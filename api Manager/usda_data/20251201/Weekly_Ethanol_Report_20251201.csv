@@ -1,0 +1,3 @@
+source,report_type,fetch_timestamp,commodity,unit,product_type
+USDA_AMS,ethanol,2025-12-01T06:34:13.415418,ethanol,$/gallon,ethanol
+USDA_AMS,ethanol,2025-12-01T06:34:13.415445,ethanol,$/gallon,ethanol

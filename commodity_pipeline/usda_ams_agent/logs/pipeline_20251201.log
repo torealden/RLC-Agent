@@ -1,0 +1,159 @@
+2025-12-01 11:57:21,655 - __main__ - ERROR - Failed to initialize USDA collector: Could not find usda_ams_collector_asynch.py
+2025-12-01 11:57:21,655 - agents.database_agent - INFO - DatabaseAgent initialized with sqlite backend
+2025-12-01 11:57:21,656 - agents.verification_agent - INFO - VerificationAgent initialized with sample_size=5
+2025-12-01 11:57:21,656 - core.pipeline_orchestrator - INFO - PipelineOrchestrator created
+2025-12-01 11:57:21,656 - __main__ - INFO - Commodity Pipeline initialized
+2025-12-01 11:57:21,662 - agents.database_agent - ERROR - Database connection error: no such table: price_data
+2025-12-01 11:57:21,662 - agents.database_agent - ERROR - Error getting record count: no such table: price_data
+2025-12-01 11:59:38,374 - usda_ams_collector_asynch - INFO - Config file report_config.xlsx not found, using default configurations
+2025-12-01 11:59:38,375 - __main__ - INFO - USDA Collector initialized successfully
+2025-12-01 11:59:38,376 - agents.database_agent - INFO - DatabaseAgent initialized with sqlite backend
+2025-12-01 11:59:38,376 - agents.verification_agent - INFO - VerificationAgent initialized with sample_size=5
+2025-12-01 11:59:38,377 - core.pipeline_orchestrator - INFO - PipelineOrchestrator created
+2025-12-01 11:59:38,377 - __main__ - INFO - Commodity Pipeline initialized
+2025-12-01 11:59:38,382 - agents.database_agent - ERROR - Database connection error: no such table: price_data
+2025-12-01 11:59:38,383 - agents.database_agent - ERROR - Error getting record count: no such table: price_data
+2025-12-01 11:59:38,384 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports (attempt 1/3)
+2025-12-01 11:59:38,831 - usda_ams_collector_asynch - INFO - Successfully fetched data from https://marsapi.ams.usda.gov/services/v1.2/reports
+2025-12-01 11:59:38,833 - usda_ams_collector_asynch - INFO - Found 1046 available reports
+2025-12-01 12:00:03,830 - usda_ams_collector_asynch - INFO - Config file report_config.xlsx not found, using default configurations
+2025-12-01 12:00:03,830 - __main__ - INFO - USDA Collector initialized successfully
+2025-12-01 12:00:03,830 - agents.database_agent - INFO - DatabaseAgent initialized with sqlite backend
+2025-12-01 12:00:03,830 - agents.verification_agent - INFO - VerificationAgent initialized with sample_size=5
+2025-12-01 12:00:03,831 - core.pipeline_orchestrator - INFO - PipelineOrchestrator created
+2025-12-01 12:00:03,831 - __main__ - INFO - Commodity Pipeline initialized
+2025-12-01 12:00:03,944 - agents.database_agent - INFO - Database schema initialized successfully
+2025-12-01 12:00:03,949 - core.pipeline_orchestrator - INFO - Pipeline orchestrator initialized successfully
+2025-12-01 12:00:03,955 - agents.database_agent - ERROR - Database connection error: parameters are of unsupported type
+2025-12-01 12:00:03,955 - agents.database_agent - ERROR - Error getting date range: parameters are of unsupported type
+2025-12-01 12:00:45,094 - usda_ams_collector_asynch - INFO - Config file report_config.xlsx not found, using default configurations
+2025-12-01 12:00:45,095 - __main__ - INFO - USDA Collector initialized successfully
+2025-12-01 12:00:45,096 - agents.database_agent - INFO - DatabaseAgent initialized with sqlite backend
+2025-12-01 12:00:45,096 - agents.verification_agent - INFO - VerificationAgent initialized with sample_size=5
+2025-12-01 12:00:45,096 - core.pipeline_orchestrator - INFO - PipelineOrchestrator created
+2025-12-01 12:00:45,097 - __main__ - INFO - Commodity Pipeline initialized
+2025-12-01 12:00:45,098 - __main__ - INFO - Running daily pipeline for date: 11/25/2025
+2025-12-01 12:00:45,098 - core.pipeline_orchestrator - INFO - Starting daily pipeline run: daily_20251201_120045_aaeb1c4a
+2025-12-01 12:00:45,099 - agents.database_agent - INFO - Database schema initialized successfully
+2025-12-01 12:00:45,100 - core.pipeline_orchestrator - INFO - Pipeline orchestrator initialized successfully
+2025-12-01 12:00:45,101 - core.pipeline_orchestrator - INFO - Step 1: Collecting data from API...
+2025-12-01 12:00:45,101 - usda_ams_collector_asynch - INFO - Collecting Daily Grain Review (ID: 2849)
+2025-12-01 12:00:45,101 - usda_ams_collector_asynch - INFO - Collecting Daily Ethanol Report (ID: 3617)
+2025-12-01 12:00:45,101 - usda_ams_collector_asynch - INFO - Collecting Iowa Daily Grain Bids (ID: 2852)
+2025-12-01 12:00:45,102 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/2849 (attempt 1/3)
+2025-12-01 12:00:45,105 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/3617 (attempt 1/3)
+2025-12-01 12:00:45,107 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/2852 (attempt 1/3)
+2025-12-01 12:00:45,374 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/2849
+2025-12-01 12:00:45,377 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/2852
+2025-12-01 12:00:48,610 - usda_ams_collector_asynch - INFO - Successfully fetched data from https://marsapi.ams.usda.gov/services/v1.2/reports/3617
+2025-12-01 12:00:48,613 - usda_ams_collector_asynch - ERROR - Failed to fetch data for Daily Grain Review (ID: 2849)
+2025-12-01 12:00:48,614 - usda_ams_collector_asynch - INFO - Parsed 2 records from response
+2025-12-01 12:00:48,625 - usda_ams_collector_asynch - INFO - Saved 2 records to data\20251125\Daily_Ethanol_Report_20251125.json
+2025-12-01 12:00:48,636 - usda_ams_collector_asynch - INFO - Saved CSV to data\20251125\Daily_Ethanol_Report_20251125.csv
+2025-12-01 12:00:48,637 - usda_ams_collector_asynch - ERROR - Failed to fetch data for Iowa Daily Grain Bids (ID: 2852)
+2025-12-01 12:00:48,637 - usda_ams_collector_asynch - INFO - Total records collected: 2
+2025-12-01 12:00:48,647 - usda_ams_collector_asynch - INFO - Saved combined data to data\combined_20251125.json
+2025-12-01 12:00:48,648 - core.pipeline_orchestrator - INFO - Collected 2 records
+2025-12-01 12:00:48,649 - core.pipeline_orchestrator - INFO - Step 2: Storing data in database...
+2025-12-01 12:00:48,666 - agents.database_agent - INFO - Insert complete: 1 inserted, 1 skipped, 0 errors
+2025-12-01 12:00:48,683 - core.pipeline_orchestrator - INFO - Step 3: Verifying data integrity...
+2025-12-01 12:00:48,685 - agents.verification_agent - INFO - Verification complete for USDA_AMS: PARTIAL - 4/5 verification checks passed
+2025-12-01 12:00:48,685 - core.pipeline_orchestrator - INFO - Pipeline run complete: SUCCESS
+2025-12-01 12:00:48,685 - core.pipeline_orchestrator - INFO - Pipeline Run daily_20251201_120045_aaeb1c4a
+  Status: SUCCESS
+  Duration: 3.6s
+  Reports: 1/1 successful
+  Records: 1 inserted, 1 skipped
+  Verification: PARTIAL
+2025-12-01 12:03:39,927 - usda_ams_collector_asynch - INFO - Config file report_config.xlsx not found, using default configurations
+2025-12-01 12:03:39,928 - __main__ - INFO - USDA Collector initialized successfully
+2025-12-01 12:03:39,928 - agents.database_agent - INFO - DatabaseAgent initialized with sqlite backend
+2025-12-01 12:03:39,928 - agents.verification_agent - INFO - VerificationAgent initialized with sample_size=5
+2025-12-01 12:03:39,928 - core.pipeline_orchestrator - INFO - PipelineOrchestrator created
+2025-12-01 12:03:39,928 - __main__ - INFO - Commodity Pipeline initialized
+2025-12-01 12:03:39,928 - __main__ - INFO - Running historical backfill: 01/01/2020 to 12/31/2024
+2025-12-01 12:03:39,929 - core.pipeline_orchestrator - INFO - Starting historical backfill: backfill_20251201_120339_014abeae
+2025-12-01 12:03:39,930 - agents.database_agent - INFO - Database schema initialized successfully
+2025-12-01 12:03:39,931 - core.pipeline_orchestrator - INFO - Pipeline orchestrator initialized successfully
+2025-12-01 12:03:39,931 - core.pipeline_orchestrator - INFO - Step 1: Collecting data from API...
+2025-12-01 12:03:39,931 - usda_ams_collector_asynch - INFO - Collecting Daily Grain Review (ID: 2849)
+2025-12-01 12:03:39,931 - usda_ams_collector_asynch - INFO - Collecting Daily Ethanol Report (ID: 3617)
+2025-12-01 12:03:39,931 - usda_ams_collector_asynch - INFO - Collecting Iowa Daily Grain Bids (ID: 2852)
+2025-12-01 12:03:39,932 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/2849 (attempt 1/3)
+2025-12-01 12:03:39,934 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/3617 (attempt 1/3)
+2025-12-01 12:03:39,935 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/2852 (attempt 1/3)
+2025-12-01 12:03:40,154 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/2849
+2025-12-01 12:03:40,261 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/2852
+2025-12-01 12:04:04,605 - usda_ams_collector_asynch - INFO - Successfully fetched data from https://marsapi.ams.usda.gov/services/v1.2/reports/3617
+2025-12-01 12:04:04,606 - usda_ams_collector_asynch - ERROR - Failed to fetch data for Daily Grain Review (ID: 2849)
+2025-12-01 12:04:04,607 - usda_ams_collector_asynch - INFO - Parsed 2 records from response
+2025-12-01 12:04:04,607 - usda_ams_collector_asynch - ERROR - Error processing data for Daily Ethanol Report: unconverted data remains: :12/31/2024
+2025-12-01 12:04:04,607 - usda_ams_collector_asynch - ERROR - Failed to fetch data for Iowa Daily Grain Bids (ID: 2852)
+2025-12-01 12:04:04,608 - usda_ams_collector_asynch - INFO - Total records collected: 2
+2025-12-01 12:04:04,608 - core.pipeline_orchestrator - ERROR - Pipeline execution failed: unconverted data remains: :12/31/2024
+2025-12-01 12:04:04,616 - core.pipeline_orchestrator - INFO - Historical backfill complete: FAILED
+2025-12-01 12:04:04,617 - core.pipeline_orchestrator - INFO - Pipeline Run backfill_20251201_120339_014abeae
+  Status: FAILED
+  Duration: 24.7s
+  Reports: 0/0 successful
+  Records: 0 inserted, 0 skipped
+  Verification: NOT_RUN
+2025-12-01 12:06:05,878 - usda_ams_collector_asynch - INFO - Loaded 9 report configurations from report_config.xlsx
+2025-12-01 12:06:05,879 - __main__ - INFO - USDA Collector initialized successfully
+2025-12-01 12:06:05,879 - agents.database_agent - INFO - DatabaseAgent initialized with sqlite backend
+2025-12-01 12:06:05,879 - agents.verification_agent - INFO - VerificationAgent initialized with sample_size=5
+2025-12-01 12:06:05,879 - core.pipeline_orchestrator - INFO - PipelineOrchestrator created
+2025-12-01 12:06:05,879 - __main__ - INFO - Commodity Pipeline initialized
+2025-12-01 12:06:05,879 - __main__ - INFO - Running historical backfill: 01/01/2020 to 12/31/2024
+2025-12-01 12:06:05,879 - core.pipeline_orchestrator - INFO - Starting historical backfill: backfill_20251201_120605_c0b08a45
+2025-12-01 12:06:05,881 - agents.database_agent - INFO - Database schema initialized successfully
+2025-12-01 12:06:05,881 - core.pipeline_orchestrator - INFO - Pipeline orchestrator initialized successfully
+2025-12-01 12:06:05,881 - core.pipeline_orchestrator - INFO - Step 1: Collecting data from API...
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Collecting Daily Grain Review (ID: 2849)
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Collecting Daily Ethanol Report (ID: 3617)
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Collecting Iowa Daily Grain Bids (ID: 2852)
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Collecting National Weekly Grain Co-Products Report (ID: 3618)
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Collecting National Weekly Ag Energy Roundup (ID: 2805)
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Collecting Weekly Ethanol Report (ID: 3616)
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Collecting National Biomass Report (ID: 2804)
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Collecting Central Illinois Corn Processor Report (ID: 3189)
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Collecting Weekly Distiller Grain Summary (ID: 3202)
+2025-12-01 12:06:05,882 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/2849 (attempt 1/3)
+2025-12-01 12:06:05,885 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/3617 (attempt 1/3)
+2025-12-01 12:06:05,886 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/2852 (attempt 1/3)
+2025-12-01 12:06:05,886 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/3618 (attempt 1/3)
+2025-12-01 12:06:05,886 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/2805 (attempt 1/3)
+2025-12-01 12:06:05,887 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/3616 (attempt 1/3)
+2025-12-01 12:06:05,887 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/2804 (attempt 1/3)
+2025-12-01 12:06:05,887 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/3189 (attempt 1/3)
+2025-12-01 12:06:05,888 - usda_ams_collector_asynch - INFO - Fetching https://marsapi.ams.usda.gov/services/v1.2/reports/3202 (attempt 1/3)
+2025-12-01 12:06:06,116 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/2805
+2025-12-01 12:06:06,117 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/2849
+2025-12-01 12:06:06,125 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/2852
+2025-12-01 12:06:06,126 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/3202
+2025-12-01 12:06:06,164 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/3189
+2025-12-01 12:06:06,174 - usda_ams_collector_asynch - ERROR - Resource not found: https://marsapi.ams.usda.gov/services/v1.2/reports/2804
+2025-12-01 12:06:06,887 - usda_ams_collector_asynch - INFO - Successfully fetched data from https://marsapi.ams.usda.gov/services/v1.2/reports/3617
+2025-12-01 12:06:09,268 - usda_ams_collector_asynch - INFO - Successfully fetched data from https://marsapi.ams.usda.gov/services/v1.2/reports/3618
+2025-12-01 12:06:30,690 - usda_ams_collector_asynch - INFO - Successfully fetched data from https://marsapi.ams.usda.gov/services/v1.2/reports/3616
+2025-12-01 12:06:30,691 - usda_ams_collector_asynch - ERROR - Failed to fetch data for Daily Grain Review (ID: 2849)
+2025-12-01 12:06:30,692 - usda_ams_collector_asynch - INFO - Parsed 2 records from response
+2025-12-01 12:06:30,692 - usda_ams_collector_asynch - ERROR - Error processing data for Daily Ethanol Report: unconverted data remains: :12/31/2024
+2025-12-01 12:06:30,692 - usda_ams_collector_asynch - ERROR - Failed to fetch data for Iowa Daily Grain Bids (ID: 2852)
+2025-12-01 12:06:30,692 - usda_ams_collector_asynch - INFO - Parsed 4 records from response
+2025-12-01 12:06:30,692 - usda_ams_collector_asynch - ERROR - Error processing data for National Weekly Grain Co-Products Report: unconverted data remains: :12/31/2024
+2025-12-01 12:06:30,692 - usda_ams_collector_asynch - ERROR - Failed to fetch data for National Weekly Ag Energy Roundup (ID: 2805)
+2025-12-01 12:06:30,693 - usda_ams_collector_asynch - INFO - Parsed 2 records from response
+2025-12-01 12:06:30,693 - usda_ams_collector_asynch - ERROR - Error processing data for Weekly Ethanol Report: unconverted data remains: :12/31/2024
+2025-12-01 12:06:30,693 - usda_ams_collector_asynch - ERROR - Failed to fetch data for National Biomass Report (ID: 2804)
+2025-12-01 12:06:30,693 - usda_ams_collector_asynch - ERROR - Failed to fetch data for Central Illinois Corn Processor Report (ID: 3189)
+2025-12-01 12:06:30,693 - usda_ams_collector_asynch - ERROR - Failed to fetch data for Weekly Distiller Grain Summary (ID: 3202)
+2025-12-01 12:06:30,694 - usda_ams_collector_asynch - INFO - Total records collected: 8
+2025-12-01 12:06:30,694 - core.pipeline_orchestrator - ERROR - Pipeline execution failed: unconverted data remains: :12/31/2024
+2025-12-01 12:06:30,710 - core.pipeline_orchestrator - INFO - Historical backfill complete: FAILED
+2025-12-01 12:06:30,710 - core.pipeline_orchestrator - INFO - Pipeline Run backfill_20251201_120605_c0b08a45
+  Status: FAILED
+  Duration: 24.8s
+  Reports: 0/0 successful
+  Records: 0 inserted, 0 skipped
+  Verification: NOT_RUN

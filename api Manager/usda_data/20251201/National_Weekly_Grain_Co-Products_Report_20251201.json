@@ -1,0 +1,34 @@
+[
+  {
+    "source": "USDA_AMS",
+    "report_type": "ethanol",
+    "fetch_timestamp": "2025-12-01T06:34:13.397239",
+    "commodity": "ethanol",
+    "unit": "$/gallon",
+    "product_type": "ethanol"
+  },
+  {
+    "source": "USDA_AMS",
+    "report_type": "ethanol",
+    "fetch_timestamp": "2025-12-01T06:34:13.397266",
+    "commodity": "ethanol",
+    "unit": "$/gallon",
+    "product_type": "ethanol"
+  },
+  {
+    "source": "USDA_AMS",
+    "report_type": "ethanol",
+    "fetch_timestamp": "2025-12-01T06:34:13.397274",
+    "commodity": "ethanol",
+    "unit": "$/gallon",
+    "product_type": "ethanol"
+  },
+  {
+    "source": "USDA_AMS",
+    "report_type": "ethanol",
+    "fetch_timestamp": "2025-12-01T06:34:13.397280",
+    "commodity": "ethanol",
+    "unit": "$/gallon",
+    "product_type": "ethanol"
+  }
+]

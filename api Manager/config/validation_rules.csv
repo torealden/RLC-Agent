@@ -1,0 +1,8 @@
+rule_name,commodity_code,validation_type,min_value,max_value,alert_threshold
+price_positive,ALL,price_range,0,10000,
+volume_reasonable,SOYBEAN,volume_range,0,1000000,10000
+basis_range,SOYBEAN,basis_range,-200,200,150
+volume_reasonable,CORN,volume_range,0,2000000,50000
+volume_reasonable,WHEAT,volume_range,0,1500000,20000
+basis_range,CORN,basis_range,-150,150,100
+basis_range,WHEAT,basis_range,-200,200,150
