@@ -1,0 +1,102 @@
+{
+    "version": "1.0",
+    "description": "Email handling preferences for RLC Master Agent",
+
+    "priority_senders": {
+        "high": [
+            "@example.com",
+            "important.contact@domain.com"
+        ],
+        "low": []
+    },
+
+    "auto_archive": {
+        "enabled": false,
+        "patterns": [
+            "newsletter@",
+            "noreply@",
+            "no-reply@",
+            "automated@"
+        ],
+        "subjects": [
+            "Daily Digest",
+            "Weekly Summary"
+        ]
+    },
+
+    "auto_label": {
+        "enabled": true,
+        "rules": [
+            {
+                "condition": {
+                    "from_contains": "usda.gov"
+                },
+                "label": "USDA"
+            },
+            {
+                "condition": {
+                    "subject_contains": "invoice"
+                },
+                "label": "Finance"
+            },
+            {
+                "condition": {
+                    "subject_contains": "meeting"
+                },
+                "label": "Meetings"
+            }
+        ]
+    },
+
+    "urgent_keywords": [
+        "urgent",
+        "asap",
+        "immediately",
+        "critical",
+        "emergency",
+        "deadline today"
+    ],
+
+    "categories": {
+        "trading": {
+            "keywords": ["trade", "position", "market", "price", "futures", "options"],
+            "priority": "high"
+        },
+        "ranch": {
+            "keywords": ["cattle", "livestock", "ranch", "feed", "vet"],
+            "priority": "medium"
+        },
+        "analytics": {
+            "keywords": ["report", "analysis", "data", "forecast", "chart"],
+            "priority": "medium"
+        },
+        "administrative": {
+            "keywords": ["invoice", "payment", "contract", "agreement"],
+            "priority": "medium"
+        }
+    },
+
+    "response_templates": {
+        "acknowledge": "Thank you for your email. I've received your message and will review it shortly.",
+        "meeting_request": "Thank you for the meeting request. I'll check my calendar and get back to you with available times.",
+        "out_of_office": "Thank you for your email. I'm currently unavailable but will respond as soon as possible."
+    },
+
+    "ignore_threads": {
+        "enabled": false,
+        "thread_ids": []
+    },
+
+    "daily_summary": {
+        "enabled": true,
+        "time": "08:00",
+        "include_unread_count": true,
+        "include_priority_emails": true,
+        "max_items": 10
+    },
+
+    "retention": {
+        "archive_after_days": 30,
+        "delete_spam_after_days": 7
+    }
+}
