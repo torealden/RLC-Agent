@@ -1,2 +1,2 @@
-source,source_report,source_report_id,report_type,fetch_timestamp
-USDA_AMS,"OKC West Livestock Auction – El Reno, OK",1281,cattle,2025-12-04T14:10:05.390146
+source,source_report,source_report_id,report_type,fetch_timestamp,api_stats,api_results
+USDA_AMS,"OKC West Livestock Auction – El Reno, OK",1281,cattle,2025-12-04T14:39:56.853450,"{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]

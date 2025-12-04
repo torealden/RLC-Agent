@@ -4,7 +4,18 @@
     "source_report": "Ohio Daily Grain Bids",
     "source_report_id": "3225",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.646462",
+    "fetch_timestamp": "2025-12-04T14:39:57.111618",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -12,7 +23,18 @@
     "source_report": "Ohio Daily Grain Bids",
     "source_report_id": "3225",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.646520",
+    "fetch_timestamp": "2025-12-04T14:39:57.111685",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   }
 ]

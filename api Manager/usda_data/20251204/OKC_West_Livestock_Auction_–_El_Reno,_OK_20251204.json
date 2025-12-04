@@ -4,7 +4,13 @@
     "source_report": "OKC West Livestock Auction \u2013 El Reno, OK",
     "source_report_id": "1281",
     "report_type": "cattle",
-    "fetch_timestamp": "2025-12-04T14:10:05.390146",
+    "fetch_timestamp": "2025-12-04T14:39:56.853450",
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   }
 ]

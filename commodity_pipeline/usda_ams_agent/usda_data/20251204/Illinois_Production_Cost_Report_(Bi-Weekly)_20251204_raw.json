@@ -1,0 +1,28 @@
+[
+  {
+    "reportSection": "Report Header",
+    "reportSections": [
+      "Report Header",
+      "Report Details - Prices"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  },
+  {
+    "reportSection": "Report Details - Prices",
+    "reportSections": [
+      "Report Header",
+      "Report Details - Prices"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  }
+]

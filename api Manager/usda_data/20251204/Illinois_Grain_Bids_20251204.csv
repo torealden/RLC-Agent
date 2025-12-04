@@ -1,3 +1,3 @@
-source,source_report,source_report_id,report_type,fetch_timestamp
-USDA_AMS,Illinois Grain Bids,3192,grain,2025-12-04T14:10:05.592021
-USDA_AMS,Illinois Grain Bids,3192,grain,2025-12-04T14:10:05.592085
+source,source_report,source_report_id,report_type,fetch_timestamp,api_reportSection,api_reportSections,api_stats,api_results
+USDA_AMS,Illinois Grain Bids,3192,grain,2025-12-04T14:39:57.054993,Report Header,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
+USDA_AMS,Illinois Grain Bids,3192,grain,2025-12-04T14:39:57.055072,Report Detail,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]

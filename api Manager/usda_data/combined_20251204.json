@@ -4,7 +4,39 @@
     "source_report": "Daily Ethanol Report",
     "source_report_id": "3617",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.262949",
+    "fetch_timestamp": "2025-12-04T14:39:56.696268",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 1,
+      "userAllowedRows": 100000,
+      "totalRows": 1
+    },
+    "api_results": [
+      {
+        "office_name": "St Joseph, MO",
+        "office_code": "LS-SJ",
+        "office_city": "Saint Joseph",
+        "office_state": "MO",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_city": "Saint Joseph",
+        "market_location_state": "MO",
+        "market_type": "Bioenergy",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "final_ind": "Final",
+        "report_date": "12/04/2025",
+        "special_notes": null,
+        "report_narrative": null
+      }
+    ],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 1, \"userAllowedRows\": 100000, \"totalRows\": 1}, \"results\": [{\"office_name\": \"St Joseph, MO\", \"office_code\": \"LS-SJ\", \"office_city\": \"Saint Joseph\", \"office_state\": \"MO\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_city\": \"Saint Joseph\", \"market_location_state\": \"MO\", \"market_type\": \"Bioenergy\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"final_ind\": \"Final\", \"report_date\": \"12/04/2025\", \"special_notes\": null, \"report_narrative\": null}]}"
   },
   {
@@ -12,7 +44,619 @@
     "source_report": "Daily Ethanol Report",
     "source_report_id": "3617",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.263047",
+    "fetch_timestamp": "2025-12-04T14:39:56.696338",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 12,
+      "userAllowedRows": 100000,
+      "totalRows": 12
+    },
+    "api_results": [
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Illinois",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -16,
+        "basis Max": 20,
+        "basis Min Change": 4,
+        "basis Max Change": 0,
+        "basis Min Direction": "UP",
+        "basis Max Direction": "UNCH",
+        "price Min": 4.275,
+        "price Max": 4.635,
+        "price Min Change": 0.025,
+        "price Max Change": 0.065,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 4.415,
+        "avg_price_year_ago": 4.3457
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Indiana",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -12,
+        "basis Max": 25,
+        "basis Min Change": 0,
+        "basis Max Change": 0,
+        "basis Min Direction": "UNCH",
+        "basis Max Direction": "UNCH",
+        "price Min": 4.315,
+        "price Max": 4.685,
+        "price Min Change": 0.065,
+        "price Max Change": 0.065,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 4.4606,
+        "avg_price_year_ago": 4.32
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Iowa",
+        "region": "East",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -25,
+        "basis Max": 0,
+        "basis Min Change": 1,
+        "basis Max Change": 5,
+        "basis Min Direction": "UP",
+        "basis Max Direction": "DN",
+        "price Min": 4.185,
+        "price Max": 4.435,
+        "price Min Change": 0.055,
+        "price Max Change": 0.115,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 4.2804,
+        "avg_price_year_ago": 4.2067
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Iowa",
+        "region": "West",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -47,
+        "basis Max": -12,
+        "basis Min Change": 1,
+        "basis Max Change": 0,
+        "basis Min Direction": "UP",
+        "basis Max Direction": "UNCH",
+        "price Min": 3.965,
+        "price Max": 4.315,
+        "price Min Change": 0.055,
+        "price Max Change": 0.065,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 4.1618,
+        "avg_price_year_ago": 4.2571
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Kansas",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -40,
+        "basis Max": -20,
+        "basis Min Change": 10,
+        "basis Max Change": 0,
+        "basis Min Direction": null,
+        "basis Max Direction": "UNCH",
+        "price Min": 4.035,
+        "price Max": 4.235,
+        "price Min Change": 0.045,
+        "price Max Change": 0.065,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 4.1475,
+        "avg_price_year_ago": 4.4967
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Michigan",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -35,
+        "basis Max": -10,
+        "basis Min Change": 0,
+        "basis Max Change": 5,
+        "basis Min Direction": null,
+        "basis Max Direction": "UP",
+        "price Min": 4.085,
+        "price Max": 4.335,
+        "price Min Change": 0.055,
+        "price Max Change": 0.015,
+        "price Min Direction": "UP",
+        "price Max Direction": "DN",
+        "avg_price": 4.2225,
+        "avg_price_year_ago": 3.925
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Minnesota",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -52,
+        "basis Max": -26,
+        "basis Min Change": 0,
+        "basis Max Change": 0,
+        "basis Min Direction": "UNCH",
+        "basis Max Direction": "UNCH",
+        "price Min": 3.915,
+        "price Max": 4.175,
+        "price Min Change": 0.065,
+        "price Max Change": 0.065,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 4.0617,
+        "avg_price_year_ago": 4.2414
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Missouri",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -25,
+        "basis Max": -10,
+        "basis Min Change": 0,
+        "basis Max Change": 0,
+        "basis Min Direction": "UNCH",
+        "basis Max Direction": "UNCH",
+        "price Min": 4.185,
+        "price Max": 4.335,
+        "price Min Change": 0.065,
+        "price Max Change": 0.065,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 4.245,
+        "avg_price_year_ago": 4.0425
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Nebraska",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -54,
+        "basis Max": -12,
+        "basis Min Change": 0,
+        "basis Max Change": 0,
+        "basis Min Direction": "UNCH",
+        "basis Max Direction": "UNCH",
+        "price Min": 3.895,
+        "price Max": 4.315,
+        "price Min Change": 0.065,
+        "price Max Change": 0.065,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 4.1521,
+        "avg_price_year_ago": 4.1793
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Ohio",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": 0,
+        "basis Max": 20,
+        "basis Min Change": 0,
+        "basis Max Change": 0,
+        "basis Min Direction": "UNCH",
+        "basis Max Direction": "UNCH",
+        "price Min": 4.435,
+        "price Max": 4.635,
+        "price Min Change": 0.065,
+        "price Max Change": 0.065,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 4.5267,
+        "avg_price_year_ago": 4.3
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "South Dakota",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -75,
+        "basis Max": -44,
+        "basis Min Change": 0,
+        "basis Max Change": 1,
+        "basis Min Direction": "UNCH",
+        "basis Max Direction": "UP",
+        "price Min": 3.685,
+        "price Max": 3.995,
+        "price Min Change": 0.065,
+        "price Max Change": 0.055,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 3.7867,
+        "avg_price_year_ago": 3.9469
+      },
+      {
+        "report_date": "12/04/2025",
+        "report_begin_date": "12/04/2025",
+        "report_end_date": "12/04/2025",
+        "published_date": "12/04/2025 04:10:40",
+        "office_name": "St Joseph, MO",
+        "office_state": "MO",
+        "office_city": "Saint Joseph",
+        "market_type": "Bioenergy",
+        "market_location_name": "Ag Energy (Grain)",
+        "market_location_state": "MO",
+        "market_location_city": "Saint Joseph",
+        "slug_id": 3617,
+        "slug_name": "AMS_3617",
+        "report_title": "National Daily Ethanol Report",
+        "grp": "Bioenergy",
+        "cat": "Grain",
+        "commodity": "Corn",
+        "quote_type": "Basis",
+        "state/Province": "Wisconsin",
+        "region": "N/A",
+        "variety": "N/A",
+        "application": "N/A",
+        "class": "Yellow",
+        "grade": "US #2",
+        "pkg": "bulk",
+        "price_unit": "$ Per Bushel",
+        "basis_unit": "\u00a2/Bu",
+        "freight": "Delivered",
+        "sale Type": "Bid",
+        "trans_mode": "Truck",
+        "shipping_point": "Ethanol Plant",
+        "delivery_period": "Current",
+        "basis Min Futures Month": "March (H)",
+        "basis Max Futures Month": "March (H)",
+        "basis Min": -56,
+        "basis Max": -30,
+        "basis Min Change": 0,
+        "basis Max Change": 2,
+        "basis Min Direction": "UNCH",
+        "basis Max Direction": "UP",
+        "price Min": 3.875,
+        "price Max": 4.135,
+        "price Min Change": 0.065,
+        "price Max Change": 0.045,
+        "price Min Direction": "DN",
+        "price Max Direction": "DN",
+        "avg_price": 3.977,
+        "avg_price_year_ago": 3.95
+      }
+    ],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 12, \"userAllowedRows\": 100000, \"totalRows\": 12}, \"results\": [{\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Illinois\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -16, \"basis Max\": 20, \"basis Min Change\": 4, \"basis Max Change\": 0, \"basis Min Direction\": \"UP\", \"basis Max Direction\": \"UNCH\", \"price Min\": 4.275, \"price Max\": 4.635, \"price Min Change\": 0.025, \"price Max Change\": 0.065, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 4.415, \"avg_price_year_ago\": 4.3457}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Indiana\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -12, \"basis Max\": 25, \"basis Min Change\": 0, \"basis Max Change\": 0, \"basis Min Direction\": \"UNCH\", \"basis Max Direction\": \"UNCH\", \"price Min\": 4.315, \"price Max\": 4.685, \"price Min Change\": 0.065, \"price Max Change\": 0.065, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 4.4606, \"avg_price_year_ago\": 4.32}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Iowa\", \"region\": \"East\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -25, \"basis Max\": 0, \"basis Min Change\": 1, \"basis Max Change\": 5, \"basis Min Direction\": \"UP\", \"basis Max Direction\": \"DN\", \"price Min\": 4.185, \"price Max\": 4.435, \"price Min Change\": 0.055, \"price Max Change\": 0.115, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 4.2804, \"avg_price_year_ago\": 4.2067}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Iowa\", \"region\": \"West\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -47, \"basis Max\": -12, \"basis Min Change\": 1, \"basis Max Change\": 0, \"basis Min Direction\": \"UP\", \"basis Max Direction\": \"UNCH\", \"price Min\": 3.965, \"price Max\": 4.315, \"price Min Change\": 0.055, \"price Max Change\": 0.065, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 4.1618, \"avg_price_year_ago\": 4.2571}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Kansas\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -40, \"basis Max\": -20, \"basis Min Change\": 10, \"basis Max Change\": 0, \"basis Min Direction\": null, \"basis Max Direction\": \"UNCH\", \"price Min\": 4.035, \"price Max\": 4.235, \"price Min Change\": 0.045, \"price Max Change\": 0.065, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 4.1475, \"avg_price_year_ago\": 4.4967}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Michigan\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -35, \"basis Max\": -10, \"basis Min Change\": 0, \"basis Max Change\": 5, \"basis Min Direction\": null, \"basis Max Direction\": \"UP\", \"price Min\": 4.085, \"price Max\": 4.335, \"price Min Change\": 0.055, \"price Max Change\": 0.015, \"price Min Direction\": \"UP\", \"price Max Direction\": \"DN\", \"avg_price\": 4.2225, \"avg_price_year_ago\": 3.925}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Minnesota\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -52, \"basis Max\": -26, \"basis Min Change\": 0, \"basis Max Change\": 0, \"basis Min Direction\": \"UNCH\", \"basis Max Direction\": \"UNCH\", \"price Min\": 3.915, \"price Max\": 4.175, \"price Min Change\": 0.065, \"price Max Change\": 0.065, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 4.0617, \"avg_price_year_ago\": 4.2414}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Missouri\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -25, \"basis Max\": -10, \"basis Min Change\": 0, \"basis Max Change\": 0, \"basis Min Direction\": \"UNCH\", \"basis Max Direction\": \"UNCH\", \"price Min\": 4.185, \"price Max\": 4.335, \"price Min Change\": 0.065, \"price Max Change\": 0.065, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 4.245, \"avg_price_year_ago\": 4.0425}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Nebraska\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -54, \"basis Max\": -12, \"basis Min Change\": 0, \"basis Max Change\": 0, \"basis Min Direction\": \"UNCH\", \"basis Max Direction\": \"UNCH\", \"price Min\": 3.895, \"price Max\": 4.315, \"price Min Change\": 0.065, \"price Max Change\": 0.065, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 4.1521, \"avg_price_year_ago\": 4.1793}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Ohio\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": 0, \"basis Max\": 20, \"basis Min Change\": 0, \"basis Max Change\": 0, \"basis Min Direction\": \"UNCH\", \"basis Max Direction\": \"UNCH\", \"price Min\": 4.435, \"price Max\": 4.635, \"price Min Change\": 0.065, \"price Max Change\": 0.065, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 4.5267, \"avg_price_year_ago\": 4.3}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"South Dakota\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -75, \"basis Max\": -44, \"basis Min Change\": 0, \"basis Max Change\": 1, \"basis Min Direction\": \"UNCH\", \"basis Max Direction\": \"UP\", \"price Min\": 3.685, \"price Max\": 3.995, \"price Min Change\": 0.065, \"price Max Change\": 0.055, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 3.7867, \"avg_price_year_ago\": 3.9469}, {\"report_date\": \"12/04/2025\", \"report_begin_date\": \"12/04/2025\", \"report_end_date\": \"12/04/2025\", \"published_date\": \"12/04/2025 04:10:40\", \"office_name\": \"St Joseph, MO\", \"office_state\": \"MO\", \"office_city\": \"Saint Joseph\", \"market_type\": \"Bioenergy\", \"market_location_name\": \"Ag Energy (Grain)\", \"market_location_state\": \"MO\", \"market_location_city\": \"Saint Joseph\", \"slug_id\": 3617, \"slug_name\": \"AMS_3617\", \"report_title\": \"National Daily Ethanol Report\", \"grp\": \"Bioenergy\", \"cat\": \"Grain\", \"commodity\": \"Corn\", \"quote_type\": \"Basis\", \"state/Province\": \"Wisconsin\", \"region\": \"N/A\", \"variety\": \"N/A\", \"application\": \"N/A\", \"class\": \"Yellow\", \"grade\": \"US #2\", \"pkg\": \"bulk\", \"price_unit\": \"$ Per Bushel\", \"basis_unit\": \"\\u00a2/Bu\", \"freight\": \"Delivered\", \"sale Type\": \"Bid\", \"trans_mode\": \"Truck\", \"shipping_point\": \"Ethanol Plant\", \"delivery_period\": \"Current\", \"basis Min Futures Month\": \"March (H)\", \"basis Max Futures Month\": \"March (H)\", \"basis Min\": -56, \"basis Max\": -30, \"basis Min Change\": 0, \"basis Max Change\": 2, \"basis Min Direction\": \"UNCH\", \"basis Max Direction\": \"UP\", \"price Min\": 3.875, \"price Max\": 4.135, \"price Min Change\": 0.065, \"price Max Change\": 0.045, \"price Min Direction\": \"DN\", \"price Max Direction\": \"DN\", \"avg_price\": 3.977, \"avg_price_year_ago\": 3.95}]}"
   },
   {
@@ -20,7 +664,20 @@
     "source_report": "National Weekly Grain Co-Products Report",
     "source_report_id": "3618",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.333292",
+    "fetch_timestamp": "2025-12-04T14:39:56.789912",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Input Cost",
+      "Report Detail",
+      "Report EPV"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Input Cost\", \"Report Detail\", \"Report EPV\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -28,7 +685,20 @@
     "source_report": "National Weekly Grain Co-Products Report",
     "source_report_id": "3618",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.333362",
+    "fetch_timestamp": "2025-12-04T14:39:56.789987",
+    "api_reportSection": "Report Input Cost",
+    "api_reportSections": [
+      "Report Header",
+      "Report Input Cost",
+      "Report Detail",
+      "Report EPV"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Input Cost\", \"reportSections\": [\"Report Header\", \"Report Input Cost\", \"Report Detail\", \"Report EPV\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -36,7 +706,20 @@
     "source_report": "National Weekly Grain Co-Products Report",
     "source_report_id": "3618",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.333387",
+    "fetch_timestamp": "2025-12-04T14:39:56.790018",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Input Cost",
+      "Report Detail",
+      "Report EPV"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Input Cost\", \"Report Detail\", \"Report EPV\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -44,7 +727,20 @@
     "source_report": "National Weekly Grain Co-Products Report",
     "source_report_id": "3618",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.333405",
+    "fetch_timestamp": "2025-12-04T14:39:56.790039",
+    "api_reportSection": "Report EPV",
+    "api_reportSections": [
+      "Report Header",
+      "Report Input Cost",
+      "Report Detail",
+      "Report EPV"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report EPV\", \"reportSections\": [\"Report Header\", \"Report Input Cost\", \"Report Detail\", \"Report EPV\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -52,7 +748,18 @@
     "source_report": "Weekly Ethanol Report",
     "source_report_id": "3616",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.362551",
+    "fetch_timestamp": "2025-12-04T14:39:56.824408",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -60,7 +767,18 @@
     "source_report": "Weekly Ethanol Report",
     "source_report_id": "3616",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.362627",
+    "fetch_timestamp": "2025-12-04T14:39:56.824477",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -68,7 +786,13 @@
     "source_report": "OKC West Livestock Auction \u2013 El Reno, OK",
     "source_report_id": "1281",
     "report_type": "cattle",
-    "fetch_timestamp": "2025-12-04T14:10:05.390146",
+    "fetch_timestamp": "2025-12-04T14:39:56.853450",
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -76,7 +800,18 @@
     "source_report": "Turkey: Daily National Turkey Market-at-a-Glance",
     "source_report_id": "2771",
     "report_type": "poultry",
-    "fetch_timestamp": "2025-12-04T14:10:05.412220",
+    "fetch_timestamp": "2025-12-04T14:39:56.876495",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -84,7 +819,18 @@
     "source_report": "Turkey: Daily National Turkey Market-at-a-Glance",
     "source_report_id": "2771",
     "report_type": "poultry",
-    "fetch_timestamp": "2025-12-04T14:10:05.412277",
+    "fetch_timestamp": "2025-12-04T14:39:56.876565",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -92,7 +838,21 @@
     "source_report": "National Direct Feeder Pig Report",
     "source_report_id": "2810",
     "report_type": "swine",
-    "fetch_timestamp": "2025-12-04T14:10:05.442115",
+    "fetch_timestamp": "2025-12-04T14:39:56.909221",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -100,7 +860,21 @@
     "source_report": "National Direct Feeder Pig Report",
     "source_report_id": "2810",
     "report_type": "swine",
-    "fetch_timestamp": "2025-12-04T14:10:05.442181",
+    "fetch_timestamp": "2025-12-04T14:39:56.909298",
+    "api_reportSection": "Report Receipts",
+    "api_reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Receipts\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -108,7 +882,21 @@
     "source_report": "National Direct Feeder Pig Report",
     "source_report_id": "2810",
     "report_type": "swine",
-    "fetch_timestamp": "2025-12-04T14:10:05.442206",
+    "fetch_timestamp": "2025-12-04T14:39:56.909329",
+    "api_reportSection": "Report Volume",
+    "api_reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Volume\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -116,7 +904,21 @@
     "source_report": "National Direct Feeder Pig Report",
     "source_report_id": "2810",
     "report_type": "swine",
-    "fetch_timestamp": "2025-12-04T14:10:05.442223",
+    "fetch_timestamp": "2025-12-04T14:39:56.909352",
+    "api_reportSection": "Report Details",
+    "api_reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Details\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -124,7 +926,21 @@
     "source_report": "National Direct Feeder Pig Report",
     "source_report_id": "2810",
     "report_type": "swine",
-    "fetch_timestamp": "2025-12-04T14:10:05.442238",
+    "fetch_timestamp": "2025-12-04T14:39:56.909372",
+    "api_reportSection": "Report Comprehensive",
+    "api_reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Comprehensive\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -132,7 +948,18 @@
     "source_report": "National Daily Sunflower, Canola, Millet, and Flaxseed Report",
     "source_report_id": "2887",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.475415",
+    "fetch_timestamp": "2025-12-04T14:39:56.941793",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -140,7 +967,18 @@
     "source_report": "National Daily Sunflower, Canola, Millet, and Flaxseed Report",
     "source_report_id": "2887",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.475483",
+    "fetch_timestamp": "2025-12-04T14:39:56.941867",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -148,7 +986,18 @@
     "source_report": "Indiana Grain Bids",
     "source_report_id": "2932",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.509987",
+    "fetch_timestamp": "2025-12-04T14:39:56.970831",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -156,7 +1005,18 @@
     "source_report": "Indiana Grain Bids",
     "source_report_id": "2932",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.510023",
+    "fetch_timestamp": "2025-12-04T14:39:56.970911",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -164,7 +1024,18 @@
     "source_report": "Green City Livestock Auction \u2013 Green City, MO",
     "source_report_id": "3046",
     "report_type": "cattle",
-    "fetch_timestamp": "2025-12-04T14:10:05.537397",
+    "fetch_timestamp": "2025-12-04T14:39:57.000809",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -172,7 +1043,18 @@
     "source_report": "Green City Livestock Auction \u2013 Green City, MO",
     "source_report_id": "3046",
     "report_type": "cattle",
-    "fetch_timestamp": "2025-12-04T14:10:05.537473",
+    "fetch_timestamp": "2025-12-04T14:39:57.000885",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -180,7 +1062,18 @@
     "source_report": "Kansas City Board of Trade Daily Wheat Bids",
     "source_report_id": "3148",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.564257",
+    "fetch_timestamp": "2025-12-04T14:39:57.027856",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -188,7 +1081,18 @@
     "source_report": "Kansas City Board of Trade Daily Wheat Bids",
     "source_report_id": "3148",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.564321",
+    "fetch_timestamp": "2025-12-04T14:39:57.027911",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -196,7 +1100,18 @@
     "source_report": "Illinois Grain Bids",
     "source_report_id": "3192",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.592021",
+    "fetch_timestamp": "2025-12-04T14:39:57.054993",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -204,7 +1119,18 @@
     "source_report": "Illinois Grain Bids",
     "source_report_id": "3192",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.592085",
+    "fetch_timestamp": "2025-12-04T14:39:57.055072",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -212,7 +1138,18 @@
     "source_report": "Illinois Production Cost Report (Bi-Weekly)",
     "source_report_id": "3195",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.619231",
+    "fetch_timestamp": "2025-12-04T14:39:57.085517",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Details - Prices"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Details - Prices\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -220,7 +1157,18 @@
     "source_report": "Illinois Production Cost Report (Bi-Weekly)",
     "source_report_id": "3195",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.619297",
+    "fetch_timestamp": "2025-12-04T14:39:57.085587",
+    "api_reportSection": "Report Details - Prices",
+    "api_reportSections": [
+      "Report Header",
+      "Report Details - Prices"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Details - Prices\", \"reportSections\": [\"Report Header\", \"Report Details - Prices\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -228,7 +1176,18 @@
     "source_report": "Ohio Daily Grain Bids",
     "source_report_id": "3225",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.646462",
+    "fetch_timestamp": "2025-12-04T14:39:57.111618",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -236,7 +1195,18 @@
     "source_report": "Ohio Daily Grain Bids",
     "source_report_id": "3225",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.646520",
+    "fetch_timestamp": "2025-12-04T14:39:57.111685",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -244,7 +1214,19 @@
     "source_report": "National Grain and Oilseed Processor Feedstuff Report",
     "source_report_id": "3511",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.674284",
+    "fetch_timestamp": "2025-12-04T14:39:57.138068",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail",
+      "Report Comprehensive Values"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\", \"Report Comprehensive Values\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -252,7 +1234,19 @@
     "source_report": "National Grain and Oilseed Processor Feedstuff Report",
     "source_report_id": "3511",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.674352",
+    "fetch_timestamp": "2025-12-04T14:39:57.138138",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail",
+      "Report Comprehensive Values"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\", \"Report Comprehensive Values\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -260,7 +1254,19 @@
     "source_report": "National Grain and Oilseed Processor Feedstuff Report",
     "source_report_id": "3511",
     "report_type": "ethanol",
-    "fetch_timestamp": "2025-12-04T14:10:05.674376",
+    "fetch_timestamp": "2025-12-04T14:39:57.138167",
+    "api_reportSection": "Report Comprehensive Values",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail",
+      "Report Comprehensive Values"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Comprehensive Values\", \"reportSections\": [\"Report Header\", \"Report Detail\", \"Report Comprehensive Values\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   }
 ]

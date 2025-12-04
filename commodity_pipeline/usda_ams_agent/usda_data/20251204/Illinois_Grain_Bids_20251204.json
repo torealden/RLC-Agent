@@ -1,0 +1,40 @@
+[
+  {
+    "source": "USDA_AMS",
+    "source_report": "Illinois Grain Bids",
+    "source_report_id": "3192",
+    "report_type": "grain",
+    "fetch_timestamp": "2025-12-04T14:42:57.424503",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
+    "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  },
+  {
+    "source": "USDA_AMS",
+    "source_report": "Illinois Grain Bids",
+    "source_report_id": "3192",
+    "report_type": "grain",
+    "fetch_timestamp": "2025-12-04T14:42:57.424572",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
+    "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  }
+]

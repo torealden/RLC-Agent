@@ -4,7 +4,18 @@
     "source_report": "Turkey: Daily National Turkey Market-at-a-Glance",
     "source_report_id": "2771",
     "report_type": "poultry",
-    "fetch_timestamp": "2025-12-04T14:10:05.412220",
+    "fetch_timestamp": "2025-12-04T14:39:56.876495",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -12,7 +23,18 @@
     "source_report": "Turkey: Daily National Turkey Market-at-a-Glance",
     "source_report_id": "2771",
     "report_type": "poultry",
-    "fetch_timestamp": "2025-12-04T14:10:05.412277",
+    "fetch_timestamp": "2025-12-04T14:39:56.876565",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   }
 ]

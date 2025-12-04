@@ -4,7 +4,18 @@
     "source_report": "Indiana Grain Bids",
     "source_report_id": "2932",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.509987",
+    "fetch_timestamp": "2025-12-04T14:39:56.970831",
+    "api_reportSection": "Report Header",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   },
   {
@@ -12,7 +23,18 @@
     "source_report": "Indiana Grain Bids",
     "source_report_id": "2932",
     "report_type": "grain",
-    "fetch_timestamp": "2025-12-04T14:10:05.510023",
+    "fetch_timestamp": "2025-12-04T14:39:56.970911",
+    "api_reportSection": "Report Detail",
+    "api_reportSections": [
+      "Report Header",
+      "Report Detail"
+    ],
+    "api_stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "api_results": [],
     "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
   }
 ]

@@ -1,0 +1,3 @@
+source,source_report,source_report_id,report_type,fetch_timestamp,api_reportSection,api_reportSections,api_stats,api_results
+USDA_AMS,Turkey: Daily National Turkey Market-at-a-Glance,2771,poultry,2025-12-04T14:42:57.253325,Report Header,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
+USDA_AMS,Turkey: Daily National Turkey Market-at-a-Glance,2771,poultry,2025-12-04T14:42:57.253395,Report Detail,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
