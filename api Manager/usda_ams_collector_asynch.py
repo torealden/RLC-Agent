@@ -213,8 +213,27 @@ class USDACollector:
                     logger.info(f"Available keys: {list(response_data.keys())}")
                     data_items = [response_data]
             elif isinstance(response_data, list):
-                data_items = response_data
-                logger.info(f"Response is a list with {len(data_items)} items")
+                # USDA API returns a list of sections (Report Header, Report Detail, etc.)
+                # Each section has a 'results' array containing the actual data records
+                # We need to extract results from each section
+                data_items = []
+                for section in response_data:
+                    if isinstance(section, dict):
+                        section_name = section.get('reportSection', 'Unknown')
+                        section_results = section.get('results', [])
+                        stats = section.get('stats', {})
+                        returned_rows = stats.get('returnedRows', len(section_results))
+
+                        if section_results:
+                            logger.info(f"Found {returned_rows} records in section '{section_name}' for {report_name}")
+                            data_items.extend(section_results)
+                        else:
+                            logger.debug(f"Section '{section_name}' has no results for {report_name}")
+                    else:
+                        # If it's not a section dict, treat it as a data item directly
+                        data_items.append(section)
+
+                logger.info(f"Total records extracted from list response: {len(data_items)} for {report_name}")
             else:
                 logger.error(f"Unexpected response format: {type(response_data)}")
                 return [], raw_metadata
