@@ -1,0 +1,11 @@
+# Templates Directory
+# Place HB report Word templates (.docx) here
+#
+# Example: hb_report_template.docx
+#
+# Templates should include:
+# - Heading styles (Heading 1, 2, 3)
+# - Body text styles (Normal)
+# - Table styles (Table Grid)
+# - Page layout and margins
+# - Header/footer formatting
