@@ -237,6 +237,7 @@ class USDACollector:
         """
         Parse a single record from USDA response.
         Extracts all available price-related fields and preserves raw data.
+        IMPORTANT: Preserves ALL original fields from API response to ensure price data isn't lost.
 
         Args:
             item: Single data item from response
@@ -257,12 +258,20 @@ class USDACollector:
                 'fetch_timestamp': datetime.now().isoformat()
             }
 
+            # IMPORTANT: First, copy ALL original fields from the API response
+            # This ensures we don't lose any price data due to field name mismatches
+            for key, value in item.items():
+                if key not in record:
+                    # Convert to lowercase key for consistency but preserve value
+                    record[f'api_{key}'] = value
+
             # Extract report date - try multiple possible field names
             report_date = (
                 item.get('report_date') or
                 item.get('published_date') or
                 item.get('date') or
                 item.get('report_begin_date') or
+                item.get('report_end_date') or
                 ''
             )
             record['report_date'] = report_date
@@ -271,9 +280,12 @@ class USDACollector:
             commodity = (
                 item.get('commodity') or
                 item.get('commodity_name') or
+                item.get('commodity_lov_id') or
                 item.get('class') or
                 item.get('item') or
-                item.get('commodity_lov_id', '')
+                item.get('class_name') or
+                item.get('product') or
+                ''
             )
             record['commodity'] = str(commodity).lower() if commodity else ''
 
@@ -286,39 +298,59 @@ class USDACollector:
                 item.get('region_name') or
                 item.get('city') or
                 item.get('office_city') or
+                item.get('plant_location') or
+                item.get('office_name') or
                 ''
             )
             record['location'] = location
 
-            # Extract price fields - USDA uses various naming conventions
-            # Price fields might be strings or numbers
+            # Comprehensive price field mapping - USDA uses MANY different naming conventions
+            # These are the actual field names used across different USDA AMS reports
             price_fields = {
-                'price': ['price', 'current_price', 'price_point', 'wtd_avg'],
-                'price_low': ['price_low', 'low_price', 'low', 'price_min', 'low_range'],
-                'price_high': ['price_high', 'high_price', 'high', 'price_max', 'high_range'],
-                'price_avg': ['price_avg', 'avg_price', 'average_price', 'avg', 'weighted_avg', 'wtd_avg'],
-                'price_mostly': ['price_mostly', 'mostly', 'mostly_price'],
+                'price': [
+                    'price', 'current_price', 'price_point', 'wtd_avg', 'weighted_avg',
+                    'avg_price', 'average', 'mean', 'price_avg', 'avg'
+                ],
+                'price_low': [
+                    'price_low', 'low_price', 'low', 'price_min', 'low_range',
+                    'price_range_low', 'min_price', 'minimum', 'lo', 'low_price_range'
+                ],
+                'price_high': [
+                    'price_high', 'high_price', 'high', 'price_max', 'high_range',
+                    'price_range_high', 'max_price', 'maximum', 'hi', 'high_price_range'
+                ],
+                'price_avg': [
+                    'price_avg', 'avg_price', 'average_price', 'avg', 'weighted_avg',
+                    'wtd_avg', 'weighted_average', 'mean_price', 'average'
+                ],
+                'price_mostly': [
+                    'price_mostly', 'mostly', 'mostly_price', 'mode', 'most_common'
+                ],
             }
 
             for target_field, source_fields in price_fields.items():
                 for src in source_fields:
-                    if src in item and item[src] is not None:
-                        record[target_field] = self._parse_price(item[src])
-                        break
+                    if src in item and item[src] is not None and item[src] != '':
+                        parsed = self._parse_price(item[src])
+                        if parsed is not None:
+                            record[target_field] = parsed
+                            break
 
             # Extract basis fields for grain reports
             basis_fields = {
-                'basis': ['basis', 'basis_level'],
-                'basis_low': ['basis_low', 'low_basis'],
-                'basis_high': ['basis_high', 'high_basis'],
-                'basis_change': ['basis_change', 'change'],
+                'basis': ['basis', 'basis_level', 'basis_price', 'cash_basis'],
+                'basis_low': ['basis_low', 'low_basis', 'basis_range_low'],
+                'basis_high': ['basis_high', 'high_basis', 'basis_range_high'],
+                'basis_change': ['basis_change', 'change', 'basis_chg', 'chg'],
             }
 
             for target_field, source_fields in basis_fields.items():
                 for src in source_fields:
-                    if src in item and item[src] is not None:
-                        record[target_field] = self._parse_price(item[src])
-                        break
+                    if src in item and item[src] is not None and item[src] != '':
+                        parsed = self._parse_price(item[src])
+                        if parsed is not None:
+                            record[target_field] = parsed
+                            break
 
             # Extract unit of measure
             unit = (
@@ -326,25 +358,27 @@ class USDACollector:
                 item.get('unit_of_measure') or
                 item.get('commodity_unit') or
                 item.get('price_unit') or
+                item.get('uom') or
                 ''
             )
             record['unit'] = unit
 
             # Extract additional context fields
-            record['grade'] = item.get('grade') or item.get('quality') or ''
-            record['delivery_period'] = item.get('delivery_period') or item.get('delivery_month') or ''
+            record['grade'] = item.get('grade') or item.get('quality') or item.get('grade_name') or ''
+            record['delivery_period'] = item.get('delivery_period') or item.get('delivery_month') or item.get('del_period') or ''
             record['delivery_point'] = item.get('delivery_point') or item.get('delivery_location') or ''
-            record['transaction_type'] = item.get('transaction_type') or item.get('type') or ''
+            record['transaction_type'] = item.get('transaction_type') or item.get('type') or item.get('trans_type') or ''
+            record['product_type'] = item.get('product_type') or item.get('product') or ''
 
             # Volume/quantity fields
-            volume = item.get('volume') or item.get('quantity') or item.get('head_count')
+            volume = item.get('volume') or item.get('quantity') or item.get('head_count') or item.get('qty')
             if volume is not None:
                 record['volume'] = volume
 
             # Weight fields (common in livestock reports)
-            weight_avg = item.get('weight_avg') or item.get('avg_weight')
-            weight_low = item.get('weight_low') or item.get('low_weight')
-            weight_high = item.get('weight_high') or item.get('high_weight')
+            weight_avg = item.get('weight_avg') or item.get('avg_weight') or item.get('average_weight')
+            weight_low = item.get('weight_low') or item.get('low_weight') or item.get('min_weight')
+            weight_high = item.get('weight_high') or item.get('high_weight') or item.get('max_weight')
             if weight_avg:
                 record['weight_avg'] = self._parse_price(weight_avg)
             if weight_low:
@@ -352,11 +386,11 @@ class USDACollector:
             if weight_high:
                 record['weight_high'] = self._parse_price(weight_high)
 
-            # Store raw data for database building and debugging
+            # Store raw data for database building and debugging - ALWAYS include this
             record['raw_data'] = json.dumps(item)
 
-            # Remove empty string fields (but keep None and 0 values)
-            record = {k: v for k, v in record.items() if v != ''}
+            # Remove empty string fields (but keep None, 0 values, and raw_data)
+            record = {k: v for k, v in record.items() if v != '' or k == 'raw_data'}
 
             return record
 
@@ -447,7 +481,9 @@ class USDACollector:
         return collected_data
 
     async def collect_historical_data(self, start_date: str, end_date: str = None,
-                                       report_ids: List[str] = None) -> List[Dict]:
+                                       report_ids: List[str] = None,
+                                       commodity_filter: str = None,
+                                       location_filter: str = None) -> List[Dict]:
         """
         Collect historical price data for a date range.
 
@@ -455,6 +491,8 @@ class USDACollector:
             start_date: Start date in MM/DD/YYYY format
             end_date: End date in MM/DD/YYYY format (default: today)
             report_ids: List of specific report IDs to fetch (default: all configured reports)
+            commodity_filter: Filter results to specific commodity (case-insensitive partial match)
+            location_filter: Filter results to specific location (case-insensitive partial match)
 
         Returns:
             List of all collected data records for the date range
@@ -463,6 +501,10 @@ class USDACollector:
             end_date = self.today
 
         logger.info(f"Collecting historical data from {start_date} to {end_date}")
+        if commodity_filter:
+            logger.info(f"Filtering by commodity: {commodity_filter}")
+        if location_filter:
+            logger.info(f"Filtering by location: {location_filter}")
 
         # Determine which reports to collect
         if report_ids:
@@ -502,6 +544,28 @@ class USDACollector:
                         report_name=report['name'],
                         report_id=report['id']
                     )
+
+                    # Apply filters if specified
+                    if commodity_filter or location_filter:
+                        filtered = []
+                        for record in standardized:
+                            commodity_match = True
+                            location_match = True
+
+                            if commodity_filter:
+                                commodity = str(record.get('commodity', '')).lower()
+                                commodity_match = commodity_filter.lower() in commodity
+
+                            if location_filter:
+                                location = str(record.get('location', '')).lower()
+                                location_match = location_filter.lower() in location
+
+                            if commodity_match and location_match:
+                                filtered.append(record)
+
+                        standardized = filtered
+                        logger.info(f"After filtering: {len(standardized)} records for {report['name']}")
+
                     collected_data.extend(standardized)
                     logger.info(f"Collected {len(standardized)} records for {report['name']}")
                 except Exception as e:
@@ -513,10 +577,118 @@ class USDACollector:
 
         # Save all collected data
         date_str = f"{datetime.strptime(start_date, '%m/%d/%Y').strftime('%Y%m%d')}_to_{datetime.strptime(end_date, '%m/%d/%Y').strftime('%Y%m%d')}"
+
+        # Add filter info to filename if filters were used
+        if commodity_filter:
+            date_str += f"_{commodity_filter.replace(' ', '_')}"
+        if location_filter:
+            date_str += f"_{location_filter.replace(' ', '_')}"
+
         self._save_historical_data(collected_data, date_str)
 
         if self.save_raw and raw_responses:
             self._save_raw_responses(raw_responses, f"historical_{date_str}")
+
+        return collected_data
+
+    async def collect_single_report_historical(self, report_id: str, start_date: str,
+                                                end_date: str = None,
+                                                commodity_filter: str = None,
+                                                location_filter: str = None) -> List[Dict]:
+        """
+        Collect historical data for a SINGLE report. Useful for targeted data collection
+        without fetching all configured reports.
+
+        Args:
+            report_id: The USDA report ID (e.g., '3617' for Daily Ethanol Report)
+            start_date: Start date in MM/DD/YYYY format
+            end_date: End date in MM/DD/YYYY format (default: today)
+            commodity_filter: Filter results to specific commodity (case-insensitive partial match)
+            location_filter: Filter results to specific location (case-insensitive partial match)
+
+        Returns:
+            List of collected data records for the single report
+        """
+        if end_date is None:
+            end_date = self.today
+
+        # Find the report config or create a temporary one
+        report_config = None
+        for r in self.report_configs:
+            if r['id'] == report_id:
+                report_config = r
+                break
+
+        if not report_config:
+            # Create a temporary config for this report
+            report_config = {'id': report_id, 'name': f'Report_{report_id}', 'type': 'generic'}
+            logger.info(f"Report {report_id} not in configuration, using generic parsing")
+
+        logger.info(f"Collecting historical data for {report_config['name']} (ID: {report_id})")
+        logger.info(f"Date range: {start_date} to {end_date}")
+
+        auth = BasicAuth(self.api_key or "", "")
+        collected_data: List[Dict] = []
+
+        async with aiohttp.ClientSession() as session:
+            url = f"{self.base_url}/reports/{report_id}"
+            params = {
+                'q': f'report_begin_date={start_date}:{end_date}',
+                'allSections': 'true'
+            }
+            result = await self.fetch_with_retry(session, url, params=params, auth=auth)
+
+        if result:
+            try:
+                # Save raw response
+                if self.save_raw:
+                    date_str = f"{datetime.strptime(start_date, '%m/%d/%Y').strftime('%Y%m%d')}_to_{datetime.strptime(end_date, '%m/%d/%Y').strftime('%Y%m%d')}"
+                    self._save_raw_responses({report_config['name']: result}, f"single_report_{report_id}_{date_str}")
+
+                standardized, metadata = self.parse_usda_response(
+                    result,
+                    report_type=report_config.get('type', 'generic'),
+                    report_name=report_config['name'],
+                    report_id=report_id
+                )
+
+                # Apply filters if specified
+                if commodity_filter or location_filter:
+                    filtered = []
+                    for record in standardized:
+                        commodity_match = True
+                        location_match = True
+
+                        if commodity_filter:
+                            commodity = str(record.get('commodity', '')).lower()
+                            commodity_match = commodity_filter.lower() in commodity
+
+                        if location_filter:
+                            location = str(record.get('location', '')).lower()
+                            location_match = location_filter.lower() in location
+
+                        if commodity_match and location_match:
+                            filtered.append(record)
+
+                    standardized = filtered
+                    logger.info(f"After filtering: {len(standardized)} records")
+
+                collected_data.extend(standardized)
+                logger.info(f"Collected {len(standardized)} records for {report_config['name']}")
+
+                # Save the data
+                date_str = f"{datetime.strptime(start_date, '%m/%d/%Y').strftime('%Y%m%d')}_to_{datetime.strptime(end_date, '%m/%d/%Y').strftime('%Y%m%d')}"
+                if commodity_filter:
+                    date_str += f"_{commodity_filter.replace(' ', '_')}"
+                if location_filter:
+                    date_str += f"_{location_filter.replace(' ', '_')}"
+
+                self._save_historical_data(collected_data, f"single_{report_id}_{date_str}")
+
+            except Exception as e:
+                logger.error(f"Error processing data for {report_config['name']}: {e}")
+        else:
+            logger.error(f"Failed to fetch data for report {report_id}")
 
         return collected_data
 
@@ -705,6 +877,18 @@ Examples:
 
   # Collect historical data for specific reports
   python usda_ams_collector_asynch.py --historical --start 11/01/2025 --reports 3617,3618
+
+  # Collect historical data for a SINGLE report (faster, targeted)
+  python usda_ams_collector_asynch.py --single-report 3617 --start 01/01/2025 --end 12/01/2025
+
+  # Filter historical data by commodity
+  python usda_ams_collector_asynch.py --historical --start 11/01/2025 --commodity ethanol
+
+  # Filter historical data by location
+  python usda_ams_collector_asynch.py --historical --start 11/01/2025 --location Iowa
+
+  # Combine filters for targeted data collection
+  python usda_ams_collector_asynch.py --single-report 2849 --start 01/01/2025 --commodity corn --location Iowa
         """
     )
 
@@ -712,12 +896,18 @@ Examples:
                         help='Specific date to collect (MM/DD/YYYY format)')
     parser.add_argument('--historical', '-H', action='store_true',
                         help='Collect historical data for a date range')
+    parser.add_argument('--single-report', '-S', type=str, default=None,
+                        help='Collect historical data for a SINGLE report ID (faster than --historical)')
     parser.add_argument('--start', '-s', type=str,
                         help='Start date for historical collection (MM/DD/YYYY)')
     parser.add_argument('--end', '-e', type=str,
                         help='End date for historical collection (MM/DD/YYYY, default: today)')
     parser.add_argument('--reports', '-r', type=str,
                         help='Comma-separated list of report IDs to collect')
+    parser.add_argument('--commodity', type=str, default=None,
+                        help='Filter results by commodity (partial match, case-insensitive)')
+    parser.add_argument('--location', type=str, default=None,
+                        help='Filter results by location (partial match, case-insensitive)')
     parser.add_argument('--output', '-o', type=str, default='./usda_data',
                         help='Output directory for collected data')
     parser.add_argument('--config', '-c', type=str, default='report_config.xlsx',
@@ -772,19 +962,49 @@ async def main():
     for report in collector.list_configured_reports():
         print(f"  - {report['name']} (ID: {report['id']}, Type: {report.get('type', 'generic')})")
 
-    # Historical data collection mode
-    if args.historical:
+    data = []
+
+    # Single report historical data collection mode
+    if args.single_report:
+        if not args.start:
+            print("ERROR: --start date is required for single report historical collection")
+            return
+
+        print(f"\nCollecting historical data for report {args.single_report}")
+        print(f"Date range: {args.start} to {args.end or 'today'}")
+        if args.commodity:
+            print(f"Commodity filter: {args.commodity}")
+        if args.location:
+            print(f"Location filter: {args.location}")
+
+        data = await collector.collect_single_report_historical(
+            report_id=args.single_report,
+            start_date=args.start,
+            end_date=args.end,
+            commodity_filter=args.commodity,
+            location_filter=args.location
+        )
+        print(f"\nCollected {len(data)} total records for report {args.single_report}")
+
+    # Historical data collection mode (multiple reports)
+    elif args.historical:
         if not args.start:
             print("ERROR: --start date is required for historical collection")
             return
 
         report_ids = args.reports.split(',') if args.reports else None
         print(f"\nCollecting historical data from {args.start} to {args.end or 'today'}...")
+        if args.commodity:
+            print(f"Commodity filter: {args.commodity}")
+        if args.location:
+            print(f"Location filter: {args.location}")
 
         data = await collector.collect_historical_data(
             start_date=args.start,
             end_date=args.end,
-            report_ids=report_ids
+            report_ids=report_ids,
+            commodity_filter=args.commodity,
+            location_filter=args.location
         )
         print(f"\nCollected {len(data)} total historical records")
 
@@ -809,17 +1029,31 @@ async def main():
         if sample is None:
             sample = data[0]
 
-        # Display sample without raw_data (too verbose)
-        display_sample = {k: v for k, v in sample.items() if k != 'raw_data'}
+        # Display sample without raw_data (too verbose for console)
+        display_sample = {k: v for k, v in sample.items() if k != 'raw_data' and not k.startswith('api_')}
         print(json.dumps(display_sample, indent=2, default=str))
 
-        # Show summary of fields found
+        # Show summary of ALL fields found (including api_ prefixed ones)
         all_fields = set()
         for record in data:
             all_fields.update(record.keys())
+
+        # Show price/basis fields
         price_fields = [f for f in all_fields if 'price' in f.lower() or 'basis' in f.lower()]
         if price_fields:
             print(f"\nPrice/basis fields found in data: {', '.join(sorted(price_fields))}")
+
+        # Show API fields (original fields from USDA response)
+        api_fields = [f for f in all_fields if f.startswith('api_')]
+        if api_fields:
+            print(f"\nOriginal API fields preserved (api_* prefix): {', '.join(sorted(api_fields))}")
+            print("Note: These fields contain the raw values from the USDA API response.")
+
+        # Check if raw_data is present
+        if any('raw_data' in record for record in data):
+            print("\nraw_data field: Present (contains full JSON from API for database building)")
+        else:
+            print("\nWARNING: raw_data field not found in output!")
 
 
 if __name__ == "__main__":
