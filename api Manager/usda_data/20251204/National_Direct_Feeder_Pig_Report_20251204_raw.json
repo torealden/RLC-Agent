@@ -1,0 +1,82 @@
+[
+  {
+    "reportSection": "Report Header",
+    "reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  },
+  {
+    "reportSection": "Report Receipts",
+    "reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  },
+  {
+    "reportSection": "Report Volume",
+    "reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  },
+  {
+    "reportSection": "Report Details",
+    "reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  },
+  {
+    "reportSection": "Report Comprehensive",
+    "reportSections": [
+      "Report Header",
+      "Report Receipts",
+      "Report Volume",
+      "Report Details",
+      "Report Comprehensive"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  }
+]

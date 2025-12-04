@@ -1,0 +1,18 @@
+[
+  {
+    "source": "USDA_AMS",
+    "source_report": "National Daily Sunflower, Canola, Millet, and Flaxseed Report",
+    "source_report_id": "2887",
+    "report_type": "grain",
+    "fetch_timestamp": "2025-12-04T14:10:05.475415",
+    "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  },
+  {
+    "source": "USDA_AMS",
+    "source_report": "National Daily Sunflower, Canola, Millet, and Flaxseed Report",
+    "source_report_id": "2887",
+    "report_type": "grain",
+    "fetch_timestamp": "2025-12-04T14:10:05.475483",
+    "raw_data": "{\"reportSection\": \"Report Detail\", \"reportSections\": [\"Report Header\", \"Report Detail\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  }
+]

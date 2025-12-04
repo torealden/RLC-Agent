@@ -1,0 +1,42 @@
+[
+  {
+    "source": "USDA_AMS",
+    "source_report": "National Direct Feeder Pig Report",
+    "source_report_id": "2810",
+    "report_type": "swine",
+    "fetch_timestamp": "2025-12-04T14:10:05.442115",
+    "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  },
+  {
+    "source": "USDA_AMS",
+    "source_report": "National Direct Feeder Pig Report",
+    "source_report_id": "2810",
+    "report_type": "swine",
+    "fetch_timestamp": "2025-12-04T14:10:05.442181",
+    "raw_data": "{\"reportSection\": \"Report Receipts\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  },
+  {
+    "source": "USDA_AMS",
+    "source_report": "National Direct Feeder Pig Report",
+    "source_report_id": "2810",
+    "report_type": "swine",
+    "fetch_timestamp": "2025-12-04T14:10:05.442206",
+    "raw_data": "{\"reportSection\": \"Report Volume\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  },
+  {
+    "source": "USDA_AMS",
+    "source_report": "National Direct Feeder Pig Report",
+    "source_report_id": "2810",
+    "report_type": "swine",
+    "fetch_timestamp": "2025-12-04T14:10:05.442223",
+    "raw_data": "{\"reportSection\": \"Report Details\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  },
+  {
+    "source": "USDA_AMS",
+    "source_report": "National Direct Feeder Pig Report",
+    "source_report_id": "2810",
+    "report_type": "swine",
+    "fetch_timestamp": "2025-12-04T14:10:05.442238",
+    "raw_data": "{\"reportSection\": \"Report Comprehensive\", \"reportSections\": [\"Report Header\", \"Report Receipts\", \"Report Volume\", \"Report Details\", \"Report Comprehensive\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  }
+]

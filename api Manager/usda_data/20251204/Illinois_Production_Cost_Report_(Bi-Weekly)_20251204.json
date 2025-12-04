@@ -1,0 +1,18 @@
+[
+  {
+    "source": "USDA_AMS",
+    "source_report": "Illinois Production Cost Report (Bi-Weekly)",
+    "source_report_id": "3195",
+    "report_type": "ethanol",
+    "fetch_timestamp": "2025-12-04T14:10:05.619231",
+    "raw_data": "{\"reportSection\": \"Report Header\", \"reportSections\": [\"Report Header\", \"Report Details - Prices\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  },
+  {
+    "source": "USDA_AMS",
+    "source_report": "Illinois Production Cost Report (Bi-Weekly)",
+    "source_report_id": "3195",
+    "report_type": "ethanol",
+    "fetch_timestamp": "2025-12-04T14:10:05.619297",
+    "raw_data": "{\"reportSection\": \"Report Details - Prices\", \"reportSections\": [\"Report Header\", \"Report Details - Prices\"], \"stats\": {\"returnedRows\": 0, \"userAllowedRows\": 100000, \"totalRows\": 0}, \"results\": []}"
+  }
+]

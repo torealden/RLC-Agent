@@ -1,0 +1,44 @@
+[
+  {
+    "reportSection": "Report Header",
+    "reportSections": [
+      "Report Header",
+      "Report Detail",
+      "Report Comprehensive Values"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  },
+  {
+    "reportSection": "Report Detail",
+    "reportSections": [
+      "Report Header",
+      "Report Detail",
+      "Report Comprehensive Values"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  },
+  {
+    "reportSection": "Report Comprehensive Values",
+    "reportSections": [
+      "Report Header",
+      "Report Detail",
+      "Report Comprehensive Values"
+    ],
+    "stats": {
+      "returnedRows": 0,
+      "userAllowedRows": 100000,
+      "totalRows": 0
+    },
+    "results": []
+  }
+]
