@@ -57,23 +57,26 @@ class USDACollectorAdapter:
     Adapter class to integrate with the external USDA collector.
     This allows the pipeline to work with the existing usda_ams_collector_asynch.py
     """
-    
-    def __init__(self, collector_module_path: str = None, 
+
+    def __init__(self, collector_module_path: str = None,
                  api_key: str = None,
                  output_dir: str = './data',
-                 config_path: str = 'report_config.xlsx'):
+                 config_path: str = 'report_config.xlsx',
+                 lookback_days: int = 7):
         """
         Initialize the collector adapter.
-        
+
         Args:
             collector_module_path: Path to the usda_ams_collector_asynch.py file
             api_key: USDA API key (reads from env if None)
             output_dir: Output directory for data files
             config_path: Path to report configuration Excel file
+            lookback_days: Number of days to look back for weekly reports (default 7)
         """
         self.api_key = api_key or os.getenv('USDA_AMS_API_KEY')
         self.output_dir = output_dir
         self.config_path = config_path
+        self.lookback_days = lookback_days
         self.collector = None
         self._initialize_collector(collector_module_path)
     
@@ -91,7 +94,7 @@ class USDACollectorAdapter:
                     '../usda_ams_collector_asynch.py',
                     'usda_ams_collector_asynch.py'
                 ]
-                
+
                 USDACollector = None
                 for path in possible_paths:
                     if path and Path(path).exists():
@@ -101,17 +104,18 @@ class USDACollectorAdapter:
                         spec.loader.exec_module(module)
                         USDACollector = module.USDACollector
                         break
-                
+
                 if USDACollector is None:
                     raise ImportError("Could not find usda_ams_collector_asynch.py")
-            
+
             self.collector = USDACollector(
                 api_key=self.api_key,
                 output_dir=self.output_dir,
-                config_path=self.config_path
+                config_path=self.config_path,
+                lookback_days=self.lookback_days
             )
-            logging.getLogger(__name__).info("USDA Collector initialized successfully")
-            
+            logging.getLogger(__name__).info(f"USDA Collector initialized successfully (lookback: {self.lookback_days} days)")
+
         except Exception as e:
             logging.getLogger(__name__).error(f"Failed to initialize USDA collector: {e}")
             self.collector = None
@@ -139,34 +143,37 @@ class CommodityPipeline:
     """
     Main application class that provides a simple interface for all pipeline operations.
     """
-    
-    def __init__(self, 
+
+    def __init__(self,
                  collector_path: str = None,
-                 config_path: str = 'report_config.xlsx'):
+                 config_path: str = 'report_config.xlsx',
+                 lookback_days: int = 7):
         """
         Initialize the commodity pipeline.
-        
+
         Args:
             collector_path: Path to the USDA collector script
             config_path: Path to report configuration file
+            lookback_days: Number of days to look back for weekly reports (default 7)
         """
         self.settings = get_settings()
         self.logger = logging.getLogger(__name__)
-        
-        # Initialize collector
+
+        # Initialize collector with lookback days for smart weekly report handling
         self.collector = USDACollectorAdapter(
             collector_module_path=collector_path,
             output_dir=self.settings.pipeline.output_dir,
-            config_path=config_path
+            config_path=config_path,
+            lookback_days=lookback_days
         )
-        
+
         # Initialize orchestrator with collector
         self.orchestrator = create_pipeline_orchestrator(
             collector=self.collector,
             settings=self.settings
         )
-        
-        self.logger.info("Commodity Pipeline initialized")
+
+        self.logger.info(f"Commodity Pipeline initialized (lookback: {lookback_days} days)")
     
     async def run_daily(self, report_date: str = None):
         """
@@ -315,7 +322,8 @@ async def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python main.py daily                     # Collect today's data
+  python main.py daily                     # Collect today's data (with 7-day lookback for weekly reports)
+  python main.py daily --lookback 14       # Collect with 14-day lookback for bi-weekly reports
   python main.py daily --date 11/25/2025   # Collect specific date
   python main.py backfill                  # Full historical backfill
   python main.py backfill --start-date 01/01/2024 --end-date 12/31/2024
@@ -323,6 +331,11 @@ Examples:
   python main.py verify                    # Verify data integrity
   python main.py test                      # Test all connections
   python main.py reports                   # Show configured reports
+
+Notes:
+  The --lookback option (default 7 days) helps capture data from weekly reports
+  that may not publish every day. The collector will query a date range and use
+  the USDA's published reports list to efficiently fetch only reports with new data.
         """
     )
     
@@ -339,6 +352,8 @@ Examples:
                        help='Path to report configuration file')
     parser.add_argument('--collector', type=str,
                        help='Path to USDA collector script')
+    parser.add_argument('--lookback', type=int, default=7,
+                       help='Days to look back for weekly reports (default: 7)')
     parser.add_argument('--log-level', type=str, default='INFO',
                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
                        help='Logging level')
@@ -359,7 +374,8 @@ Examples:
     try:
         pipeline = CommodityPipeline(
             collector_path=args.collector,
-            config_path=args.config
+            config_path=args.config,
+            lookback_days=args.lookback
         )
     except Exception as e:
         logger.error(f"Failed to initialize pipeline: {e}")
