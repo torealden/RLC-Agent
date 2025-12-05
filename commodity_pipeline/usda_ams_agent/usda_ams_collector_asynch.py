@@ -47,9 +47,10 @@ class USDACollector:
     - Daily price collection
     - Historical data collection with date ranges
     - Raw data preservation for database building
+    - Smart date handling for weekly/daily reports using published reports list
     """
     def __init__(self, api_key: str = None, output_dir: str = './data', config_path: str = 'report_config.xlsx',
-                 save_raw: bool = True):
+                 save_raw: bool = True, lookback_days: int = 7):
         """
         Initialize the USDA collector.
 
@@ -58,6 +59,7 @@ class USDACollector:
             output_dir: Directory to save collected data.
             config_path: Path to the Excel file containing report configurations.
             save_raw: Whether to save raw API responses for debugging.
+            lookback_days: Number of days to look back for recently published reports (default 7).
         """
         # Load API key from environment if not provided
         if api_key is None:
@@ -72,6 +74,10 @@ class USDACollector:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.today = datetime.now().strftime('%m/%d/%Y')
         self.save_raw = save_raw
+        self.lookback_days = lookback_days
+        # Cache for recently published reports (populated on first use)
+        self._published_reports_cache = None
+        self._cache_timestamp = None
         # Removed requests session setup; using aiohttp for asynchronous requests
         # Load report configurations from Excel (or defaults)
         self.report_configs = self._load_report_configs(config_path)
@@ -438,12 +444,19 @@ class USDACollector:
             logger.warning(f"Could not parse price value: {price_value}")
             return None
     
-    async def collect_daily_prices(self, report_date: str = None) -> List[Dict]:
+    async def collect_daily_prices(self, report_date: str = None, use_date_range: bool = True) -> List[Dict]:
         """
         Main collection method - collects daily prices from all configured reports concurrently.
 
+        This method uses a smart date range approach to ensure we capture data from weekly reports
+        that may not have been published today. It queries with a date range spanning the lookback
+        period, then deduplicates to keep only the most recent data.
+
         Args:
-            report_date: Date in MM/DD/YYYY format (default: today).
+            report_date: Date in MM/DD/YYYY format (default: today). When use_date_range is True,
+                        this becomes the end date of the range.
+            use_date_range: If True, query with a date range to capture weekly reports.
+                           If False, query only the specified date (original behavior).
 
         Returns:
             List of all collected and standardized data records.
@@ -451,26 +464,67 @@ class USDACollector:
         if report_date is None:
             report_date = self.today
 
+        # Calculate date range for smart collection (captures weekly reports)
+        if use_date_range:
+            try:
+                end_date = datetime.strptime(report_date, '%m/%d/%Y')
+            except ValueError:
+                end_date = datetime.now()
+            start_date = end_date - timedelta(days=self.lookback_days)
+            date_query = f"{start_date.strftime('%m/%d/%Y')}:{report_date}"
+            logger.info(f"Using date range query: {date_query} (lookback: {self.lookback_days} days)")
+        else:
+            date_query = report_date
+            logger.info(f"Using single date query: {report_date}")
+
+        # First, get the list of recently published reports to know which ones have data
+        published_reports = await self.get_recently_published_reports()
+        if published_reports:
+            logger.info(f"Found {len(published_reports)} recently published reports to check against config")
+
         auth = BasicAuth(self.api_key or "", "")
         collected_data: List[Dict] = []
         raw_responses: Dict[str, Any] = {}
+        reports_with_data = 0
+        reports_skipped = 0
 
         # Use a single aiohttp session for all concurrent requests
         async with aiohttp.ClientSession() as session:
             tasks = []
+            task_report_map = []  # Track which task corresponds to which report
+
             for report in self.report_configs:
-                logger.info(f"Collecting {report['name']} (ID: {report['id']})")
-                url = f"{self.base_url}/reports/{report['id']}"
-                # Use proper query format per USDA API docs
-                params = {'q': f'report_begin_date={report_date}', 'allSections': 'true'}
+                report_id = str(report['id'])
+
+                # Check if report was recently published (if we have that info)
+                if published_reports:
+                    if report_id not in published_reports:
+                        logger.debug(f"Skipping {report['name']} (ID: {report_id}) - not in recently published list")
+                        reports_skipped += 1
+                        continue
+                    else:
+                        pub_info = published_reports[report_id]
+                        logger.info(f"Collecting {report['name']} (ID: {report_id}) - last published: {pub_info.get('published_date', 'unknown')}")
+                else:
+                    logger.info(f"Collecting {report['name']} (ID: {report_id})")
+
+                url = f"{self.base_url}/reports/{report_id}"
+                # Use date range format for better capture of weekly reports
+                params = {'q': f'report_begin_date={date_query}', 'allSections': 'true'}
                 # Prepare and schedule fetch tasks for each report (concurrent execution)
                 tasks.append(self.fetch_with_retry(session, url, params=params, auth=auth))
+                task_report_map.append(report)
+
+            if not tasks:
+                logger.warning("No reports to fetch - all were skipped or none configured")
+                return []
+
             # Run all fetch tasks concurrently and wait for all to complete
             results = await asyncio.gather(*tasks)
 
         # Process each result after concurrent fetches
         for idx, result in enumerate(results):
-            report = self.report_configs[idx]
+            report = task_report_map[idx]
             if result:
                 try:
                     # Save raw response for debugging
@@ -483,14 +537,23 @@ class USDACollector:
                         report_name=report['name'],
                         report_id=report['id']
                     )
-                    collected_data.extend(standardized)
-                    self._save_report_data(standardized, report['name'], report_date, raw_response=result)
+
+                    if standardized:
+                        reports_with_data += 1
+                        collected_data.extend(standardized)
+                        self._save_report_data(standardized, report['name'], report_date, raw_response=result)
+                    else:
+                        logger.info(f"No data records found in {report['name']} for the date range")
+
                 except Exception as e:
                     logger.error(f"Error processing data for {report['name']}: {e}")
             else:
                 logger.error(f"Failed to fetch data for {report['name']} (ID: {report['id']})")
 
-        logger.info(f"Total records collected: {len(collected_data)}")
+        logger.info(f"Total records collected: {len(collected_data)} from {reports_with_data} reports")
+        if reports_skipped > 0:
+            logger.info(f"Reports skipped (not recently published): {reports_skipped}")
+
         self._save_combined_data(collected_data, report_date)
 
         # Save all raw responses to a single file for analysis
@@ -835,7 +898,7 @@ class USDACollector:
         """
         Get list of all available reports from USDA AMS (asynchronous).
         Useful for discovering new report IDs.
-        
+
         Returns:
             List of available reports with their IDs and names.
         """
@@ -852,6 +915,91 @@ class USDACollector:
             return data if isinstance(data, list) else []
         else:
             return []
+
+    async def get_recently_published_reports(self, days: int = None, force_refresh: bool = False) -> Dict[str, Dict]:
+        """
+        Get list of recently published reports with their last publication dates.
+        Uses the USDA AMS listPublishedReports endpoint.
+
+        This is essential for determining which reports have new data and avoiding
+        empty API responses when querying for dates when a report wasn't published.
+
+        Args:
+            days: Number of days to look back (default: self.lookback_days)
+            force_refresh: Force refresh of cache even if recent
+
+        Returns:
+            Dictionary mapping slug_id to report metadata including last published date
+            Example: {'3617': {'slug_id': '3617', 'slug_name': 'AMS_3617',
+                              'report_title': 'National Daily Ethanol Report',
+                              'published_date': '12/05/2025'}}
+        """
+        if days is None:
+            days = self.lookback_days
+
+        # Check cache validity (cache for 1 hour)
+        cache_valid = (
+            self._published_reports_cache is not None and
+            self._cache_timestamp is not None and
+            (datetime.now() - self._cache_timestamp).total_seconds() < 3600 and
+            not force_refresh
+        )
+
+        if cache_valid:
+            logger.debug("Using cached published reports list")
+            return self._published_reports_cache
+
+        # Use v1.1 endpoint for listPublishedReports (v1.2 may not have this)
+        url = f"https://marsapi.ams.usda.gov/services/v1.1/public/listPublishedReports/{days}"
+
+        logger.info(f"Fetching list of reports published in the last {days} days...")
+
+        async with aiohttp.ClientSession() as session:
+            auth = BasicAuth(self.api_key or "", "")
+            data = await self.fetch_with_retry(session, url, auth=auth)
+
+        published_reports = {}
+
+        if data and isinstance(data, list):
+            for report in data:
+                slug_id = str(report.get('slug_id', ''))
+                if slug_id:
+                    # Extract the most relevant info
+                    published_reports[slug_id] = {
+                        'slug_id': slug_id,
+                        'slug_name': report.get('slug_name', ''),
+                        'report_title': report.get('report_title', ''),
+                        'published_date': report.get('published_date', ''),
+                        'report_date': report.get('report_date', ''),
+                        'market_type': report.get('market_type', ''),
+                        'office_name': report.get('office_name', '')
+                    }
+
+            logger.info(f"Found {len(published_reports)} reports published in the last {days} days")
+
+            # Update cache
+            self._published_reports_cache = published_reports
+            self._cache_timestamp = datetime.now()
+        else:
+            logger.warning(f"Could not fetch published reports list, got: {type(data)}")
+            # Return empty dict but don't cache failure
+            return {}
+
+        return published_reports
+
+    def _parse_published_date(self, date_str: str) -> Optional[datetime]:
+        """Parse a published date string to datetime object."""
+        if not date_str:
+            return None
+
+        # Handle formats like "12/05/2025 08:25:02" or "12/05/2025"
+        for fmt in ['%m/%d/%Y %H:%M:%S', '%m/%d/%Y', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d']:
+            try:
+                return datetime.strptime(date_str.split()[0] if ' ' in date_str else date_str,
+                                        fmt.split()[0])
+            except ValueError:
+                continue
+        return None
     
     def add_report(self, report_id: str, report_name: str, report_type: str = 'generic'):
         """
