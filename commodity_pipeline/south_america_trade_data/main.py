@@ -8,12 +8,21 @@ Usage:
     python -m south_america_trade_data.main [command] [options]
 
 Commands:
-    fetch       - Fetch data for a specific country and period
-    monthly     - Run full monthly pipeline for all countries
-    backfill    - Run historical backfill
-    schedule    - Start the scheduler for automated pulls
-    status      - Show pipeline and agent status
-    validate    - Validate configuration and connectivity
+    Trade Data (Monthly):
+        fetch       - Fetch data for a specific country and period
+        monthly     - Run full monthly pipeline for all countries
+        backfill    - Run historical backfill
+        schedule    - Start the scheduler for automated pulls
+
+    Port Lineup Data (Weekly):
+        lineup          - Fetch lineup data for a specific country and week
+        lineup-weekly   - Run weekly lineup pipeline for all countries
+        lineup-backfill - Run lineup historical backfill
+        lineup-schedule - Start the lineup scheduler
+
+    Utility:
+        status      - Show pipeline and agent status
+        validate    - Validate configuration and connectivity
 """
 
 import argparse
@@ -24,8 +33,8 @@ from datetime import datetime
 from dataclasses import asdict
 
 from .config.settings import SouthAmericaTradeConfig, default_config
-from .services.orchestrator import TradeDataOrchestrator
-from .services.scheduler import TradeDataScheduler, get_recommended_cron_schedules
+from .services.orchestrator import TradeDataOrchestrator, LineupDataOrchestrator
+from .services.scheduler import TradeDataScheduler, LineupScheduler, get_recommended_cron_schedules
 from .database.models import init_database
 
 # Configure logging
@@ -212,20 +221,219 @@ def cmd_schedule(args):
 
 def cmd_status(args):
     """Show pipeline status"""
-    orchestrator = TradeDataOrchestrator()
-    status = orchestrator.get_pipeline_status()
+    # Trade data status
+    trade_orchestrator = TradeDataOrchestrator()
+    trade_status = trade_orchestrator.get_pipeline_status()
 
     print("\n" + "=" * 60)
-    print("PIPELINE STATUS")
+    print("TRADE DATA PIPELINE STATUS")
     print("=" * 60)
-    print(f"Pipeline: {status['pipeline_name']} v{status['pipeline_version']}")
-    print(f"Enabled countries: {', '.join(status['enabled_countries'])}")
+    print(f"Pipeline: {trade_status['pipeline_name']} v{trade_status['pipeline_version']}")
+    print(f"Enabled countries: {', '.join(trade_status['enabled_countries'])}")
 
-    print("\nAgent Status:")
-    for country, agent_status in status['agent_status'].items():
+    print("\nTrade Data Agents:")
+    for country, agent_status in trade_status['agent_status'].items():
         health = "Healthy" if agent_status.get('is_healthy') else "Unhealthy"
         last_success = agent_status.get('last_success', 'Never')
         print(f"  {country}: {health}, Last success: {last_success}")
+
+    # Lineup data status
+    print("\n" + "=" * 60)
+    print("LINEUP DATA PIPELINE STATUS")
+    print("=" * 60)
+
+    lineup_orchestrator = LineupDataOrchestrator()
+    lineup_status = lineup_orchestrator.get_pipeline_status()
+
+    print(f"Pipeline: {lineup_status['pipeline_name']}")
+    print(f"Enabled countries: {', '.join(lineup_status['enabled_countries'])}")
+
+    print("\nLineup Data Agents:")
+    for country, agent_status in lineup_status['agent_status'].items():
+        health = "Healthy" if agent_status.get('is_healthy') else "Unhealthy"
+        last_success = agent_status.get('last_success', 'Never')
+        agent_type = agent_status.get('agent_type', 'lineup')
+        print(f"  {country} ({agent_type}): {health}, Last success: {last_success}")
+
+    return 0
+
+
+def cmd_lineup(args):
+    """Fetch lineup data for a specific country and week"""
+    from .agents.brazil_lineup_agent import BrazilANECLineupAgent
+
+    config = SouthAmericaTradeConfig()
+
+    agents = {
+        'BRA': (BrazilANECLineupAgent, config.brazil_lineup),
+    }
+
+    country = args.country.upper()
+    if country not in agents:
+        print(f"Unknown country for lineup data: {country}")
+        print(f"Available: {list(agents.keys())}")
+        return 1
+
+    agent_class, agent_config = agents[country]
+    agent = agent_class(agent_config)
+
+    year = args.year
+    week = args.week
+
+    # Default to current week if not specified
+    if week is None:
+        from datetime import date
+        year, week, _ = date.today().isocalendar()
+
+    print(f"\nFetching {country} lineup for {year}-W{week:02d}...")
+
+    result = agent.fetch_data(year=year, week=week)
+
+    print(f"  Success: {result.success}")
+    print(f"  Report Week: {result.report_week}")
+    print(f"  Records: {result.records_fetched}")
+
+    if result.error_message:
+        print(f"  Error: {result.error_message}")
+
+    if result.success and result.data is not None:
+        print(f"\n  Columns: {list(result.data.columns)}")
+
+        if args.verbose:
+            print(f"\n  Data:\n{result.data}")
+        else:
+            print(f"\n  Sample (first 5 rows):\n{result.data.head()}")
+
+        if args.transform:
+            records = agent.transform_to_records(result.data, result.report_week)
+            print(f"\n  Transformed records: {len(records)}")
+
+            # Show volume summary
+            total_volume = sum(r.get('volume_tons', 0) for r in records)
+            print(f"  Total volume: {total_volume:,.0f} metric tons")
+
+            # Group by port
+            ports = {}
+            for r in records:
+                port = r.get('port', 'Unknown')
+                ports[port] = ports.get(port, 0) + r.get('volume_tons', 0)
+
+            print("\n  Volume by port:")
+            for port, vol in sorted(ports.items(), key=lambda x: x[1], reverse=True):
+                print(f"    {port}: {vol:,.0f} tons")
+
+    return 0
+
+
+def cmd_lineup_weekly(args):
+    """Run weekly lineup pipeline"""
+    orchestrator = LineupDataOrchestrator()
+
+    year = args.year
+    week = args.week
+
+    countries = args.countries if args.countries else None
+
+    result = orchestrator.run_weekly_pipeline(
+        year=year,
+        week=week,
+        countries=countries
+    )
+
+    # Print summary
+    print("\n" + "=" * 60)
+    print("WEEKLY LINEUP PIPELINE RESULTS")
+    print("=" * 60)
+    print(f"Report Weeks: {', '.join(result.report_weeks_processed)}")
+    print(f"Success: {result.success}")
+    print(f"Duration: {(result.end_time - result.start_time).total_seconds():.1f}s")
+    print(f"Total records fetched: {result.total_records_fetched}")
+    print(f"Total records loaded: {result.total_records_loaded}")
+    print(f"Total volume: {result.total_volume_tons:,.0f} metric tons")
+    print(f"Total errors: {result.total_errors}")
+
+    print("\nCountry Results:")
+    for country, country_result in result.country_results.items():
+        status = "OK" if country_result.get('success') else "FAILED"
+        records = country_result.get('records_loaded', 0)
+        volume = country_result.get('total_volume_tons', 0)
+        print(f"  {country}: {status} ({records} records, {volume:,.0f} tons)")
+
+        if country_result.get('error'):
+            print(f"    Error: {country_result['error']}")
+
+    if result.quality_alerts:
+        print(f"\nQuality Alerts: {len(result.quality_alerts)}")
+        for alert in result.quality_alerts[:5]:
+            print(f"  - {alert.get('message', 'Unknown')}")
+
+    if args.output:
+        with open(args.output, 'w') as f:
+            json.dump(asdict(result), f, indent=2, default=str)
+        print(f"\nFull results saved to: {args.output}")
+
+    return 0 if result.success else 1
+
+
+def cmd_lineup_backfill(args):
+    """Run historical lineup backfill"""
+    orchestrator = LineupDataOrchestrator()
+
+    print(f"Starting lineup backfill from {args.start_year}-W{args.start_week:02d}")
+
+    results = orchestrator.run_historical_backfill(
+        start_year=args.start_year,
+        start_week=args.start_week,
+        end_year=args.end_year,
+        end_week=args.end_week,
+        countries=args.countries
+    )
+
+    # Summary
+    successful = sum(1 for r in results if r.success)
+    failed = len(results) - successful
+    total_records = sum(r.total_records_loaded for r in results)
+    total_volume = sum(r.total_volume_tons for r in results)
+
+    print("\n" + "=" * 60)
+    print("LINEUP BACKFILL RESULTS")
+    print("=" * 60)
+    print(f"Weeks processed: {len(results)}")
+    print(f"Successful: {successful}")
+    print(f"Failed: {failed}")
+    print(f"Total records loaded: {total_records}")
+    print(f"Total volume: {total_volume:,.0f} metric tons")
+
+    return 0 if failed == 0 else 1
+
+
+def cmd_lineup_schedule(args):
+    """Lineup scheduler operations"""
+    import time
+
+    orchestrator = LineupDataOrchestrator()
+    scheduler = LineupScheduler(orchestrator=orchestrator)
+
+    if args.list:
+        status = scheduler.get_schedule_status()
+        print(json.dumps(status, indent=2, default=str))
+        return 0
+
+    if args.run_task:
+        result = scheduler.run_task(args.run_task)
+        print(json.dumps(result, indent=2, default=str))
+        return 0 if result.get('success') else 1
+
+    # Start continuous scheduler
+    print("Starting lineup scheduler (Ctrl+C to stop)...")
+    scheduler.start(check_interval=args.interval)
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        scheduler.stop()
+        print("\nScheduler stopped")
 
     return 0
 
@@ -290,8 +498,23 @@ Examples:
   # Historical backfill from January 2024
   python -m south_america_trade_data.main backfill --start-year 2024 --start-month 1
 
-  # Start scheduler
+  # Start trade data scheduler
   python -m south_america_trade_data.main schedule
+
+  # Fetch Brazil port lineup for current week
+  python -m south_america_trade_data.main lineup --country BRA
+
+  # Fetch Brazil lineup for specific week
+  python -m south_america_trade_data.main lineup --country BRA --year 2024 --week 44 --transform
+
+  # Run weekly lineup pipeline
+  python -m south_america_trade_data.main lineup-weekly
+
+  # Lineup backfill from week 1
+  python -m south_america_trade_data.main lineup-backfill --start-year 2024 --start-week 1
+
+  # Start lineup scheduler
+  python -m south_america_trade_data.main lineup-schedule
 
   # Check status
   python -m south_america_trade_data.main status
@@ -341,6 +564,39 @@ Examples:
     # Validate command
     validate_parser = subparsers.add_parser('validate', help='Validate configuration')
 
+    # ==========================================================================
+    # LINEUP COMMANDS
+    # ==========================================================================
+
+    # Lineup fetch command
+    lineup_parser = subparsers.add_parser('lineup', help='Fetch lineup data for a country')
+    lineup_parser.add_argument('--country', '-c', required=True, help='Country code (BRA)')
+    lineup_parser.add_argument('--year', '-y', type=int, default=datetime.now().year)
+    lineup_parser.add_argument('--week', '-w', type=int, default=None, help='ISO week number')
+    lineup_parser.add_argument('--verbose', '-v', action='store_true')
+    lineup_parser.add_argument('--transform', '-t', action='store_true', help='Transform records')
+
+    # Lineup weekly command
+    lineup_weekly_parser = subparsers.add_parser('lineup-weekly', help='Run weekly lineup pipeline')
+    lineup_weekly_parser.add_argument('--year', '-y', type=int, default=datetime.now().year)
+    lineup_weekly_parser.add_argument('--week', '-w', type=int, default=None, help='ISO week number')
+    lineup_weekly_parser.add_argument('--countries', '-c', nargs='+', help='Country codes')
+    lineup_weekly_parser.add_argument('--output', '-o', help='Output file for results (JSON)')
+
+    # Lineup backfill command
+    lineup_backfill_parser = subparsers.add_parser('lineup-backfill', help='Run lineup historical backfill')
+    lineup_backfill_parser.add_argument('--start-year', type=int, required=True)
+    lineup_backfill_parser.add_argument('--start-week', type=int, default=1)
+    lineup_backfill_parser.add_argument('--end-year', type=int)
+    lineup_backfill_parser.add_argument('--end-week', type=int)
+    lineup_backfill_parser.add_argument('--countries', '-c', nargs='+')
+
+    # Lineup schedule command
+    lineup_schedule_parser = subparsers.add_parser('lineup-schedule', help='Lineup scheduler operations')
+    lineup_schedule_parser.add_argument('--list', '-l', action='store_true', help='List scheduled tasks')
+    lineup_schedule_parser.add_argument('--run-task', help='Run specific task')
+    lineup_schedule_parser.add_argument('--interval', type=int, default=60, help='Check interval')
+
     args = parser.parse_args()
 
     if not args.command:
@@ -355,6 +611,11 @@ Examples:
         'schedule': cmd_schedule,
         'status': cmd_status,
         'validate': cmd_validate,
+        # Lineup commands
+        'lineup': cmd_lineup,
+        'lineup-weekly': cmd_lineup_weekly,
+        'lineup-backfill': cmd_lineup_backfill,
+        'lineup-schedule': cmd_lineup_schedule,
     }
 
     handler = handlers.get(args.command)

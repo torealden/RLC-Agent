@@ -3,6 +3,8 @@ Trade Data Orchestrator
 
 Coordinates data collection across all South American country agents,
 handles harmonization, and manages the complete data pipeline.
+
+Also includes LineupDataOrchestrator for port line-up data collection.
 """
 
 import logging
@@ -21,6 +23,7 @@ from ..agents.brazil_agent import BrazilComexStatAgent
 from ..agents.colombia_agent import ColombiaDANEAgent
 from ..agents.uruguay_agent import UruguayDNAAgent
 from ..agents.paraguay_agent import ParaguayAgent
+from ..agents.brazil_lineup_agent import BrazilANECLineupAgent
 from ..utils.harmonization import TradeDataHarmonizer, BalanceMatrixBuilder
 from ..utils.quality import QualityValidator, OutlierDetector, CompletenessChecker
 
@@ -459,6 +462,345 @@ def main():
             'successful': sum(1 for r in results if r.success),
             'failed': sum(1 for r in results if not r.success),
             'total_records': sum(r.total_records_loaded for r in results),
+        }
+        print(json.dumps(summary, indent=2))
+
+    elif args.command == 'status':
+        status = orchestrator.get_pipeline_status()
+        print(json.dumps(status, indent=2, default=str))
+
+
+# =============================================================================
+# LINEUP DATA ORCHESTRATOR
+# =============================================================================
+
+@dataclass
+class LineupPipelineResult:
+    """Result of a lineup pipeline run"""
+    success: bool
+    start_time: datetime
+    end_time: Optional[datetime] = None
+    report_weeks_processed: List[str] = field(default_factory=list)
+    countries_processed: List[str] = field(default_factory=list)
+    total_records_fetched: int = 0
+    total_records_loaded: int = 0
+    total_errors: int = 0
+    total_volume_tons: float = 0.0
+    country_results: Dict[str, Any] = field(default_factory=dict)
+    quality_alerts: List[Dict] = field(default_factory=list)
+    error_message: Optional[str] = None
+
+
+class LineupDataOrchestrator:
+    """
+    Orchestrates port line-up data collection from South American sources
+
+    Responsibilities:
+    1. Initialize and manage lineup-specific agents (ANEC, NABSA, etc.)
+    2. Coordinate weekly data fetching
+    3. Aggregate lineup data by port and commodity
+    4. Perform quality validation
+    5. Log all operations
+    """
+
+    def __init__(self, config: SouthAmericaTradeConfig = None, db_session_factory=None):
+        """
+        Initialize lineup orchestrator
+
+        Args:
+            config: Pipeline configuration
+            db_session_factory: SQLAlchemy session factory
+        """
+        self.config = config or default_config
+        self.db_session_factory = db_session_factory
+
+        # Initialize lineup agents
+        self.agents = self._initialize_agents()
+
+        logger.info(f"Initialized LineupDataOrchestrator with {len(self.agents)} agents")
+
+    def _initialize_agents(self) -> Dict[str, Any]:
+        """Initialize country-specific lineup agents"""
+        agents = {}
+
+        # Brazil ANEC
+        if self.config.brazil_lineup.enabled:
+            agents['BRA'] = BrazilANECLineupAgent(
+                self.config.brazil_lineup,
+                self.db_session_factory
+            )
+
+        # Argentina NABSA (placeholder - to be implemented)
+        # if self.config.argentina_lineup.enabled:
+        #     agents['ARG'] = ArgentinaNABSALineupAgent(
+        #         self.config.argentina_lineup,
+        #         self.db_session_factory
+        #     )
+
+        logger.info(f"Initialized {len(agents)} lineup agents: {list(agents.keys())}")
+        return agents
+
+    def run_weekly_pipeline(
+        self,
+        year: int = None,
+        week: int = None,
+        countries: List[str] = None
+    ) -> LineupPipelineResult:
+        """
+        Run the complete weekly lineup data pipeline
+
+        Args:
+            year: Year to process (default: current)
+            week: Week to process (default: current)
+            countries: List of country codes (default: all enabled)
+
+        Returns:
+            LineupPipelineResult with complete pipeline results
+        """
+        # Default to current week
+        today = date.today()
+        if year is None:
+            year, week, _ = today.isocalendar()
+        elif week is None:
+            week = today.isocalendar()[1]
+
+        report_week = f"{year}-W{week:02d}"
+        start_time = datetime.now()
+
+        result = LineupPipelineResult(
+            success=True,
+            start_time=start_time,
+            report_weeks_processed=[report_week],
+        )
+
+        countries = countries or list(self.agents.keys())
+
+        logger.info(f"Starting weekly lineup pipeline for {report_week}")
+        logger.info(f"Countries: {countries}")
+
+        # Fetch data from all sources
+        all_records = []
+
+        for country in countries:
+            if country not in self.agents:
+                logger.warning(f"No lineup agent for {country}")
+                continue
+
+            try:
+                country_result = self._fetch_country_lineup(country, year, week)
+                result.country_results[country] = country_result
+
+                result.total_records_fetched += country_result.get('records_fetched', 0)
+                result.total_records_loaded += country_result.get('records_loaded', 0)
+                result.total_errors += country_result.get('errors', 0)
+                result.total_volume_tons += country_result.get('total_volume_tons', 0)
+
+                if country_result.get('records'):
+                    all_records.extend(country_result['records'])
+
+                if not country_result.get('success', False):
+                    result.success = False
+
+            except Exception as e:
+                logger.error(f"Error fetching {country} lineup: {e}")
+                result.country_results[country] = {
+                    'success': False,
+                    'error': str(e)
+                }
+                result.success = False
+
+        result.countries_processed = countries
+        result.end_time = datetime.now()
+        duration = (result.end_time - result.start_time).total_seconds()
+
+        logger.info(
+            f"Lineup pipeline complete: {result.total_records_loaded} records loaded, "
+            f"{result.total_volume_tons:,.0f} tons total, {duration:.1f}s"
+        )
+
+        return result
+
+    def _fetch_country_lineup(
+        self,
+        country: str,
+        year: int,
+        week: int
+    ) -> Dict[str, Any]:
+        """Fetch lineup data for a single country"""
+        agent = self.agents.get(country)
+        if not agent:
+            return {'success': False, 'error': 'Agent not found'}
+
+        try:
+            # Fetch data
+            fetch_result = agent.fetch_data(year=year, week=week)
+
+            if not fetch_result.success:
+                return {
+                    'success': False,
+                    'error': fetch_result.error_message,
+                    'records_fetched': 0,
+                    'records_loaded': 0,
+                }
+
+            # Transform to records
+            if fetch_result.data is not None:
+                records = agent.transform_to_records(
+                    fetch_result.data,
+                    fetch_result.report_week
+                )
+            else:
+                records = []
+
+            # Calculate totals
+            total_volume = sum(r.get('volume_tons', 0) for r in records)
+
+            return {
+                'success': True,
+                'records_fetched': fetch_result.records_fetched,
+                'records_loaded': len(records),
+                'records': records,
+                'total_volume_tons': total_volume,
+                'report_week': fetch_result.report_week,
+                'errors': 0,
+            }
+
+        except Exception as e:
+            logger.error(f"Error processing {country} lineup: {e}")
+            return {
+                'success': False,
+                'error': str(e),
+                'records_fetched': 0,
+                'records_loaded': 0,
+            }
+
+    def run_historical_backfill(
+        self,
+        start_year: int,
+        start_week: int,
+        end_year: int = None,
+        end_week: int = None,
+        countries: List[str] = None
+    ) -> List[LineupPipelineResult]:
+        """
+        Run historical backfill for a week range
+
+        Args:
+            start_year: Start year
+            start_week: Start week number
+            end_year: End year (default: current)
+            end_week: End week (default: current)
+            countries: Countries to process
+
+        Returns:
+            List of LineupPipelineResult for each week
+        """
+        today = date.today()
+        if end_year is None:
+            end_year, end_week, _ = today.isocalendar()
+        elif end_week is None:
+            end_week = today.isocalendar()[1]
+
+        results = []
+
+        current_year = start_year
+        current_week = start_week
+
+        while (current_year < end_year) or (current_year == end_year and current_week <= end_week):
+            logger.info(f"Processing lineup week {current_year}-W{current_week:02d}")
+
+            result = self.run_weekly_pipeline(
+                year=current_year,
+                week=current_week,
+                countries=countries
+            )
+            results.append(result)
+
+            # Move to next week
+            current_week += 1
+            last_week = date(current_year, 12, 28).isocalendar()[1]
+            if current_week > last_week:
+                current_week = 1
+                current_year += 1
+
+        return results
+
+    def get_agent_status(self) -> Dict[str, Dict]:
+        """Get status of all lineup agents"""
+        status = {}
+
+        for country, agent in self.agents.items():
+            status[country] = agent.get_status()
+
+        return status
+
+    def get_pipeline_status(self) -> Dict:
+        """Get overall lineup pipeline status"""
+        return {
+            'pipeline_name': 'SouthAmericaLineupPipeline',
+            'pipeline_type': 'lineup',
+            'enabled_countries': list(self.agents.keys()),
+            'agent_status': self.get_agent_status(),
+        }
+
+
+# =============================================================================
+# LINEUP STANDALONE USAGE
+# =============================================================================
+
+def lineup_main():
+    """Run lineup orchestrator from command line"""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='South America Port Lineup Data Pipeline'
+    )
+
+    parser.add_argument(
+        'command',
+        choices=['weekly', 'backfill', 'status'],
+        help='Command to execute'
+    )
+
+    parser.add_argument('--year', '-y', type=int, default=datetime.now().year)
+    parser.add_argument('--week', '-w', type=int, default=None)
+    parser.add_argument('--start-year', type=int)
+    parser.add_argument('--start-week', type=int, default=1)
+    parser.add_argument('--end-year', type=int)
+    parser.add_argument('--end-week', type=int)
+    parser.add_argument('--countries', '-c', nargs='+', help='Country codes')
+
+    args = parser.parse_args()
+
+    # Create orchestrator
+    orchestrator = LineupDataOrchestrator()
+
+    if args.command == 'weekly':
+        result = orchestrator.run_weekly_pipeline(
+            year=args.year,
+            week=args.week,
+            countries=args.countries
+        )
+        print(json.dumps(asdict(result), indent=2, default=str))
+
+    elif args.command == 'backfill':
+        start_year = args.start_year or args.year
+        start_week = args.start_week
+
+        results = orchestrator.run_historical_backfill(
+            start_year=start_year,
+            start_week=start_week,
+            end_year=args.end_year,
+            end_week=args.end_week,
+            countries=args.countries
+        )
+
+        summary = {
+            'total_weeks': len(results),
+            'successful': sum(1 for r in results if r.success),
+            'failed': sum(1 for r in results if not r.success),
+            'total_records': sum(r.total_records_loaded for r in results),
+            'total_volume_tons': sum(r.total_volume_tons for r in results),
         }
         print(json.dumps(summary, indent=2))
 

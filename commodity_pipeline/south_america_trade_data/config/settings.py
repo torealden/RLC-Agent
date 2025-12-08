@@ -450,6 +450,116 @@ class ParaguayConfig(CountryConfig):
 
 
 # =============================================================================
+# PORT LINEUP CONFIGURATIONS
+# =============================================================================
+
+@dataclass
+class LineupConfig:
+    """Base configuration for port lineup data sources"""
+    country_code: str  # ISO3
+    country_name: str
+    enabled: bool = True
+
+    # Source settings
+    base_url: str = ""
+    report_format: str = "pdf"  # pdf, excel, html
+
+    # Rate limiting
+    rate_limit_per_minute: int = 30
+    retry_attempts: int = 3
+    retry_delay_base: float = 2.0
+    timeout: int = 60
+
+    # Update schedule
+    update_frequency: str = "weekly"  # weekly, daily
+    update_day: str = "monday"  # Day reports are typically available
+    release_lag_days: int = 1  # Days after period end that report is available
+
+    # Data directories
+    data_directory: Path = field(default_factory=lambda: Path("./data/lineup"))
+    cache_directory: Path = field(default_factory=lambda: Path("./data/lineup/cache"))
+
+
+@dataclass
+class BrazilLineupConfig(LineupConfig):
+    """
+    Brazil ANEC Port Lineup Configuration
+    Source: ANEC (Associação Nacional dos Exportadores de Cereais)
+    Frequency: Weekly (typically released Monday/Tuesday)
+    """
+    country_code: str = "BRA"
+    country_name: str = "Brazil"
+
+    # ANEC website
+    base_url: str = "https://anec.com.br"
+    publications_url: str = "https://anec.com.br/pt/publicacoes"
+
+    # Report characteristics
+    report_format: str = "pdf"
+    report_name_pattern: str = "line_up"
+
+    # PDF parsing settings
+    pdf_parser: str = "pdfplumber"  # pdfplumber, tabula, pypdf2
+    table_extraction_method: str = "auto"
+
+    # Commodities covered
+    commodities: List[str] = field(default_factory=lambda: [
+        "soybeans", "soybean_meal", "corn", "wheat"
+    ])
+
+    # Ports covered
+    major_ports: List[str] = field(default_factory=lambda: [
+        "Santos", "Paranagua", "Rio Grande", "Sao Francisco do Sul",
+        "Sao Luis", "Barcarena", "Santarem", "Vitoria", "Imbituba"
+    ])
+
+    # Schedule
+    update_frequency: str = "weekly"
+    update_day: str = "monday"
+    release_lag_days: int = 1  # Report usually available Monday afternoon
+
+    # Quality thresholds
+    min_weekly_volume_tons: float = 100_000  # Alert if below
+    max_weekly_volume_tons: float = 10_000_000  # Alert if above
+    deviation_threshold_pct: float = 50.0  # Flag if >50% from historical
+
+
+@dataclass
+class ArgentinaLineupConfig(LineupConfig):
+    """
+    Argentina NABSA Port Lineup Configuration
+    Source: NABSA and maritime agencies
+    Frequency: Daily/Weekly updates
+    """
+    country_code: str = "ARG"
+    country_name: str = "Argentina"
+
+    # NABSA website
+    base_url: str = "https://www.nabsa.com.ar"
+    reports_url: str = "https://www.nabsa.com.ar/assets/"
+
+    # Report characteristics
+    report_format: str = "pdf"  # Can also be xlsx
+    alternate_formats: List[str] = field(default_factory=lambda: ["xlsx", "csv"])
+
+    # Commodities covered
+    commodities: List[str] = field(default_factory=lambda: [
+        "soybeans", "soybean_meal", "corn", "wheat", "sunflower_oil"
+    ])
+
+    # Major Argentine ports
+    major_ports: List[str] = field(default_factory=lambda: [
+        "Rosario", "San Lorenzo", "San Martin", "Bahia Blanca",
+        "Necochea", "Buenos Aires", "Ramallo", "Timbues"
+    ])
+
+    # Schedule - more frequent than Brazil
+    update_frequency: str = "daily"
+    update_day: str = "weekday"  # Updates on weekdays
+    release_lag_days: int = 0
+
+
+# =============================================================================
 # ISO COUNTRY CODES AND MAPPINGS
 # =============================================================================
 
@@ -587,6 +697,10 @@ class SouthAmericaTradeConfig:
     # Quality validation
     quality: QualityConfig = field(default_factory=QualityConfig)
 
+    # Port Lineup configurations
+    brazil_lineup: BrazilLineupConfig = field(default_factory=BrazilLineupConfig)
+    argentina_lineup: ArgentinaLineupConfig = field(default_factory=ArgentinaLineupConfig)
+
     # Scheduling
     default_schedule_day: int = 15  # Day of month
     schedule_timezone: str = "America/Sao_Paulo"  # Use Brazil time as reference
@@ -625,6 +739,25 @@ class SouthAmericaTradeConfig:
             ("COL", self.colombia),
             ("URY", self.uruguay),
             ("PRY", self.paraguay),
+        ]:
+            if config.enabled:
+                enabled.append(code)
+        return enabled
+
+    def get_lineup_config(self, country_code: str) -> Optional[LineupConfig]:
+        """Get lineup configuration for a specific country"""
+        configs = {
+            "BRA": self.brazil_lineup,
+            "ARG": self.argentina_lineup,
+        }
+        return configs.get(country_code.upper())
+
+    def get_enabled_lineup_countries(self) -> List[str]:
+        """Get list of country codes with enabled lineup data sources"""
+        enabled = []
+        for code, config in [
+            ("BRA", self.brazil_lineup),
+            ("ARG", self.argentina_lineup),
         ]:
             if config.enabled:
                 enabled.append(code)

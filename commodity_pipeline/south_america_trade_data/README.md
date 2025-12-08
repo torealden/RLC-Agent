@@ -2,7 +2,9 @@
 
 A comprehensive data pipeline for collecting, harmonizing, and analyzing trade flow data from South American countries.
 
-## Supported Countries
+## Supported Data Sources
+
+### Monthly Trade Flow Data
 
 | Country | Source | API Type | Update Frequency |
 |---------|--------|----------|------------------|
@@ -11,6 +13,13 @@ A comprehensive data pipeline for collecting, harmonizing, and analyzing trade f
 | Colombia | DANE | Socrata API | Mid-month (~15th) |
 | Uruguay | DNA | CKAN API | Mid-month (~15th) |
 | Paraguay | DNA / WITS | Multi-source | ~20th (2 month lag) |
+
+### Weekly Port Lineup Data
+
+| Country | Source | Format | Update Frequency |
+|---------|--------|--------|------------------|
+| Brazil | ANEC | PDF reports | Weekly (Monday) |
+| Argentina | NABSA | PDF/Excel | Daily (planned) |
 
 ## Installation
 
@@ -189,6 +198,88 @@ GET https://www.datos.gov.co/resource/{dataset_id}.json?$where=year=2024 AND mon
 **Uruguay (CKAN)**
 ```
 GET https://catalogodatos.gub.uy/api/3/action/datastore_search?resource_id={id}&filters={"anio":2024,"mes":8}
+```
+
+## Port Lineup Data
+
+Port lineup data provides near-term visibility into export activity by showing vessels queued at major grain ports.
+
+### Brazil ANEC Lineup
+
+ANEC (Brazilian Grain Exporters Association) publishes weekly reports showing scheduled grain shipments at major Brazilian ports.
+
+**Commodities Covered:**
+- Soybeans
+- Soybean Meal
+- Corn
+- Wheat
+
+**Major Ports:**
+- Santos
+- Paranagua
+- Rio Grande
+- Sao Francisco do Sul
+- Sao Luis
+- Barcarena
+- Santarem
+- Vitoria
+- Imbituba
+
+### Lineup Usage
+
+```bash
+# Fetch Brazil port lineup for current week
+python -m south_america_trade_data.main lineup --country BRA
+
+# Fetch lineup for specific week with transformations
+python -m south_america_trade_data.main lineup --country BRA --year 2024 --week 44 --transform
+
+# Run weekly lineup pipeline
+python -m south_america_trade_data.main lineup-weekly
+
+# Lineup historical backfill
+python -m south_america_trade_data.main lineup-backfill --start-year 2024 --start-week 1 --end-week 44
+```
+
+### Python API for Lineup
+
+```python
+from south_america_trade_data.agents.brazil_lineup_agent import BrazilANECLineupAgent
+from south_america_trade_data.config.settings import BrazilLineupConfig
+
+# Initialize agent
+agent = BrazilANECLineupAgent(BrazilLineupConfig())
+
+# Fetch current week's lineup
+result = agent.get_latest_report()
+
+if result.success:
+    print(f"Week: {result.report_week}")
+    print(f"Records: {result.records_fetched}")
+    print(result.data)
+```
+
+### Lineup Data Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| country | str | ISO3 country code (e.g., BRA) |
+| port | str | Port name (normalized) |
+| commodity | str | Commodity type (soybeans, corn, etc.) |
+| volume_tons | float | Volume in metric tons |
+| report_week | str | ISO week format (YYYY-Www) |
+| data_source | str | Source identifier (ANEC, NABSA) |
+| vessel_name | str | Vessel name (if available) |
+| vessel_status | str | Status (scheduled, arrived, loading, sailed) |
+
+### Lineup Scheduling
+
+```cron
+# Brazil ANEC - Every Monday at 2 PM
+0 14 * * 1 python -m south_america_trade_data.main lineup-weekly -c BRA
+
+# Argentina NABSA - Every weekday at 10 AM (when implemented)
+# 0 10 * * 1-5 python -m south_america_trade_data.main lineup-weekly -c ARG
 ```
 
 ## License
