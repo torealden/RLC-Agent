@@ -37,6 +37,18 @@ class DataSource(enum.Enum):
     DNA_PY = "DNA_PY"  # Paraguay
     WITS = "WITS"  # World Bank fallback
     COMTRADE = "COMTRADE"  # UN Comtrade fallback
+    ANEC = "ANEC"  # Brazil lineup (ANEC)
+    NABSA = "NABSA"  # Argentina lineup (NABSA)
+
+
+class VesselStatus(enum.Enum):
+    """Vessel status in port lineup"""
+    SCHEDULED = "scheduled"
+    ARRIVED = "arrived"
+    LOADING = "loading"
+    LOADED = "loaded"
+    SAILED = "sailed"
+    WAITING = "waiting"
 
 
 # =============================================================================
@@ -339,6 +351,186 @@ class MonthlyAggregate(Base):
             name='uq_monthly_aggregate'
         ),
         Index('ix_agg_reporter_flow', 'reporter_country', 'flow', 'period'),
+    )
+
+
+# =============================================================================
+# PORT LINEUP TABLES
+# =============================================================================
+
+class PortLineupRecord(Base):
+    """
+    Port lineup record - stores vessel/shipment data from lineup reports
+    One record per unique (country, port, commodity, report_week) or per vessel
+    """
+    __tablename__ = 'sa_port_lineup_records'
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    # Source identification
+    data_source = Column(String(20), nullable=False, index=True)  # ANEC, NABSA, etc.
+    source_file = Column(String(255))  # Original filename/URL
+    source_url = Column(Text)  # URL of the report
+
+    # Country and port
+    country = Column(String(3), nullable=False, index=True)  # ISO3
+    port = Column(String(100), nullable=False, index=True)
+    terminal = Column(String(100))  # Specific terminal within port
+
+    # Commodity
+    commodity = Column(String(50), nullable=False, index=True)  # soybeans, corn, etc.
+    commodity_description = Column(String(200))
+
+    # Volume
+    volume_tons = Column(Numeric(18, 4), nullable=False)
+    volume_unit = Column(String(20), default='metric_tons')
+
+    # Time period - weekly reports
+    report_week = Column(String(10), nullable=False, index=True)  # YYYY-Www format
+    report_date = Column(Date, index=True)  # Actual report date
+    week_start_date = Column(Date)  # Monday of the week
+    week_end_date = Column(Date)  # Sunday of the week
+
+    # Vessel information (if available at vessel level)
+    vessel_name = Column(String(200))
+    vessel_flag = Column(String(50))
+    vessel_imo = Column(String(20))  # IMO number
+    vessel_status = Column(String(20))  # scheduled, arrived, loading, sailed
+    estimated_arrival = Column(Date)  # ETA
+    estimated_departure = Column(Date)  # ETD
+    actual_arrival = Column(DateTime)
+    actual_departure = Column(DateTime)
+
+    # Destination (if known)
+    destination_country = Column(String(100))
+    destination_port = Column(String(100))
+
+    # Report metadata
+    report_type = Column(String(50), default='weekly_lineup')
+    is_summary_row = Column(Boolean, default=False)  # True if this is a port/commodity total
+
+    # Audit fields
+    ingested_at = Column(DateTime, default=datetime.utcnow, index=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    file_hash = Column(String(64))  # SHA256 of source file
+    record_hash = Column(String(64))  # Hash for duplicate detection
+
+    __table_args__ = (
+        # Unique constraint for summary records (port/commodity totals)
+        UniqueConstraint(
+            'country', 'port', 'commodity', 'report_week', 'is_summary_row',
+            name='uq_lineup_summary_record'
+        ),
+        # Performance indexes
+        Index('ix_lineup_country_week', 'country', 'report_week'),
+        Index('ix_lineup_port_week', 'port', 'report_week'),
+        Index('ix_lineup_commodity_week', 'commodity', 'report_week'),
+    )
+
+
+class LineupAggregate(Base):
+    """
+    Pre-aggregated lineup totals for quick reporting
+    Aggregated by country, port, commodity, week
+    """
+    __tablename__ = 'sa_lineup_aggregates'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    # Dimensions
+    country = Column(String(3), nullable=False, index=True)
+    port = Column(String(100), index=True)  # NULL for country total
+    commodity = Column(String(50), index=True)  # NULL for port total
+
+    # Time period
+    report_week = Column(String(10), nullable=False, index=True)
+    year = Column(Integer, nullable=False, index=True)
+    week_number = Column(Integer, nullable=False)
+
+    # Aggregation level
+    agg_level = Column(String(20), nullable=False)  # 'country', 'port', 'commodity', 'port_commodity'
+
+    # Metrics
+    total_volume_tons = Column(Numeric(18, 4), nullable=False)
+    vessel_count = Column(Integer)  # Number of vessels if known
+
+    # Comparisons
+    prior_week_volume_tons = Column(Numeric(18, 4))
+    prior_year_volume_tons = Column(Numeric(18, 4))
+    wow_change_pct = Column(Numeric(10, 4))  # Week-over-week
+    yoy_change_pct = Column(Numeric(10, 4))  # Year-over-year
+
+    # Year-to-date
+    ytd_volume_tons = Column(Numeric(18, 4))
+
+    # Data quality
+    data_source_count = Column(Integer, default=1)  # Number of sources contributing
+    is_complete = Column(Boolean, default=True)  # All expected ports reporting
+
+    calculated_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        UniqueConstraint(
+            'country', 'port', 'commodity', 'report_week', 'agg_level',
+            name='uq_lineup_aggregate'
+        ),
+        Index('ix_lineup_agg_country_week', 'country', 'report_week'),
+    )
+
+
+class LineupSourceLog(Base):
+    """
+    Track lineup data ingestion operations
+    """
+    __tablename__ = 'sa_lineup_source_log'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    # Source identification
+    data_source = Column(String(20), nullable=False)  # ANEC, NABSA
+    country_code = Column(String(3), nullable=False)
+
+    # Operation details
+    operation_type = Column(String(20), nullable=False)  # fetch, parse, load
+    operation_timestamp = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    # Report details
+    report_week = Column(String(10))  # YYYY-Www
+    report_url = Column(Text)
+    report_date = Column(Date)
+
+    # Request metadata
+    response_status = Column(Integer)
+    response_time_ms = Column(Integer)
+
+    # Data metrics
+    records_extracted = Column(Integer)
+    records_inserted = Column(Integer)
+    records_updated = Column(Integer)
+    records_skipped = Column(Integer)
+    records_errored = Column(Integer)
+
+    # Volume totals
+    total_volume_tons = Column(Numeric(18, 4))
+    port_count = Column(Integer)
+    commodity_count = Column(Integer)
+
+    # File info
+    source_file = Column(String(255))
+    file_hash = Column(String(64))  # SHA256
+    file_size_bytes = Column(BigInteger)
+
+    # Status
+    status = Column(String(20), nullable=False)  # SUCCESS, PARTIAL, FAILED
+    error_message = Column(Text)
+    error_details = Column(Text)
+
+    # Duration
+    duration_seconds = Column(Float)
+
+    __table_args__ = (
+        Index('ix_lineup_log_source_date', 'data_source', 'operation_timestamp'),
+        Index('ix_lineup_log_week', 'report_week'),
     )
 
 

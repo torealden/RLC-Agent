@@ -378,6 +378,277 @@ class TradeDataScheduler:
 
 
 # =============================================================================
+# LINEUP SCHEDULER
+# =============================================================================
+
+# Default lineup schedules (weekly)
+DEFAULT_LINEUP_SCHEDULES = {
+    'BRA': ScheduleConfig(
+        country_code='BRA',
+        release_day_of_month=0,  # Not used for weekly
+        release_lag_months=0,
+    ),
+    # Argentina lineup can be added when NABSA agent is implemented
+    # 'ARG': ScheduleConfig(
+    #     country_code='ARG',
+    #     release_day_of_month=0,
+    #     release_lag_months=0,
+    # ),
+}
+
+
+class LineupScheduler:
+    """
+    Scheduler for automated port lineup data pulls
+
+    Features:
+    - Weekly scheduling for lineup data (typically released Monday)
+    - Automatic retry on failure
+    - Configurable per-country schedules
+    """
+
+    def __init__(self, orchestrator=None, schedules: Dict[str, ScheduleConfig] = None):
+        """
+        Initialize lineup scheduler
+
+        Args:
+            orchestrator: LineupDataOrchestrator instance
+            schedules: Custom schedule configurations
+        """
+        self.orchestrator = orchestrator
+        self.schedules = schedules or DEFAULT_LINEUP_SCHEDULES
+        self.tasks: Dict[str, ScheduledTask] = {}
+        self._running = False
+        self._thread: Optional[threading.Thread] = None
+
+        # Initialize tasks from schedules
+        self._initialize_tasks()
+
+    def _initialize_tasks(self):
+        """Create scheduled tasks from configurations"""
+        for country_code, schedule in self.schedules.items():
+            task_id = f"weekly_lineup_{country_code.lower()}"
+
+            self.tasks[task_id] = ScheduledTask(
+                task_id=task_id,
+                country_code=country_code,
+                description=f"Weekly lineup pull for {country_code}",
+                frequency=ScheduleFrequency.WEEKLY,
+                day_of_month=0,  # Not used for weekly
+                day_of_week=0,  # Monday
+                hour=14,  # 2 PM - after most reports are released
+                minute=0,
+                enabled=True,
+            )
+
+            # Calculate next run
+            self._calculate_next_run(self.tasks[task_id])
+
+    def _calculate_next_run(self, task: ScheduledTask):
+        """Calculate next run time for a weekly task"""
+        now = datetime.now()
+
+        days_ahead = task.day_of_week - now.weekday()
+        if days_ahead <= 0:
+            days_ahead += 7
+
+        next_run = now + timedelta(days=days_ahead)
+        next_run = next_run.replace(
+            hour=task.hour, minute=task.minute, second=0, microsecond=0
+        )
+
+        # If the calculated time is today but already passed, move to next week
+        if next_run <= now:
+            next_run += timedelta(days=7)
+
+        task.next_run = next_run
+
+    def get_week_for_run(self, country_code: str, run_date: date = None) -> tuple:
+        """
+        Calculate which week to fetch based on run date
+
+        Args:
+            country_code: Country code
+            run_date: Date of run (default: today)
+
+        Returns:
+            Tuple of (year, week_number) to fetch
+        """
+        run_date = run_date or date.today()
+
+        # Get the current week
+        year, week, weekday = run_date.isocalendar()
+
+        # If running on Monday, fetch current week's data
+        # If running later in the week, also fetch current week
+        return year, week
+
+    def run_task(self, task_id: str) -> Dict:
+        """
+        Execute a scheduled lineup task
+
+        Args:
+            task_id: ID of task to run
+
+        Returns:
+            Dictionary with task results
+        """
+        task = self.tasks.get(task_id)
+        if not task:
+            return {'success': False, 'error': f'Task not found: {task_id}'}
+
+        if not task.enabled:
+            return {'success': False, 'error': 'Task is disabled'}
+
+        logger.info(f"Running lineup task: {task_id}")
+
+        task.last_run = datetime.now()
+
+        try:
+            # Calculate week to fetch
+            year, week = self.get_week_for_run(task.country_code)
+
+            # Run the orchestrator if available
+            if self.orchestrator:
+                result = self.orchestrator.run_weekly_pipeline(
+                    year=year,
+                    week=week,
+                    countries=[task.country_code]
+                )
+
+                if result.success:
+                    task.last_success = datetime.now()
+                    task.consecutive_failures = 0
+                else:
+                    task.consecutive_failures += 1
+
+                # Calculate next run
+                self._calculate_next_run(task)
+
+                return {
+                    'success': result.success,
+                    'task_id': task_id,
+                    'country': task.country_code,
+                    'report_week': f"{year}-W{week:02d}",
+                    'records_loaded': result.total_records_loaded,
+                    'total_volume_tons': result.total_volume_tons,
+                    'errors': result.total_errors,
+                }
+            else:
+                return {
+                    'success': False,
+                    'error': 'No orchestrator configured',
+                }
+
+        except Exception as e:
+            logger.error(f"Lineup task {task_id} failed: {e}")
+            task.consecutive_failures += 1
+            self._calculate_next_run(task)
+
+            return {
+                'success': False,
+                'task_id': task_id,
+                'error': str(e),
+            }
+
+    def get_pending_tasks(self) -> List[ScheduledTask]:
+        """Get tasks that are due to run"""
+        now = datetime.now()
+        pending = []
+
+        for task in self.tasks.values():
+            if task.enabled and task.next_run and task.next_run <= now:
+                pending.append(task)
+
+        return pending
+
+    def start(self, check_interval: int = 60):
+        """
+        Start the scheduler in a background thread
+
+        Args:
+            check_interval: Seconds between checks for pending tasks
+        """
+        if self._running:
+            logger.warning("Lineup scheduler already running")
+            return
+
+        self._running = True
+        self._thread = threading.Thread(
+            target=self._scheduler_loop,
+            args=(check_interval,),
+            daemon=True
+        )
+        self._thread.start()
+        logger.info("Lineup scheduler started")
+
+    def stop(self):
+        """Stop the scheduler"""
+        self._running = False
+        if self._thread:
+            self._thread.join(timeout=5)
+        logger.info("Lineup scheduler stopped")
+
+    def _scheduler_loop(self, check_interval: int):
+        """Main scheduler loop"""
+        while self._running:
+            try:
+                pending = self.get_pending_tasks()
+
+                for task in pending:
+                    logger.info(f"Executing pending lineup task: {task.task_id}")
+                    result = self.run_task(task.task_id)
+                    logger.info(f"Lineup task result: {result}")
+
+            except Exception as e:
+                logger.error(f"Lineup scheduler error: {e}")
+
+            time.sleep(check_interval)
+
+    def get_schedule_status(self) -> Dict[str, Any]:
+        """Get status of all scheduled lineup tasks"""
+        return {
+            'type': 'lineup',
+            'running': self._running,
+            'tasks': {
+                task_id: {
+                    'country': task.country_code,
+                    'description': task.description,
+                    'enabled': task.enabled,
+                    'frequency': 'weekly',
+                    'day_of_week': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][task.day_of_week],
+                    'last_run': str(task.last_run) if task.last_run else None,
+                    'last_success': str(task.last_success) if task.last_success else None,
+                    'next_run': str(task.next_run) if task.next_run else None,
+                    'consecutive_failures': task.consecutive_failures,
+                }
+                for task_id, task in self.tasks.items()
+            }
+        }
+
+    def add_task(
+        self,
+        task_id: str,
+        country_code: str,
+        day_of_week: int = 0,  # 0=Monday
+        hour: int = 14
+    ):
+        """Add a new weekly lineup task"""
+        task = ScheduledTask(
+            task_id=task_id,
+            country_code=country_code,
+            description=f"Weekly lineup for {country_code}",
+            frequency=ScheduleFrequency.WEEKLY,
+            day_of_month=0,
+            day_of_week=day_of_week,
+            hour=hour,
+        )
+        self._calculate_next_run(task)
+        self.tasks[task_id] = task
+        logger.info(f"Added lineup task: {task_id}")
+
+
+# =============================================================================
 # CRON EXPRESSION HELPER
 # =============================================================================
 
@@ -392,19 +663,38 @@ def generate_cron_expression(schedule: ScheduleConfig) -> str:
     return f"0 8 {schedule.release_day_of_month} * *"
 
 
-def get_recommended_cron_schedules() -> Dict[str, str]:
+def get_recommended_cron_schedules() -> Dict[str, Dict[str, str]]:
     """
-    Get recommended cron schedules for all countries
+    Get recommended cron schedules for all data sources
+
+    Returns:
+        Dictionary with 'trade' and 'lineup' schedules
+    """
+    return {
+        'trade': {
+            'BRA': "0 8 8 * *",    # Brazil: 8th of each month at 8 AM
+            'ARG': "0 8 15 * *",   # Argentina: 15th of each month at 8 AM
+            'COL': "0 8 15 * *",   # Colombia: 15th of each month at 8 AM
+            'URY': "0 8 15 * *",   # Uruguay: 15th of each month at 8 AM
+            'PRY': "0 8 20 * *",   # Paraguay: 20th of each month at 8 AM (WITS lag)
+        },
+        'lineup': {
+            'BRA': "0 14 * * 1",  # Brazil ANEC: Every Monday at 2 PM
+            # 'ARG': "0 10 * * 1-5",  # Argentina NABSA: Daily at 10 AM (when implemented)
+        }
+    }
+
+
+def get_lineup_cron_schedules() -> Dict[str, str]:
+    """
+    Get recommended cron schedules for lineup data
 
     Returns:
         Dictionary mapping country codes to cron expressions
     """
     return {
-        'BRA': "0 8 8 * *",    # Brazil: 8th of each month at 8 AM
-        'ARG': "0 8 15 * *",   # Argentina: 15th of each month at 8 AM
-        'COL': "0 8 15 * *",   # Colombia: 15th of each month at 8 AM
-        'URY': "0 8 15 * *",   # Uruguay: 15th of each month at 8 AM
-        'PRY': "0 8 20 * *",   # Paraguay: 20th of each month at 8 AM (WITS lag)
+        'BRA_ANEC': "0 14 * * 1",  # Every Monday at 2 PM (after ANEC releases)
+        # 'ARG_NABSA': "0 10 * * 1-5",  # Weekdays at 10 AM
     }
 
 
@@ -465,7 +755,11 @@ def main():
     elif args.command == 'cron':
         crons = get_recommended_cron_schedules()
         print("Recommended cron schedules:")
-        for country, cron in crons.items():
+        print("\nMonthly Trade Data:")
+        for country, cron in crons['trade'].items():
+            print(f"  {country}: {cron}")
+        print("\nWeekly Lineup Data:")
+        for country, cron in crons['lineup'].items():
             print(f"  {country}: {cron}")
 
 

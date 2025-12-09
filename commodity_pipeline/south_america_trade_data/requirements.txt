@@ -14,6 +14,11 @@ psycopg2-binary>=2.9.0  # PostgreSQL support
 openpyxl>=3.1.0       # xlsx files
 xlrd>=2.0.0           # xls files (legacy)
 
+# PDF parsing (for port lineup reports)
+pdfplumber>=0.10.0    # Primary PDF parser (tables and text)
+PyPDF2>=3.0.0         # Fallback PDF text extraction
+# tabula-py>=2.8.0    # Optional: Java-based PDF table extraction
+
 # Utilities
 python-dateutil>=2.8.0
 
