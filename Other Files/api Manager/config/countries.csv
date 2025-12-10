@@ -1,0 +1,15 @@
+country_code,country_name,region,trade_data_source,active
+US,United States,North America,census_bureau,TRUE
+BR,Brazil,South America,mdic,TRUE
+AR,Argentina,South America,indec,TRUE
+CA,Canada,North America,statcan,TRUE
+CN,China,Asia,customs,TRUE
+MX,Mexico,North America,comtrade,TRUE
+EU,European Union,Europe,eurostat,TRUE
+RU,Russia,Europe,customs,TRUE
+UA,Ukraine,Europe,ukrstat,TRUE
+IN,India,Asia,comtrade,TRUE
+ID,Indonesia,Asia,comtrade,TRUE
+MY,Malaysia,Asia,comtrade,TRUE
+JP,Japan,Asia,customs,TRUE
+EG,Egypt,Africa,comtrade,TRUE

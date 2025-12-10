@@ -1,0 +1,10 @@
+langchain>=0.2.12
+langchain-community>=0.2.10      # for ChatOllama
+google-api-python-client>=2.147.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.1
+python-dotenv>=1.0.1
+pydantic>=2.8.2
+notion-client>=2.2.1
+tzdata>=2025.1
+dateparser>=1.2.0

@@ -1,0 +1,15 @@
+# Export Inspections Agent Dependencies
+# Core
+sqlalchemy>=2.0.0
+requests>=2.28.0
+
+# Database drivers (install based on your database choice)
+pymysql>=1.0.0          # For MySQL
+psycopg2-binary>=2.9.0  # For PostgreSQL
+# sqlite3 is included in Python standard library
+
+# Testing
+pytest>=7.0.0
+
+# Optional - for enhanced functionality
+urllib3>=2.0.0

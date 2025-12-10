@@ -1,0 +1,9 @@
+import google.oauth2.service_account as sa
+if not hasattr(sa, Credentials):
+    sa.ServiceCredentials = sa.Credentials  # alias to satisfy the toolkit
+
+from langchain_google_community import CalendarToolkit
+
+toolkit = CalendarToolkit()
+tools = toolkit.get_tools()
+print("Calendar tools loaded:", [t.name for t in tools])

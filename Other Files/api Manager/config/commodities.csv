@@ -1,0 +1,17 @@
+commodity_code,commodity_name,category,unit_preference,metric_ton_conversion,active
+SOYBEAN,Soybeans,agriculture,bushel,36.744,TRUE
+CORN,Corn,agriculture,bushel,39.368,TRUE
+SOYOIL,Soybean Oil,agriculture,pound,2204.62,TRUE
+BIODIESEL,Biodiesel,biofuel,gallon,264.172,TRUE
+ETHANOL,Ethanol,biofuel,gallon,264.172,TRUE
+DIESEL,Diesel Fuel,energy,gallon,264.172,TRUE
+GASOLINE,Gasoline,energy,gallon,264.172,TRUE
+SOYMEAL,Soybean Meal,agriculture,short_ton,1.102,TRUE
+CANOLA,Rapeseed/Canola,agriculture,bushel,44.092,TRUE
+RAPOIL,Rapeseed Oil,agriculture,metric_ton,1,TRUE
+RAPMEAL,Rapeseed Meal,agriculture,metric_ton,1,TRUE
+SUNSEED,Sunflower Seed,agriculture,bushel,78.736,TRUE
+SUNOIL,Sunflower Oil,agriculture,metric_ton,1,TRUE
+SUNMEAL,Sunflower Meal,agriculture,metric_ton,1,TRUE
+PALMOIL,Palm Oil,agriculture,metric_ton,1,TRUE
+WHEAT,Wheat,agriculture,bushel,36.744,TRUE

@@ -1,0 +1,69 @@
+{
+  "usda_ams": {
+    "name": "USDA Agricultural Marketing Service",
+    "enabled": true,
+    "schedule": "daily",
+    "schedule_time": "13:00",
+    "description": "USDA Market News - commodity prices",
+    "auth_type": "api_key",
+    "base_url": "https://marsapi.ams.usda.gov/services/v1.2/reports",
+    "endpoints": {
+      "search": "/search",
+      "report": "/{slug_id}"
+    },
+    "retry_attempts": 3,
+    "timeout": 60,
+    "rate_limit_per_minute": 60,
+    "commodities": [
+      {
+        "commodity": "soybeans",
+        "report_type": "grain-cash-bids",
+        "locations": [
+          "Central Illinois",
+          "Decatur, IL",
+          "Chicago, IL",
+          "Iowa Interior",
+          "Gulf"
+        ]
+      }
+    ],
+    "tables": {
+      "prices": "usda_ams_prices",
+      "reports": "usda_ams_reports",
+      "metadata": "usda_ams_metadata"
+    }
+  },
+  "eia": {
+    "name": "Energy Information Administration",
+    "enabled": true,
+    "schedule": "monthly",
+    "schedule_day": 15,
+    "schedule_time": "14:00",
+    "description": "EIA Biofuels production and feedstock data",
+    "auth_type": "none",
+    "base_url": "https://www.eia.gov/biofuels/biodiesel/production/",
+    "retry_attempts": 3,
+    "timeout": 30,
+    "tables": {
+      "feedstock": "eia_feedstock",
+      "production": "eia_production"
+    }
+  },
+  "lcfs": {
+    "name": "California LCFS Program",
+    "enabled": true,
+    "schedule": "quarterly",
+    "schedule_day": 1,
+    "schedule_time": "10:00",
+    "description": "California Low Carbon Fuel Standard data",
+    "auth_type": "none",
+    "base_url": "https://ww3.arb.ca.gov/fuels/lcfs/lrtqsummaries.htm",
+    "retry_attempts": 3,
+    "timeout": 30,
+    "tables": {
+      "feedstock": "lcfs_feedstock",
+      "credit": "lcfs_credit",
+      "deficit": "lcfs_deficit"
+    }
+  }
+}
