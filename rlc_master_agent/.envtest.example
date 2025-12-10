@@ -28,7 +28,7 @@ LLM_MAX_TOKENS=2000
 # NOTION INTEGRATION
 # -----------------------------------------------------------------------------
 # Get your API key from: https://www.notion.so/my-integrations
-NOTION_API_KEY=secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+NOTION_API_KEY=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
 
 # Database IDs (found in the URL when viewing each database)
 # Format: https://notion.so/workspace/database-name-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
