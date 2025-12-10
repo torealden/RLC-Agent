@@ -30,17 +30,15 @@ class USDAService:
     API Documentation: https://mymarketnews.ams.usda.gov/mymarketnews-api
     """
 
-    # Common commodity report slugs
+    # Common commodity report IDs (numeric IDs used by USDA API)
     REPORT_SLUGS = {
-        'corn': 'LSD_MARS_1815',
-        'soybeans': 'LSD_MARS_1822',
-        'wheat': 'LSD_MARS_1821',
-        'cattle': 'LM_CT105',
-        'hogs': 'LM_HG201',
-        'ethanol': 'LSD_MARS_2261',
-        'ddgs': 'LSD_MARS_1816',
-        'soybean_meal': 'LSD_MARS_1823',
-        'soybean_oil': 'LSD_MARS_1824',
+        'corn': '2849',           # Daily Grain Review
+        'soybeans': '2849',       # Daily Grain Review (includes soybeans)
+        'wheat': '2849',          # Daily Grain Review (includes wheat)
+        'ethanol': '3617',        # Daily Ethanol Report
+        'ddgs': '3617',           # Daily Ethanol Report (includes DDGS)
+        'grain': '2849',          # Daily Grain Review
+        'iowa_grain': '2852',     # Iowa Daily Grain Bids
     }
 
     def __init__(self, api_key: str, base_url: str = "https://marsapi.ams.usda.gov/services/v1.2"):
