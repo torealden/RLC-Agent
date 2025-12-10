@@ -54,8 +54,10 @@ class USDAService:
         self.api_key = api_key
         self.base_url = base_url.rstrip('/')
         self.session = requests.Session()
+        # USDA AMS API uses HTTP Basic Auth with API key as username
+        if api_key:
+            self.session.auth = (api_key, '')
         self.session.headers.update({
-            'Authorization': f'Bearer {api_key}' if api_key else '',
             'Accept': 'application/json'
         })
 
@@ -73,9 +75,7 @@ class USDAService:
         url = f"{self.base_url}/{endpoint}"
         params = params or {}
 
-        # Add API key to params if not in header
-        if self.api_key and 'api_key' not in params:
-            params['api_key'] = self.api_key
+        # API key is passed via Basic Auth (set in __init__), not as URL param
 
         try:
             response = self.session.get(url, params=params, timeout=30)
