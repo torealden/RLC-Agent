@@ -207,6 +207,14 @@ def create_excel_workbook(datasets, output_path):
         ws = wb.create_sheet(title=sheet_name)
         sheets_created.append(sheet_name)
 
+        # Convert date columns to string format for clean Excel export
+        for col in df.columns:
+            if df[col].dtype == 'datetime64[ns]' or 'date' in col.lower():
+                try:
+                    df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%Y-%m-%d')
+                except:
+                    pass
+
         # Write data
         for r_idx, row in enumerate(dataframe_to_rows(df, index=False, header=True), 1):
             for c_idx, value in enumerate(row, 1):
