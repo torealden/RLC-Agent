@@ -96,22 +96,33 @@ def process_eia_data(records):
     """Process EIA data into analysis-ready format"""
     df = pd.DataFrame(records)
 
-    if 'period' in df.columns:
-        df['date'] = pd.to_datetime(df['period'], errors='coerce')
+    # Try to find and convert date column
+    date_col = None
+    for col in ['period', 'date', 'Date', 'PERIOD', 'report_date', 'week_ending']:
+        if col in df.columns:
+            date_col = col
+            break
+
+    if date_col:
+        # Convert to datetime
+        df['date'] = pd.to_datetime(df[date_col], errors='coerce')
+
+        # Check if conversion was successful (has valid dates)
+        valid_dates = df['date'].notna().sum()
+        if valid_dates > 0:
+            # Add week number and year only if we have valid dates
+            df['year'] = df['date'].dt.year
+            df['week'] = df['date'].dt.isocalendar().week
+            df['month'] = df['date'].dt.month
+            df['month_name'] = df['date'].dt.strftime('%B')
+            # Sort by date
+            df = df.sort_values('date')
+        else:
+            # No valid dates, drop the date column we created
+            df = df.drop(columns=['date'])
 
     if 'value' in df.columns:
         df['value'] = pd.to_numeric(df['value'], errors='coerce')
-
-    # Add week number and year
-    if 'date' in df.columns:
-        df['year'] = df['date'].dt.year
-        df['week'] = df['date'].dt.isocalendar().week
-        df['month'] = df['date'].dt.month
-        df['month_name'] = df['date'].dt.strftime('%B')
-
-    # Sort by date
-    if 'date' in df.columns:
-        df = df.sort_values('date')
 
     return df
 
@@ -182,10 +193,13 @@ def create_excel_workbook(datasets, output_path):
         # Create DataFrame
         df = pd.DataFrame(records)
 
-        # Process based on dataset type
-        if 'period' in df.columns or 'date' in df.columns:
+        # Process based on dataset type - look for any date-like columns
+        date_cols = ['period', 'date', 'Date', 'PERIOD', 'report_date', 'week_ending']
+        has_date_col = any(col in df.columns for col in date_cols)
+
+        if has_date_col:
             df = process_eia_data(records)
-            if 'value' in df.columns:
+            if 'value' in df.columns and 'date' in df.columns:
                 df = calculate_weekly_changes(df)
 
         # Create sheet
