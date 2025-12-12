@@ -65,16 +65,19 @@ AG_STATES = [
 class DroughtConfig(CollectorConfig):
     """Drought Monitor specific configuration"""
     source_name: str = "US Drought Monitor"
-    source_url: str = "https://droughtmonitor.unl.edu/DmData/DataDownload/ComprehensiveStatistics.aspx"
+    # Updated to new API endpoint (2024+)
+    source_url: str = "https://usdmdataservices.unl.edu/api"
     auth_type: AuthType = AuthType.NONE
     frequency: DataFrequency = DataFrequency.WEEKLY
 
     # States to track
     states: List[str] = field(default_factory=lambda: AG_STATES)
 
-    # Data endpoints
-    csv_endpoint: str = "https://droughtmonitor.unl.edu/DmData/DataDownload/ComprehensiveStatistics.aspx"
-    geojson_endpoint: str = "https://droughtmonitor.unl.edu/DmData/GeoJSON/"
+    # New REST API endpoints (2024+)
+    # See: https://droughtmonitor.unl.edu/DmData/DataDownload/WebServiceInfo.aspx
+    state_stats_endpoint: str = "/StateStatistics/GetDroughtSeverityStatisticsByAreaPercent"
+    us_stats_endpoint: str = "/USStatistics/GetDroughtSeverityStatisticsByAreaPercent"
+    county_stats_endpoint: str = "/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent"
 
 
 class DroughtCollector(BaseCollector):
@@ -120,61 +123,64 @@ class DroughtCollector(BaseCollector):
         end_date = end_date or date.today()
         start_date = start_date or (end_date - timedelta(days=365))
 
-        # Build URL for CSV download
-        url = self._build_download_url(
-            start_date, end_date, states, area_type
+        all_records = []
+        warnings = []
+
+        # Request JSON format from the API
+        headers = {'Accept': 'application/json'}
+
+        # New API requires fetching each state separately for state-level data
+        states_to_fetch = states if area_type == 'state' else [None]
+
+        for state in states_to_fetch:
+            current_states = [state] if state else states
+
+            url = self._build_download_url(
+                start_date, end_date, current_states, area_type
+            )
+
+            response, error = self._make_request(url, timeout=60, headers=headers)
+
+            if error:
+                warnings.append(f"{state or 'US'}: {error}")
+                continue
+
+            if response.status_code != 200:
+                warnings.append(f"{state or 'US'}: HTTP {response.status_code}")
+                continue
+
+            # Parse response
+            try:
+                records = self._parse_csv_response(response.text, current_states)
+                all_records.extend(records)
+            except Exception as e:
+                warnings.append(f"{state or 'US'}: Parse error - {e}")
+
+        if not all_records:
+            return CollectorResult(
+                success=False,
+                source=self.config.source_name,
+                error_message="No data retrieved",
+                warnings=warnings
+            )
+
+        # Convert to DataFrame
+        if PANDAS_AVAILABLE:
+            df = pd.DataFrame(all_records)
+            df['date'] = pd.to_datetime(df['date'])
+            df = df.sort_values(['state', 'date'])
+        else:
+            df = all_records
+
+        return CollectorResult(
+            success=True,
+            source=self.config.source_name,
+            records_fetched=len(all_records),
+            data=df,
+            period_start=start_date.isoformat(),
+            period_end=end_date.isoformat(),
+            warnings=warnings if warnings else None
         )
-
-        response, error = self._make_request(url, timeout=60)
-
-        if error:
-            return CollectorResult(
-                success=False,
-                source=self.config.source_name,
-                error_message=error
-            )
-
-        if response.status_code != 200:
-            return CollectorResult(
-                success=False,
-                source=self.config.source_name,
-                error_message=f"HTTP {response.status_code}"
-            )
-
-        # Parse CSV response
-        try:
-            records = self._parse_csv_response(response.text, states)
-
-            if not records:
-                return CollectorResult(
-                    success=False,
-                    source=self.config.source_name,
-                    error_message="No data in response"
-                )
-
-            # Convert to DataFrame
-            if PANDAS_AVAILABLE:
-                df = pd.DataFrame(records)
-                df['date'] = pd.to_datetime(df['date'])
-                df = df.sort_values(['state', 'date'])
-            else:
-                df = records
-
-            return CollectorResult(
-                success=True,
-                source=self.config.source_name,
-                records_fetched=len(records),
-                data=df,
-                period_start=start_date.isoformat(),
-                period_end=end_date.isoformat()
-            )
-
-        except Exception as e:
-            return CollectorResult(
-                success=False,
-                source=self.config.source_name,
-                error_message=f"Parse error: {e}"
-            )
 
     def _build_download_url(
         self,
@@ -183,27 +189,41 @@ class DroughtCollector(BaseCollector):
         states: List[str],
         area_type: str
     ) -> str:
-        """Build download URL for drought data"""
-        # The Drought Monitor has a specific URL format for data download
-        base_url = "https://droughtmonitor.unl.edu/DmData/DataDownload/WebServiceCall.aspx"
+        """Build download URL for drought data using new REST API (2024+)"""
+        # Use the new usdmdataservices.unl.edu API
+        # Docs: https://droughtmonitor.unl.edu/DmData/DataDownload/WebServiceInfo.aspx
 
+        base_url = self.config.source_url
+
+        # Select endpoint based on area type
+        if area_type == 'national' or not states or states == ['US']:
+            endpoint = self.config.us_stats_endpoint
+            aoi = 'us'
+        elif area_type == 'county':
+            endpoint = self.config.county_stats_endpoint
+            aoi = states[0] if states else 'IA'
+        else:
+            # State-level data - fetch each state separately
+            endpoint = self.config.state_stats_endpoint
+            aoi = states[0] if states else 'IA'
+
+        # statisticsType=2 returns area percent (1 returns absolute area)
         params = {
-            'aession': 'D',  # Drought statistics
-            'stateabbr': ','.join(states) if states else 'US',
+            'aoi': aoi,
             'startdate': start_date.strftime('%m/%d/%Y'),
             'enddate': end_date.strftime('%m/%d/%Y'),
-            'format': 'json',
+            'statisticsType': '2',
         }
 
         param_str = '&'.join(f"{k}={v}" for k, v in params.items())
-        return f"{base_url}?{param_str}"
+        return f"{base_url}{endpoint}?{param_str}"
 
     def _parse_csv_response(
         self,
         content: str,
         states: List[str]
     ) -> List[Dict]:
-        """Parse CSV/JSON response from Drought Monitor"""
+        """Parse JSON/CSV response from Drought Monitor API"""
         records = []
 
         try:
@@ -211,18 +231,29 @@ class DroughtCollector(BaseCollector):
             data = json.loads(content)
 
             for item in data:
-                state = item.get('State', item.get('state', ''))
+                # Handle different API response field names
+                state = (item.get('StateAbbreviation') or
+                        item.get('State') or
+                        item.get('state') or
+                        item.get('Name', ''))
 
-                if states and state not in states:
+                if states and state not in states and state.upper() not in [s.upper() for s in states]:
                     continue
 
+                # New API uses 'MapDate' or 'ValidStart'/'ValidEnd'
+                report_date = (item.get('MapDate') or
+                              item.get('ValidStart') or
+                              item.get('releaseDate') or
+                              item.get('date'))
+
                 record = {
-                    'date': item.get('MapDate', item.get('date')),
-                    'state': state,
-                    'fips': item.get('FIPS'),
+                    'date': report_date,
+                    'state': state.upper() if state else '',
+                    'fips': item.get('FIPS') or item.get('fips'),
 
                     # Percentage of area in each drought category
-                    'none_pct': self._safe_float(item.get('None')),
+                    # New API may use different field names
+                    'none_pct': self._safe_float(item.get('None') or item.get('NONE')),
                     'd0_pct': self._safe_float(item.get('D0')),
                     'd1_pct': self._safe_float(item.get('D1')),
                     'd2_pct': self._safe_float(item.get('D2')),
@@ -248,33 +279,41 @@ class DroughtCollector(BaseCollector):
 
                 records.append(record)
 
-        except json.JSONDecodeError:
-            # Try parsing as CSV
+        except (json.JSONDecodeError, TypeError):
+            # Try parsing as CSV (fallback)
             lines = content.strip().split('\n')
             if len(lines) < 2:
                 return records
 
-            headers = lines[0].split(',')
+            headers = [h.strip() for h in lines[0].split(',')]
 
             for line in lines[1:]:
-                values = line.split(',')
+                values = [v.strip() for v in line.split(',')]
                 if len(values) != len(headers):
                     continue
 
                 row = dict(zip(headers, values))
-                state = row.get('State', '')
+                state = row.get('StateAbbreviation') or row.get('State', '')
 
                 if states and state not in states:
                     continue
 
+                d0 = self._safe_float(row.get('D0'))
+                d1 = self._safe_float(row.get('D1'))
+                d2 = self._safe_float(row.get('D2'))
+                d3 = self._safe_float(row.get('D3'))
+                d4 = self._safe_float(row.get('D4'))
+
                 record = {
                     'date': row.get('MapDate', row.get('Date')),
-                    'state': state,
-                    'd0_pct': self._safe_float(row.get('D0')),
-                    'd1_pct': self._safe_float(row.get('D1')),
-                    'd2_pct': self._safe_float(row.get('D2')),
-                    'd3_pct': self._safe_float(row.get('D3')),
-                    'd4_pct': self._safe_float(row.get('D4')),
+                    'state': state.upper() if state else '',
+                    'd0_pct': d0,
+                    'd1_pct': d1,
+                    'd2_pct': d2,
+                    'd3_pct': d3,
+                    'd4_pct': d4,
+                    'drought_pct': (d0 or 0) + (d1 or 0) + (d2 or 0) + (d3 or 0) + (d4 or 0),
+                    'severe_drought_pct': (d2 or 0) + (d3 or 0) + (d4 or 0),
                     'source': 'USDM',
                 }
                 records.append(record)
