@@ -67,26 +67,38 @@ def get_database_connection(database_url: str = None):
 
 def read_migration_file(filepath: str, db_type: str) -> str:
     """Read and adapt migration SQL for database type"""
+    import re
+
     with open(filepath, 'r') as f:
         sql = f.read()
 
     if db_type == 'sqlite':
         # Adapt PostgreSQL syntax to SQLite
-        sql = sql.replace('SERIAL PRIMARY KEY', 'INTEGER PRIMARY KEY AUTOINCREMENT')
-        sql = sql.replace('BIGSERIAL PRIMARY KEY', 'INTEGER PRIMARY KEY AUTOINCREMENT')
-        sql = sql.replace('SERIAL', 'INTEGER')
-        sql = sql.replace('BIGSERIAL', 'INTEGER')
+        # Handle SERIAL/BIGSERIAL PRIMARY KEY - SQLite uses INTEGER PRIMARY KEY (no AUTOINCREMENT needed for rowid)
+        sql = re.sub(r'BIGSERIAL\s+PRIMARY\s+KEY', 'INTEGER PRIMARY KEY', sql, flags=re.IGNORECASE)
+        sql = re.sub(r'SERIAL\s+PRIMARY\s+KEY', 'INTEGER PRIMARY KEY', sql, flags=re.IGNORECASE)
+
+        # Handle standalone SERIAL/BIGSERIAL (not followed by PRIMARY KEY)
+        sql = re.sub(r'\bBIGSERIAL\b(?!\s+PRIMARY)', 'INTEGER', sql, flags=re.IGNORECASE)
+        sql = re.sub(r'\bSERIAL\b(?!\s+PRIMARY)', 'INTEGER', sql, flags=re.IGNORECASE)
+
+        # Other type conversions
         sql = sql.replace('TIMESTAMP DEFAULT CURRENT_TIMESTAMP', 'TEXT DEFAULT CURRENT_TIMESTAMP')
         sql = sql.replace('TIMESTAMP', 'TEXT')
-        sql = sql.replace('NUMERIC', 'REAL')
+        sql = re.sub(r'\bNUMERIC\b', 'REAL', sql)
         sql = sql.replace('JSONB', 'TEXT')
         sql = sql.replace('BOOLEAN', 'INTEGER')
-        sql = sql.replace('true', '1')
-        sql = sql.replace('false', '0')
+        sql = re.sub(r'\btrue\b', '1', sql)
+        sql = re.sub(r'\bfalse\b', '0', sql)
+
         # Remove PostgreSQL-specific ON CONFLICT clauses
-        import re
-        sql = re.sub(r'ON CONFLICT \([^)]+\) DO NOTHING', '', sql)
-        sql = sql.replace('ON CONFLICT (code) DO NOTHING', '')
+        sql = re.sub(r'ON CONFLICT\s*\([^)]+\)\s*DO\s+NOTHING', '', sql, flags=re.IGNORECASE)
+
+        # Remove CASCADE from DROP TABLE (SQLite doesn't support it)
+        sql = re.sub(r'\s+CASCADE', '', sql, flags=re.IGNORECASE)
+
+        # Remove IF NOT EXISTS from CREATE INDEX (older SQLite versions)
+        # Actually keep it - modern SQLite supports it
 
     return sql
 
