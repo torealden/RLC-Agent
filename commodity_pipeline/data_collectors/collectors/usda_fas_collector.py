@@ -164,39 +164,63 @@ class USDATFASCollector(BaseCollector):
         all_records = []
         warnings = []
 
+        # Determine marketing years to fetch based on date range
+        current_year = date.today().year
+        marketing_years = [current_year - 1, current_year]
+
         for commodity in commodities:
             if commodity not in FAS_COMMODITY_CODES:
                 warnings.append(f"Unknown commodity: {commodity}")
                 continue
 
             commodity_info = FAS_COMMODITY_CODES[commodity]
-            url = f"{self.config.source_url}{self.config.esr_endpoint}/commodityCode/{commodity_info['code']}"
+            commodity_success = False
 
-            response, error = self._make_request(url)
+            # Try the new API format with marketing year first
+            for my in marketing_years:
+                url = f"{self.config.source_url}{self.config.esr_endpoint}/commodityCode/{commodity_info['code']}/allCountries/marketYear/{my}"
+                response, error = self._make_request(url)
 
-            if error:
-                warnings.append(f"{commodity}: {error}")
-                continue
+                if not error and response.status_code == 200:
+                    try:
+                        data = response.json()
+                        for record in data:
+                            parsed = self._parse_export_sales_record(
+                                record, commodity, commodity_info
+                            )
+                            if parsed:
+                                week_ending = self.parse_date(parsed.get('week_ending'))
+                                if week_ending and start_date <= week_ending <= end_date:
+                                    all_records.append(parsed)
+                        commodity_success = True
+                    except Exception as e:
+                        warnings.append(f"{commodity} MY{my}: Parse error - {e}")
 
-            if response.status_code != 200:
-                warnings.append(f"{commodity}: HTTP {response.status_code}")
-                continue
+            # If no marketing year endpoints worked, try fallback
+            if not commodity_success:
+                url = f"{self.config.source_url}{self.config.esr_endpoint}/commodityCode/{commodity_info['code']}"
+                response, error = self._make_request(url)
 
-            try:
-                data = response.json()
+                if error:
+                    warnings.append(f"{commodity}: {error}")
+                    continue
 
-                for record in data:
-                    parsed = self._parse_export_sales_record(
-                        record, commodity, commodity_info
-                    )
-                    if parsed:
-                        # Filter by date
-                        week_ending = self.parse_date(parsed.get('week_ending'))
-                        if week_ending and start_date <= week_ending <= end_date:
-                            all_records.append(parsed)
+                if response.status_code != 200:
+                    warnings.append(f"{commodity}: HTTP {response.status_code}")
+                    continue
 
-            except Exception as e:
-                warnings.append(f"{commodity}: Parse error - {e}")
+                try:
+                    data = response.json()
+                    for record in data:
+                        parsed = self._parse_export_sales_record(
+                            record, commodity, commodity_info
+                        )
+                        if parsed:
+                            week_ending = self.parse_date(parsed.get('week_ending'))
+                            if week_ending and start_date <= week_ending <= end_date:
+                                all_records.append(parsed)
+                except Exception as e:
+                    warnings.append(f"{commodity}: Parse error - {e}")
 
         if not all_records:
             return CollectorResult(

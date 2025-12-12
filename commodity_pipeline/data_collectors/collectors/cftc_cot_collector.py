@@ -105,21 +105,22 @@ CFTC_AG_CONTRACTS = {
 class CFTCCOTConfig(CollectorConfig):
     """CFTC COT specific configuration"""
     source_name: str = "CFTC COT"
-    source_url: str = "https://publicreporting.cftc.gov/resource/jun7-fc8e.json"
+    source_url: str = "https://publicreporting.cftc.gov/resource/6dca-aqww.json"
     auth_type: AuthType = AuthType.NONE
     frequency: DataFrequency = DataFrequency.WEEKLY
 
     # CFTC-specific settings
-    report_type: str = "disaggregated"  # disaggregated, legacy, or tff
+    report_type: str = "legacy"  # legacy is most reliable; disaggregated or tff also available
     contracts: List[str] = field(default_factory=lambda: [
         'corn', 'soybeans', 'wheat_srw', 'wheat_hrw',
         'soybean_oil', 'soybean_meal'
     ])
 
-    # API endpoints for different report types
+    # API endpoints for different report types (Socrata resource IDs)
+    # Find datasets at: https://publicreporting.cftc.gov/browse
     endpoints: Dict[str, str] = field(default_factory=lambda: {
-        'disaggregated': 'https://publicreporting.cftc.gov/resource/jun7-fc8e.json',
         'legacy': 'https://publicreporting.cftc.gov/resource/6dca-aqww.json',
+        'disaggregated': 'https://publicreporting.cftc.gov/resource/72hh-3qpy.json',
         'tff': 'https://publicreporting.cftc.gov/resource/gpe5-46if.json',
     })
 
@@ -285,81 +286,148 @@ class CFTCCOTCollector(BaseCollector):
             report_date = record.get('report_date_as_yyyy_mm_dd', '')
             as_of_date = record.get('as_of_date_in_form_yymmdd', '')
 
-            # Managed Money positions (Disaggregated report)
-            mm_long = self._safe_int(record.get('m_money_positions_long_all'))
-            mm_short = self._safe_int(record.get('m_money_positions_short_all'))
-            mm_spread = self._safe_int(record.get('m_money_positions_spread_all'))
-
-            # Commercial/Producer positions
-            prod_long = self._safe_int(record.get('prod_merc_positions_long_all'))
-            prod_short = self._safe_int(record.get('prod_merc_positions_short_all'))
-
-            # Swap Dealer positions
-            swap_long = self._safe_int(record.get('swap_positions_long_all'))
-            swap_short = self._safe_int(record.get('swap_positions_short_all'))
-            swap_spread = self._safe_int(record.get('swap__positions_spread_all'))
-
-            # Other Reportables
-            other_long = self._safe_int(record.get('other_rept_positions_long_all'))
-            other_short = self._safe_int(record.get('other_rept_positions_short_all'))
-
-            # Non-reportables
-            nonrept_long = self._safe_int(record.get('nonrept_positions_long_all'))
-            nonrept_short = self._safe_int(record.get('nonrept_positions_short_all'))
-
             # Open Interest
             open_interest = self._safe_int(record.get('open_interest_all'))
 
-            # Calculate net positions
-            mm_net = (mm_long or 0) - (mm_short or 0)
-            prod_net = (prod_long or 0) - (prod_short or 0)
-            swap_net = (swap_long or 0) - (swap_short or 0)
+            # Handle LEGACY report format (noncomm/comm)
+            if self.config.report_type == 'legacy':
+                # Non-Commercial (Speculators)
+                noncomm_long = self._safe_int(record.get('noncomm_positions_long_all'))
+                noncomm_short = self._safe_int(record.get('noncomm_positions_short_all'))
+                noncomm_spread = self._safe_int(record.get('noncomm_positions_spread_all'))
 
-            # Week-over-week changes
-            mm_long_change = self._safe_int(record.get('change_in_m_money_long_all'))
-            mm_short_change = self._safe_int(record.get('change_in_m_money_short_all'))
-            mm_net_change = (mm_long_change or 0) - (mm_short_change or 0)
-
-            return {
-                'report_date': report_date,
-                'as_of_date': as_of_date,
-                'commodity': commodity,
-                'exchange': contract_info['exchange'],
-                'contract_code': contract_info['code'],
-
-                # Managed Money
-                'mm_long': mm_long,
-                'mm_short': mm_short,
-                'mm_spread': mm_spread,
-                'mm_net': mm_net,
-                'mm_net_change': mm_net_change,
-
-                # Producer/Merchant/Processor
-                'prod_long': prod_long,
-                'prod_short': prod_short,
-                'prod_net': prod_net,
-
-                # Swap Dealers
-                'swap_long': swap_long,
-                'swap_short': swap_short,
-                'swap_spread': swap_spread,
-                'swap_net': swap_net,
-
-                # Other Reportables
-                'other_long': other_long,
-                'other_short': other_short,
+                # Commercial (Hedgers)
+                comm_long = self._safe_int(record.get('comm_positions_long_all'))
+                comm_short = self._safe_int(record.get('comm_positions_short_all'))
 
                 # Non-reportables
-                'nonrept_long': nonrept_long,
-                'nonrept_short': nonrept_short,
+                nonrept_long = self._safe_int(record.get('nonrept_positions_long_all'))
+                nonrept_short = self._safe_int(record.get('nonrept_positions_short_all'))
 
-                # Open Interest
-                'open_interest': open_interest,
+                # Changes
+                noncomm_long_chg = self._safe_int(record.get('change_in_noncomm_long_all'))
+                noncomm_short_chg = self._safe_int(record.get('change_in_noncomm_short_all'))
 
-                # Metadata
-                'source': 'CFTC',
-                'report_type': self.config.report_type,
-            }
+                # Calculate nets
+                noncomm_net = (noncomm_long or 0) - (noncomm_short or 0)
+                comm_net = (comm_long or 0) - (comm_short or 0)
+                noncomm_net_change = (noncomm_long_chg or 0) - (noncomm_short_chg or 0)
+
+                return {
+                    'report_date': report_date,
+                    'as_of_date': as_of_date,
+                    'commodity': commodity,
+                    'exchange': contract_info['exchange'],
+                    'contract_code': contract_info['code'],
+
+                    # Non-Commercial (map to mm_ fields for consistency)
+                    'mm_long': noncomm_long,
+                    'mm_short': noncomm_short,
+                    'mm_spread': noncomm_spread,
+                    'mm_net': noncomm_net,
+                    'mm_net_change': noncomm_net_change,
+
+                    # Commercial (map to prod_ fields)
+                    'prod_long': comm_long,
+                    'prod_short': comm_short,
+                    'prod_net': comm_net,
+
+                    # Legacy doesn't have swap breakdown
+                    'swap_long': None,
+                    'swap_short': None,
+                    'swap_spread': None,
+                    'swap_net': None,
+
+                    # Other (not in legacy)
+                    'other_long': None,
+                    'other_short': None,
+
+                    # Non-reportables
+                    'nonrept_long': nonrept_long,
+                    'nonrept_short': nonrept_short,
+
+                    # Open Interest
+                    'open_interest': open_interest,
+
+                    # Metadata
+                    'source': 'CFTC',
+                    'report_type': self.config.report_type,
+                }
+
+            # Handle DISAGGREGATED report format
+            else:
+                # Managed Money positions
+                mm_long = self._safe_int(record.get('m_money_positions_long_all'))
+                mm_short = self._safe_int(record.get('m_money_positions_short_all'))
+                mm_spread = self._safe_int(record.get('m_money_positions_spread_all'))
+
+                # Commercial/Producer positions
+                prod_long = self._safe_int(record.get('prod_merc_positions_long_all'))
+                prod_short = self._safe_int(record.get('prod_merc_positions_short_all'))
+
+                # Swap Dealer positions
+                swap_long = self._safe_int(record.get('swap_positions_long_all'))
+                swap_short = self._safe_int(record.get('swap_positions_short_all'))
+                swap_spread = self._safe_int(record.get('swap__positions_spread_all'))
+
+                # Other Reportables
+                other_long = self._safe_int(record.get('other_rept_positions_long_all'))
+                other_short = self._safe_int(record.get('other_rept_positions_short_all'))
+
+                # Non-reportables
+                nonrept_long = self._safe_int(record.get('nonrept_positions_long_all'))
+                nonrept_short = self._safe_int(record.get('nonrept_positions_short_all'))
+
+                # Calculate net positions
+                mm_net = (mm_long or 0) - (mm_short or 0)
+                prod_net = (prod_long or 0) - (prod_short or 0)
+                swap_net = (swap_long or 0) - (swap_short or 0)
+
+                # Week-over-week changes
+                mm_long_change = self._safe_int(record.get('change_in_m_money_long_all'))
+                mm_short_change = self._safe_int(record.get('change_in_m_money_short_all'))
+                mm_net_change = (mm_long_change or 0) - (mm_short_change or 0)
+
+                return {
+                    'report_date': report_date,
+                    'as_of_date': as_of_date,
+                    'commodity': commodity,
+                    'exchange': contract_info['exchange'],
+                    'contract_code': contract_info['code'],
+
+                    # Managed Money
+                    'mm_long': mm_long,
+                    'mm_short': mm_short,
+                    'mm_spread': mm_spread,
+                    'mm_net': mm_net,
+                    'mm_net_change': mm_net_change,
+
+                    # Producer/Merchant/Processor
+                    'prod_long': prod_long,
+                    'prod_short': prod_short,
+                    'prod_net': prod_net,
+
+                    # Swap Dealers
+                    'swap_long': swap_long,
+                    'swap_short': swap_short,
+                    'swap_spread': swap_spread,
+                    'swap_net': swap_net,
+
+                    # Other Reportables
+                    'other_long': other_long,
+                    'other_short': other_short,
+
+                    # Non-reportables
+                    'nonrept_long': nonrept_long,
+                    'nonrept_short': nonrept_short,
+
+                    # Open Interest
+                    'open_interest': open_interest,
+
+                    # Metadata
+                    'source': 'CFTC',
+                    'report_type': self.config.report_type,
+                }
 
         except Exception as e:
             self.logger.warning(f"Error parsing record: {e}")
