@@ -127,10 +127,18 @@ class CensusTradeCollector(BaseCollector):
             flow: 'imports', 'exports', or 'both'
             hs_codes: List of HS codes (2-10 digits)
             partner_country: ISO country code filter
+
+        Note: Monthly data available from 2013-present.
+              For earlier data, use annual endpoint (2005-present).
         """
         hs_codes = hs_codes or self.config.hs_codes
         end_date = end_date or date.today()
+        # Monthly API data starts from 2013
+        min_date = date(2013, 1, 1)
         start_date = start_date or date(end_date.year - 1, 1, 1)
+        if start_date < min_date:
+            self.logger.warning(f"Monthly data only available from 2013. Adjusting start date.")
+            start_date = min_date
 
         all_records = []
         warnings = []
@@ -183,67 +191,77 @@ class CensusTradeCollector(BaseCollector):
         """Fetch data for a specific HS code and flow"""
         url = self._build_api_url(flow)
 
-        # Build query parameters
-        # Census API uses specific variable names
-        params = {
-            'get': 'GEN_VAL_MO,GEN_QY1_MO,UNIT_QY1,CTY_CODE,CTY_NAME',
-            'I_COMMODITY': hs_code,
-            'time': f'from+{start_date.year}-{start_date.month:02d}+to+{end_date.year}-{end_date.month:02d}',
-        }
+        # Census API uses different field prefixes for imports vs exports
+        # Imports: I_COMMODITY, GEN_VAL_MO (general value)
+        # Exports: E_COMMODITY, ALL_VAL_MO (all value)
+        if flow == 'imports':
+            commodity_field = 'I_COMMODITY'
+            value_field = 'GEN_VAL_MO'
+            qty_field = 'GEN_QY1_MO'
+        else:
+            commodity_field = 'E_COMMODITY'
+            value_field = 'ALL_VAL_MO'
+            qty_field = 'QY1_MO'
 
-        if self.config.api_key:
-            params['key'] = self.config.api_key
+        all_records = []
 
-        if partner_country:
-            params['CTY_CODE'] = partner_country
+        # Fetch month by month for more reliable results
+        current = date(start_date.year, start_date.month, 1)
+        while current <= end_date:
+            time_str = f"{current.year}-{current.month:02d}"
 
-        response, error = self._make_request(url, params=params)
+            params = {
+                'get': f'{value_field},{qty_field},CTY_CODE,CTY_NAME',
+                commodity_field: hs_code,
+                'time': time_str,
+            }
 
-        if error:
-            return {'success': False, 'error': error, 'records': []}
+            if self.config.api_key:
+                params['key'] = self.config.api_key
 
-        if response.status_code != 200:
-            return {'success': False, 'error': f"HTTP {response.status_code}", 'records': []}
+            if partner_country:
+                params['CTY_CODE'] = partner_country
 
-        try:
-            data = response.json()
+            response, error = self._make_request(url, params=params)
 
-            if not data or len(data) < 2:
-                return {'success': True, 'records': []}
+            if error:
+                # Move to next month
+                if current.month == 12:
+                    current = date(current.year + 1, 1, 1)
+                else:
+                    current = date(current.year, current.month + 1, 1)
+                continue
 
-            # First row is headers
-            headers = data[0]
-            records = []
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    if data and len(data) > 1:
+                        headers = data[0]
+                        for row in data[1:]:
+                            record = dict(zip(headers, row))
+                            all_records.append({
+                                'year': current.year,
+                                'month': current.month,
+                                'flow': flow,
+                                'hs_code': hs_code,
+                                'country_code': record.get('CTY_CODE'),
+                                'country_name': record.get('CTY_NAME'),
+                                'value_usd': self._safe_float(record.get(value_field)),
+                                'quantity': self._safe_float(record.get(qty_field)),
+                                'source': 'CENSUS_TRADE',
+                            })
+                except Exception:
+                    pass
 
-            for row in data[1:]:
-                record = dict(zip(headers, row))
+            # Move to next month
+            if current.month == 12:
+                current = date(current.year + 1, 1, 1)
+            else:
+                current = date(current.year, current.month + 1, 1)
 
-                # Parse time field
-                time_str = record.get('time', '')
-                year = None
-                month = None
-                if '-' in time_str:
-                    parts = time_str.split('-')
-                    year = int(parts[0])
-                    month = int(parts[1])
-
-                records.append({
-                    'year': year,
-                    'month': month,
-                    'flow': flow,
-                    'hs_code': hs_code,
-                    'country_code': record.get('CTY_CODE'),
-                    'country_name': record.get('CTY_NAME'),
-                    'value_usd': self._safe_float(record.get('GEN_VAL_MO')),
-                    'quantity': self._safe_float(record.get('GEN_QY1_MO')),
-                    'quantity_unit': record.get('UNIT_QY1'),
-                    'source': 'CENSUS_TRADE',
-                })
-
-            return {'success': True, 'records': records}
-
-        except Exception as e:
-            return {'success': False, 'error': str(e), 'records': []}
+        if all_records:
+            return {'success': True, 'records': all_records}
+        return {'success': False, 'error': 'No data retrieved', 'records': []}
 
     def _safe_float(self, value: Any) -> Optional[float]:
         """Safely convert to float"""
