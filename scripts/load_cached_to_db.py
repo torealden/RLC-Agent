@@ -53,6 +53,35 @@ CACHE_TO_TABLE = {
 }
 
 
+def detect_table_from_records(records: list) -> str:
+    """Auto-detect table name based on record fields"""
+    if not records:
+        return 'unknown_data'
+
+    sample = records[0]
+    fields = set(sample.keys()) if isinstance(sample, dict) else set()
+
+    # Detect based on field patterns
+    if 'production_kbd' in fields or 'stocks_kb' in fields:
+        return 'ethanol_data'
+    elif 'series_id' in fields and any('PET' in str(v) for v in sample.values()):
+        return 'energy_prices'
+    elif 'statisticcat_desc' in fields or 'commodity_desc' in fields:
+        return 'crop_progress'
+    elif 'mm_long' in fields or 'mm_short' in fields or 'open_interest' in fields:
+        return 'cot_positions'
+    elif 'week_ending' in fields and 'weekly_exports' in fields:
+        return 'export_sales'
+    elif 'd0_pct' in fields or 'd1_pct' in fields:
+        return 'drought_data'
+    elif 'hs_code' in fields or 'flow' in fields:
+        return 'trade_flows'
+    elif 'value' in fields and 'series_id' in fields:
+        return 'energy_prices'
+    else:
+        return 'cached_data'
+
+
 def get_database_connection():
     """Get database connection"""
     database_url = os.getenv('DATABASE_URL', 'sqlite:///./data/commodity.db')
@@ -83,17 +112,27 @@ def load_cache_file(cache_path: Path) -> tuple:
         with open(cache_path, 'r') as f:
             data = json.load(f)
 
-        records = data.get('data', [])
-        source = data.get('source', cache_path.stem)
-        timestamp = data.get('timestamp', '')
+        # Handle different cache formats
+        if isinstance(data, list):
+            # Direct list of records
+            records = data
+            source = cache_path.stem
+            timestamp = ''
+        elif isinstance(data, dict):
+            records = data.get('data', [])
+            source = data.get('source', cache_path.stem)
+            timestamp = data.get('timestamp', '')
 
-        # Handle different data structures
-        if isinstance(records, dict):
-            if 'columns' in records and 'data' in records:
-                # DataFrame-style JSON
-                records = [dict(zip(records['columns'], row)) for row in records['data']]
-            else:
-                records = [records]
+            # Handle DataFrame-style JSON
+            if isinstance(records, dict):
+                if 'columns' in records and 'data' in records:
+                    records = [dict(zip(records['columns'], row)) for row in records['data']]
+                else:
+                    records = [records]
+        else:
+            records = []
+            source = cache_path.stem
+            timestamp = ''
 
         return records, source, timestamp
     except Exception as e:
@@ -253,8 +292,6 @@ def main():
 
     for cache_file in cache_files:
         cache_name = cache_file.stem
-        table_name = CACHE_TO_TABLE.get(cache_name, cache_name)
-
         logger.info(f"Processing: {cache_name}")
 
         # Load cache
@@ -266,6 +303,13 @@ def main():
             continue
 
         logger.info(f"  Loaded {len(records):,} records from cache")
+
+        # Determine table name - use mapping if known, otherwise auto-detect
+        if cache_name in CACHE_TO_TABLE:
+            table_name = CACHE_TO_TABLE[cache_name]
+        else:
+            table_name = detect_table_from_records(records)
+            logger.info(f"  Auto-detected table: {table_name}")
 
         # Create table if needed
         if not create_table_if_not_exists(conn, db_type, table_name, records[0]):
