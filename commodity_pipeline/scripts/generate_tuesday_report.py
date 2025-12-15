@@ -21,7 +21,30 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+script_dir = Path(__file__).parent
+project_root = script_dir.parent.parent
+sys.path.insert(0, str(script_dir.parent))
+
+# Load environment variables from .env files
+try:
+    from dotenv import load_dotenv
+
+    # Search for .env files in multiple locations
+    env_locations = [
+        project_root / '.env',
+        project_root / 'api Manager' / '.env',
+        script_dir.parent / '.env',
+        script_dir.parent / 'usda_ams_agent' / '.env',
+        Path.cwd() / '.env',
+    ]
+
+    for env_path in env_locations:
+        if env_path.exists():
+            load_dotenv(env_path)
+            print(f"Loaded environment from: {env_path}")
+
+except ImportError:
+    print("Warning: python-dotenv not installed. Run: pip install python-dotenv")
 
 try:
     import pandas as pd
@@ -111,8 +134,20 @@ def setup_logging() -> logging.Logger:
 # ============================================================================
 
 def get_api_key(env_var: str) -> Optional[str]:
-    """Get API key from environment"""
-    return os.environ.get(env_var)
+    """Get API key from environment, checking alternative names"""
+    # Key name mappings (your .env name -> standard name)
+    key_mappings = {
+        'NASS_API_KEY': ['NASS_API_KEY', 'QUICK_STATS_API_KEY'],
+        'EIA_API_KEY': ['EIA_API_KEY'],
+        'CENSUS_API_KEY': ['CENSUS_API_KEY'],
+    }
+
+    names_to_try = key_mappings.get(env_var, [env_var])
+    for name in names_to_try:
+        value = os.environ.get(name)
+        if value:
+            return value
+    return None
 
 
 def collect_source_data(
