@@ -186,6 +186,192 @@ This document catalogs all identified data sources for South American agricultur
 
 ---
 
+## BRAZIL STATE-LEVEL DATA SOURCES
+
+State-level agencies often provide more timely and granular data than national sources. The major agricultural states each have their own research institutes and extension services.
+
+### Mato Grosso (MT) - Largest Soy/Corn Producer
+
+#### IMEA (Instituto Mato-Grossense de Economia Agropecuária)
+**Mato Grosso Institute of Agricultural Economics - Most Important State Source**
+
+| Field | Details |
+|-------|---------|
+| **URL** | https://www.imea.com.br |
+| **Mobile App** | IMEA Digital (iOS/Android) |
+| **API Type** | Web reports, PDFs, Mobile App |
+| **Auth Required** | No |
+| **Update Frequency** | Weekly/Monthly |
+
+**Available Data:**
+- Soybean/corn/cotton production estimates
+- Planting & harvest progress (weekly)
+- Cost of production analysis
+- Price indicators
+- Supply & demand tables by commodity
+- Regional breakdown within Mato Grosso
+
+**Why Important:**
+- Mato Grosso produces ~30% of Brazil's soybeans
+- ~25% of Brazil's corn
+- 70%+ of Brazil's cotton
+- Often more accurate than national estimates for MT
+
+**Contact:** Edifício Famato, Cuiabá - (65) 2123-2657
+
+---
+
+### Paraná (PR) - Second Largest Producer
+
+#### DERAL (Departamento de Economia Rural)
+**Department of Rural Economy - SEAB/PR**
+
+| Field | Details |
+|-------|---------|
+| **URL** | https://www.agricultura.pr.gov.br/deral |
+| **Parent Agency** | SEAB (Secretaria da Agricultura e do Abastecimento) |
+| **API Type** | Web reports, bulletins |
+| **Auth Required** | No |
+| **Update Frequency** | Weekly during season |
+
+**Available Data:**
+- Crop condition ratings
+- Planting/harvest progress
+- Production estimates by crop
+- Price information
+- VBP (Gross Production Value)
+
+**Recent Data Example:**
+- First-season corn 2024/25: 3 million MT (17% higher than prior year)
+- Average yield: 10.89 t/ha (record high)
+
+---
+
+### Rio Grande do Sul (RS) - Third Largest Producer
+
+#### EMATER/RS (Empresa de Assistência Técnica e Extensão Rural)
+**Technical Assistance and Rural Extension Company**
+
+| Field | Details |
+|-------|---------|
+| **URL** | https://www.emater.tche.br |
+| **API Type** | Web reports |
+| **Auth Required** | No |
+| **Update Frequency** | Weekly |
+
+**Available Data:**
+- Soybean/corn/rice production estimates
+- Planting & harvest progress
+- Yield estimates
+- Crop condition assessments
+
+**Recent Data Example (2024/25):**
+- Soybeans: 15.1 million MT (down 17% due to weather)
+- Summer corn: 4.8 million MT
+- Rice: 8.1 million MT
+
+---
+
+### Goiás (GO) - Fourth Largest Producer
+
+#### SEAPA Goiás (Secretaria de Estado da Agricultura, Pecuária e Abastecimento)
+
+| Field | Details |
+|-------|---------|
+| **URL** | https://www.agricultura.go.gov.br |
+| **API Type** | Web reports |
+| **Auth Required** | No |
+
+**Available Data:**
+- State production statistics
+- Crop progress reports
+- Agricultural census data
+
+**Production Context:**
+- Soybeans: 15.2 million MT (4th largest state)
+- Sorghum: National leader (44% of Brazil's crop)
+- Corn: Top-5 producer
+
+---
+
+### Mato Grosso do Sul (MS)
+
+#### APROSOJA/MS + SEMAGRO
+
+| Field | Details |
+|-------|---------|
+| **APROSOJA/MS** | https://aprosojams.org.br |
+| **SEMAGRO** | State Secretariat |
+| **SIGA-MS** | Geographic Information System for Agribusiness |
+
+**Available Data:**
+- Soybean production estimates
+- Cost of production
+- Regional breakdown
+
+**Recent Data (2024/25):**
+- Soybean area: 4.5 million ha (+6.8%)
+- Production: 13.9 million MT (+13.2%)
+- Yield expectation: 51.7 sc/ha
+
+---
+
+### Other Key State Agencies
+
+| State | Agency | Website | Key Crops |
+|-------|--------|---------|-----------|
+| **Bahia** | SEAGRI | http://www.seagri.ba.gov.br | Cotton, Soybeans, Corn |
+| **Minas Gerais** | SEAPA-MG | https://www.agricultura.mg.gov.br | Coffee, Corn, Soybeans |
+| **São Paulo** | SAA-SP | https://www.agricultura.sp.gov.br | Sugarcane, Orange, Coffee |
+| **Santa Catarina** | EPAGRI | https://www.epagri.sc.gov.br | Rice, Corn, Soybeans |
+| **Tocantins** | SEAGRO | https://seagro.to.gov.br | Soybeans (MATOPIBA region) |
+| **Piauí** | SEAPI | https://www.seapi.pi.gov.br | Soybeans (MATOPIBA region) |
+| **Maranhão** | SEAP | State portal | Soybeans (MATOPIBA region) |
+
+---
+
+### Producer Associations (APROSOJA Network)
+
+APROSOJA Brasil coordinates state-level soybean producer associations that conduct independent production surveys.
+
+| State | Association | Notes |
+|-------|-------------|-------|
+| **National** | APROSOJA Brasil | https://aprosojabrasil.com.br |
+| **Mato Grosso** | APROSOJA/MT | Largest state chapter |
+| **Mato Grosso do Sul** | APROSOJA/MS | Runs SIGA-MS project |
+| **Goiás** | APROSOJA/GO | |
+| **Piauí** | APROSOJA/PI | MATOPIBA focus |
+
+**Survey Methodology:**
+- Direct surveys of member farmers
+- 1,000+ landowners surveyed monthly
+- Often differs from CONAB estimates
+- Particularly useful during adverse weather years
+
+---
+
+### Cooperative Systems
+
+#### OCEPAR (Paraná Cooperatives)
+
+| Field | Details |
+|-------|---------|
+| **URL** | https://www.ocepar.org.br |
+| **Coverage** | 62 agricultural cooperatives |
+| **Membership** | 231,500 members |
+
+**Available Data:**
+- Cooperative production volumes
+- Processing capacity
+- Revenue statistics
+
+**Context:**
+- Cooperatives manage ~50% of Brazil's harvest
+- 240,000+ soybean growers affiliated
+- 20,000 MT/day soy crush capacity in Paraná alone
+
+---
+
 ## ARGENTINA DATA SOURCES
 
 ### 1. MAGyP (Ministry of Agriculture, Livestock and Fisheries)
@@ -285,6 +471,84 @@ This document catalogs all identified data sources for South American agricultur
 | **API Type** | CSV/XLS downloads |
 | **Auth Required** | No |
 | **Status** | ✅ Implemented |
+
+---
+
+### 6. INTA (Instituto Nacional de Tecnología Agropecuaria)
+**National Agricultural Technology Institute**
+
+| Field | Details |
+|-------|---------|
+| **URL** | https://www.inta.gob.ar |
+| **Weather Data** | http://siga2.inta.gov.ar/#/data |
+| **Crop Maps** | https://zenodo.org/records/10103323 |
+| **API Type** | Data portals, Zenodo |
+| **Auth Required** | No |
+
+**Available Data:**
+- Weather station data for agricultural regions
+- National Crop Maps (satellite-derived, annual)
+- Agronomic research data
+- Regional yield studies
+
+**Structure:**
+- 15 regional centers
+- 6 specialized research centers
+- 53 experimental stations
+- 300+ extension units
+
+---
+
+## ARGENTINA PROVINCIAL DATA SOURCES
+
+Argentina's agricultural production is concentrated in the Pampas region. The provinces of Buenos Aires, Córdoba, and Santa Fe account for over 75% of oilseed and cereal production.
+
+### Production by Province
+
+| Province | Wheat % | Corn % | Soy % | Processing |
+|----------|---------|--------|-------|------------|
+| **Buenos Aires** | 50% | 27% | Major | Northern BA has crushing |
+| **Córdoba** | 13% | 35% | Major | Significant capacity |
+| **Santa Fe** | 18% | 10% | Major | 80% of crushing capacity |
+| **Santiago del Estero** | - | 9% | Growing | - |
+| **Entre Ríos** | Minor | Minor | Growing | - |
+| **La Pampa** | Minor | Minor | Sunflower | - |
+
+### Provincial Ministry Contacts
+
+| Province | Ministry | Open Data Portal |
+|----------|----------|------------------|
+| **Buenos Aires** | Ministerio de Desarrollo Agrario | https://www.gba.gob.ar/agroindustria |
+| **Córdoba** | Ministerio de Agricultura y Ganadería | https://www.cba.gov.ar/agricultura |
+| **Santa Fe** | Ministerio de Producción | https://www.santafe.gob.ar/produccion |
+
+### Key Regional Data Points
+
+**Santa Fe Province:**
+- ~80% of Argentina's soybean crushing capacity
+- Direct river access for exports
+- Rosario port complex handles 90%+ of ag exports
+
+**Buenos Aires Province:**
+- Largest total agricultural area
+- Best wheat-growing region (southeast)
+- Northern zone has processing capacity
+
+**Córdoba Province:**
+- Highest corn production share (35%)
+- Major soybean producer
+- Significant processing infrastructure
+
+### INTA Regional Centers
+
+INTA operates regional research and extension centers throughout the Pampas:
+
+| Region | INTA Center | Focus |
+|--------|-------------|-------|
+| **Pergamino (BA)** | INTA Pergamino | Wheat, Corn, Soy |
+| **Marcos Juárez (CBA)** | INTA Marcos Juárez | Corn, Soy rotations |
+| **Oliveros (SF)** | INTA Oliveros | Soy, crushing region |
+| **Paraná (ER)** | INTA Paraná | Rice, diversified |
 
 ---
 
