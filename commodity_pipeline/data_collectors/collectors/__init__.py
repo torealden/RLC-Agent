@@ -102,6 +102,10 @@ from .magyp_collector import MAGyPCollector, MAGyPConfig
 # Global collectors
 from .faostat_collector import FAOSTATCollector, FAOSTATConfig
 
+# Futures/Broker collectors
+from .ibkr_collector import IBKRCollector, IBKRConfig
+from .tradestation_collector import TradeStationCollector, TradeStationConfig
+
 __all__ = [
     # Base classes
     'BaseCollector',
@@ -181,6 +185,12 @@ __all__ = [
     # Global
     'FAOSTATCollector',
     'FAOSTATConfig',
+
+    # Futures/Broker
+    'IBKRCollector',
+    'IBKRConfig',
+    'TradeStationCollector',
+    'TradeStationConfig',
 ]
 
 
@@ -501,6 +511,34 @@ COLLECTOR_REGISTRY = {
             'env_var': 'COMTRADE_API_KEY',
             'status': 'planned',
             'release_schedule': 'Annual (historical)',
+        },
+    },
+    'futures': {
+        'ibkr': {
+            'class': IBKRCollector,
+            'config_class': IBKRConfig,
+            'description': 'Interactive Brokers Historical Futures',
+            'auth_required': True,
+            'env_var': 'IBKR_ACCOUNT_ID',
+            'status': 'implemented',
+            'commodities': ['corn', 'wheat_srw', 'wheat_hrw', 'soybeans', 'soybean_meal',
+                           'soybean_oil', 'crude_oil', 'natural_gas', 'ethanol',
+                           'cotton', 'sugar', 'coffee', 'live_cattle', 'lean_hogs'],
+            'release_schedule': 'Real-time/Historical',
+            'notes': 'Requires Client Portal Gateway or TWS running',
+        },
+        'tradestation': {
+            'class': TradeStationCollector,
+            'config_class': TradeStationConfig,
+            'description': 'TradeStation Historical Futures',
+            'auth_required': True,
+            'env_var': 'TRADESTATION_CLIENT_ID',
+            'status': 'implemented',
+            'commodities': ['corn', 'wheat_srw', 'wheat_hrw', 'soybeans', 'soybean_meal',
+                           'soybean_oil', 'crude_oil', 'natural_gas', 'ethanol',
+                           'cotton', 'sugar', 'coffee', 'live_cattle', 'lean_hogs'],
+            'release_schedule': 'Real-time/Historical',
+            'notes': 'Requires OAuth setup with TradeStation developer account',
         },
     },
 }
