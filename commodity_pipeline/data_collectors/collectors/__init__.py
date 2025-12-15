@@ -18,13 +18,21 @@ NORTH AMERICA:
 - Canada StatsCan: Statistics Canada agricultural data
 - CME Settlements: Futures settlement prices
 
+SOUTH AMERICA:
+- CONAB: Brazil crop estimates & supply/demand
+- ABIOVE: Brazil soybean crush & processing capacity
+- (Planned) BCBA: Buenos Aires Grain Exchange
+- (Planned) BCR: Rosario Board of Trade
+- (Planned) MAGyP: Argentina Ministry of Agriculture
+- (Planned) IBGE SIDRA: Brazil agricultural statistics
+
 ASIA PACIFIC:
 - MPOB: Malaysian palm oil data
 
-SOUTH AMERICA:
-- (Planned) CONAB: Brazil crop estimates
-- (Planned) ABIOVE: Brazil soy crush
-- (Planned) BCBA: Argentina grain exchange
+GLOBAL:
+- FAOSTAT: FAO production and trade data (1961-present)
+- (Planned) UN Comtrade: International trade database
+- (Planned) IGC: International Grains Council
 
 EUROPE:
 - (Planned) Eurostat: EU production/trade data
@@ -82,6 +90,13 @@ from .cme_settlements_collector import CMESettlementsCollector, CMESettlementsCo
 
 # Asia Pacific collectors
 from .mpob_collector import MPOBCollector, MPOBConfig
+
+# South America collectors
+from .conab_collector import CONABCollector, CONABConfig
+from .abiove_collector import ABIOVECollector, ABIOVEConfig
+
+# Global collectors
+from .faostat_collector import FAOSTATCollector, FAOSTATConfig
 
 __all__ = [
     # Base classes
@@ -146,6 +161,16 @@ __all__ = [
     # Asia Pacific
     'MPOBCollector',
     'MPOBConfig',
+
+    # South America
+    'CONABCollector',
+    'CONABConfig',
+    'ABIOVECollector',
+    'ABIOVEConfig',
+
+    # Global
+    'FAOSTATCollector',
+    'FAOSTATConfig',
 ]
 
 
@@ -330,17 +355,21 @@ COLLECTOR_REGISTRY = {
     },
     'south_america': {
         'conab': {
-            'class': None,
+            'class': CONABCollector,
+            'config_class': CONABConfig,
             'description': 'CONAB Brazil Crop Estimates',
             'auth_required': False,
-            'status': 'planned',
+            'status': 'implemented',
+            'commodities': ['corn', 'soybeans', 'wheat', 'rice', 'cotton', 'sorghum', 'barley'],
             'release_schedule': 'Monthly (8th-12th)',
         },
         'abiove': {
-            'class': None,
+            'class': ABIOVECollector,
+            'config_class': ABIOVEConfig,
             'description': 'ABIOVE Brazil Soy Crush',
             'auth_required': False,
-            'status': 'planned',
+            'status': 'implemented',
+            'commodities': ['soybeans', 'soybean_oil', 'soybean_meal'],
             'release_schedule': 'Monthly',
         },
         'bcba': {
@@ -356,6 +385,20 @@ COLLECTOR_REGISTRY = {
             'auth_required': False,
             'status': 'planned',
             'release_schedule': 'Weekly',
+        },
+        'magyp': {
+            'class': None,
+            'description': 'Argentina MAGyP Open Data',
+            'auth_required': False,
+            'status': 'planned',
+            'release_schedule': 'Monthly',
+        },
+        'ibge_sidra': {
+            'class': None,
+            'description': 'IBGE SIDRA Brazil Agricultural Statistics',
+            'auth_required': False,
+            'status': 'planned',
+            'release_schedule': 'Annual/Monthly',
         },
     },
     'asia_pacific': {
@@ -404,6 +447,15 @@ COLLECTOR_REGISTRY = {
         },
     },
     'global': {
+        'faostat': {
+            'class': FAOSTATCollector,
+            'config_class': FAOSTATConfig,
+            'description': 'FAOSTAT Global Production & Trade Data',
+            'auth_required': False,
+            'status': 'implemented',
+            'commodities': ['corn', 'soybeans', 'wheat', 'rice', 'sorghum', 'barley', 'cotton', 'sunflower'],
+            'release_schedule': 'Annual (historical)',
+        },
         'fao_amis': {
             'class': None,
             'description': 'FAO AMIS Global Data',
@@ -420,7 +472,9 @@ COLLECTOR_REGISTRY = {
             'class': None,
             'description': 'UN Comtrade Trade Database',
             'auth_required': False,
+            'env_var': 'COMTRADE_API_KEY',
             'status': 'planned',
+            'release_schedule': 'Annual (historical)',
         },
     },
 }
