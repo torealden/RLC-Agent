@@ -21,10 +21,11 @@ NORTH AMERICA:
 SOUTH AMERICA:
 - CONAB: Brazil crop estimates & supply/demand
 - ABIOVE: Brazil soybean crush & processing capacity
+- IBGE SIDRA: Brazil municipal agricultural statistics
+- IMEA: Mato Grosso state crop data (weekly progress, costs)
+- MAGyP: Argentina Ministry of Agriculture open data
 - (Planned) BCBA: Buenos Aires Grain Exchange
 - (Planned) BCR: Rosario Board of Trade
-- (Planned) MAGyP: Argentina Ministry of Agriculture
-- (Planned) IBGE SIDRA: Brazil agricultural statistics
 
 ASIA PACIFIC:
 - MPOB: Malaysian palm oil data
@@ -94,6 +95,9 @@ from .mpob_collector import MPOBCollector, MPOBConfig
 # South America collectors
 from .conab_collector import CONABCollector, CONABConfig
 from .abiove_collector import ABIOVECollector, ABIOVEConfig
+from .imea_collector import IMEACollector, IMEAConfig
+from .ibge_sidra_collector import IBGESIDRACollector, IBGESIDRAConfig
+from .magyp_collector import MAGyPCollector, MAGyPConfig
 
 # Global collectors
 from .faostat_collector import FAOSTATCollector, FAOSTATConfig
@@ -167,6 +171,12 @@ __all__ = [
     'CONABConfig',
     'ABIOVECollector',
     'ABIOVEConfig',
+    'IMEACollector',
+    'IMEAConfig',
+    'IBGESIDRACollector',
+    'IBGESIDRAConfig',
+    'MAGyPCollector',
+    'MAGyPConfig',
 
     # Global
     'FAOSTATCollector',
@@ -354,6 +364,7 @@ COLLECTOR_REGISTRY = {
         },
     },
     'south_america': {
+        # Brazil National
         'conab': {
             'class': CONABCollector,
             'config_class': CONABConfig,
@@ -372,6 +383,35 @@ COLLECTOR_REGISTRY = {
             'commodities': ['soybeans', 'soybean_oil', 'soybean_meal'],
             'release_schedule': 'Monthly',
         },
+        'ibge_sidra': {
+            'class': IBGESIDRACollector,
+            'config_class': IBGESIDRAConfig,
+            'description': 'IBGE SIDRA Brazil Agricultural Statistics',
+            'auth_required': False,
+            'status': 'implemented',
+            'commodities': ['corn', 'soybeans', 'wheat', 'rice', 'cotton', 'sorghum'],
+            'release_schedule': 'Annual/Monthly',
+        },
+        # Brazil State-Level
+        'imea': {
+            'class': IMEACollector,
+            'config_class': IMEAConfig,
+            'description': 'IMEA Mato Grosso State Data',
+            'auth_required': False,
+            'status': 'implemented',
+            'commodities': ['soybeans', 'corn', 'cotton'],
+            'release_schedule': 'Weekly/Monthly',
+        },
+        # Argentina
+        'magyp': {
+            'class': MAGyPCollector,
+            'config_class': MAGyPConfig,
+            'description': 'Argentina MAGyP Open Data',
+            'auth_required': False,
+            'status': 'implemented',
+            'commodities': ['soybeans', 'corn', 'wheat', 'sunflower', 'barley', 'sorghum'],
+            'release_schedule': 'Monthly',
+        },
         'bcba': {
             'class': None,
             'description': 'Buenos Aires Grain Exchange',
@@ -385,20 +425,6 @@ COLLECTOR_REGISTRY = {
             'auth_required': False,
             'status': 'planned',
             'release_schedule': 'Weekly',
-        },
-        'magyp': {
-            'class': None,
-            'description': 'Argentina MAGyP Open Data',
-            'auth_required': False,
-            'status': 'planned',
-            'release_schedule': 'Monthly',
-        },
-        'ibge_sidra': {
-            'class': None,
-            'description': 'IBGE SIDRA Brazil Agricultural Statistics',
-            'auth_required': False,
-            'status': 'planned',
-            'release_schedule': 'Annual/Monthly',
         },
     },
     'asia_pacific': {
