@@ -626,15 +626,137 @@ url = "http://bepi.mpob.gov.my/index.php/en/statistics/production.html"
 
 ## Collector Status Tracker
 
-| Source | Collector File | Status | Last Updated |
-|--------|---------------|--------|--------------|
-| CFTC COT | `cftc_cot_collector.py` | PENDING | - |
-| USDA FAS | `usda_fas_collector.py` | PENDING | - |
-| EIA Ethanol | `eia_ethanol_collector.py` | PENDING | - |
-| MPOB | `mpob_collector.py` | PENDING | - |
-| Weather | `weather_collector.py` | PENDING | - |
-| CME Settlements | `cme_settlements_collector.py` | PENDING | - |
-| Drought Monitor | `drought_collector.py` | PENDING | - |
+**Last Audit: December 19, 2025**
+
+### US Government Sources
+
+| Source | Collector File | Status | API Key | Notes |
+|--------|---------------|--------|---------|-------|
+| USDA NASS Quick Stats | `usda_nass_collector.py` | ✅ COMPLETE | 🔑 Free | Crop progress, stocks, production |
+| USDA FAS Export Sales | `usda_fas_collector.py` | ✅ COMPLETE | None | Weekly export commitments |
+| USDA FAS PSD | `usda_fas_collector.py` | ✅ COMPLETE | None | Global S&D balances |
+| USDA AMS Market News | `usda_ams_collector.py` | ✅ COMPLETE | None | Tallow, DDGS, corn oil prices |
+| USDA ERS Feed Grains | `usda_ers_collector.py` | ✅ COMPLETE | None | Historical corn S&D |
+| USDA ERS Oil Crops | - | ❌ MISSING | None | **GAP: Needs collector** |
+| USDA ERS Wheat | - | ❌ MISSING | None | **GAP: Needs collector** |
+| USDA WASDE | - | ❌ MISSING | None | **GAP: Key monthly S&D** |
+| USDA FGIS Inspections | `export_inspections_agent/` | ✅ COMPLETE | None | Full agent with database |
+| EIA Ethanol | `eia_ethanol_collector.py` | ✅ COMPLETE | 🔑 Free | Production, stocks, blending |
+| EIA Petroleum | `eia_petroleum_collector.py` | ✅ COMPLETE | 🔑 Free | Energy prices |
+| EPA RFS/EMTS | `epa_rfs_collector.py` | ⚠️ PARTIAL | None | Excel parsing fragile |
+| CFTC COT | `cftc_cot_collector.py` | ✅ COMPLETE | None | Managed money positions |
+| US Drought Monitor | `drought_collector.py` | ✅ COMPLETE | None | Weekly drought conditions |
+| Census Trade | `census_trade_collector.py` | ✅ COMPLETE | Optional | Import/export by HS code |
+
+### International Sources - South America
+
+| Source | Collector File | Status | API Key | Notes |
+|--------|---------------|--------|---------|-------|
+| Brazil CONAB | `conab_collector.py` | ✅ COMPLETE | None | Official crop estimates |
+| Brazil ABIOVE | `abiove_collector.py` | ✅ COMPLETE | None | Soy crush data |
+| Brazil IBGE SIDRA | `ibge_sidra_collector.py` | ✅ COMPLETE | None | Production statistics |
+| Brazil IMEA | `imea_collector.py` | ✅ COMPLETE | None | Mato Grosso regional |
+| Brazil ANEC | `south_america_trade_data/` | ✅ COMPLETE | None | Port lineup data |
+| Brazil Comex Stat | `south_america_trade_data/` | ✅ COMPLETE | None | Trade by HS code |
+| Argentina MAGyP | `magyp_collector.py` | ✅ COMPLETE | None | Ministry crop data |
+| Argentina INDEC | `south_america_trade_data/` | ✅ COMPLETE | None | Trade statistics |
+| Argentina Rosario | - | ❌ MISSING | None | **GAP: Exchange prices** |
+| Paraguay | `south_america_trade_data/` | ✅ COMPLETE | None | Regional trade |
+| Uruguay | `south_america_trade_data/` | ✅ COMPLETE | None | Regional trade |
+
+### International Sources - Canada
+
+| Source | Collector File | Status | API Key | Notes |
+|--------|---------------|--------|---------|-------|
+| Canadian Grain Commission | `canada_cgc_collector.py` | ✅ COMPLETE | None | Visible supply, deliveries |
+| Statistics Canada | `canada_statscan_collector.py` | ✅ COMPLETE | None | Official stats via CANSIM |
+
+### International Sources - Other
+
+| Source | Collector File | Status | API Key | Notes |
+|--------|---------------|--------|---------|-------|
+| MPOB Malaysia | `mpob_collector.py` | ⚠️ PARTIAL | None | Scraping fragile |
+| Indonesia GAPKI | - | ❌ MISSING | None | **GAP: Indonesia palm** |
+| FAOSTAT | `faostat_collector.py` | ✅ COMPLETE | None | Global production/trade |
+| Eurostat | - | ❌ MISSING | None | **GAP: EU data** |
+| EU MARS Bulletin | - | ❌ MISSING | None | **GAP: EU crop conditions** |
+| Australia ABARES | - | ❌ MISSING | None | **GAP: Australia S&D** |
+| Ukraine AgMin | - | ❌ MISSING | None | **GAP: Ukraine exports** |
+| Russia SovEcon | - | ❌ MISSING | 💰 | **GAP: Russia data** |
+| China GACC | - | ❌ MISSING | 💰 | **GAP: China imports** |
+
+### Exchange/Price Data
+
+| Source | Collector File | Status | API Key | Notes |
+|--------|---------------|--------|---------|-------|
+| CME Settlements | `cme_settlements_collector.py` | ✅ COMPLETE | None | Free delayed data |
+| Interactive Brokers | `ibkr_collector.py` | ✅ COMPLETE | Account | Historical OHLC |
+| TradeStation | `tradestation_collector.py` | ✅ COMPLETE | Account | OAuth required |
+| Unified Futures | `futures_data_collector.py` | ✅ COMPLETE | Either | Auto fallback |
+
+### Industry/Trade Associations
+
+| Source | Collector File | Status | API Key | Notes |
+|--------|---------------|--------|---------|-------|
+| **NOPA (US Soy Crush)** | - | ❌ MISSING | None | **CRITICAL GAP** |
+| UN Comtrade | - | ❌ MISSING | 🔑 Free | **GAP: Global trade** |
+
+---
+
+## Gap Analysis by Commodity
+
+### 🌽 CORN Balance Sheet Coverage
+
+| Data Point | US | Brazil | Argentina | EU | Ukraine | China |
+|------------|:--:|:------:|:---------:|:--:|:-------:|:-----:|
+| Production | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Stocks | ✅ | ⚠️ | ⚠️ | ❌ | ❌ | ❌ |
+| Exports | ✅ | ✅ | ✅ | ❌ | ❌ | N/A |
+| Ethanol Use | ✅ | ⚠️ | N/A | ❌ | N/A | N/A |
+| Crop Progress | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+
+**Priority Corn Gaps:** WASDE, Ukraine, EU Eurostat
+
+### 🌾 WHEAT Balance Sheet Coverage
+
+| Data Point | US | Canada | EU | Russia | Ukraine | Australia | Argentina |
+|------------|:--:|:------:|:--:|:------:|:-------:|:---------:|:---------:|
+| Production | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| By Class | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Stocks | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ⚠️ |
+| Exports | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+
+**Priority Wheat Gaps:** ERS Wheat Yearbook, Russia, EU, Australia, Ukraine
+
+### 🫘 SOYBEANS Balance Sheet Coverage
+
+| Data Point | US | Brazil | Argentina | China |
+|------------|:--:|:------:|:---------:|:-----:|
+| Production | ✅ | ✅ | ✅ | ❌ |
+| Crush | ❌ | ✅ | ❌ | ❌ |
+| Exports | ✅ | ✅ | ✅ | N/A |
+| Imports | ✅ | N/A | N/A | ❌ |
+
+**Priority Soybean Gaps:** NOPA (US Crush), China GACC imports, Argentina crush
+
+---
+
+## Immediate Action Items
+
+### 1. Get Free API Keys (30 minutes)
+- [ ] USDA NASS: https://quickstats.nass.usda.gov/api
+- [ ] EIA: https://www.eia.gov/opendata/register.php
+- [ ] Add to `.env` file
+
+### 2. Build Critical Missing Collectors
+- [ ] **NOPA US Crush** - Monthly soybean crush (Priority 1)
+- [ ] **USDA WASDE** - Monthly S&D report (Priority 1)
+- [ ] **USDA ERS Wheat/Oil Crops** - Extend existing ERS collector (Priority 2)
+
+### 3. Test Existing Collectors
+- [ ] Run USDA FAS collector (no key needed)
+- [ ] Run CFTC COT collector (no key needed)
+- [ ] Verify database storage working
 
 ---
 
