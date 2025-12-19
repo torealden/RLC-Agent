@@ -405,7 +405,10 @@ def export_data(
     logger.info("-" * 60)
 
     for name, result in results.items():
-        if not result.data:
+        # Check if data exists (handle DataFrame truth value issue)
+        if result.data is None:
+            continue
+        if PANDAS_AVAILABLE and isinstance(result.data, pd.DataFrame) and result.data.empty:
             continue
 
         # Determine filename
@@ -422,7 +425,12 @@ def export_data(
                     elif isinstance(data, list):
                         df = pd.DataFrame(data)
                     elif isinstance(data, dict):
-                        df = pd.DataFrame([data] if not isinstance(list(data.values())[0], list) else data)
+                        # Check if dict values are lists (columnar format) or single values
+                        first_val = next(iter(data.values()), None)
+                        if isinstance(first_val, list):
+                            df = pd.DataFrame(data)
+                        else:
+                            df = pd.DataFrame([data])
                     else:
                         logger.warning(f"  {name}: Cannot export type {type(data)}")
                         continue
