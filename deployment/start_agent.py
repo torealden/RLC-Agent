@@ -149,28 +149,30 @@ Current focus: Building supply/demand balance sheets for corn, wheat, and soybea
             tools_desc = get_tools_description()
             self.system_prompt = f"""{base_prompt}
 
-YOU HAVE ACCESS TO TOOLS. When you need to:
-- Read files → use read_file
-- List directories → use list_directory
-- Run data collectors → use run_collector
-- Query the database → use query_database
-- Search the web → use search_web
+YOU HAVE ACCESS TO TOOLS. To use a tool, write EXACTLY this format on its own line:
 
-TO USE A TOOL, respond with this exact format:
-<tool>tool_name</tool>
-<params>
-{{"param1": "value1", "param2": "value2"}}
-</params>
+TOOL: tool_name
+PARAMS: {{"key": "value"}}
 
-After I execute the tool, I'll show you the result, and you can continue reasoning.
+Example to list files:
+TOOL: list_directory
+PARAMS: {{"dir_path": "."}}
+
+Example to read a file:
+TOOL: read_file
+PARAMS: {{"file_path": "docs/DATA_SOURCE_REGISTRY.md"}}
+
+Example with no params:
+TOOL: list_collectors
+PARAMS: {{}}
 
 {tools_desc}
 
-IMPORTANT:
-- Only use one tool at a time
-- Wait for the tool result before continuing
-- If a tool fails, explain what went wrong and try an alternative
-- Be concise and action-oriented"""
+RULES:
+1. Use EXACTLY the format above - TOOL: on one line, PARAMS: on next line
+2. Only call one tool at a time
+3. Wait for results before continuing
+4. After seeing results, provide your analysis"""
         else:
             self.system_prompt = f"""{base_prompt}
 
@@ -226,7 +228,29 @@ To actually execute tasks, the user needs to run commands manually or enable too
 
     def _parse_tool_call(self, response: str) -> Optional[Dict[str, Any]]:
         """Parse a tool call from the LLM response."""
-        # Look for <tool>...</tool> and <params>...</params>
+        # Try multiple formats
+
+        # Format 1: TOOL: name \n PARAMS: {...}
+        tool_match = re.search(r'TOOL:\s*(\w+)', response, re.IGNORECASE)
+        params_match = re.search(r'PARAMS:\s*(\{.*?\})', response, re.IGNORECASE | re.DOTALL)
+
+        if tool_match:
+            tool_name = tool_match.group(1).strip()
+            params = {}
+
+            if params_match:
+                try:
+                    params = json.loads(params_match.group(1))
+                except json.JSONDecodeError:
+                    params_str = params_match.group(1).replace("'", '"')
+                    try:
+                        params = json.loads(params_str)
+                    except:
+                        params = {}
+
+            return {"tool": tool_name, "params": params}
+
+        # Format 2: <tool>name</tool> <params>{...}</params>
         tool_match = re.search(r'<tool>\s*(\w+)\s*</tool>', response, re.IGNORECASE)
         params_match = re.search(r'<params>\s*(\{.*?\})\s*</params>', response, re.IGNORECASE | re.DOTALL)
 
@@ -238,15 +262,26 @@ To actually execute tasks, the user needs to run commands manually or enable too
                 try:
                     params = json.loads(params_match.group(1))
                 except json.JSONDecodeError:
-                    # Try to fix common JSON issues
-                    params_str = params_match.group(1)
-                    params_str = params_str.replace("'", '"')
+                    params_str = params_match.group(1).replace("'", '"')
                     try:
                         params = json.loads(params_str)
                     except:
                         params = {}
 
             return {"tool": tool_name, "params": params}
+
+        # Format 3: Just look for tool names directly (fallback)
+        for tool_name in TOOLS.keys():
+            if tool_name in response.lower() and ("use" in response.lower() or "call" in response.lower()):
+                # Extract any JSON-like params
+                json_match = re.search(r'\{[^{}]*\}', response)
+                params = {}
+                if json_match:
+                    try:
+                        params = json.loads(json_match.group(0))
+                    except:
+                        pass
+                return {"tool": tool_name, "params": params}
 
         return None
 

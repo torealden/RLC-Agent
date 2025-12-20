@@ -553,6 +553,351 @@ def run_python_code(code: str) -> ToolResult:
 
 
 # =============================================================================
+# DOCUMENT SEARCH (RAG) TOOLS
+# =============================================================================
+
+def search_documents(query: str, top_k: int = 5) -> ToolResult:
+    """
+    Search indexed documents (Excel, PDF, Markdown) using semantic search.
+
+    Uses local embeddings via Ollama's nomic-embed-text model to find
+    relevant content from balance sheets, analysis files, and documentation.
+
+    Args:
+        query: Natural language search query
+        top_k: Number of results to return (default 5)
+
+    Returns:
+        ToolResult with matching document chunks and scores
+    """
+    try:
+        from document_rag import search_documents_sync, get_index_stats
+
+        # Check if index exists
+        stats = get_index_stats()
+        if not stats.get("indexed"):
+            return ToolResult(False, error=stats.get("message", "No index found"))
+
+        # Perform search
+        result = search_documents_sync(query, top_k)
+
+        if not result["success"]:
+            return ToolResult(False, error=result.get("error", "Search failed"))
+
+        # Format results for display
+        formatted_results = []
+        for r in result["results"]:
+            formatted_results.append({
+                "file": r["file_name"],
+                "path": r["file_path"],
+                "score": round(r["score"], 3),
+                "content": r["content"][:500] + "..." if len(r["content"]) > 500 else r["content"]
+            })
+
+        return ToolResult(True, data={
+            "query": query,
+            "result_count": result["result_count"],
+            "results": formatted_results
+        })
+
+    except ImportError:
+        return ToolResult(False, error="RAG module not found. Run: python document_rag.py --index")
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def get_rag_stats() -> ToolResult:
+    """
+    Get statistics about the document RAG index.
+
+    Returns:
+        ToolResult with index statistics (file counts, chunk counts, etc.)
+    """
+    try:
+        from document_rag import get_index_stats
+
+        stats = get_index_stats()
+        return ToolResult(True, data=stats)
+
+    except ImportError:
+        return ToolResult(False, error="RAG module not found")
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+# =============================================================================
+# EMAIL & CALENDAR TOOLS
+# =============================================================================
+
+# Cache for Google services
+_gmail_service = None
+_calendar_service = None
+
+
+def _get_google_credentials(service_type: str = "gmail"):
+    """Get Google OAuth credentials from token file."""
+    import pickle
+
+    # Look for token in multiple locations
+    possible_paths = [
+        PROJECT_ROOT / "data" / "tokens" / f"{service_type}_token.pickle",
+        PROJECT_ROOT / "rlc_master_agent" / "config" / "tokens" / f"{service_type}_token.pickle",
+        Path.home() / ".rlc" / "tokens" / f"{service_type}_token.pickle",
+    ]
+
+    for token_path in possible_paths:
+        if token_path.exists():
+            with open(token_path, 'rb') as f:
+                creds = pickle.load(f)
+                if creds and creds.valid:
+                    return creds
+                elif creds and creds.expired and creds.refresh_token:
+                    try:
+                        from google.auth.transport.requests import Request
+                        creds.refresh(Request())
+                        with open(token_path, 'wb') as f:
+                            pickle.dump(creds, f)
+                        return creds
+                    except Exception:
+                        pass
+
+    return None
+
+
+def _get_gmail_service():
+    """Get Gmail API service."""
+    global _gmail_service
+    if _gmail_service:
+        return _gmail_service
+
+    try:
+        from googleapiclient.discovery import build
+        creds = _get_google_credentials("gmail")
+        if creds:
+            _gmail_service = build('gmail', 'v1', credentials=creds)
+            return _gmail_service
+    except ImportError:
+        pass
+    except Exception:
+        pass
+
+    return None
+
+
+def _get_calendar_service():
+    """Get Google Calendar API service."""
+    global _calendar_service
+    if _calendar_service:
+        return _calendar_service
+
+    try:
+        from googleapiclient.discovery import build
+        creds = _get_google_credentials("calendar")
+        if creds:
+            _calendar_service = build('calendar', 'v3', credentials=creds)
+            return _calendar_service
+    except ImportError:
+        pass
+    except Exception:
+        pass
+
+    return None
+
+
+def check_email(max_results: int = 10, query: str = "is:unread") -> ToolResult:
+    """
+    Check emails from Gmail.
+
+    Args:
+        max_results: Maximum number of emails to return (default 10)
+        query: Gmail search query (default: unread emails)
+
+    Returns:
+        ToolResult with email summaries
+    """
+    try:
+        service = _get_gmail_service()
+        if not service:
+            return ToolResult(
+                False,
+                error="Gmail not connected. Run: python deployment/setup_google_oauth.py"
+            )
+
+        # Fetch emails
+        results = service.users().messages().list(
+            userId='me',
+            q=query,
+            maxResults=max_results
+        ).execute()
+
+        messages = results.get('messages', [])
+
+        if not messages:
+            return ToolResult(True, data={
+                "count": 0,
+                "query": query,
+                "emails": [],
+                "message": "No emails found matching query"
+            })
+
+        emails = []
+        for msg_info in messages[:max_results]:
+            msg = service.users().messages().get(
+                userId='me',
+                id=msg_info['id'],
+                format='metadata',
+                metadataHeaders=['From', 'Subject', 'Date']
+            ).execute()
+
+            headers = {h['name']: h['value'] for h in msg.get('payload', {}).get('headers', [])}
+
+            emails.append({
+                "id": msg_info['id'],
+                "from": headers.get('From', 'Unknown'),
+                "subject": headers.get('Subject', '(No Subject)'),
+                "date": headers.get('Date', ''),
+                "snippet": msg.get('snippet', '')[:150],
+                "is_unread": 'UNREAD' in msg.get('labelIds', [])
+            })
+
+        return ToolResult(True, data={
+            "count": len(emails),
+            "query": query,
+            "emails": emails
+        })
+
+    except ImportError:
+        return ToolResult(False, error="Google API packages not installed. Run: pip install google-api-python-client google-auth")
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def get_email_content(email_id: str) -> ToolResult:
+    """
+    Get full content of a specific email.
+
+    Args:
+        email_id: The email ID to retrieve
+
+    Returns:
+        ToolResult with full email content
+    """
+    try:
+        import base64
+        service = _get_gmail_service()
+        if not service:
+            return ToolResult(False, error="Gmail not connected")
+
+        msg = service.users().messages().get(
+            userId='me',
+            id=email_id,
+            format='full'
+        ).execute()
+
+        headers = {h['name']: h['value'] for h in msg.get('payload', {}).get('headers', [])}
+
+        # Extract body
+        body = ""
+        payload = msg.get('payload', {})
+        if 'body' in payload and 'data' in payload['body']:
+            body = base64.urlsafe_b64decode(payload['body']['data']).decode('utf-8', errors='ignore')
+        elif 'parts' in payload:
+            for part in payload['parts']:
+                if part['mimeType'] == 'text/plain' and 'data' in part.get('body', {}):
+                    body = base64.urlsafe_b64decode(part['body']['data']).decode('utf-8', errors='ignore')
+                    break
+
+        return ToolResult(True, data={
+            "id": email_id,
+            "from": headers.get('From', 'Unknown'),
+            "to": headers.get('To', ''),
+            "subject": headers.get('Subject', '(No Subject)'),
+            "date": headers.get('Date', ''),
+            "body": body[:2000] if body else "(No text content)",
+            "labels": msg.get('labelIds', [])
+        })
+
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def check_calendar(days_ahead: int = 7) -> ToolResult:
+    """
+    Check calendar events.
+
+    Args:
+        days_ahead: Number of days to look ahead (default 7)
+
+    Returns:
+        ToolResult with calendar events
+    """
+    try:
+        from datetime import datetime, timedelta
+
+        service = _get_calendar_service()
+        if not service:
+            return ToolResult(
+                False,
+                error="Calendar not connected. Run: python deployment/setup_google_oauth.py"
+            )
+
+        now = datetime.utcnow()
+        end = now + timedelta(days=days_ahead)
+
+        events_result = service.events().list(
+            calendarId='primary',
+            timeMin=now.isoformat() + 'Z',
+            timeMax=end.isoformat() + 'Z',
+            maxResults=50,
+            singleEvents=True,
+            orderBy='startTime'
+        ).execute()
+
+        events = []
+        for item in events_result.get('items', []):
+            start = item.get('start', {})
+            is_all_day = 'date' in start
+
+            events.append({
+                "id": item['id'],
+                "title": item.get('summary', 'Untitled'),
+                "start": start.get('date') if is_all_day else start.get('dateTime', ''),
+                "end": item.get('end', {}).get('date') if is_all_day else item.get('end', {}).get('dateTime', ''),
+                "location": item.get('location', ''),
+                "description": (item.get('description', '') or '')[:200],
+                "is_all_day": is_all_day,
+                "link": item.get('htmlLink', '')
+            })
+
+        # Group by day
+        today = now.date()
+        today_events = [e for e in events if today.isoformat() in e['start']]
+
+        return ToolResult(True, data={
+            "total_events": len(events),
+            "days_ahead": days_ahead,
+            "today_count": len(today_events),
+            "today_events": today_events,
+            "all_events": events
+        })
+
+    except ImportError:
+        return ToolResult(False, error="Google API packages not installed")
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def get_todays_schedule() -> ToolResult:
+    """
+    Get today's calendar schedule.
+
+    Returns:
+        ToolResult with today's events
+    """
+    return check_calendar(days_ahead=1)
+
+
+# =============================================================================
 # TOOL REGISTRY
 # =============================================================================
 
@@ -642,6 +987,52 @@ TOOLS = {
         "parameters": {
             "code": "Python code to execute"
         }
+    },
+
+    # Document Search (RAG)
+    "search_documents": {
+        "function": search_documents,
+        "description": "Search indexed documents (Excel balance sheets, PDFs, Markdown) using semantic search",
+        "parameters": {
+            "query": "Natural language search query (e.g. 'soybean crush margins')",
+            "top_k": "Number of results (default 5)"
+        }
+    },
+    "get_rag_stats": {
+        "function": get_rag_stats,
+        "description": "Get statistics about the document index",
+        "parameters": {}
+    },
+
+    # Email (Gmail)
+    "check_email": {
+        "function": check_email,
+        "description": "Check Gmail inbox for emails (unread by default)",
+        "parameters": {
+            "max_results": "Number of emails to return (default 10)",
+            "query": "Gmail search query (default: is:unread)"
+        }
+    },
+    "get_email_content": {
+        "function": get_email_content,
+        "description": "Get the full content of a specific email by ID",
+        "parameters": {
+            "email_id": "The email ID to retrieve"
+        }
+    },
+
+    # Calendar (Google Calendar)
+    "check_calendar": {
+        "function": check_calendar,
+        "description": "Check upcoming calendar events",
+        "parameters": {
+            "days_ahead": "Number of days to look ahead (default 7)"
+        }
+    },
+    "get_todays_schedule": {
+        "function": get_todays_schedule,
+        "description": "Get today's calendar schedule",
+        "parameters": {}
     }
 }
 
