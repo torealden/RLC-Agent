@@ -708,18 +708,92 @@ def _get_google_credentials(service_type: str = "gmail"):
     return None
 
 
-def _get_gmail_service():
-    """Get Gmail API service."""
-    global _gmail_service
-    if _gmail_service:
-        return _gmail_service
+def _get_google_credentials_for_account(account: str = "work"):
+    """
+    Get Google OAuth credentials for a specific account.
+
+    Args:
+        account: "work" or "personal"
+    """
+    import pickle
+
+    if account == "work":
+        # Work account token locations
+        paths = [
+            PROJECT_ROOT / "data" / "tokens" / "gmail_token.pickle",
+            PROJECT_ROOT / "data" / "tokens" / "work_token.json",
+            PROJECT_ROOT / "rlc_master_agent" / "config" / "tokens" / "gmail_token.json",
+            PROJECT_ROOT / "Other Files" / "Desktop Assistant" / "token_work.json",
+        ]
+    else:
+        # Personal account token locations
+        paths = [
+            PROJECT_ROOT / "data" / "tokens" / "gmail_personal_token.pickle",
+            PROJECT_ROOT / "data" / "tokens" / "personal_token.json",
+            PROJECT_ROOT / "Other Files" / "Desktop Assistant" / "token_personal.json",
+        ]
+
+    for token_path in paths:
+        if not token_path.exists():
+            continue
+
+        try:
+            # Try pickle format
+            if token_path.suffix == '.pickle':
+                with open(token_path, 'rb') as f:
+                    creds = pickle.load(f)
+            else:
+                # JSON format
+                from google.oauth2.credentials import Credentials
+                with open(token_path, 'r') as f:
+                    token_data = json.load(f)
+                creds = Credentials(
+                    token=token_data.get('token'),
+                    refresh_token=token_data.get('refresh_token'),
+                    token_uri=token_data.get('token_uri'),
+                    client_id=token_data.get('client_id'),
+                    client_secret=token_data.get('client_secret'),
+                    scopes=token_data.get('scopes')
+                )
+
+            if creds and creds.valid:
+                return creds
+            elif creds and creds.refresh_token:
+                try:
+                    from google.auth.transport.requests import Request
+                    creds.refresh(Request())
+                    # Save refreshed token
+                    if token_path.suffix == '.pickle':
+                        with open(token_path, 'wb') as f:
+                            pickle.dump(creds, f)
+                    return creds
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    return None
+
+
+# Service caches for each account
+_gmail_services = {}
+_calendar_service = None
+
+
+def _get_gmail_service(account: str = "work"):
+    """Get Gmail API service for a specific account."""
+    global _gmail_services
+
+    if account in _gmail_services:
+        return _gmail_services[account]
 
     try:
         from googleapiclient.discovery import build
-        creds = _get_google_credentials("gmail")
+        creds = _get_google_credentials_for_account(account)
         if creds:
-            _gmail_service = build('gmail', 'v1', credentials=creds)
-            return _gmail_service
+            service = build('gmail', 'v1', credentials=creds)
+            _gmail_services[account] = service
+            return service
     except ImportError:
         pass
     except Exception:
@@ -729,14 +803,15 @@ def _get_gmail_service():
 
 
 def _get_calendar_service():
-    """Get Google Calendar API service."""
+    """Get Google Calendar API service (always uses WORK account)."""
     global _calendar_service
     if _calendar_service:
         return _calendar_service
 
     try:
         from googleapiclient.discovery import build
-        creds = _get_google_credentials("calendar")
+        # Always use work account for calendar
+        creds = _get_google_credentials_for_account("work")
         if creds:
             _calendar_service = build('calendar', 'v3', credentials=creds)
             return _calendar_service
@@ -748,66 +823,80 @@ def _get_calendar_service():
     return None
 
 
-def check_email(max_results: int = 10, query: str = "is:unread") -> ToolResult:
+def check_email(max_results: int = 10, query: str = "is:unread", account: str = "both") -> ToolResult:
     """
     Check emails from Gmail.
 
     Args:
         max_results: Maximum number of emails to return (default 10)
         query: Gmail search query (default: unread emails)
+        account: Which account - "work", "personal", or "both" (default: both)
 
     Returns:
-        ToolResult with email summaries
+        ToolResult with email summaries from specified account(s)
     """
     try:
-        service = _get_gmail_service()
-        if not service:
-            return ToolResult(
-                False,
-                error="Gmail not connected. Run: python deployment/setup_google_oauth.py"
-            )
+        all_emails = []
+        accounts_checked = []
+        errors = []
 
-        # Fetch emails
-        results = service.users().messages().list(
-            userId='me',
-            q=query,
-            maxResults=max_results
-        ).execute()
+        accounts_to_check = ["work", "personal"] if account == "both" else [account]
 
-        messages = results.get('messages', [])
+        for acct in accounts_to_check:
+            service = _get_gmail_service(acct)
+            if not service:
+                if account != "both":  # Only error if specifically requested
+                    errors.append(f"{acct} account not connected")
+                continue
 
-        if not messages:
-            return ToolResult(True, data={
-                "count": 0,
-                "query": query,
-                "emails": [],
-                "message": "No emails found matching query"
-            })
+            try:
+                # Get account email address
+                profile = service.users().getProfile(userId='me').execute()
+                email_address = profile.get('emailAddress', acct)
+                accounts_checked.append(email_address)
 
-        emails = []
-        for msg_info in messages[:max_results]:
-            msg = service.users().messages().get(
-                userId='me',
-                id=msg_info['id'],
-                format='metadata',
-                metadataHeaders=['From', 'Subject', 'Date']
-            ).execute()
+                # Fetch emails
+                results = service.users().messages().list(
+                    userId='me',
+                    q=query,
+                    maxResults=max_results
+                ).execute()
 
-            headers = {h['name']: h['value'] for h in msg.get('payload', {}).get('headers', [])}
+                messages = results.get('messages', [])
 
-            emails.append({
-                "id": msg_info['id'],
-                "from": headers.get('From', 'Unknown'),
-                "subject": headers.get('Subject', '(No Subject)'),
-                "date": headers.get('Date', ''),
-                "snippet": msg.get('snippet', '')[:150],
-                "is_unread": 'UNREAD' in msg.get('labelIds', [])
-            })
+                for msg_info in messages[:max_results]:
+                    msg = service.users().messages().get(
+                        userId='me',
+                        id=msg_info['id'],
+                        format='metadata',
+                        metadataHeaders=['From', 'Subject', 'Date']
+                    ).execute()
+
+                    headers = {h['name']: h['value'] for h in msg.get('payload', {}).get('headers', [])}
+
+                    all_emails.append({
+                        "id": msg_info['id'],
+                        "account": email_address,
+                        "from": headers.get('From', 'Unknown'),
+                        "subject": headers.get('Subject', '(No Subject)'),
+                        "date": headers.get('Date', ''),
+                        "snippet": msg.get('snippet', '')[:150],
+                        "is_unread": 'UNREAD' in msg.get('labelIds', [])
+                    })
+            except Exception as e:
+                errors.append(f"{acct}: {str(e)}")
+
+        if not accounts_checked and errors:
+            return ToolResult(False, error=f"No email accounts connected. {'; '.join(errors)}")
+
+        # Sort by date (most recent first)
+        all_emails.sort(key=lambda x: x.get('date', ''), reverse=True)
 
         return ToolResult(True, data={
-            "count": len(emails),
+            "accounts_checked": accounts_checked,
+            "count": len(all_emails),
             "query": query,
-            "emails": emails
+            "emails": all_emails[:max_results * 2] if account == "both" else all_emails[:max_results]
         })
 
     except ImportError:
@@ -816,21 +905,26 @@ def check_email(max_results: int = 10, query: str = "is:unread") -> ToolResult:
         return ToolResult(False, error=str(e))
 
 
-def get_email_content(email_id: str) -> ToolResult:
+def get_email_content(email_id: str, account: str = "work") -> ToolResult:
     """
     Get full content of a specific email.
 
     Args:
         email_id: The email ID to retrieve
+        account: Which account the email is from - "work" or "personal" (default: work)
 
     Returns:
         ToolResult with full email content
     """
     try:
         import base64
-        service = _get_gmail_service()
+        service = _get_gmail_service(account)
         if not service:
-            return ToolResult(False, error="Gmail not connected")
+            # Try the other account
+            other = "personal" if account == "work" else "work"
+            service = _get_gmail_service(other)
+            if not service:
+                return ToolResult(False, error="Gmail not connected")
 
         msg = service.users().messages().get(
             userId='me',
@@ -1338,34 +1432,36 @@ TOOLS = {
         "parameters": {}
     },
 
-    # Email (Gmail)
+    # Email (Gmail - checks BOTH work and personal accounts by default)
     "check_email": {
         "function": check_email,
-        "description": "Check Gmail inbox for emails (unread by default)",
+        "description": "Check Gmail inbox for emails from BOTH work and personal accounts",
         "parameters": {
-            "max_results": "Number of emails to return (default 10)",
-            "query": "Gmail search query (default: is:unread)"
+            "max_results": "Number of emails to return per account (default 10)",
+            "query": "Gmail search query (default: is:unread)",
+            "account": "Which account: 'both', 'work', or 'personal' (default: both)"
         }
     },
     "get_email_content": {
         "function": get_email_content,
         "description": "Get the full content of a specific email by ID",
         "parameters": {
-            "email_id": "The email ID to retrieve"
+            "email_id": "The email ID to retrieve",
+            "account": "Which account: 'work' or 'personal' (default: work)"
         }
     },
 
-    # Calendar (Google Calendar)
+    # Calendar (Google Calendar - ALWAYS uses work account)
     "check_calendar": {
         "function": check_calendar,
-        "description": "Check upcoming calendar events",
+        "description": "Check upcoming calendar events (uses work calendar: tore.alden@roundlakescommodities.com)",
         "parameters": {
             "days_ahead": "Number of days to look ahead (default 7)"
         }
     },
     "get_todays_schedule": {
         "function": get_todays_schedule,
-        "description": "Get today's calendar schedule",
+        "description": "Get today's schedule (uses work calendar)",
         "parameters": {}
     },
 
