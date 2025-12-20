@@ -30,6 +30,9 @@ dropbox>=11.0.0
 # Data processing
 openpyxl>=3.1.0  # Excel files
 
+# Web search (for agent tools)
+duckduckgo-search>=6.0.0
+
 # Development
 pytest>=7.0.0
 pytest-asyncio>=0.21.0
