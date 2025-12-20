@@ -635,31 +635,75 @@ _calendar_service = None
 
 
 def _get_google_credentials(service_type: str = "gmail"):
-    """Get Google OAuth credentials from token file."""
+    """Get Google OAuth credentials from token file (pickle or JSON format)."""
     import pickle
 
-    # Look for token in multiple locations
-    possible_paths = [
+    # Look for token in multiple locations (pickle format first)
+    pickle_paths = [
         PROJECT_ROOT / "data" / "tokens" / f"{service_type}_token.pickle",
         PROJECT_ROOT / "rlc_master_agent" / "config" / "tokens" / f"{service_type}_token.pickle",
         Path.home() / ".rlc" / "tokens" / f"{service_type}_token.pickle",
     ]
 
-    for token_path in possible_paths:
+    for token_path in pickle_paths:
         if token_path.exists():
-            with open(token_path, 'rb') as f:
-                creds = pickle.load(f)
+            try:
+                with open(token_path, 'rb') as f:
+                    creds = pickle.load(f)
+                    if creds and creds.valid:
+                        return creds
+                    elif creds and creds.expired and creds.refresh_token:
+                        try:
+                            from google.auth.transport.requests import Request
+                            creds.refresh(Request())
+                            with open(token_path, 'wb') as f:
+                                pickle.dump(creds, f)
+                            return creds
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+
+    # Look for JSON format tokens (from older setup or rlc_master_agent)
+    json_paths = [
+        PROJECT_ROOT / "data" / "tokens" / f"{service_type}_token.json",
+        PROJECT_ROOT / "data" / "tokens" / "work_token.json",
+        PROJECT_ROOT / "rlc_master_agent" / "config" / "tokens" / f"{service_type}_token.json",
+        PROJECT_ROOT / "Other Files" / "Desktop Assistant" / "token_work.json",
+    ]
+
+    for token_path in json_paths:
+        if token_path.exists():
+            try:
+                from google.oauth2.credentials import Credentials
+                from google.auth.transport.requests import Request
+
+                with open(token_path, 'r') as f:
+                    token_data = json.load(f)
+
+                creds = Credentials(
+                    token=token_data.get('token'),
+                    refresh_token=token_data.get('refresh_token'),
+                    token_uri=token_data.get('token_uri'),
+                    client_id=token_data.get('client_id'),
+                    client_secret=token_data.get('client_secret'),
+                    scopes=token_data.get('scopes')
+                )
+
                 if creds and creds.valid:
                     return creds
-                elif creds and creds.expired and creds.refresh_token:
+                elif creds and creds.refresh_token:
                     try:
-                        from google.auth.transport.requests import Request
                         creds.refresh(Request())
-                        with open(token_path, 'wb') as f:
-                            pickle.dump(creds, f)
+                        # Save refreshed token
+                        token_data['token'] = creds.token
+                        with open(token_path, 'w') as f:
+                            json.dump(token_data, f)
                         return creds
                     except Exception:
                         pass
+            except Exception:
+                pass
 
     return None
 
