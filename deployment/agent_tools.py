@@ -898,6 +898,296 @@ def get_todays_schedule() -> ToolResult:
 
 
 # =============================================================================
+# NOTION MEMORY TOOLS
+# =============================================================================
+
+_notion_client = None
+MEMORY_TYPES = ["preference", "fact", "decision", "observation", "process", "contact", "feedback"]
+MEMORY_CATEGORIES = ["trading", "ranch", "analytics", "communications", "scheduling", "general"]
+
+
+def _get_notion_client():
+    """Get Notion client if configured."""
+    global _notion_client
+    if _notion_client:
+        return _notion_client
+
+    try:
+        from notion_client import Client
+        import os
+
+        # Check for token in environment or config file
+        token = os.environ.get("NOTION_API_KEY")
+
+        if not token:
+            # Try loading from .env
+            env_path = PROJECT_ROOT / ".env"
+            if env_path.exists():
+                with open(env_path) as f:
+                    for line in f:
+                        if line.startswith("NOTION_API_KEY="):
+                            token = line.split("=", 1)[1].strip().strip('"')
+                            break
+
+        if token:
+            _notion_client = Client(auth=token)
+            return _notion_client
+
+    except ImportError:
+        pass
+    except Exception:
+        pass
+
+    return None
+
+
+def store_memory(
+    content: str,
+    memory_type: str = "observation",
+    category: str = "general",
+    source: str = "agent"
+) -> ToolResult:
+    """
+    Store a memory for long-term recall.
+
+    Use this to remember important facts, user preferences, decisions,
+    or observations that should persist across sessions.
+
+    Args:
+        content: The information to remember
+        memory_type: Type of memory (preference, fact, decision, observation, process, contact, feedback)
+        category: Category (trading, ranch, analytics, communications, scheduling, general)
+        source: Where this information came from
+
+    Returns:
+        ToolResult confirming storage
+    """
+    from datetime import datetime
+
+    if memory_type not in MEMORY_TYPES:
+        return ToolResult(False, error=f"Invalid memory_type. Use one of: {MEMORY_TYPES}")
+
+    if category not in MEMORY_CATEGORIES:
+        return ToolResult(False, error=f"Invalid category. Use one of: {MEMORY_CATEGORIES}")
+
+    memory_record = {
+        "content": content,
+        "type": memory_type,
+        "category": category,
+        "source": source,
+        "created_at": datetime.now().isoformat()
+    }
+
+    # Try Notion first
+    client = _get_notion_client()
+    if client:
+        try:
+            import os
+            db_id = os.environ.get("NOTION_MEMORY_DB_ID")
+
+            if db_id:
+                properties = {
+                    "Name": {"title": [{"text": {"content": content[:100]}}]},
+                    "Type": {"select": {"name": memory_type}},
+                    "Category": {"select": {"name": category}},
+                    "Content": {"rich_text": [{"text": {"content": content}}]},
+                    "Source": {"rich_text": [{"text": {"content": source}}]},
+                    "Created": {"date": {"start": datetime.now().isoformat()}}
+                }
+
+                response = client.pages.create(
+                    parent={"database_id": db_id},
+                    properties=properties
+                )
+
+                return ToolResult(True, data={
+                    "stored_in": "notion",
+                    "id": response["id"],
+                    "content": content[:100] + "..." if len(content) > 100 else content
+                })
+        except Exception as e:
+            # Fall through to local storage
+            pass
+
+    # Local fallback
+    local_cache_path = DATA_DIR / "memory_cache.json"
+    local_cache_path.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        import json
+        cache = {}
+        if local_cache_path.exists():
+            with open(local_cache_path) as f:
+                cache = json.load(f)
+
+        if "memories" not in cache:
+            cache["memories"] = []
+
+        memory_record["id"] = f"mem_{datetime.now().timestamp()}"
+        cache["memories"].append(memory_record)
+
+        # Keep last 1000 memories
+        cache["memories"] = cache["memories"][-1000:]
+
+        with open(local_cache_path, "w") as f:
+            json.dump(cache, f, indent=2)
+
+        return ToolResult(True, data={
+            "stored_in": "local",
+            "id": memory_record["id"],
+            "content": content[:100] + "..." if len(content) > 100 else content
+        })
+
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def recall_memories(
+    query: str = None,
+    memory_type: str = None,
+    category: str = None,
+    limit: int = 10
+) -> ToolResult:
+    """
+    Recall stored memories matching criteria.
+
+    Args:
+        query: Search term to filter by (searches content)
+        memory_type: Filter by type (preference, fact, decision, etc.)
+        category: Filter by category (trading, ranch, etc.)
+        limit: Maximum memories to return (default 10)
+
+    Returns:
+        ToolResult with matching memories
+    """
+    from datetime import datetime
+    import json
+
+    memories = []
+
+    # Try Notion first
+    client = _get_notion_client()
+    if client:
+        try:
+            import os
+            db_id = os.environ.get("NOTION_MEMORY_DB_ID")
+
+            if db_id:
+                filters = []
+                if memory_type:
+                    filters.append({"property": "Type", "select": {"equals": memory_type}})
+                if category:
+                    filters.append({"property": "Category", "select": {"equals": category}})
+
+                filter_obj = None
+                if filters:
+                    filter_obj = {"and": filters} if len(filters) > 1 else filters[0]
+
+                response = client.databases.query(
+                    database_id=db_id,
+                    filter=filter_obj,
+                    page_size=limit,
+                    sorts=[{"property": "Created", "direction": "descending"}]
+                )
+
+                for page in response.get("results", []):
+                    props = page.get("properties", {})
+                    content = ""
+                    if props.get("Content", {}).get("rich_text"):
+                        content = props["Content"]["rich_text"][0].get("plain_text", "")
+
+                    # Filter by query if provided
+                    if query and query.lower() not in content.lower():
+                        continue
+
+                    memories.append({
+                        "id": page["id"],
+                        "content": content,
+                        "type": props.get("Type", {}).get("select", {}).get("name", ""),
+                        "category": props.get("Category", {}).get("select", {}).get("name", ""),
+                        "created_at": props.get("Created", {}).get("date", {}).get("start", ""),
+                        "source": "notion"
+                    })
+
+                if memories:
+                    return ToolResult(True, data={
+                        "source": "notion",
+                        "count": len(memories),
+                        "memories": memories[:limit]
+                    })
+        except Exception:
+            pass  # Fall through to local
+
+    # Local fallback
+    local_cache_path = DATA_DIR / "memory_cache.json"
+
+    if local_cache_path.exists():
+        try:
+            with open(local_cache_path) as f:
+                cache = json.load(f)
+
+            for mem in cache.get("memories", []):
+                # Apply filters
+                if memory_type and mem.get("type") != memory_type:
+                    continue
+                if category and mem.get("category") != category:
+                    continue
+                if query and query.lower() not in mem.get("content", "").lower():
+                    continue
+                memories.append(mem)
+
+        except Exception as e:
+            return ToolResult(False, error=str(e))
+
+    # Sort by created_at descending
+    memories.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+
+    return ToolResult(True, data={
+        "source": "local",
+        "count": len(memories[:limit]),
+        "memories": memories[:limit]
+    })
+
+
+def get_memory_stats() -> ToolResult:
+    """
+    Get statistics about stored memories.
+
+    Returns:
+        ToolResult with memory statistics
+    """
+    import json
+
+    stats = {
+        "notion_configured": _get_notion_client() is not None,
+        "local_memories": 0,
+        "by_type": {},
+        "by_category": {}
+    }
+
+    # Check local cache
+    local_cache_path = DATA_DIR / "memory_cache.json"
+    if local_cache_path.exists():
+        try:
+            with open(local_cache_path) as f:
+                cache = json.load(f)
+
+            memories = cache.get("memories", [])
+            stats["local_memories"] = len(memories)
+
+            for mem in memories:
+                t = mem.get("type", "unknown")
+                c = mem.get("category", "unknown")
+                stats["by_type"][t] = stats["by_type"].get(t, 0) + 1
+                stats["by_category"][c] = stats["by_category"].get(c, 0) + 1
+
+        except Exception:
+            pass
+
+    return ToolResult(True, data=stats)
+
+
+# =============================================================================
 # TOOL REGISTRY
 # =============================================================================
 
@@ -1032,6 +1322,33 @@ TOOLS = {
     "get_todays_schedule": {
         "function": get_todays_schedule,
         "description": "Get today's calendar schedule",
+        "parameters": {}
+    },
+
+    # Memory (Notion + local fallback)
+    "store_memory": {
+        "function": store_memory,
+        "description": "Store a memory for long-term recall (facts, preferences, decisions, observations)",
+        "parameters": {
+            "content": "The information to remember",
+            "memory_type": "Type: preference, fact, decision, observation, process, contact, feedback",
+            "category": "Category: trading, ranch, analytics, communications, scheduling, general",
+            "source": "Where this came from (default: agent)"
+        }
+    },
+    "recall_memories": {
+        "function": recall_memories,
+        "description": "Recall stored memories matching criteria",
+        "parameters": {
+            "query": "Search term to filter by",
+            "memory_type": "Filter by type (optional)",
+            "category": "Filter by category (optional)",
+            "limit": "Max memories to return (default 10)"
+        }
+    },
+    "get_memory_stats": {
+        "function": get_memory_stats,
+        "description": "Get statistics about stored memories",
         "parameters": {}
     }
 }
