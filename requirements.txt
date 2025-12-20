@@ -29,6 +29,7 @@ dropbox>=11.0.0
 
 # Data processing
 openpyxl>=3.1.0  # Excel files
+pypdf>=4.0.0     # PDF parsing for RAG
 
 # Web search (for agent tools)
 duckduckgo-search>=6.0.0

@@ -553,6 +553,79 @@ def run_python_code(code: str) -> ToolResult:
 
 
 # =============================================================================
+# DOCUMENT SEARCH (RAG) TOOLS
+# =============================================================================
+
+def search_documents(query: str, top_k: int = 5) -> ToolResult:
+    """
+    Search indexed documents (Excel, PDF, Markdown) using semantic search.
+
+    Uses local embeddings via Ollama's nomic-embed-text model to find
+    relevant content from balance sheets, analysis files, and documentation.
+
+    Args:
+        query: Natural language search query
+        top_k: Number of results to return (default 5)
+
+    Returns:
+        ToolResult with matching document chunks and scores
+    """
+    try:
+        from document_rag import search_documents_sync, get_index_stats
+
+        # Check if index exists
+        stats = get_index_stats()
+        if not stats.get("indexed"):
+            return ToolResult(False, error=stats.get("message", "No index found"))
+
+        # Perform search
+        result = search_documents_sync(query, top_k)
+
+        if not result["success"]:
+            return ToolResult(False, error=result.get("error", "Search failed"))
+
+        # Format results for display
+        formatted_results = []
+        for r in result["results"]:
+            formatted_results.append({
+                "file": r["file_name"],
+                "path": r["file_path"],
+                "score": round(r["score"], 3),
+                "content": r["content"][:500] + "..." if len(r["content"]) > 500 else r["content"]
+            })
+
+        return ToolResult(True, data={
+            "query": query,
+            "result_count": result["result_count"],
+            "results": formatted_results
+        })
+
+    except ImportError:
+        return ToolResult(False, error="RAG module not found. Run: python document_rag.py --index")
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def get_rag_stats() -> ToolResult:
+    """
+    Get statistics about the document RAG index.
+
+    Returns:
+        ToolResult with index statistics (file counts, chunk counts, etc.)
+    """
+    try:
+        from document_rag import get_index_stats
+
+        stats = get_index_stats()
+        return ToolResult(True, data=stats)
+
+    except ImportError:
+        return ToolResult(False, error="RAG module not found")
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+# =============================================================================
 # TOOL REGISTRY
 # =============================================================================
 
@@ -642,6 +715,21 @@ TOOLS = {
         "parameters": {
             "code": "Python code to execute"
         }
+    },
+
+    # Document Search (RAG)
+    "search_documents": {
+        "function": search_documents,
+        "description": "Search indexed documents (Excel balance sheets, PDFs, Markdown) using semantic search",
+        "parameters": {
+            "query": "Natural language search query (e.g. 'soybean crush margins')",
+            "top_k": "Number of results (default 5)"
+        }
+    },
+    "get_rag_stats": {
+        "function": get_rag_stats,
+        "description": "Get statistics about the document index",
+        "parameters": {}
     }
 }
 
