@@ -1326,6 +1326,634 @@ def get_memory_stats() -> ToolResult:
 
 
 # =============================================================================
+# ENHANCED DATABASE TOOLS
+# =============================================================================
+
+# Path to the main commodity database
+COMMODITY_DB_PATH = DATA_DIR / "rlc_commodities.db"
+
+
+def get_data_catalog(
+    commodity: str = None,
+    category: str = None,
+    search: str = None
+) -> ToolResult:
+    """
+    Browse the data catalog to see what data series are available.
+
+    Args:
+        commodity: Filter by commodity (corn, soybeans, etc.)
+        category: Filter by category (biofuels, oilseeds, etc.)
+        search: Search term to find series by name
+
+    Returns:
+        ToolResult with available data series
+    """
+    try:
+        if not COMMODITY_DB_PATH.exists():
+            return ToolResult(False, error="Database not initialized. Run: python deployment/excel_to_database.py --init --load")
+
+        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
+        cursor = conn.cursor()
+
+        # Check if data_catalog table exists
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='data_catalog'")
+        if not cursor.fetchone():
+            # Fall back to listing what's in other tables
+            tables_info = []
+            for table in ['balance_sheets', 'price_history', 'excel_time_series']:
+                try:
+                    cursor.execute(f"SELECT COUNT(*) FROM {table}")
+                    count = cursor.fetchone()[0]
+                    if count > 0:
+                        cursor.execute(f"SELECT DISTINCT source_file FROM {table} LIMIT 20")
+                        files = [r[0] for r in cursor.fetchall()]
+                        tables_info.append({
+                            "table": table,
+                            "rows": count,
+                            "source_files": files[:10]
+                        })
+                except:
+                    pass
+
+            conn.close()
+            return ToolResult(True, data={
+                "note": "Data catalog not yet built. Here's what's in the database:",
+                "tables": tables_info
+            })
+
+        # Build query with filters
+        conditions = []
+        params = []
+
+        if commodity:
+            conditions.append("LOWER(commodity) LIKE ?")
+            params.append(f"%{commodity.lower()}%")
+        if category:
+            conditions.append("LOWER(category) LIKE ?")
+            params.append(f"%{category.lower()}%")
+        if search:
+            conditions.append("(LOWER(series_name) LIKE ? OR LOWER(description) LIKE ?)")
+            params.extend([f"%{search.lower()}%", f"%{search.lower()}%"])
+
+        where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+
+        cursor.execute(f"""
+            SELECT series_id, series_name, description, commodity, country,
+                   category, frequency, start_date, end_date, row_count
+            FROM data_catalog
+            {where_clause}
+            ORDER BY category, commodity, series_name
+            LIMIT 50
+        """, params)
+
+        series = []
+        for row in cursor.fetchall():
+            series.append({
+                "id": row[0],
+                "name": row[1],
+                "description": row[2],
+                "commodity": row[3],
+                "country": row[4],
+                "category": row[5],
+                "frequency": row[6],
+                "date_range": f"{row[7]} to {row[8]}",
+                "rows": row[9]
+            })
+
+        conn.close()
+
+        return ToolResult(True, data={
+            "count": len(series),
+            "series": series
+        })
+
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def get_balance_sheet(
+    commodity: str,
+    country: str = None,
+    year: str = None
+) -> ToolResult:
+    """
+    Get balance sheet data for a commodity.
+
+    Args:
+        commodity: Commodity name (soybeans, corn, etc.)
+        country: Country/region filter (optional)
+        year: Marketing year filter (e.g. "2024/25")
+
+    Returns:
+        ToolResult with balance sheet data in a readable format
+    """
+    try:
+        if not COMMODITY_DB_PATH.exists():
+            return ToolResult(False, error="Database not initialized")
+
+        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
+        cursor = conn.cursor()
+
+        # Build query
+        conditions = ["LOWER(commodity) LIKE ?"]
+        params = [f"%{commodity.lower()}%"]
+
+        if country:
+            conditions.append("LOWER(country) LIKE ?")
+            params.append(f"%{country.lower()}%")
+        if year:
+            conditions.append("marketing_year = ?")
+            params.append(year)
+
+        where_clause = " AND ".join(conditions)
+
+        cursor.execute(f"""
+            SELECT commodity, country, marketing_year, metric, value, unit, source_file
+            FROM balance_sheets
+            WHERE {where_clause}
+            ORDER BY country, marketing_year DESC, metric
+            LIMIT 200
+        """, params)
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        if not rows:
+            return ToolResult(True, data={
+                "commodity": commodity,
+                "message": "No data found. Try searching with get_data_catalog first."
+            })
+
+        # Organize by country/year
+        by_country_year = {}
+        for row in rows:
+            key = f"{row[1]}|{row[2]}"
+            if key not in by_country_year:
+                by_country_year[key] = {
+                    "commodity": row[0],
+                    "country": row[1],
+                    "marketing_year": row[2],
+                    "metrics": {},
+                    "source": row[6]
+                }
+            by_country_year[key]["metrics"][row[3]] = row[4]
+
+        return ToolResult(True, data={
+            "commodity": commodity,
+            "balance_sheets": list(by_country_year.values())
+        })
+
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def get_price_history(
+    symbol: str = None,
+    commodity: str = None,
+    start_date: str = None,
+    end_date: str = None,
+    limit: int = 100
+) -> ToolResult:
+    """
+    Get historical price data.
+
+    Args:
+        symbol: Specific symbol (e.g., "ZS" for soybeans)
+        commodity: Commodity name (alternative to symbol)
+        start_date: Start date (YYYY-MM-DD)
+        end_date: End date (YYYY-MM-DD)
+        limit: Maximum rows (default 100)
+
+    Returns:
+        ToolResult with price history
+    """
+    try:
+        if not COMMODITY_DB_PATH.exists():
+            return ToolResult(False, error="Database not initialized")
+
+        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
+        cursor = conn.cursor()
+
+        conditions = []
+        params = []
+
+        if symbol:
+            conditions.append("LOWER(symbol) LIKE ?")
+            params.append(f"%{symbol.lower()}%")
+        if commodity:
+            conditions.append("LOWER(commodity) LIKE ?")
+            params.append(f"%{commodity.lower()}%")
+        if start_date:
+            conditions.append("date_value >= ?")
+            params.append(start_date)
+        if end_date:
+            conditions.append("date_value <= ?")
+            params.append(end_date)
+
+        where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+
+        cursor.execute(f"""
+            SELECT symbol, commodity, price_type, date_value,
+                   open, high, low, close, settle, volume
+            FROM price_history
+            {where_clause}
+            ORDER BY date_value DESC
+            LIMIT ?
+        """, params + [limit])
+
+        prices = []
+        for row in cursor.fetchall():
+            prices.append({
+                "symbol": row[0],
+                "commodity": row[1],
+                "type": row[2],
+                "date": row[3],
+                "open": row[4],
+                "high": row[5],
+                "low": row[6],
+                "close": row[7],
+                "settle": row[8],
+                "volume": row[9]
+            })
+
+        conn.close()
+
+        return ToolResult(True, data={
+            "count": len(prices),
+            "prices": prices
+        })
+
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def get_time_series(
+    series_name: str = None,
+    category: str = None,
+    search: str = None,
+    limit: int = 100
+) -> ToolResult:
+    """
+    Get time series data from Excel imports.
+
+    Args:
+        series_name: Exact series name
+        category: Category filter (biofuels, oilseeds, etc.)
+        search: Search term
+        limit: Maximum rows (default 100)
+
+    Returns:
+        ToolResult with time series data
+    """
+    try:
+        if not COMMODITY_DB_PATH.exists():
+            return ToolResult(False, error="Database not initialized")
+
+        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
+        cursor = conn.cursor()
+
+        conditions = []
+        params = []
+
+        if series_name:
+            conditions.append("series_name = ?")
+            params.append(series_name)
+        if category:
+            conditions.append("LOWER(category) LIKE ?")
+            params.append(f"%{category.lower()}%")
+        if search:
+            conditions.append("LOWER(series_name) LIKE ?")
+            params.append(f"%{search.lower()}%")
+
+        where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+
+        # First get distinct series
+        cursor.execute(f"""
+            SELECT DISTINCT series_name, category, source_file
+            FROM excel_time_series
+            {where_clause}
+            LIMIT 20
+        """, params)
+
+        series_list = [{"name": r[0], "category": r[1], "source": r[2]} for r in cursor.fetchall()]
+
+        # Then get data for first matching series
+        if series_list:
+            target_series = series_list[0]["name"]
+            cursor.execute("""
+                SELECT date_value, numeric_value
+                FROM excel_time_series
+                WHERE series_name = ?
+                ORDER BY date_value DESC
+                LIMIT ?
+            """, [target_series, limit])
+
+            data_points = [{"date": r[0], "value": r[1]} for r in cursor.fetchall()]
+        else:
+            data_points = []
+
+        conn.close()
+
+        return ToolResult(True, data={
+            "available_series": series_list,
+            "data_series": series_list[0]["name"] if series_list else None,
+            "data_points": data_points
+        })
+
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def analyze_data_relationships(commodity: str) -> ToolResult:
+    """
+    Analyze relationships between data series for a commodity.
+    Helps understand what data is connected.
+
+    Args:
+        commodity: Commodity to analyze (soybeans, corn, etc.)
+
+    Returns:
+        ToolResult with relationship analysis
+    """
+    try:
+        if not COMMODITY_DB_PATH.exists():
+            return ToolResult(False, error="Database not initialized")
+
+        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
+        cursor = conn.cursor()
+
+        analysis = {
+            "commodity": commodity,
+            "balance_sheet_countries": [],
+            "balance_sheet_metrics": [],
+            "time_series_available": [],
+            "price_data": [],
+            "source_files": []
+        }
+
+        # Get balance sheet info
+        cursor.execute("""
+            SELECT DISTINCT country FROM balance_sheets
+            WHERE LOWER(commodity) LIKE ?
+        """, [f"%{commodity.lower()}%"])
+        analysis["balance_sheet_countries"] = [r[0] for r in cursor.fetchall()]
+
+        cursor.execute("""
+            SELECT DISTINCT metric FROM balance_sheets
+            WHERE LOWER(commodity) LIKE ?
+        """, [f"%{commodity.lower()}%"])
+        analysis["balance_sheet_metrics"] = [r[0] for r in cursor.fetchall()]
+
+        # Get time series info
+        cursor.execute("""
+            SELECT DISTINCT series_name, category FROM excel_time_series
+            WHERE LOWER(series_name) LIKE ? OR LOWER(category) LIKE ?
+            LIMIT 20
+        """, [f"%{commodity.lower()}%", f"%{commodity.lower()}%"])
+        analysis["time_series_available"] = [{"name": r[0], "category": r[1]} for r in cursor.fetchall()]
+
+        # Get price data info
+        cursor.execute("""
+            SELECT DISTINCT symbol, price_type FROM price_history
+            WHERE LOWER(commodity) LIKE ?
+        """, [f"%{commodity.lower()}%"])
+        analysis["price_data"] = [{"symbol": r[0], "type": r[1]} for r in cursor.fetchall()]
+
+        # Get source files
+        cursor.execute("""
+            SELECT DISTINCT source_file FROM balance_sheets
+            WHERE LOWER(commodity) LIKE ?
+            UNION
+            SELECT DISTINCT source_file FROM excel_time_series
+            WHERE LOWER(series_name) LIKE ?
+            LIMIT 20
+        """, [f"%{commodity.lower()}%", f"%{commodity.lower()}%"])
+        analysis["source_files"] = [r[0] for r in cursor.fetchall()]
+
+        conn.close()
+
+        return ToolResult(True, data=analysis)
+
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def get_database_status() -> ToolResult:
+    """
+    Get comprehensive status of the commodity database.
+
+    Returns:
+        ToolResult with database statistics
+    """
+    try:
+        if not COMMODITY_DB_PATH.exists():
+            return ToolResult(True, data={
+                "exists": False,
+                "message": "Database not initialized. Run: python deployment/excel_to_database.py --init --load"
+            })
+
+        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
+        cursor = conn.cursor()
+
+        status = {
+            "exists": True,
+            "path": str(COMMODITY_DB_PATH),
+            "size_mb": COMMODITY_DB_PATH.stat().st_size / (1024*1024),
+            "tables": {}
+        }
+
+        # Get all tables
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [r[0] for r in cursor.fetchall()]
+
+        for table in tables:
+            try:
+                cursor.execute(f"SELECT COUNT(*) FROM {table}")
+                count = cursor.fetchone()[0]
+                status["tables"][table] = count
+            except:
+                status["tables"][table] = "error"
+
+        # Get summary stats
+        try:
+            cursor.execute("SELECT COUNT(DISTINCT commodity) FROM balance_sheets")
+            status["commodities_count"] = cursor.fetchone()[0]
+        except:
+            pass
+
+        try:
+            cursor.execute("SELECT COUNT(DISTINCT source_file) FROM excel_imports WHERE import_status='success'")
+            status["files_imported"] = cursor.fetchone()[0]
+        except:
+            pass
+
+        conn.close()
+
+        return ToolResult(True, data=status)
+
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def import_excel_to_database(file_path: str = None, scan_only: bool = False) -> ToolResult:
+    """
+    Import Excel files into the database or scan available files.
+
+    Args:
+        file_path: Specific file to import (optional)
+        scan_only: If True, just scan and report what's available
+
+    Returns:
+        ToolResult with import status
+    """
+    try:
+        import subprocess
+
+        script_path = PROJECT_ROOT / "deployment" / "excel_to_database.py"
+        if not script_path.exists():
+            return ToolResult(False, error="excel_to_database.py not found")
+
+        if scan_only:
+            cmd = [sys.executable, str(script_path), "--scan"]
+        elif file_path:
+            cmd = [sys.executable, str(script_path), "--file", file_path]
+        else:
+            cmd = [sys.executable, str(script_path), "--init", "--load"]
+
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=600  # 10 minute timeout for full import
+        )
+
+        output = result.stdout + result.stderr
+
+        return ToolResult(
+            success=result.returncode == 0,
+            data={"output": output[:5000]},  # Truncate long output
+            error=result.stderr[:500] if result.returncode != 0 else None
+        )
+
+    except subprocess.TimeoutExpired:
+        return ToolResult(False, error="Import timed out after 10 minutes")
+    except Exception as e:
+        return ToolResult(False, error=str(e))
+
+
+def discover_data_sources(
+    commodity: str,
+    data_type: str = "all",
+    region: str = "global"
+) -> ToolResult:
+    """
+    Search for potential new data sources on the internet.
+    Uses web search to find APIs, datasets, and data portals.
+
+    Args:
+        commodity: Commodity to find data for
+        data_type: Type of data (prices, production, trade, stocks, etc.)
+        region: Geographic focus (US, Brazil, Global, etc.)
+
+    Returns:
+        ToolResult with potential data sources
+    """
+    # Known commodity data sources to recommend
+    known_sources = {
+        "government": [
+            {"name": "USDA FAS", "url": "https://apps.fas.usda.gov/psdonline/app/index.html",
+             "data": ["production", "consumption", "trade", "stocks"], "regions": ["global"]},
+            {"name": "USDA NASS", "url": "https://quickstats.nass.usda.gov",
+             "data": ["production", "prices", "crop progress"], "regions": ["US"]},
+            {"name": "USDA ERS", "url": "https://www.ers.usda.gov/data-products/",
+             "data": ["prices", "costs", "farm economy"], "regions": ["US"]},
+            {"name": "EIA", "url": "https://api.eia.gov",
+             "data": ["ethanol", "biodiesel", "petroleum", "energy"], "regions": ["US", "global"]},
+            {"name": "CFTC", "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm",
+             "data": ["COT positions", "speculator positions"], "regions": ["US"]},
+            {"name": "CONAB Brazil", "url": "https://www.conab.gov.br",
+             "data": ["production", "stocks", "crop progress"], "regions": ["Brazil"]},
+            {"name": "ABIOVE Brazil", "url": "https://abiove.org.br",
+             "data": ["crush", "meal production", "oil production"], "regions": ["Brazil"]},
+            {"name": "MAGyP Argentina", "url": "https://datos.agroindustria.gob.ar",
+             "data": ["production", "exports", "trade"], "regions": ["Argentina"]},
+            {"name": "EU EUROSTAT", "url": "https://ec.europa.eu/eurostat",
+             "data": ["production", "trade", "prices"], "regions": ["EU"]},
+        ],
+        "exchanges": [
+            {"name": "CME Group", "url": "https://www.cmegroup.com",
+             "data": ["futures prices", "options", "settlements"], "regions": ["global"]},
+            {"name": "ICE", "url": "https://www.theice.com",
+             "data": ["futures prices", "energy"], "regions": ["global"]},
+            {"name": "B3 Brazil", "url": "https://www.b3.com.br",
+             "data": ["futures prices", "soybean", "corn"], "regions": ["Brazil"]},
+        ],
+        "industry": [
+            {"name": "Oil World", "url": "https://www.oilworld.biz",
+             "data": ["oilseeds", "vegetable oils", "fats"], "regions": ["global"], "paid": True},
+            {"name": "OPIS", "url": "https://www.opisnet.com",
+             "data": ["biofuels prices", "RINs", "biodiesel"], "regions": ["US"], "paid": True},
+            {"name": "Argus Media", "url": "https://www.argusmedia.com",
+             "data": ["biofuels", "feedstocks", "prices"], "regions": ["global"], "paid": True},
+            {"name": "EPA EMTS", "url": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/rin-data-emts",
+             "data": ["RINs", "biofuel credits"], "regions": ["US"]},
+        ],
+        "free_apis": [
+            {"name": "USDA AMS Market News", "url": "https://marsapi.ams.usda.gov",
+             "data": ["daily prices", "cash markets", "basis"], "regions": ["US"]},
+            {"name": "Quandl/Nasdaq", "url": "https://data.nasdaq.com",
+             "data": ["futures", "commodities", "economic"], "regions": ["global"]},
+            {"name": "FRED", "url": "https://fred.stlouisfed.org",
+             "data": ["economic", "interest rates", "currencies"], "regions": ["US", "global"]},
+        ]
+    }
+
+    # Filter by commodity, data_type, and region
+    commodity_lower = commodity.lower()
+    data_type_lower = data_type.lower()
+    region_lower = region.lower()
+
+    recommended = []
+
+    for category, sources in known_sources.items():
+        for source in sources:
+            # Check if source matches criteria
+            data_match = data_type_lower == "all" or any(
+                data_type_lower in d.lower() for d in source["data"]
+            )
+            region_match = region_lower == "global" or any(
+                region_lower in r.lower() for r in source["regions"]
+            ) or "global" in source["regions"]
+
+            if data_match and region_match:
+                recommended.append({
+                    "category": category,
+                    "name": source["name"],
+                    "url": source["url"],
+                    "data_types": source["data"],
+                    "regions": source["regions"],
+                    "paid": source.get("paid", False)
+                })
+
+    # Build search queries for web search
+    search_queries = [
+        f"{commodity} {data_type} API free data",
+        f"{commodity} {region} statistics data download",
+        f"{commodity} market data source {data_type}",
+    ]
+
+    return ToolResult(True, data={
+        "commodity": commodity,
+        "data_type": data_type,
+        "region": region,
+        "recommended_sources": recommended,
+        "search_suggestions": search_queries,
+        "note": "Use search_web tool with the search_suggestions to find additional sources"
+    })
+
+
+# =============================================================================
 # TOOL REGISTRY
 # =============================================================================
 
@@ -1490,6 +2118,76 @@ TOOLS = {
         "function": get_memory_stats,
         "description": "Get statistics about stored memories",
         "parameters": {}
+    },
+
+    # Enhanced Database Tools
+    "get_data_catalog": {
+        "function": get_data_catalog,
+        "description": "Browse the data catalog to see what data series are available in the database",
+        "parameters": {
+            "commodity": "Filter by commodity (corn, soybeans, etc.)",
+            "category": "Filter by category (biofuels, oilseeds, etc.)",
+            "search": "Search term to find series by name"
+        }
+    },
+    "get_balance_sheet": {
+        "function": get_balance_sheet,
+        "description": "Get balance sheet data for a commodity (production, exports, crush, stocks, etc.)",
+        "parameters": {
+            "commodity": "Commodity name (soybeans, corn, wheat, etc.) - REQUIRED",
+            "country": "Country/region filter (US, Brazil, World, etc.)",
+            "year": "Marketing year filter (e.g. 2024/25)"
+        }
+    },
+    "get_price_history": {
+        "function": get_price_history,
+        "description": "Get historical price data for a commodity or symbol",
+        "parameters": {
+            "symbol": "Specific symbol (e.g., ZS for soybeans)",
+            "commodity": "Commodity name (alternative to symbol)",
+            "start_date": "Start date (YYYY-MM-DD)",
+            "end_date": "End date (YYYY-MM-DD)",
+            "limit": "Maximum rows (default 100)"
+        }
+    },
+    "get_time_series": {
+        "function": get_time_series,
+        "description": "Get time series data from imported Excel files",
+        "parameters": {
+            "series_name": "Exact series name",
+            "category": "Category filter (biofuels, oilseeds, etc.)",
+            "search": "Search term to find series",
+            "limit": "Maximum rows (default 100)"
+        }
+    },
+    "analyze_data_relationships": {
+        "function": analyze_data_relationships,
+        "description": "Analyze what data is available for a commodity and how it's connected",
+        "parameters": {
+            "commodity": "Commodity to analyze (soybeans, corn, biodiesel, etc.)"
+        }
+    },
+    "get_database_status": {
+        "function": get_database_status,
+        "description": "Get comprehensive status of the commodity database (tables, row counts, etc.)",
+        "parameters": {}
+    },
+    "import_excel_to_database": {
+        "function": import_excel_to_database,
+        "description": "Import Excel files into the commodity database (builds the fundamental data)",
+        "parameters": {
+            "file_path": "Specific file to import (optional - imports all if not specified)",
+            "scan_only": "If True, just scan and report what files are available"
+        }
+    },
+    "discover_data_sources": {
+        "function": discover_data_sources,
+        "description": "Search for potential new data sources on the internet for a commodity or metric",
+        "parameters": {
+            "commodity": "Commodity to find data for (soybeans, biodiesel, etc.)",
+            "data_type": "Type of data needed (prices, production, trade, etc.)",
+            "region": "Geographic focus (US, Brazil, Global, etc.)"
+        }
     }
 }
 
