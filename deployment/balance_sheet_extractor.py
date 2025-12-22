@@ -327,6 +327,12 @@ class BalanceSheetExtractor:
 
         for sheet_name in wb.sheetnames:
             sheet = wb[sheet_name]
+
+            # Skip chart sheets (they don't have data)
+            if not hasattr(sheet, 'max_row'):
+                logger.info(f"  Skipping chart sheet: {sheet_name}")
+                continue
+
             sheet_analysis = self.analyze_sheet(sheet, sheet_name)
 
             sheet_info = {
@@ -437,13 +443,19 @@ class BalanceSheetExtractor:
         sheets_processed = 0
 
         for sheet_name in wb.sheetnames:
+            sheet = wb[sheet_name]
+
+            # Skip chart sheets (they don't have data)
+            if not hasattr(sheet, 'max_row'):
+                logger.info(f"  Skipping chart sheet: {sheet_name}")
+                continue
+
             # Filter to Complex sheets if requested
             if complex_only and 'complex' not in sheet_name.lower():
                 logger.info(f"  Skipping: {sheet_name} (no 'Complex' in name)")
                 continue
 
             logger.info(f"\n  Processing: {sheet_name}")
-            sheet = wb[sheet_name]
 
             extracted = self.extract_sheet(sheet, sheet_name, filepath.name)
             all_extracted.extend(extracted)
