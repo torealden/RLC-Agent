@@ -47,8 +47,11 @@ MODELS_DIR = PROJECT_ROOT / "Models"
 DATA_DIR = PROJECT_ROOT / "data"
 DB_PATH = DATA_DIR / "rlc_commodities.db"
 
-# Marketing year pattern: "2020/21", "1995/96", etc.
-MARKETING_YEAR_PATTERN = re.compile(r'^(\d{4})/(\d{2})$')
+# Marketing year patterns:
+# - "2020/21" (4-digit/2-digit)
+# - "64/65" or "64/65 " (2-digit/2-digit, possibly with trailing space)
+MARKETING_YEAR_PATTERN_4DIGIT = re.compile(r'^(\d{4})/(\d{2})\s*$')
+MARKETING_YEAR_PATTERN_2DIGIT = re.compile(r'^(\d{2})/(\d{2})\s*$')
 
 # Historical data range
 MIN_YEAR = 1965
@@ -99,24 +102,60 @@ class SheetAnalysis:
 
 def is_marketing_year(value: Any) -> Optional[Tuple[int, int]]:
     """
-    Check if value is a marketing year like "2020/21".
+    Check if value is a marketing year like "2020/21" or "64/65".
     Returns (start_year, end_year) tuple or None.
     """
     if value is None:
         return None
 
     val_str = str(value).strip()
-    match = MARKETING_YEAR_PATTERN.match(val_str)
 
+    # Try 4-digit format first: "2020/21"
+    match = MARKETING_YEAR_PATTERN_4DIGIT.match(val_str)
     if match:
         start_year = int(match.group(1))
         end_year_short = int(match.group(2))
-        # Convert "21" to 2021 based on start year
         end_year = (start_year // 100) * 100 + end_year_short
         if end_year_short < (start_year % 100):
             end_year += 100  # Handle century boundary like 1999/00
         return (start_year, end_year)
 
+    # Try 2-digit format: "64/65"
+    match = MARKETING_YEAR_PATTERN_2DIGIT.match(val_str)
+    if match:
+        start_short = int(match.group(1))
+        end_short = int(match.group(2))
+
+        # Convert 2-digit to 4-digit year
+        # 64 -> 1964, 00 -> 2000, 25 -> 2025
+        if start_short >= 50:
+            start_year = 1900 + start_short
+        else:
+            start_year = 2000 + start_short
+
+        if end_short >= 50:
+            end_year = 1900 + end_short
+        else:
+            end_year = 2000 + end_short
+
+        # Handle wrap-around: 99/00 means 1999/2000
+        if end_year < start_year:
+            end_year += 100
+
+        return (start_year, end_year)
+
+    return None
+
+
+def normalize_marketing_year(value: Any) -> Optional[str]:
+    """
+    Normalize a marketing year to standard format "YYYY/YY".
+    Converts "64/65" to "1964/65", "2020/21" stays as is.
+    """
+    years = is_marketing_year(value)
+    if years:
+        start_year, end_year = years
+        return f"{start_year}/{end_year % 100:02d}"
     return None
 
 
@@ -249,13 +288,14 @@ class BalanceSheetExtractor:
         sections = []
         current_section = None
 
-        # Scan first 5 rows for year headers
-        for row_idx in range(1, min(6, sheet.max_row + 1)):
-            for col_idx in range(1, min(100, sheet.max_column + 1)):
+        # Scan first 10 rows for year headers (years may be in row 2 or later)
+        # Scan up to 200 columns (balance sheets can have many years)
+        for row_idx in range(1, min(11, sheet.max_row + 1)):
+            for col_idx in range(1, min(200, sheet.max_column + 1)):
                 cell_value = sheet.cell(row=row_idx, column=col_idx).value
-                years = is_marketing_year(cell_value)
-                if years and is_historical_year(str(cell_value)):
-                    year_columns[str(cell_value).strip()] = col_idx
+                normalized = normalize_marketing_year(cell_value)
+                if normalized and is_historical_year(normalized):
+                    year_columns[normalized] = col_idx
 
         # Scan rows for sections and structure
         for row_idx in range(1, min(100, sheet.max_row + 1)):
