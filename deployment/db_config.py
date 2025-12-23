@@ -34,7 +34,7 @@ PG_HOST = os.environ.get("RLC_PG_HOST", "localhost")
 PG_PORT = os.environ.get("RLC_PG_PORT", "5432")
 PG_DATABASE = os.environ.get("RLC_PG_DATABASE", "rlc_commodities")
 PG_USER = os.environ.get("RLC_PG_USER", "postgres")
-PG_PASSWORD = os.environ.get("RLC_PG_PASSWORD", "rlc2024!")
+PG_PASSWORD = os.environ.get("RLC_PG_PASSWORD", "SoupBoss1")
 
 # SQLite settings (backup/development)
 RLC_ROOT = Path("C:/RLC") if sys.platform == "win32" else Path("/home/user/RLC-Agent")

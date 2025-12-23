@@ -23,7 +23,7 @@ from sqlalchemy import create_engine, text
 FEED_GRAINS_DIR = Path(r"C:\Users\torem\Dropbox\RLC Documents\LLM Model and Documents\Projects\RLC-Agent\Models\Feed Grains")
 
 # PostgreSQL connection
-PG_PASSWORD = "rlc2024!"  # Change if different
+PG_PASSWORD = "SoupBoss1"  # PostgreSQL password
 PG_URL = f"postgresql://postgres:{PG_PASSWORD}@localhost:5432/rlc_commodities"
 
 # Files to extract (balance sheets only - skip price files for now)
