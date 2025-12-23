@@ -15,13 +15,27 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-import sqlite3
 
 # Base paths
 RLC_ROOT = Path("C:/RLC") if sys.platform == "win32" else Path("/home/user/RLC-Agent")
 PROJECT_ROOT = RLC_ROOT / "projects" / "rlc-agent" if sys.platform == "win32" else Path("/home/user/RLC-Agent")
 DATA_DIR = PROJECT_ROOT / "data"
 COLLECTORS_DIR = PROJECT_ROOT / "commodity_pipeline" / "data_collectors" / "collectors"
+
+# Database configuration - supports both PostgreSQL (production) and SQLite (backup)
+try:
+    from db_config import (
+        get_connection, get_engine, DB_TYPE,
+        list_tables_query, get_table_columns_query, format_column_info,
+        check_database, PG_DATABASE
+    )
+    DB_AVAILABLE = True
+except ImportError:
+    # Fallback to SQLite if db_config not available
+    import sqlite3
+    DB_AVAILABLE = False
+    DB_TYPE = "sqlite"
+    PG_DATABASE = None
 
 
 class ToolResult:
@@ -262,7 +276,7 @@ def run_collector(collector_name: str, **kwargs) -> ToolResult:
 
 def query_database(sql: str, limit: int = 100) -> ToolResult:
     """
-    Execute a SQL query on the commodity database.
+    Execute a SQL query on the commodity database (PostgreSQL or SQLite).
 
     Args:
         sql: SQL query (SELECT only for safety)
@@ -283,42 +297,49 @@ def query_database(sql: str, limit: int = 100) -> ToolResult:
             if keyword in sql_lower:
                 return ToolResult(False, error=f"Query contains forbidden keyword: {keyword}")
 
-        # Find the database
-        db_path = DATA_DIR / "rlc_commodities.db"
-        if not db_path.exists():
-            # Try alternate locations
-            alt_paths = [
-                PROJECT_ROOT / "data" / "rlc_commodities.db",
-                PROJECT_ROOT / "commodity.db",
-            ]
-            for alt in alt_paths:
-                if alt.exists():
-                    db_path = alt
-                    break
-            else:
-                return ToolResult(False, error="Database not found. Run database initialization first.")
-
         # Add LIMIT if not present
         if "limit" not in sql_lower:
             sql = f"{sql.rstrip(';')} LIMIT {limit}"
 
-        conn = sqlite3.connect(str(db_path))
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        # Use db_config if available (PostgreSQL), otherwise fallback to SQLite
+        if DB_AVAILABLE:
+            with get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute(sql)
+                rows = cursor.fetchall()
 
-        cursor.execute(sql)
-        rows = cursor.fetchall()
+                # Convert to list of dicts (works for both PostgreSQL RealDictCursor and SQLite Row)
+                if DB_TYPE == "postgresql":
+                    results = [dict(row) for row in rows]
+                else:
+                    results = [dict(row) for row in rows]
 
-        # Convert to list of dicts
-        results = [dict(row) for row in rows]
+            return ToolResult(True, data={
+                "query": sql,
+                "row_count": len(results),
+                "rows": results,
+                "database": DB_TYPE
+            })
+        else:
+            # Fallback to SQLite
+            db_path = DATA_DIR / "rlc_commodities.db"
+            if not db_path.exists():
+                return ToolResult(False, error="Database not found. Run database initialization first.")
 
-        conn.close()
+            conn = sqlite3.connect(str(db_path))
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            results = [dict(row) for row in rows]
+            conn.close()
 
-        return ToolResult(True, data={
-            "query": sql,
-            "row_count": len(results),
-            "rows": results
-        })
+            return ToolResult(True, data={
+                "query": sql,
+                "row_count": len(results),
+                "rows": results,
+                "database": "sqlite"
+            })
 
     except Exception as e:
         return ToolResult(False, error=str(e))
@@ -326,41 +347,74 @@ def query_database(sql: str, limit: int = 100) -> ToolResult:
 
 def list_tables() -> ToolResult:
     """
-    List all tables in the commodity database.
+    List all tables in the commodity database (PostgreSQL or SQLite).
 
     Returns:
         ToolResult with list of tables and their schemas
     """
     try:
-        db_path = DATA_DIR / "rlc_commodities.db"
-        if not db_path.exists():
-            return ToolResult(False, error="Database not found")
+        if DB_AVAILABLE:
+            with get_connection() as conn:
+                cursor = conn.cursor()
 
-        conn = sqlite3.connect(str(db_path))
-        cursor = conn.cursor()
+                # Get all tables using database-appropriate query
+                cursor.execute(list_tables_query())
+                if DB_TYPE == "postgresql":
+                    tables = [row["name"] for row in cursor.fetchall()]
+                else:
+                    tables = [row[0] for row in cursor.fetchall()]
 
-        # Get all tables
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
-        tables = [row[0] for row in cursor.fetchall()]
+                # Get schema for each table
+                table_info = []
+                for table in tables:
+                    if DB_TYPE == "postgresql":
+                        # PostgreSQL: use information_schema
+                        cursor.execute(get_table_columns_query(table))
+                        columns = [{"name": row["name"], "type": row["type"]} for row in cursor.fetchall()]
+                    else:
+                        # SQLite: use PRAGMA
+                        cursor.execute(f"PRAGMA table_info({table})")
+                        columns = [{"name": row[1], "type": row[2]} for row in cursor.fetchall()]
 
-        # Get schema for each table
-        table_info = []
-        for table in tables:
-            cursor.execute(f"PRAGMA table_info({table})")
-            columns = [{"name": row[1], "type": row[2]} for row in cursor.fetchall()]
+                    cursor.execute(f"SELECT COUNT(*) FROM {table}")
+                    result = cursor.fetchone()
+                    row_count = result["count"] if DB_TYPE == "postgresql" else result[0]
 
-            cursor.execute(f"SELECT COUNT(*) FROM {table}")
-            row_count = cursor.fetchone()[0]
+                    table_info.append({
+                        "name": table,
+                        "columns": columns,
+                        "row_count": row_count
+                    })
 
-            table_info.append({
-                "name": table,
-                "columns": columns,
-                "row_count": row_count
-            })
+            return ToolResult(True, data={"database": DB_TYPE, "tables": table_info})
+        else:
+            # Fallback to SQLite
+            db_path = DATA_DIR / "rlc_commodities.db"
+            if not db_path.exists():
+                return ToolResult(False, error="Database not found")
 
-        conn.close()
+            conn = sqlite3.connect(str(db_path))
+            cursor = conn.cursor()
 
-        return ToolResult(True, data=table_info)
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
+            tables = [row[0] for row in cursor.fetchall()]
+
+            table_info = []
+            for table in tables:
+                cursor.execute(f"PRAGMA table_info({table})")
+                columns = [{"name": row[1], "type": row[2]} for row in cursor.fetchall()]
+
+                cursor.execute(f"SELECT COUNT(*) FROM {table}")
+                row_count = cursor.fetchone()[0]
+
+                table_info.append({
+                    "name": table,
+                    "columns": columns,
+                    "row_count": row_count
+                })
+
+            conn.close()
+            return ToolResult(True, data={"database": "sqlite", "tables": table_info})
 
     except Exception as e:
         return ToolResult(False, error=str(e))
@@ -468,14 +522,25 @@ def get_system_status() -> ToolResult:
         }
 
         # Check database
-        db_path = DATA_DIR / "rlc_commodities.db"
-        if db_path.exists():
+        if DB_AVAILABLE:
+            db_status = check_database()
             status["database"] = {
-                "path": str(db_path),
-                "size_mb": round(db_path.stat().st_size / (1024 * 1024), 2)
+                "type": DB_TYPE,
+                "connected": db_status.get("connected", False),
+                "host": db_status.get("host", "unknown"),
+                "database": db_status.get("database", "unknown"),
+                "tables": db_status.get("tables", 0)
             }
         else:
-            status["database"] = None
+            db_path = DATA_DIR / "rlc_commodities.db"
+            if db_path.exists():
+                status["database"] = {
+                    "type": "sqlite",
+                    "path": str(db_path),
+                    "size_mb": round(db_path.stat().st_size / (1024 * 1024), 2)
+                }
+            else:
+                status["database"] = None
 
         # Check for transcripts
         transcripts_dir = Path("C:/RLC/whisper/transcripts")
@@ -1329,8 +1394,31 @@ def get_memory_stats() -> ToolResult:
 # ENHANCED DATABASE TOOLS
 # =============================================================================
 
-# Path to the main commodity database
+# Path to the main commodity database (SQLite fallback)
 COMMODITY_DB_PATH = DATA_DIR / "rlc_commodities.db"
+
+
+def _get_db_connection():
+    """Get database connection using db_config or SQLite fallback."""
+    if DB_AVAILABLE:
+        return get_connection()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
+        conn.row_factory = sqlite3.Row
+        return conn
+
+
+def _execute_query(cursor, sql, params=None):
+    """Execute query with database-appropriate parameter placeholders."""
+    if DB_TYPE == "postgresql":
+        # PostgreSQL uses %s placeholders
+        sql = sql.replace("?", "%s")
+    if params:
+        cursor.execute(sql, params)
+    else:
+        cursor.execute(sql)
+    return cursor
 
 
 def get_data_catalog(
@@ -1350,83 +1438,115 @@ def get_data_catalog(
         ToolResult with available data series
     """
     try:
-        if not COMMODITY_DB_PATH.exists():
-            return ToolResult(False, error="Database not initialized. Run: python deployment/excel_to_database.py --init --load")
+        if DB_AVAILABLE:
+            with get_connection() as conn:
+                cursor = conn.cursor()
 
-        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
-        cursor = conn.cursor()
+                # Check if data_catalog table exists
+                if DB_TYPE == "postgresql":
+                    cursor.execute("""
+                        SELECT table_name FROM information_schema.tables
+                        WHERE table_schema = 'public' AND table_name = 'data_catalog'
+                    """)
+                else:
+                    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='data_catalog'")
 
-        # Check if data_catalog table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='data_catalog'")
-        if not cursor.fetchone():
-            # Fall back to listing what's in other tables
-            tables_info = []
-            for table in ['balance_sheets', 'price_history', 'excel_time_series']:
-                try:
-                    cursor.execute(f"SELECT COUNT(*) FROM {table}")
-                    count = cursor.fetchone()[0]
-                    if count > 0:
-                        cursor.execute(f"SELECT DISTINCT source_file FROM {table} LIMIT 20")
-                        files = [r[0] for r in cursor.fetchall()]
-                        tables_info.append({
-                            "table": table,
-                            "rows": count,
-                            "source_files": files[:10]
+                if not cursor.fetchone():
+                    # Fall back to listing what's in other tables
+                    tables_info = []
+                    for table in ['commodity_balance_sheets', 'balance_sheets', 'price_history', 'excel_time_series']:
+                        try:
+                            cursor.execute(f"SELECT COUNT(*) as cnt FROM {table}")
+                            result = cursor.fetchone()
+                            count = result["cnt"] if DB_TYPE == "postgresql" else result[0]
+                            if count > 0:
+                                cursor.execute(f"SELECT DISTINCT source_file FROM {table} LIMIT 20")
+                                files = [r["source_file"] if DB_TYPE == "postgresql" else r[0] for r in cursor.fetchall()]
+                                tables_info.append({
+                                    "table": table,
+                                    "rows": count,
+                                    "source_files": files[:10]
+                                })
+                        except:
+                            pass
+
+                    return ToolResult(True, data={
+                        "database": DB_TYPE,
+                        "note": "Data catalog not yet built. Here's what's in the database:",
+                        "tables": tables_info
+                    })
+
+                # Build query with filters
+                conditions = []
+                params = []
+                placeholder = "%s" if DB_TYPE == "postgresql" else "?"
+
+                if commodity:
+                    conditions.append(f"LOWER(commodity) LIKE {placeholder}")
+                    params.append(f"%{commodity.lower()}%")
+                if category:
+                    conditions.append(f"LOWER(category) LIKE {placeholder}")
+                    params.append(f"%{category.lower()}%")
+                if search:
+                    conditions.append(f"(LOWER(series_name) LIKE {placeholder} OR LOWER(description) LIKE {placeholder})")
+                    params.extend([f"%{search.lower()}%", f"%{search.lower()}%"])
+
+                where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+
+                cursor.execute(f"""
+                    SELECT series_id, series_name, description, commodity, country,
+                           category, frequency, start_date, end_date, row_count
+                    FROM data_catalog
+                    {where_clause}
+                    ORDER BY category, commodity, series_name
+                    LIMIT 50
+                """, params if params else None)
+
+                series = []
+                for row in cursor.fetchall():
+                    if DB_TYPE == "postgresql":
+                        series.append({
+                            "id": row["series_id"],
+                            "name": row["series_name"],
+                            "description": row["description"],
+                            "commodity": row["commodity"],
+                            "country": row["country"],
+                            "category": row["category"],
+                            "frequency": row["frequency"],
+                            "date_range": f"{row['start_date']} to {row['end_date']}",
+                            "rows": row["row_count"]
                         })
-                except:
-                    pass
+                    else:
+                        series.append({
+                            "id": row[0],
+                            "name": row[1],
+                            "description": row[2],
+                            "commodity": row[3],
+                            "country": row[4],
+                            "category": row[5],
+                            "frequency": row[6],
+                            "date_range": f"{row[7]} to {row[8]}",
+                            "rows": row[9]
+                        })
 
+                return ToolResult(True, data={
+                    "database": DB_TYPE,
+                    "count": len(series),
+                    "series": series
+                })
+        else:
+            # SQLite fallback
+            if not COMMODITY_DB_PATH.exists():
+                return ToolResult(False, error="Database not initialized")
+
+            conn = sqlite3.connect(str(COMMODITY_DB_PATH))
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='data_catalog'")
+            if not cursor.fetchone():
+                conn.close()
+                return ToolResult(True, data={"note": "Data catalog not built", "tables": []})
             conn.close()
-            return ToolResult(True, data={
-                "note": "Data catalog not yet built. Here's what's in the database:",
-                "tables": tables_info
-            })
-
-        # Build query with filters
-        conditions = []
-        params = []
-
-        if commodity:
-            conditions.append("LOWER(commodity) LIKE ?")
-            params.append(f"%{commodity.lower()}%")
-        if category:
-            conditions.append("LOWER(category) LIKE ?")
-            params.append(f"%{category.lower()}%")
-        if search:
-            conditions.append("(LOWER(series_name) LIKE ? OR LOWER(description) LIKE ?)")
-            params.extend([f"%{search.lower()}%", f"%{search.lower()}%"])
-
-        where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
-
-        cursor.execute(f"""
-            SELECT series_id, series_name, description, commodity, country,
-                   category, frequency, start_date, end_date, row_count
-            FROM data_catalog
-            {where_clause}
-            ORDER BY category, commodity, series_name
-            LIMIT 50
-        """, params)
-
-        series = []
-        for row in cursor.fetchall():
-            series.append({
-                "id": row[0],
-                "name": row[1],
-                "description": row[2],
-                "commodity": row[3],
-                "country": row[4],
-                "category": row[5],
-                "frequency": row[6],
-                "date_range": f"{row[7]} to {row[8]}",
-                "rows": row[9]
-            })
-
-        conn.close()
-
-        return ToolResult(True, data={
-            "count": len(series),
-            "series": series
-        })
+            return ToolResult(True, data={"note": "Use PostgreSQL for full functionality"})
 
     except Exception as e:
         return ToolResult(False, error=str(e))
@@ -1449,60 +1569,77 @@ def get_balance_sheet(
         ToolResult with balance sheet data in a readable format
     """
     try:
-        if not COMMODITY_DB_PATH.exists():
-            return ToolResult(False, error="Database not initialized")
+        if DB_AVAILABLE:
+            with get_connection() as conn:
+                cursor = conn.cursor()
+                placeholder = "%s" if DB_TYPE == "postgresql" else "?"
 
-        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
-        cursor = conn.cursor()
+                # Build query - try commodity_balance_sheets first (new table name)
+                table_name = "commodity_balance_sheets"
+                conditions = [f"LOWER(commodity) LIKE {placeholder}"]
+                params = [f"%{commodity.lower()}%"]
 
-        # Build query
-        conditions = ["LOWER(commodity) LIKE ?"]
-        params = [f"%{commodity.lower()}%"]
+                if country:
+                    conditions.append(f"LOWER(country) LIKE {placeholder}")
+                    params.append(f"%{country.lower()}%")
+                if year:
+                    conditions.append(f"marketing_year = {placeholder}")
+                    params.append(year)
 
-        if country:
-            conditions.append("LOWER(country) LIKE ?")
-            params.append(f"%{country.lower()}%")
-        if year:
-            conditions.append("marketing_year = ?")
-            params.append(year)
+                where_clause = " AND ".join(conditions)
 
-        where_clause = " AND ".join(conditions)
+                cursor.execute(f"""
+                    SELECT commodity, country, marketing_year, metric, value, unit, source_file
+                    FROM {table_name}
+                    WHERE {where_clause}
+                    ORDER BY country, marketing_year DESC, metric
+                    LIMIT 200
+                """, params)
 
-        cursor.execute(f"""
-            SELECT commodity, country, marketing_year, metric, value, unit, source_file
-            FROM balance_sheets
-            WHERE {where_clause}
-            ORDER BY country, marketing_year DESC, metric
-            LIMIT 200
-        """, params)
+                rows = cursor.fetchall()
 
-        rows = cursor.fetchall()
-        conn.close()
+                if not rows:
+                    return ToolResult(True, data={
+                        "commodity": commodity,
+                        "database": DB_TYPE,
+                        "message": "No data found. Try searching with get_data_catalog first."
+                    })
 
-        if not rows:
-            return ToolResult(True, data={
-                "commodity": commodity,
-                "message": "No data found. Try searching with get_data_catalog first."
-            })
+                # Organize by country/year
+                by_country_year = {}
+                for row in rows:
+                    if DB_TYPE == "postgresql":
+                        key = f"{row['country']}|{row['marketing_year']}"
+                        if key not in by_country_year:
+                            by_country_year[key] = {
+                                "commodity": row["commodity"],
+                                "country": row["country"],
+                                "marketing_year": row["marketing_year"],
+                                "metrics": {},
+                                "source": row["source_file"]
+                            }
+                        by_country_year[key]["metrics"][row["metric"]] = row["value"]
+                    else:
+                        key = f"{row[1]}|{row[2]}"
+                        if key not in by_country_year:
+                            by_country_year[key] = {
+                                "commodity": row[0],
+                                "country": row[1],
+                                "marketing_year": row[2],
+                                "metrics": {},
+                                "source": row[6]
+                            }
+                        by_country_year[key]["metrics"][row[3]] = row[4]
 
-        # Organize by country/year
-        by_country_year = {}
-        for row in rows:
-            key = f"{row[1]}|{row[2]}"
-            if key not in by_country_year:
-                by_country_year[key] = {
-                    "commodity": row[0],
-                    "country": row[1],
-                    "marketing_year": row[2],
-                    "metrics": {},
-                    "source": row[6]
-                }
-            by_country_year[key]["metrics"][row[3]] = row[4]
-
-        return ToolResult(True, data={
-            "commodity": commodity,
-            "balance_sheets": list(by_country_year.values())
-        })
+                return ToolResult(True, data={
+                    "database": DB_TYPE,
+                    "commodity": commodity,
+                    "balance_sheets": list(by_country_year.values())
+                })
+        else:
+            if not COMMODITY_DB_PATH.exists():
+                return ToolResult(False, error="Database not initialized")
+            return ToolResult(False, error="Use PostgreSQL for full functionality")
 
     except Exception as e:
         return ToolResult(False, error=str(e))
@@ -1741,56 +1878,95 @@ def analyze_data_relationships(commodity: str) -> ToolResult:
 
 def get_database_status() -> ToolResult:
     """
-    Get comprehensive status of the commodity database.
+    Get comprehensive status of the commodity database (PostgreSQL or SQLite).
 
     Returns:
         ToolResult with database statistics
     """
     try:
-        if not COMMODITY_DB_PATH.exists():
-            return ToolResult(True, data={
-                "exists": False,
-                "message": "Database not initialized. Run: python deployment/excel_to_database.py --init --load"
-            })
+        if DB_AVAILABLE:
+            db_status = check_database()
 
-        conn = sqlite3.connect(str(COMMODITY_DB_PATH))
-        cursor = conn.cursor()
+            if not db_status.get("connected"):
+                return ToolResult(True, data={
+                    "connected": False,
+                    "database_type": DB_TYPE,
+                    "error": db_status.get("error", "Connection failed"),
+                    "message": "Database not connected. Check PostgreSQL is running."
+                })
 
-        status = {
-            "exists": True,
-            "path": str(COMMODITY_DB_PATH),
-            "size_mb": COMMODITY_DB_PATH.stat().st_size / (1024*1024),
-            "tables": {}
-        }
+            with get_connection() as conn:
+                cursor = conn.cursor()
 
-        # Get all tables
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        tables = [r[0] for r in cursor.fetchall()]
+                status = {
+                    "connected": True,
+                    "database_type": DB_TYPE,
+                    "host": db_status.get("host"),
+                    "database": db_status.get("database"),
+                    "tables": {}
+                }
 
-        for table in tables:
-            try:
-                cursor.execute(f"SELECT COUNT(*) FROM {table}")
-                count = cursor.fetchone()[0]
-                status["tables"][table] = count
-            except:
-                status["tables"][table] = "error"
+                # Get all tables
+                cursor.execute(list_tables_query())
+                if DB_TYPE == "postgresql":
+                    tables = [r["name"] for r in cursor.fetchall()]
+                else:
+                    tables = [r[0] for r in cursor.fetchall()]
 
-        # Get summary stats
-        try:
-            cursor.execute("SELECT COUNT(DISTINCT commodity) FROM balance_sheets")
-            status["commodities_count"] = cursor.fetchone()[0]
-        except:
-            pass
+                for table in tables:
+                    try:
+                        cursor.execute(f"SELECT COUNT(*) as cnt FROM {table}")
+                        result = cursor.fetchone()
+                        count = result["cnt"] if DB_TYPE == "postgresql" else result[0]
+                        status["tables"][table] = count
+                    except:
+                        status["tables"][table] = "error"
 
-        try:
-            cursor.execute("SELECT COUNT(DISTINCT source_file) FROM excel_imports WHERE import_status='success'")
-            status["files_imported"] = cursor.fetchone()[0]
-        except:
-            pass
+                # Get summary stats from commodity_balance_sheets
+                try:
+                    cursor.execute("SELECT COUNT(DISTINCT commodity) as cnt FROM commodity_balance_sheets")
+                    result = cursor.fetchone()
+                    status["commodities_count"] = result["cnt"] if DB_TYPE == "postgresql" else result[0]
+                except:
+                    pass
 
-        conn.close()
+                # Total records
+                status["total_records"] = sum(v for v in status["tables"].values() if isinstance(v, int))
 
-        return ToolResult(True, data=status)
+                return ToolResult(True, data=status)
+        else:
+            # SQLite fallback
+            if not COMMODITY_DB_PATH.exists():
+                return ToolResult(True, data={
+                    "connected": False,
+                    "database_type": "sqlite",
+                    "message": "Database not initialized. Run: python deployment/excel_to_database.py --init --load"
+                })
+
+            conn = sqlite3.connect(str(COMMODITY_DB_PATH))
+            cursor = conn.cursor()
+
+            status = {
+                "connected": True,
+                "database_type": "sqlite",
+                "path": str(COMMODITY_DB_PATH),
+                "size_mb": COMMODITY_DB_PATH.stat().st_size / (1024*1024),
+                "tables": {}
+            }
+
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = [r[0] for r in cursor.fetchall()]
+
+            for table in tables:
+                try:
+                    cursor.execute(f"SELECT COUNT(*) FROM {table}")
+                    count = cursor.fetchone()[0]
+                    status["tables"][table] = count
+                except:
+                    status["tables"][table] = "error"
+
+            conn.close()
+            return ToolResult(True, data=status)
 
     except Exception as e:
         return ToolResult(False, error=str(e))
