@@ -15,8 +15,8 @@ aiohttp>=3.9.0
 # For MySQL (uncomment if using MySQL)
 # mysql-connector-python>=8.0.0
 
-# For PostgreSQL (uncomment if using PostgreSQL)
-# psycopg2-binary>=2.9.0
+# For PostgreSQL
+psycopg2-binary>=2.9.0
 
 # Optional: SQLAlchemy for ORM support
 # sqlalchemy>=2.0.0
