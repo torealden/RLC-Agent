@@ -19,10 +19,17 @@ from datetime import date, datetime
 from pathlib import Path
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 from dotenv import load_dotenv
-load_dotenv()
+
+# Load credentials from centralized config
+credentials_path = project_root / "config" / "credentials.env"
+if credentials_path.exists():
+    load_dotenv(credentials_path)
+else:
+    load_dotenv()  # Fall back to default .env
 
 logging.basicConfig(
     level=logging.INFO,
@@ -169,30 +176,23 @@ def run_collector(name: str, save_to_db: bool = True, verbose: bool = False) -> 
 
 def save_to_database(collector_name: str, result) -> int:
     """Save collection result to database"""
-    # Get database connection
-    database_url = os.getenv('DATABASE_URL')
-    if not database_url:
-        logger.warning("DATABASE_URL not set, skipping database save")
-        return 0
+    # Get database connection using DB_* environment variables
+    db_type = os.getenv('DB_TYPE', 'postgresql')
 
     try:
-        if database_url.startswith('postgresql'):
+        if db_type == 'postgresql':
             import psycopg2
-            from urllib.parse import urlparse
-            parsed = urlparse(database_url)
             conn = psycopg2.connect(
-                host=parsed.hostname,
-                port=parsed.port or 5432,
-                database=parsed.path[1:],
-                user=parsed.username,
-                password=parsed.password
+                host=os.getenv('DB_HOST', 'localhost'),
+                port=int(os.getenv('DB_PORT', 5432)),
+                database=os.getenv('DB_NAME', 'rlc_commodities'),
+                user=os.getenv('DB_USER', 'postgres'),
+                password=os.getenv('DB_PASSWORD', '')
             )
-            db_type = 'postgresql'
         else:
             import sqlite3
-            db_path = database_url.replace('sqlite:///', '')
+            db_path = os.getenv('SQLITE_PATH', './data/rlc_commodities.db')
             conn = sqlite3.connect(db_path)
-            db_type = 'sqlite'
     except Exception as e:
         logger.warning(f"Database connection failed: {e}")
         return 0

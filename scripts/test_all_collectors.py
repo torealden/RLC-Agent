@@ -19,10 +19,19 @@ from pathlib import Path
 from datetime import date, timedelta
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 from dotenv import load_dotenv
-load_dotenv()
+
+# Load credentials from centralized config
+credentials_path = project_root / "config" / "credentials.env"
+if credentials_path.exists():
+    load_dotenv(credentials_path)
+    print(f"Loaded credentials from {credentials_path}")
+else:
+    load_dotenv()  # Fall back to default .env
+    print("Using default .env file")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -119,7 +128,7 @@ TEST_CONFIGS = {
         'class': 'NASSCollector',
         'params': {'data_type': 'crop_progress', 'commodities': ['corn']},
         'auth_required': True,
-        'env_var': 'NASS_API_KEY',
+        'env_var': 'QUICK_STATS_API_KEY',
     },
 }
 
