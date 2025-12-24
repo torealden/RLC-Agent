@@ -9,6 +9,8 @@ venv/
 .venv/
 env/
 .env
+credentials.env
+config/credentials.env
 
 # IDE
 .idea/
