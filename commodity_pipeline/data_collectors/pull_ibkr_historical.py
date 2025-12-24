@@ -205,6 +205,13 @@ class IBKRHistoricalPuller:
         if not records:
             return 0
 
+        # Deduplicate records - keep last occurrence for each (commodity, contract, date)
+        seen = {}
+        for r in records:
+            key = (r['commodity_code'], r['contract_symbol'], r['trade_date'])
+            seen[key] = r
+        records = list(seen.values())
+
         insert_sql = """
         INSERT INTO futures_prices
             (commodity_code, contract_symbol, exchange, trade_date, open, high, low, close, volume, source)
