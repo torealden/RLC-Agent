@@ -33,23 +33,27 @@ script_dir = Path(__file__).parent
 project_root = script_dir.parent.parent
 sys.path.insert(0, str(script_dir.parent))
 
-# Load environment variables from .env files
+# Load environment variables from centralized credentials
 try:
     from dotenv import load_dotenv
 
-    # Search for .env files in multiple locations
-    env_locations = [
-        project_root / '.env',
-        project_root / 'api Manager' / '.env',
-        script_dir.parent / '.env',
-        script_dir.parent / 'usda_ams_agent' / '.env',
-        Path.cwd() / '.env',
-    ]
-
-    for env_path in env_locations:
-        if env_path.exists():
-            load_dotenv(env_path)
-            print(f"Loaded environment from: {env_path}")
+    # Primary: centralized credentials file
+    credentials_path = project_root / "config" / "credentials.env"
+    if credentials_path.exists():
+        load_dotenv(credentials_path)
+        print(f"Loaded credentials from: {credentials_path}")
+    else:
+        # Fallback: search for .env files in multiple locations
+        env_locations = [
+            project_root / '.env',
+            project_root / 'api Manager' / '.env',
+            script_dir.parent / '.env',
+            Path.cwd() / '.env',
+        ]
+        for env_path in env_locations:
+            if env_path.exists():
+                load_dotenv(env_path)
+                print(f"Loaded environment from: {env_path}")
 
 except ImportError:
     print("Warning: python-dotenv not installed. Run: pip install python-dotenv")
