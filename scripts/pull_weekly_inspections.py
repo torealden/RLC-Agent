@@ -404,16 +404,22 @@ def get_marketing_year(commodity: str, record_date: date) -> str:
     return f"{str(my_start)[-2:]}/{str(my_end)[-2:]}"
 
 
-def parse_csv_file(file_path: Path, commodity_filter: str = None) -> List[Dict]:
+def parse_csv_file(file_path: Path, commodity_filter: str = None,
+                   start_date: date = None, end_date: date = None) -> List[Dict]:
     """
     Parse FGIS CSV file and return list of records
+
+    The CSV has ~112 columns including quality metrics like moisture, protein, oil, etc.
+    We parse all valuable fields for analysis.
 
     Args:
         file_path: Path to CSV file
         commodity_filter: Optional filter for specific commodity
+        start_date: Optional filter - only include records on/after this date
+        end_date: Optional filter - only include records on/before this date
 
     Returns:
-        List of parsed records
+        List of parsed records with quantities and quality metrics
     """
     records = []
 
@@ -428,13 +434,19 @@ def parse_csv_file(file_path: Path, commodity_filter: str = None) -> List[Dict]:
                     # Get grain type
                     grain = row.get('Grain', '').strip().upper()
 
-                    # Apply filter if specified
+                    # Apply commodity filter if specified
                     if commodity_filter and grain != commodity_filter.upper():
                         continue
 
                     # Parse week ending date
                     week_ending = parse_date(row.get('Thursday', ''))
                     if not week_ending:
+                        continue
+
+                    # Apply date filters if specified (for efficiency)
+                    if start_date and week_ending < start_date:
+                        continue
+                    if end_date and week_ending > end_date:
                         continue
 
                     # Parse quantities
@@ -444,22 +456,31 @@ def parse_csv_file(file_path: Path, commodity_filter: str = None) -> List[Dict]:
                     if not pounds and not metric_tons:
                         continue
 
-                    # Calculate bushels
-                    bushel_weight = BUSHEL_WEIGHTS.get(grain, 60.0)
-                    if pounds:
+                    # Calculate bushels using proper conversion
+                    # From transcript: MT * 36.7437 / 1000 = thousand bushels
+                    conversion_factor = MT_TO_BUSHELS.get(grain, 36.7437)
+                    if metric_tons:
+                        thousand_bushels = metric_tons * conversion_factor / 1000
+                    elif pounds:
+                        bushel_weight = BUSHEL_WEIGHTS.get(grain, 60.0)
                         bushels = pounds / bushel_weight
                         thousand_bushels = bushels / 1000
                     else:
                         thousand_bushels = None
 
-                    # Get destination
+                    # Get destination and location info
                     destination = row.get('Destination', '').strip()
 
                     # Calculate marketing year
                     marketing_year = get_marketing_year(grain, week_ending)
 
+                    # Parse cert date (actual inspection date)
+                    cert_date = parse_date(row.get('Cert Date', ''))
+
+                    # Build base record
                     record = {
                         'week_ending': week_ending,
+                        'cert_date': cert_date,
                         'grain': grain,
                         'destination': destination,
                         'pounds': pounds,
@@ -469,11 +490,44 @@ def parse_csv_file(file_path: Path, commodity_filter: str = None) -> List[Dict]:
                         'month': week_ending.replace(day=1),
                         'port': row.get('Port', '').strip(),
                         'grade': row.get('Grade', '').strip(),
+                        'commodity_class': row.get('Class', '').strip(),
+
+                        # Quality Metrics - these are valuable for analysis
+                        # Moisture (critical for soybeans - affects pricing/grading)
+                        'moisture_avg': parse_number(row.get('M AVG', '')),
+                        'moisture_high': parse_number(row.get('M HIGH', '')),
+                        'moisture_low': parse_number(row.get('M LOW', '')),
+
+                        # Test Weight (density indicator)
+                        'test_weight': parse_number(row.get('TW', '')),
+
+                        # Protein (important for meal value)
+                        'protein_avg': parse_number(row.get('PRO AVG', '')),
+                        'protein_high': parse_number(row.get('PRO HIGH', '')),
+                        'protein_low': parse_number(row.get('PRO LOW', '')),
+
+                        # Oil content (important for oil value)
+                        'oil_avg': parse_number(row.get('OIL AVG', '')),
+                        'oil_high': parse_number(row.get('OIL HIGH', '')),
+                        'oil_low': parse_number(row.get('OIL LOW', '')),
+
+                        # Damage metrics
+                        'total_damage_avg': parse_number(row.get('DM AVG', '')),
+                        'heat_damage_avg': parse_number(row.get('HD AVG', '')),
+                        'foreign_material_avg': parse_number(row.get('FM AVG', '')),
+
+                        # Splits (for soybeans)
+                        'splits_avg': parse_number(row.get('SPL AVG', '')),
+
+                        # Dockage
+                        'dockage_avg': parse_number(row.get('DKG AVG', '')),
                     }
 
                     records.append(record)
 
             logger.info(f"Parsed {len(records)} records from {file_path.name}")
+            if start_date or end_date:
+                logger.info(f"  Date filter: {start_date} to {end_date}")
             return records
 
         except UnicodeDecodeError:
