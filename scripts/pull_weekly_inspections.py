@@ -5,6 +5,61 @@ Weekly Export Inspections Data Collection Script
 Downloads FGIS export inspection data, aggregates by week and month,
 and updates the US Soybean Trade Excel file and RLC_commodities database.
 
+=============================================================================
+PROCESS DOCUMENTATION (from video transcript)
+=============================================================================
+
+STEP-BY-STEP PROCESS:
+
+1. CHECK CORRECTION DATE (CRITICAL FIRST STEP)
+   - Download wa_gr101.txt from https://www.ams.usda.gov/mnreports/wa_gr101.txt
+   - Look at the bottom of the report for the correction date for your commodity
+   - Example: "SOYBEANS 12-9-2025" means corrections were made through that date
+   - Must repull data from correction date forward to capture all corrections
+   - Without this step, you will have incorrect historical data!
+
+2. DOWNLOAD CSV FILES
+   - URL: https://fgisonline.ams.usda.gov/ExportGrainReport/CY{year}.csv
+   - Download current year file (e.g., CY2025.csv)
+   - If correction date crosses year boundary, also download previous year
+   - Example: In early 2026, corrections may affect 2025 data
+
+3. CREATE PIVOT TABLE (conceptually - we do this in code)
+   - Columns: Thursday (week ending date)
+   - Filters: Cert Date, Grain (select your commodity)
+   - Rows: Destination (countries)
+   - Values: Sum of Metric Tons
+
+4. CONVERT TO THOUSAND BUSHELS
+   - Formula: =IF(cell="","",cell*36.7437/1000)
+   - 36.7437 is conversion factor (MT to bushels for soybeans)
+   - Leave blanks as blanks (don't store zeros - takes up space)
+
+5. WEEKLY TOTALS
+   - Sum all destinations for each week
+   - Paste into "Weekly Export Inspections" tab
+   - Countries organized by region in the spreadsheet
+
+6. MONTHLY TOTALS BY DESTINATION
+   - Select all cert dates for each month
+   - Sum by destination country
+   - Paste into "Monthly Export Inspections" tab
+
+7. SPECIAL HANDLING: MEXICO
+   - Mexico goes to row 300 (not with other countries at ~266)
+   - Reason: Truck shipments may not be inspected
+   - Census Bureau data later shows actual total
+   - Track difference to estimate unrecorded shipments
+
+AG THEORY NOTES:
+- Inspections = first look at actual export shipments
+- Weekly Export Sales report (Thursday) shows commitments vs shipments
+- Census Bureau data (monthly) is the final reconciliation data
+- Inspections help adjust forecast vs actuals before Census data arrives
+- Marketing year for soybeans starts September 1
+
+=============================================================================
+
 Data Sources:
 - Weekly text report: https://www.ams.usda.gov/mnreports/wa_gr101.txt
 - CSV files: https://fgisonline.ams.usda.gov/ExportGrainReport/CY{year}.csv
@@ -68,6 +123,18 @@ BUSHEL_WEIGHTS = {
     'SUNFLOWER': 28.0,
 }
 
+# Conversion factor: Metric Tons to Bushels
+# This is used in the pivot table conversion: MT * 36.7437 / 1000 = thousand bushels
+# For soybeans: 1 MT = 36.7437 bushels (2204.62 lbs / 60 lbs per bushel)
+MT_TO_BUSHELS = {
+    'SOYBEANS': 36.7437,  # 2204.62 / 60
+    'CORN': 39.3680,      # 2204.62 / 56
+    'WHEAT': 36.7437,     # 2204.62 / 60
+    'SORGHUM': 39.3680,   # 2204.62 / 56
+    'BARLEY': 45.9296,    # 2204.62 / 48
+    'OATS': 68.8944,      # 2204.62 / 32
+}
+
 # Marketing year start months
 MARKETING_YEAR_START = {
     'SOYBEANS': 9,  # September
@@ -88,6 +155,19 @@ EXCEL_FILES = {
 # Excel sheet names
 WEEKLY_SHEET = 'Weekly Export Inspections'
 MONTHLY_SHEET = 'Monthly Export Inspections'
+
+# Special handling for Mexico
+# Mexico data goes to a different row because truck shipments may not be inspected
+# The difference between inspections and Census Bureau data is tracked separately
+MEXICO_SPECIAL_HANDLING = {
+    'SOYBEANS': {
+        'weekly_row': 300,  # Instead of normal position (~266)
+        'reason': 'Truck shipments to Mexico may not be inspected'
+    }
+}
+
+# Countries that need special handling due to inspection vs Census differences
+BORDER_COUNTRIES = ['MEXICO', 'CANADA']
 
 
 # =============================================================================
@@ -158,7 +238,8 @@ def download_weekly_report(data_dir: Path) -> Optional[Path]:
     """
     Download the weekly text report (wa_gr101.txt)
 
-    This report has the latest week's summary data.
+    This report has the latest week's summary data AND the correction dates.
+    CRITICAL: Must check correction dates to know how far back to repull data.
     """
     data_dir.mkdir(parents=True, exist_ok=True)
     local_path = data_dir / "wa_gr101.txt"
@@ -178,6 +259,101 @@ def download_weekly_report(data_dir: Path) -> Optional[Path]:
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to download weekly report: {e}")
         return None
+
+
+def parse_correction_date(report_path: Path, commodity: str) -> Optional[date]:
+    """
+    Parse the wa_gr101.txt report to find the latest correction date for a commodity.
+
+    CRITICAL STEP: The correction date tells us how far back we need to repull data
+    to capture any corrections that were made to historical records.
+
+    The report format has correction dates at the bottom, like:
+    "SOYBEANS 12-9-2025" meaning corrections were made through that date.
+
+    Args:
+        report_path: Path to wa_gr101.txt
+        commodity: Commodity name (SOYBEANS, CORN, etc.)
+
+    Returns:
+        Date of latest correction, or None if not found
+    """
+    if not report_path or not report_path.exists():
+        logger.warning("Weekly report not available for correction date check")
+        return None
+
+    try:
+        content = report_path.read_text(encoding='latin-1')
+
+        # Look for pattern like "SOYBEANS    12-9-2025" or similar
+        import re
+
+        # The correction dates appear at the bottom of the report
+        # Format varies but generally: COMMODITY  MM-DD-YYYY or M-D-YYYY
+        pattern = rf'{commodity.upper()}\s+(\d{{1,2}}-\d{{1,2}}-\d{{4}})'
+        matches = re.findall(pattern, content, re.IGNORECASE)
+
+        if matches:
+            # Take the last match (most recent)
+            date_str = matches[-1]
+            correction_date = datetime.strptime(date_str, '%m-%d-%Y').date()
+            logger.info(f"Found correction date for {commodity}: {correction_date}")
+            return correction_date
+
+        # Try alternative patterns
+        pattern2 = rf'{commodity.upper()}\s+(\d{{1,2}}/\d{{1,2}}/\d{{4}})'
+        matches2 = re.findall(pattern2, content, re.IGNORECASE)
+
+        if matches2:
+            date_str = matches2[-1]
+            correction_date = datetime.strptime(date_str, '%m/%d/%Y').date()
+            logger.info(f"Found correction date for {commodity}: {correction_date}")
+            return correction_date
+
+        logger.warning(f"Could not find correction date for {commodity} in report")
+        return None
+
+    except Exception as e:
+        logger.error(f"Error parsing correction date: {e}")
+        return None
+
+
+def get_required_date_range(correction_date: Optional[date], last_update_date: Optional[date] = None) -> Tuple[date, date]:
+    """
+    Determine the date range to pull based on correction date and last update.
+
+    Logic:
+    - If correction_date exists, start from that date (to capture corrections)
+    - Otherwise, start from last_update_date
+    - If neither, default to beginning of current marketing year
+
+    Args:
+        correction_date: Latest correction date from wa_gr101.txt
+        last_update_date: Date of our last update (from database or tracking)
+
+    Returns:
+        Tuple of (start_date, end_date) for data pull
+    """
+    today = date.today()
+    end_date = today
+
+    if correction_date:
+        # Start from correction date to capture all corrections
+        start_date = correction_date
+        logger.info(f"Using correction date as start: {start_date}")
+    elif last_update_date:
+        # Start from last update
+        start_date = last_update_date
+        logger.info(f"Using last update date as start: {start_date}")
+    else:
+        # Default to beginning of current marketing year (September 1)
+        if today.month >= 9:
+            start_date = date(today.year, 9, 1)
+        else:
+            start_date = date(today.year - 1, 9, 1)
+        logger.info(f"Using marketing year start as default: {start_date}")
+
+    return start_date, end_date
 
 
 # =============================================================================
@@ -647,10 +823,21 @@ def run_weekly_update(
     data_dir: Path = None,
     update_excel: bool = False,
     save_to_db: bool = False,
-    force_download: bool = False
+    force_download: bool = False,
+    check_corrections: bool = True
 ) -> Dict:
     """
     Run the complete weekly update workflow
+
+    PROCESS (from video transcript):
+    1. Download wa_gr101.txt and check correction date for commodity
+    2. Download CY{year}.csv files for required years
+    3. Parse CSV and filter by commodity
+    4. Create pivot: weeks as columns, destinations as rows, sum of metric tons
+    5. Convert to thousand bushels: MT * 36.7437 / 1000
+    6. Aggregate weekly totals and monthly totals by destination
+    7. Update Excel file (Weekly Export Inspections + Monthly Export Inspections tabs)
+    8. Save to database
 
     Args:
         commodity: Commodity to process (SOYBEANS, CORN, WHEAT)
@@ -659,6 +846,7 @@ def run_weekly_update(
         update_excel: Whether to update Excel file
         save_to_db: Whether to save to database
         force_download: Force re-download of files
+        check_corrections: Check wa_gr101.txt for correction dates (recommended)
 
     Returns:
         Dict with results summary
@@ -670,6 +858,7 @@ def run_weekly_update(
         'weekly_totals': 0,
         'monthly_totals': 0,
         'records_saved': 0,
+        'correction_date': None,
     }
 
     # Set defaults
@@ -684,6 +873,20 @@ def run_weekly_update(
 
     logger.info(f"Starting weekly inspection update for {commodity}")
     logger.info(f"Years: {years}")
+
+    # Step 0: Check correction date from weekly report (CRITICAL STEP)
+    correction_date = None
+    if check_corrections:
+        logger.info("Step 0: Checking correction date from wa_gr101.txt...")
+        report_path = download_weekly_report(data_dir)
+        if report_path:
+            correction_date = parse_correction_date(report_path, commodity)
+            results['correction_date'] = str(correction_date) if correction_date else None
+            if correction_date:
+                logger.info(f"IMPORTANT: Corrections found through {correction_date}")
+                logger.info(f"Will repull data from {correction_date} forward to capture corrections")
+            else:
+                logger.info("No correction date found - using default date range")
 
     # Step 1: Download files
     all_records = []
