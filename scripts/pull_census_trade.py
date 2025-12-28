@@ -985,7 +985,7 @@ def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
 
 
 # =============================================================================
-# EXCEL UPDATE FUNCTIONS
+# EXCEL UPDATE FUNCTIONS (using xlwings to preserve external links)
 # =============================================================================
 
 def update_excel_file(
@@ -995,7 +995,10 @@ def update_excel_file(
     flow: str
 ) -> bool:
     """
-    Update the Excel file with Census trade data
+    Update the Excel file with Census trade data using xlwings.
+
+    xlwings uses Excel's COM interface, which preserves external links and formulas
+    that openpyxl corrupts.
 
     Args:
         excel_path: Path to Excel file
@@ -1007,11 +1010,10 @@ def update_excel_file(
         True if successful
     """
     try:
-        import openpyxl
-        from openpyxl.utils import get_column_letter
+        import xlwings as xw
     except ImportError:
-        print("ERROR: openpyxl not installed. Run: pip install openpyxl")
-        logger.error("openpyxl not installed")
+        print("ERROR: xlwings not installed. Run: pip install xlwings")
+        logger.error("xlwings not installed")
         return False
 
     if not excel_path.exists():
@@ -1031,115 +1033,124 @@ def update_excel_file(
         return False
 
     try:
-        wb = openpyxl.load_workbook(excel_path)
+        # Open Excel in the background (visible=False for faster processing)
+        # Use app=None to connect to existing Excel or start new one
+        app = xw.App(visible=False, add_book=False)
+        app.display_alerts = False
+        app.screen_updating = False
+
+        wb = app.books.open(str(excel_path))
     except Exception as e:
         print(f"ERROR: Failed to open Excel file: {e}")
         logger.error(f"Failed to open Excel file: {e}")
         return False
 
-    if sheet_name not in wb.sheetnames:
-        print(f"ERROR: Sheet '{sheet_name}' not found in workbook")
-        print(f"Available sheets: {wb.sheetnames}")
-        logger.error(f"Sheet '{sheet_name}' not found")
-        wb.close()
-        return False
+    try:
+        # Get the sheet
+        if sheet_name not in [s.name for s in wb.sheets]:
+            print(f"ERROR: Sheet '{sheet_name}' not found in workbook")
+            print(f"Available sheets: {[s.name for s in wb.sheets]}")
+            logger.error(f"Sheet '{sheet_name}' not found")
+            wb.close()
+            app.quit()
+            return False
 
-    ws = wb[sheet_name]
+        ws = wb.sheets[sheet_name]
 
-    # Find date columns by scanning row 3 (header row with dates)
-    # Format expected: YYYY-MM or similar date format
-    date_columns = {}
-    header_row = 3  # Adjust if dates are in different row
+        # Find date columns by scanning row 3 (header row with dates)
+        date_columns = {}
+        header_row = 3
 
-    for col in range(1, ws.max_column + 1):
-        cell_value = ws.cell(row=header_row, column=col).value
-        if cell_value:
-            try:
-                # Try to parse as date
-                if isinstance(cell_value, datetime):
-                    dt = cell_value.date()
-                    date_columns[(dt.year, dt.month)] = col
-                elif isinstance(cell_value, date):
-                    date_columns[(cell_value.year, cell_value.month)] = col
-                elif isinstance(cell_value, str):
-                    # Try parsing string dates
-                    for fmt in ['%Y-%m', '%m/%Y', '%b-%y', '%b %Y', '%Y/%m']:
-                        try:
-                            dt = datetime.strptime(cell_value, fmt)
-                            date_columns[(dt.year, dt.month)] = col
-                            break
-                        except ValueError:
-                            continue
-            except Exception:
-                continue
+        # Get used range to find max column
+        used_range = ws.used_range
+        max_col = used_range.last_cell.column
 
-    if not date_columns:
-        print(f"WARNING: Could not find date columns in row {header_row}")
-        print("Trying row 2...")
-        header_row = 2
-        for col in range(1, ws.max_column + 1):
-            cell_value = ws.cell(row=header_row, column=col).value
+        for col in range(1, max_col + 1):
+            cell_value = ws.range((header_row, col)).value
             if cell_value:
                 try:
+                    # xlwings returns datetime objects directly
                     if isinstance(cell_value, datetime):
-                        dt = cell_value.date()
-                        date_columns[(dt.year, dt.month)] = col
+                        date_columns[(cell_value.year, cell_value.month)] = col
                     elif isinstance(cell_value, date):
                         date_columns[(cell_value.year, cell_value.month)] = col
+                    elif isinstance(cell_value, str):
+                        # Try parsing string dates
+                        for fmt in ['%Y-%m', '%m/%Y', '%b-%y', '%b %Y', '%Y/%m']:
+                            try:
+                                dt = datetime.strptime(cell_value, fmt)
+                                date_columns[(dt.year, dt.month)] = col
+                                break
+                            except ValueError:
+                                continue
                 except Exception:
                     continue
 
-    print(f"  Found {len(date_columns)} date columns in {sheet_name}")
-    logger.info(f"Found {len(date_columns)} date columns in {sheet_name}")
+        if not date_columns:
+            print(f"WARNING: Could not find date columns in row {header_row}")
+            print("Trying row 2...")
+            header_row = 2
+            for col in range(1, max_col + 1):
+                cell_value = ws.range((header_row, col)).value
+                if cell_value:
+                    try:
+                        if isinstance(cell_value, datetime):
+                            date_columns[(cell_value.year, cell_value.month)] = col
+                        elif isinstance(cell_value, date):
+                            date_columns[(cell_value.year, cell_value.month)] = col
+                    except Exception:
+                        continue
 
-    # Debug: show sample date columns
-    if date_columns:
-        sample_dates = list(date_columns.keys())[:5]
-        print(f"  Sample date columns: {sample_dates}")
+        print(f"  Found {len(date_columns)} date columns in {sheet_name}")
+        logger.info(f"Found {len(date_columns)} date columns in {sheet_name}")
 
-    # Debug: show sample destinations from data
-    sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
-    print(f"  Sample destinations in data: {sample_dests}")
+        # Debug: show sample date columns
+        if date_columns:
+            sample_dates = list(date_columns.keys())[:5]
+            print(f"  Sample date columns: {sample_dates}")
 
-    # Update cells
-    updated = 0
-    not_found_destinations = set()
-    not_found_dates = set()
-    matched_destinations = set()
+        # Debug: show sample destinations from data
+        sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
+        print(f"  Sample destinations in data: {sample_dests}")
 
-    for (year, month, destination), data in monthly_data.items():
-        # Get row for this destination
-        row = DESTINATION_ROWS.get(destination.upper())
-        if not row:
-            not_found_destinations.add(destination)
-            continue
+        # Update cells
+        updated = 0
+        not_found_destinations = set()
+        not_found_dates = set()
+        matched_destinations = set()
 
-        matched_destinations.add(destination)
+        for (year, month, destination), data in monthly_data.items():
+            # Get row for this destination
+            row = DESTINATION_ROWS.get(destination.upper())
+            if not row:
+                not_found_destinations.add(destination)
+                continue
 
-        # Get column for this date
-        col = date_columns.get((year, month))
-        if not col:
-            not_found_dates.add((year, month))
-            continue
+            matched_destinations.add(destination)
 
-        # Get value to write (use quantity for volume, or value_usd for value sheets)
-        # Census data is typically in metric tons for quantity
-        value = data.get('quantity')  # Use quantity (metric tons)
+            # Get column for this date
+            col = date_columns.get((year, month))
+            if not col:
+                not_found_dates.add((year, month))
+                continue
 
-        if value and value > 0:
-            # Convert to thousand metric tons for consistency with inspections
-            value_in_tmt = value / 1000.0
-            ws.cell(row=row, column=col).value = round(value_in_tmt, 3)
-            updated += 1
+            # Get value to write (use quantity for volume)
+            # Census data is typically in metric tons for quantity
+            value = data.get('quantity')
 
-    # Debug output
-    print(f"  Matched destinations: {len(matched_destinations)}")
-    if matched_destinations:
-        print(f"    Examples: {list(matched_destinations)[:5]}")
+            if value and value > 0:
+                # Convert to thousand metric tons for consistency with inspections
+                value_in_tmt = value / 1000.0
+                ws.range((row, col)).value = round(value_in_tmt, 3)
+                updated += 1
 
-    # Save workbook
-    try:
-        wb.save(excel_path)
+        # Debug output
+        print(f"  Matched destinations: {len(matched_destinations)}")
+        if matched_destinations:
+            print(f"    Examples: {list(matched_destinations)[:5]}")
+
+        # Save workbook
+        wb.save()
         print(f"Updated {updated} cells in {sheet_name}")
         logger.info(f"Updated {updated} cells in {sheet_name}")
 
@@ -1152,12 +1163,19 @@ def update_excel_file(
             print(f"  Dates not in spreadsheet: {len(not_found_dates)}")
 
         wb.close()
+        app.quit()
         return True
 
     except Exception as e:
-        print(f"ERROR: Failed to save Excel file: {e}")
-        logger.error(f"Failed to save Excel file: {e}")
-        wb.close()
+        print(f"ERROR: Failed to update Excel file: {e}")
+        logger.error(f"Failed to update Excel file: {e}")
+        import traceback
+        traceback.print_exc()
+        try:
+            wb.close()
+            app.quit()
+        except:
+            pass
         return False
 
 
