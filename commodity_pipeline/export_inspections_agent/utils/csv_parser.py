@@ -227,6 +227,7 @@ class FGISCSVParser:
             '%m-%d-%Y',      # MM-DD-YYYY
             '%d-%b-%Y',      # DD-Mon-YYYY
             '%m/%d/%y',      # MM/DD/YY
+            '%Y%m%d',        # YYYYMMDD (no separators)
         ]
         
         value = value.strip()

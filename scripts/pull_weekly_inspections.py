@@ -367,7 +367,7 @@ def parse_date(value: str) -> Optional[date]:
     if not value or not value.strip():
         return None
 
-    formats = ['%m/%d/%Y', '%Y-%m-%d', '%m-%d-%Y', '%m/%d/%y']
+    formats = ['%m/%d/%Y', '%Y-%m-%d', '%m-%d-%Y', '%m/%d/%y', '%Y%m%d']
 
     for fmt in formats:
         try:
