@@ -38,3 +38,4 @@ logs/
 .ipynb_checkpoints/
 *.db
 data/
+OBS_recordings/export_inspections_1.mkv

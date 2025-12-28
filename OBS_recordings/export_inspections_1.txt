@@ -1,0 +1,535 @@
+Okay, today I am recording the update process for weekly export inspections from USDA FAS.
+This is for soybeans and inspections are for the U.S.
+The corn and wheat processes would be roughly similar to these, and the spreadsheet setup
+should be exactly the same. This is the spreadsheet that I use for all of the export data.
+And we just drag it this way. Looks like it's about a year behind.
+So the first thing we're going to have to do is update all the data.
+And to do that, first we must go to the right page.
+So there are two parts to this. The first is the actual weekly report.
+And we look at that. We go all the way to the bottom.
+And we look at the date of the latest change for the commodity that we're working in.
+So for soybeans, it's 12-9-2025.
+Typically we would have updated this through whatever week was through December 15th, I guess.
+And so we would have to go back and instead of just pulling the data out of the sheet for the current week,
+we would also have to go back past the 9th and pull the data from there and then repaste it so that we get the corrections in there.
+So this is a key step because without this we wouldn't have the correct data.
+I don't know how it will work in the API, but I assume we'll need to, when we set up the pull,
+we'll need to have the collector go in, look at this, understand the latest date, and then pull the data from that date forward.
+We are going to start with updating everything. And so you can see kind of how all of this works and what I do.
+And then I'll explain why I'm doing the things that I'm doing along the way.
+And so when the LLM that is parsing this for directions and for to set up a step-by-step guide,
+there are essentially two parts to the commentary.
+One is theory, ag theory, and I guess I'll try and note when I'm talking about ag theory, but I may not do it all the time.
+The other is the step-by-step process that is used to update the spreadsheet to get the data,
+clean the data up, and then paste it into the spreadsheet so you can see where everything goes in the spreadsheet and how I do it.
+But while I'm doing that, like I said, I'll make some comments about theory.
+All right. So after we start with understanding what dates we need to pull, then we need to go back and actually get the data.
+And this one I have bookmarked. This is where you go. That's the wrong bookmark.
+Let me try that again.
+Okay. Here is the URL for the inspections data.
+You can see there are links for each year, and that link contains an Excel file that we'll use and that the LLM will need to download each week.
+Now, the files that it will download will depend on the dates.
+Most of the time you only have to download the most recent year.
+So you can see here around this time of the year when the revisions go back past the beginning of the current year.
+So once we get to the beginning of 2026, there may be revisions in 2025.
+And so if there are revisions in 2025, then you have to download both the 2026 and the 2025 file.
+There's not a 2026 file up there yet because we don't have 2026 yet. We're not in 2026 yet.
+But once they start reporting 2026 data, there will be a 2026 file there too.
+Right now we'll just do 2025 and 2024 because I imagine there are probably some corrections in the 2024 data.
+I would typically look for the 2024 date and just pull the data from there.
+But we're so far behind we probably should just update all of the 2024 and all of the 2025 data.
+All right. So we download files. Just click on the link and then it should start the download.
+There you go. There's the 2025 file and here's the 2024 file.
+All right.
+And so the first thing that I've got to do is to select all the data.
+And then insert a pivot table.
+And I just create a new worksheet, insert the pivot table.
+All right. So the Thursday is going to be the column heading.
+Assert date is going to be a filter.
+The grain is going to be a filter.
+The destination is going to be rows.
+And then tons are going to be metric ton.
+And it's going to be values, the sum of the metric tons.
+So now we can select our grain.
+And so if we do soybeans, this now gives us the weekly export inspections of soybeans by destination and week.
+And then gives us a grand total at the end.
+So typically what I would do is I would go back and I would select certain dates based on the correction date and and then sum those up.
+And we use the data or we track both the weekly totals, but then we also track the monthly totals because the monthly totals then are connected back to our balance sheet and help us.
+This is the very first view we get of exports, actual export shipments.
+We also get a Thursday report that shows exports from the USDA and the weekly export sales that shows a weekly shipments total.
+We also track that and I'll record a separate video for that one.
+And then we also get Census Bureau export data once a month.
+And the Census Bureau export data is the final data that we use.
+That's what we sort of reconcile to in our balance sheets.
+But the inspections data is what we use to see how we're doing relative to our forecast, both on a monthly basis and an annual basis.
+There's a very nice chart in the US oil seed balance sheets file that shows that.
+And we'll take a look and fill that in when we are finished sort of parsing and cleaning up all the data.
+Okay, so we don't because we're going to go all the way back. We don't have to do any of the selecting here.
+If after we record this and we convert it to a process, if that ends up becoming a sticking point, I'll go back and re record a video or maybe at the end of this, I'll show you kind of how I would select and then.
+Some things up, although we'll sum stuff up in in months and we'll select in months when we do it for months.
+And so you'll be able to see that too.
+Because we're doing the whole year the way that I'll do the months will be a little bit different, but I'll explain that when I get to it.
+All right, so now we have effectively the data and it's cleaned up and this is for 2024.
+So what we need to do is because we track inspections in bushels and we create a pivot table with tons, even though there is a bushels number.
+I've never sort of been able to get those to to reconcile to well, there's a little bit of rounding in there. And so this is just the way that we've always done it.
+And so this is kind of how I'll do it, how we end up doing it in the in the LLM, how the agent ends up doing it will will really be up to it.
+I imagine because there is a because this will all go in a database.
+This part will be much easier, but we need to convert this to bushels and the right units.
+And also, again, because we're using a spreadsheet, we can't paste zeros into the spreadsheet and get too large really, really quickly.
+And so the other thing we have to do is what we do is we look and if there's a value, then we calculate bushels. If there's no value, then we just leave it blank.
+I'm not sure that that'll be an issue in the database, although we're going to store a ton of data.
+And so ideally, we wouldn't store a value for the week.
+So for like Algeria here in the first week of twenty twenty four one four, there were no shipments.
+Ideally, we would just have an entry in the database for that.
+But I don't know enough about database theory to know whether that would screw up the database.
+And so we have to have zeros in the database.
+That's fine. But for a spreadsheet, we would put a zero there because it just takes up.
+It ends up ends up taking too much space.
+So our formula is if that cell is blank, equal blank, then we just replace it with a blank.
+Otherwise, we take that cell and we multiply the value in there times thirty six point seven four.
+Three seven divided by a thousand.
+And that will give us that will give us the correct bushels.
+And the other thing that we need to do to be able to again, this is a spreadsheet thing,
+but to be able to drag this over without having to redo it every time is to generalize this formula.
+So take Algeria out and put that in.
+We can't have that go across, so we'll freeze the column.
+And then we need to do the same thing for the date.
+Except we need to instead of freezing the column, we need to freeze the row so we can drag it across.
+And we need to do the same thing in the second part of the statement to make sure that we don't have any errors.
+And then once we do this, what we'll do is we will copy the data into the database.
+That was the wrong thing on Algeria.
+This needs to be the column, not the row.
+Columns for the countries and rows for the value or for the dates.
+All right, now we do that. We expect to get nothing there.
+That is what we get.
+And let's just put a date up here so I don't have to keep cycling back to the top.
+1 slash 4 slash 24.
+This is stored as text.
+I guess we'll do it this way.
+Oh, wrong.
+All right.
+And drag this over here and let it both go down.
+Good. We're getting the results that we want.
+And then we'll just copy this all the way over.
+Now, the grand total won't work because the grand total, one, we know there's going to be something in there.
+So for the grand total, we can just do this and times 36.7437 divided by 1000.
+And that gets us that. Now the problem with the grand total.
+So now let's see that state.
+So with the grand total, we need to freeze the date.
+Or I guess really unfreeze the date, but freeze the row so it doesn't come down.
+I'm not really taking it down, but let's see if this will do it.
+There we go. OK, so now we've got everything in bushels.
+It's in millions of thousands of bushels.
+Thousands of bushels.
+This is off.
+Should be in thousands of bushels, but it's in hundreds of bushels apparently.
+Let's try that again.
+There we go.
+And of course, this is now screwed up.
+Equals to total times 36.7437 divided by 1000.
+And then generalize our date again.
+Alright, that was all duplicated because I made an error in the first one.
+So hopefully we don't get two steps there.
+But now we're going to drag this all over.
+So close.
+And same with these. They're not going to have it.
+But we don't really need this column anyway.
+We don't need the grand total column.
+Because what we're going to do next is paste these values into our export spreadsheet.
+And so...
+Move that out a little bit so we can see everything.
+And this is kind of easier because it is just...
+It is just selecting everything.
+Finding Algeria over here.
+And then pasting it.
+Algeria over here.
+And we paste these values so we get the values instead of the formula.
+And then we just go down and do it.
+Now I could do a lookup on this sheet and have this look it up.
+Again, this won't be an issue for the database.
+But I could in theory do a lookup based on the country and the date.
+But because we can't store zeros, going back and erasing all of the blanks without doing it annually is probably beyond my Excel abilities.
+If it was possible, then I might do it that way.
+But in the interim, while tedious, this is the best way to do this.
+At least that I found.
+And until we get the LLM setup and this is automated.
+Now one thing to notice is there are differences in the names.
+And so the problem is that not all of the agencies use the same names.
+So we may have to do a little extra stuff on names.
+But generally we should be able to find a name that is close enough that we can match it up and fix whatever we need to fix otherwise.
+I think for our stuff, I think we'll just have one standardized name for everybody.
+Oh, I used to be a lot faster at this too.
+I used to be able to do this pretty quickly.
+But I am well out of practice and it's been years since I've done this.
+And in terms of theory, this one is really pretty straightforward.
+We post these in here and the weekly totals really give us some insight into where we are for any given week versus sort of where we thought we might be.
+And then the monthly totals we do, we just literally sort of line those up.
+You'll see against our prediction and then adjust everything based on how close we are, how far away we are.
+Are into Egypt.
+I am through.
+Now, this 2024 ended on January 2nd.
+And so when we do the month summaries, one, we'll have to go back and get the 2023 file to get apparently the first three days of 2024, which are in the 2023 file, because that's when the week ended.
+But then we'll have to do the same thing the opposite way for 2025, because the first day is in 2024.
+Not that I'm guessing we shipped a lot on New Year's Day, but I guess we'll see.
+The people process wouldn't be this far behind. And so some of the stuff that we would end up doing today won't necessarily be in that final process.
+And I think there probably will also be some stuff that we can, I think having the LLM and agents do it will make this a much more efficient process than this for sure.
+Even if we had to load this stuff in the spreadsheets, it would be a lot more efficient.
+As you can tell, this takes forever to do this.
+And getting it automated really there's not much to it, but getting it into these spreadsheets can be a little challenging.
+Apparently, just based on my experience, having people build automated downloaders for this data, because this is one that obviously we do this every week.
+And so it can take up a lot of time if it's not automated and generally just export data.
+You could have an analyst that just did export data.
+Think back to like the 50s and it's not like AggieCon was not then what it is today for sure.
+There weren't very many people like me in the world at that point.
+But you can imagine like I always think when I see those World War II movies and they have those offices just full of people typing or writing or just doing math.
+And the computer is one of the amazing inventions, amazing inventions in the history of mankind, and it just keeps getting better and making our lives easier.
+Anyway, I'm ready.
+But I could imagine hiring somebody back in the day. That's where I was starting. I can imagine hiring somebody just to fill in export data, just to cap the export data from one spreadsheet to another, basically.
+You can see we have our countries and our destination sheet organized by region.
+And again, in a database, that's probably not going to be that critical.
+A lot of that stuff is we do it so that it's easier for us to see or conceptualize, and I'm not sure that'll make a difference for a computer.
+I would also say there's going to be some processes that we do that I'm fairly certain will be much more efficient through the LLM.
+So a lot of this stuff and a lot of the stuff that I do and that I talk about, I don't necessarily expect that we're going to replicate when we redo it, but it'll be good to have it down anyway in case the LLM doesn't work.
+And then at least we'll have all our processes recorded.
+All right. Now for Mexico, we treat Mexico a little bit differently on the weekly, and that's because there is a difference between the inspections data and the census data for exports for any given month for any given country or not any given country, but for most, well, for some countries, I guess.
+The January 2025 total shipments to Mexico may not equal, from inspections may not equal the total shipments from the Census Bureau when we get it in a little bit here a couple months later.
+And the reason is that while most of the grain that's inspected for export, the vast majority of it gets inspected, the one that may or may not be inspected are truckloads.
+And so our neighbors, Mexico and Canada, account for those differences. We look at those differences. And again, I'll show you how we do that as well when we get into adjusting our export forecast.
+But because of that, we don't paste the Mexican shipments with the, where we paste everybody else. As you can see, there's a line up here for Mexico 266, but we paste it on 300 because we do some stuff to try and capture some of that, some of the unrecorded inspections.
+Since it's our first look and then we have to wait like a month or so, a month or two before we get the census data, we want to, and the difference is not inconsequential.
+We want to make sure that we have some idea what we think about that and think about that when we go to estimate or change our forecast for monthly exports based on the weekly data that we get.
+So that's why we do Mexico a little bit differently. We don't do Canada the same way in the weekly. In the monthly, it's a little bit more straightforward what we're doing.
+In the weekly, it's always, this was the way I learned it and I always kind of wondered why we did that that way, but I didn't ever question it by the time I sort of understood enough about what I was doing to question it.
+I had done this for so long that it was just easier to sort of keep on doing it this way.
+But again, that doesn't mean we need sort of two Mexico data series in the database. I am just pointing it out because I'm doing it differently than I'm going to do all of the other ones.
+And this is going to be long. I'm going to record the whole thing.
+I thought about sort of pausing here and just saying, okay, we continue on, but I think it's probably better if I record the whole thing.
+And then it doesn't really matter once we get it transcribed and all of that kind of stuff. It's not really that long of a process description.
+So I just want the LLM to be able to see everything that we're doing. And certainly it should, you know, you don't have to tell us how to do every, you know, you don't have to say paste Nigeria to row 211.
+You're going to create a database. And so what the LLM will need to know is how to create and get the data in that database.
+And that's going to be up to you and the coding LLM or to the parsing and the coding LLMs that take a look at this video after we're finished.
+If there is a way for the parsing LLM when it's doing this, when it finishes, to tell me whether it wants more commentary, less commentary, whether something is helpful or unhelpful that I'm doing after it's done parsing this, then that would be probably really helpful and probably a good way to improve this process.
+If I'm perfect, of course, then I don't think we need to do that. So you don't have to suggest changes. But if there are things that could be changed that might make it easier or better, then please suggest those.
+All right, we're getting down to the nitty gritty here.
+I really can't wait for this one to be done. I may even have it sort of do an intermediate step where we build the database and start to do that. But I actually we should 100% do this.
+We should replicate this process for a while until we know that the database is working and everything is processing the way that it should. And I guess that's really what we should do for all of these. So we should create kind of two scripts in the end.
+One for the database process that will parse the data, save it to a database, do any calculations, modifications or projections based on that data.
+And then another one that replicates the data portion of this process. So downloads the file, parses the data and inserts it into the to the proper Excel folder or the proper Excel file on the proper tab in the proper cell.
+Yeah, yeah, we should have both actually. And that will allow us to keep up with this while we're building the other nine. I hope that the database and the LLM will work quickly.
+But if they don't, or we have an issue and really honestly, we're probably going to need to continue to work sort of side by side, have an Excel version of our forecast and have a computer database automated version of our forecast.
+And run those side by side for a while to make sure that we're doing everything that we should be and that our that forecast and projections that are generated by the by the LLM and by our computer are match what we have on our own.
+So, yeah, I guess that's what we should do. We should have two scripts. And what I'll do is I'll probably feed this in twice and once and tell it make it for a database based on the agent structure that we have set up and once to tell it to to create a script that matches what we have on our own.
+That downloads and parses the data and then loads it into the spreadsheets in the way that I have historically done that instead of into the database.
+So close to done with 2024.
+Actually, I'm going to pause this for a second while I do after I say that. I think I'm going to pause this while I do 2025. I don't think you need to see both 2024 and 2025 and then we'll see how that goes.
+In the end, and this is a bit of the Ag Theory part, in the end, all of this will eventually help us inform our trade matrix projection.
+And so this is really one of the first steps in building our trade matrix.
+Which shaman do we use? I guess we use the Republic of.
+Alright, and then we just need the totals.
+And you'll see when we paste this, we paste the actual total here.
+And that then is and does match the sum total and the actual total are essentially the sum plus Mexico.
+So that's good. Alright, so weekly inspections are done out through there.
+I'm not sure what happened here, but these need to be dragged over.
+This does this for some reason.
+Extended that space.
+We are not quite up to the way that I would normally maintain them.
+Just getting back to doing these after having juniors do them for a while.
+And I suppose when I was a junior, I did the same stuff, trying to take shortcuts and improve the process.
+And I don't know, there are definitely things that people can show you and there are improvements that can be made to all of these.
+I do not try to pretend like any of them are perfect.
+But especially when you're like a junior analyst, there's a lot you don't know what you don't know.
+And so assuming that you can improve the process immediately, I usually take people like that with a pretty big grain of salt.
+Now, if you've done it for a bit and then you come, or if you are an LLM and you're super smart, then I assume that you can help me improve this process pretty quickly.
+But that is not the normal course.
+Alright, I guess we didn't get any of this stuff copied over.
+Take all of these over.
+Okay.
+Alright, and then let's do this.
+Sorry, this is just some formatting stuff that will bug me forever if I don't fix it.
+Again, will be something that the database will have to worry about.
+Alright, now that we're fixed and formatted.
+Alright, there we go.
+There we go.
+Alright, so now we've got inspections updated through the week of January 2nd, 2025.
+We calculate things like the five-year average for the week and then report what it was so that we can look at the difference between the five-year average, the five-year average for China.
+China five-year average pre-trade war, I'd have to go back and look.
+These probably are not calculated in pre-trade war now.
+Maybe they are, if I froze it.
+And then what they did, the difference to that, the difference to pre-war, China's percent of the total and China's percent of the difference.
+Over here, in one that didn't get extended out, we have the weekly page required.
+And this is for this chart here that we'll go into in a little bit more detail.
+But once you've copied the data over, for the weekly, really the biggest task is kind of the parsing of the data and getting it copied into the spreadsheet.
+Once you're done with that, you're basically through with the weekly process.
+For the monthly process, and again, we'll just switch to 2024 here.
+What I would do is I would go back and I would select all of the cert dates for any given month, which is tedious.
+And again, it will be much more quickly accomplished in an LLM.
+But I'll have to do this for each month.
+And then what we'll do is we will go through and line all the months up by country so we can then just copy across.
+Again, in a database, this will be a lot easier.
+But so what we do here, again, we have to get our totals into bushels.
+We're into thousands of bushels, I guess, more accurately.
+And here, since we're doing monthly totals, we just need to pre-use that country like so.
+And since we're just going down, not going across, doesn't matter.
+Ah, didn't do that right.
+There we go.
+I've got for every country and then for the grand total, which I'll just do it simply.
+Alright, and so this is January.
+I will just paste this down here.
+As values and put the month and then copy the countries.
+And we'll have to do this for each and every month.
+Again, this can be bad.
+And we'll go through and pick all the days in February.
+This is nice because they report it by day and you can get it by day.
+It's a pain for doing this.
+But it's nice to know that when I have the monthly total at the end of the month, I can get it by day.
+It's a pain for doing this.
+But it's nice to know that when I have the monthly total at the end, that that's actually the total for the month.
+And I don't have to sort of interpolate the last, the first week and the last week of the month and guess what the totals are.
+I gotta say, I do really like that.
+Look at that, 2024 is a leap year.
+Alright, and so I guess I really need spaces in between all these country names.
+I could copy this down.
+And then copy our totals, which haven't changed, thankfully.
+I mean, they've changed from January, but the formulas are all still there and all still work.
+Again, I don't think that the LLM will have to deal with all this stuff.
+I mean, it will, but in the database, it'll all be a lot, much, much easier, I think, in the database.
+Alright, select March, I think tedious.
+I assume and hope that this is the last time I ever have to do inspections.
+I imagine that it will be relatively easy to replicate this process.
+Programatically and in that we will build a script that will do this for me in my spreadsheets automatically as well.
+Alright, March totals.
+April.
+Hmm.
+Order of the way through.
+So we can quickly go check boxes, but it's still so much of a pain in the ass.
+Okay, I'll draw.
+Oops.
+Hang this down there.
+Excellent.
+If all the notes could just be that good.
+This is the glory part of working on Wall Street that nobody ever sees, right?
+And it'll stop at some ungodly hour just doing the most boring, mundane task in the world.
+Hard to make this be glamorous.
+And this is mostly what I do.
+People, the people that work on Wall Street make a lot more money than they do and have a lot more exciting lives than they do.
+At least in my experience, I know there are some that do.
+Hmm.
+Alright.
+Right.
+Right.
+See, I guess I've got something I just learned new just right there.
+That is substantially easier.
+Whoa, ho, ho.
+Like that.
+I don't even when we do this generally wouldn't necessarily be faster to to do that.
+And it looks like I screwed up.
+Anyway, fix that in a minute.
+Yeah, I did that.
+I copy and pasted values of our weekly totals.
+And so we'll have to go back and the last thing we do will be that we do that one.
+It's OK.
+Oh, bendy log.
+These are looking else.
+They mostly do not overwrite the calculations.
+Do those again every time.
+And again, for the for the LLM that is parsing this process, you don't have to.
+You don't have to record every step, every cell really much more interested in the concepts of getting all of the.
+All of the data.
+Into the.
+For the right countries, essentially by country, by week, by country weekend and month.
+So not as worried about the spreadsheet process, although again, I think we probably will use this as an opportunity to.
+Create a spread to automate the spreadsheet process as well.
+So that we can have both now and but even on the spreadsheet process, you don't need to you don't need to record every cell because these will change.
+Now the country part will the destination sheet will change.
+And so.
+That makes sense, but.
+We'll have to.
+Look and probably iterate a little bit, but that's OK.
+In the end, it will still no matter how this works out, this is going to save me so much time.
+There is no way that this is not going to save me a ton of time.
+That's about a bunch of countries.
+I was just thinking how nice it was.
+Right after harvest.
+That.
+That's funny, our marketing year starts in September, but really it's October before.
+A lot of the crop hits the market in any way.
+All right, two months left, almost done.
+This search thing was much, much, much better.
+So thankful.
+I tried to do that.
+November, maybe.
+You were.
+All right.
+That can do what you guys do is just.
+It has opened a whole new world for me.
+Sure.
+So again, we just need to, and it's unlikely that the computer will need to go through all of these steps.
+Particularly for the database version.
+And I hope that to version thing is not.
+Too complicated.
+Basically, I want a.
+I want one of these that will do this automatically, and then I want the one that I can sort of keep up with it on.
+All right. Well, the good news is we can just move all of this stuff down a bit.
+And then you just have to recopy it all over.
+Sure.
+One more time.
+There we go. Good, good, good, good, good.
+Let's move this guy back up here.
+All right, let me erase all the extraneous.
+Very good.
+Okay.
+There, but we will figure it out soon enough.
+We just want to erase all of this stuff because I'm just going to redo the the rows and everything.
+This should still be it.
+Nobody.
+I know, buddy. Hold on. Hold on.
+That big yawn was everybody's favorite puppy Freddy.
+As you can tell by the background, it's starting to get light out.
+And wants to go on his daily walk.
+Don't you, little buddy?
+One thing that will be interesting to see in the 2025 data, I think I can't remember whether they continue to report inspections or not during the government shutdown.
+But I guess we shall see.
+This is all of this. We can't erase.
+And so now these are our weekly totals.
+And we've already copied these into actually doesn't really matter.
+That we don't have those anymore.
+Just for austerity's sake, we'll keep them.
+But we need to go back and fill in the monthly.
+And I don't know of a great way to do this other than to do it by hand.
+And there probably is in the same way that I just figured out that there is a better way to select dates.
+There's probably a better way to do this as well.
+China, Colombia.
+If I can.
+Unfortunately, Venezuela and Vietnam buy a lot, so they are generally at the bottom.
+Venezuela here.
+And that's to get Venezuela for buying shit from us.
+Selling us fucking Fentanyl.
+Maduro's an asshole, though.
+He needs to go, and I'm sure the people of Venezuela will be much happier if they can live in peace and have people come.
+It's got to be a fucking gorgeous country.
+I think they ran South America.
+All right, now everybody has to come down to here.
+And this, again, you don't need to do any of this.
+This just is for the purposes of giving the months and countries lined up so I can just copy across.
+This will all happen in a database or this will all happen as you parse the data.
+I think it'll probably come out a little bit easier in the in the other.
+And it looks like I've got to go back.
+All of these should be.
+It will be very interesting to see how many.
+Totals and missteps and misdirections I have engendered into this guy as I do this.
+All right, that gives us our bottom.
+All right, everybody else has to go to wherever these are.
+So it comes down here.
+So Tunisia, Tunisia, Tunisia.
+God bless you.
+That's like, yeah, I think I've always gone through and just done it.
+Country to sort of roll down.
+Five.
+That's right.
+And.
+Hello.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+I'd probably focus better if I did.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Again, this is all just to get the months lined up by country.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+East.
+Yeah.
+Next.
+And this also is different than we do in the other sheet.
+So this is just to get them alphabetical order.
+Next.
+Everybody.
+Next.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Thank you.
+Now we have that all sorted and hopefully these are all correct.
+And then what we will do here at the very end is paste these into the months just like
+we did.
+And then what we will do here at the very end is paste these into the months just like
+we did.
+And then what we will do here at the very end is paste these into the months just like we did.
+And then what we will do here at the very end is paste these into the months just like we did.
+And this is also the step where we would naturally break.
+There's a good spot here for us to, that's parsed and we'll paste this in and that's the last step.
+So it's exactly like the weekly except monthly.
+So it's exactly like the weekly except monthly.
+The spreadsheets are set up exactly the same.
+And so it is just an adjustment in the tab name essentially.
+We are doing the same thing.
+I'm going to stop this recording here and check it out.
+it out and then I will come back and do a follow-up recording for the the
+processing of this stuff so after we do this and after I get 2025 updated what
+I'll do is I'll hook everything else up and and then we'll go through and I'll
+I'll show you how this stuff is linked together we'll look at the chart and
+we'll talk about the chart and why how the chart helps us change our forecast
+and what it shows us and anything else but this will end it for the data
+download and parsing of the export inspections data and this part plus
+pasting the data into the monthly export inspections will be one of the scripts
+that we want to write so that one will be the update script and then the the
+other one that we'll write is is update into a database into the RLC commodities
+database and then analyze in the database and have the LLM go through and
+do some of the calculations like we're looking at before the five-year average
+the difference from the five-year average how much is China off from its
+five-year average how much is China off from the pre-trade war average and on and
+on and on and on so we'll end it here we'll start to get this going and then
+we will see how that goes and kind of iterate from there
