@@ -90,9 +90,11 @@ from urllib3.util.retry import Retry
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from dotenv import load_dotenv
-
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv is optional
 
 # Configure logging
 logging.basicConfig(
@@ -558,6 +560,24 @@ def aggregate_weekly_totals(records: List[Dict], commodity: str) -> Dict[date, f
     return dict(weekly)
 
 
+def aggregate_weekly_by_destination(records: List[Dict], commodity: str) -> Dict[date, Dict[str, float]]:
+    """
+    Aggregate records to weekly totals by destination for Excel update
+
+    Returns:
+        Dict mapping week_ending date to Dict[destination, thousand_bushels]
+    """
+    weekly = defaultdict(lambda: defaultdict(float))
+
+    for r in records:
+        if r['grain'].upper() == commodity.upper():
+            if r['thousand_bushels']:
+                weekly[r['week_ending']][r['destination']] += r['thousand_bushels']
+
+    # Convert nested defaultdict to regular dict
+    return {week: dict(dests) for week, dests in weekly.items()}
+
+
 def aggregate_monthly_by_destination(records: List[Dict], commodity: str) -> Dict[Tuple[date, str], float]:
     """
     Aggregate records to monthly totals by destination country
@@ -599,9 +619,120 @@ def aggregate_marketing_year_by_destination(records: List[Dict], commodity: str)
 # EXCEL UPDATE
 # =============================================================================
 
+# Destination name normalization for matching FGIS data to Excel rows
+# FGIS uses different naming conventions than the Excel file
+DESTINATION_NAME_MAP = {
+    # FGIS name -> Excel name (or None if same)
+    'GERMANY': 'Germany, Federal Republic of',
+    'UNITED KINGDOM': 'United Kingdom',
+    'UK': 'United Kingdom',
+    'NETHERLANDS': 'Netherlands',
+    'KOREA, REPUBLIC OF': 'South Korea',
+    'KOREA, SOUTH': 'South Korea',
+    'KOREA REP OF': 'South Korea',
+    'TAIWAN': 'Taiwan',
+    'CHINA': 'China',
+    'CHINA, PEOPLES REPUBLIC OF': 'China',
+    'JAPAN': 'Japan',
+    'INDONESIA': 'Indonesia',
+    'THAILAND': 'Thailand',
+    'VIETNAM': 'Vietnam',
+    'VIET NAM': 'Vietnam',
+    'PHILIPPINES': 'Philippines',
+    'EGYPT': 'Egypt',
+    'SPAIN': 'Spain',
+    'PORTUGAL': 'Portugal',
+    'ITALY': 'Italy',
+    'FRANCE': 'France',
+    'BELGIUM': 'Belgium',
+    'TURKEY': 'Turkey',
+    'RUSSIA': 'Russia',
+    'RUSSIAN FEDERATION': 'Russia',
+    'MEXICO': 'Mexico',
+    'CANADA': 'Canada',
+    'BRAZIL': 'Brazil',
+    'ARGENTINA': 'Argentina',
+    'COLOMBIA': 'Colombia',
+    'VENEZUELA': 'Venezuela',
+    'PERU': 'Peru',
+    'CHILE': 'Chile',
+    'PAKISTAN': 'Pakistan',
+    'BANGLADESH': 'Bangladesh',
+    'MALAYSIA': 'Malaysia',
+    'SINGAPORE': 'Singapore',
+    'MYANMAR': 'Burma (Myanmar)',
+    'BURMA': 'Burma (Myanmar)',
+    'INDIA': 'India',
+    'SRI LANKA': 'Sri Lanka',
+    'ALGERIA': 'Algeria',
+    'MOROCCO': 'Morocco',
+    'TUNISIA': 'Tunisia',
+    'SOUTH AFRICA': 'South Africa',
+    'NIGERIA': 'Nigeria',
+    'IRAN': 'Iran',
+    'SAUDI ARABIA': 'Saudi Arabia',
+    'UNITED ARAB EMIRATES': 'United Arab Emirates',
+    'UAE': 'United Arab Emirates',
+    'ISRAEL': 'Israel',
+    'JORDAN': 'Jordan',
+    'HONG KONG': 'Hong Kong',
+}
+
+
+def normalize_destination(dest: str) -> str:
+    """
+    Normalize destination name to match Excel file conventions
+
+    Args:
+        dest: Destination name from FGIS data
+
+    Returns:
+        Normalized destination name for Excel matching
+    """
+    if not dest:
+        return dest
+
+    upper_dest = dest.upper().strip()
+
+    # Check explicit mapping
+    if upper_dest in DESTINATION_NAME_MAP:
+        return DESTINATION_NAME_MAP[upper_dest]
+
+    # Return original with title case if no mapping found
+    return dest.strip()
+
+
+def build_destination_to_row_map(ws, special_rows: Dict[str, int] = None) -> Dict[str, int]:
+    """
+    Build mapping of destination names to row numbers in worksheet
+
+    Args:
+        ws: openpyxl worksheet
+        special_rows: Dict of special destination handling (e.g., Mexico -> 300)
+
+    Returns:
+        Dict mapping destination name (uppercase) to row number
+    """
+    dest_to_row = {}
+
+    for row in range(4, ws.max_row + 1):
+        cell_value = ws.cell(row=row, column=1).value
+        if cell_value:
+            name = str(cell_value).strip()
+            # Skip indented subtotals/headers (those starting with spaces)
+            if name and not name.startswith(' '):
+                dest_to_row[name.upper()] = row
+
+    # Add special row overrides
+    if special_rows:
+        dest_to_row.update({k.upper(): v for k, v in special_rows.items()})
+
+    return dest_to_row
+
+
 def update_excel_file(
     excel_path: Path,
-    weekly_data: Dict[date, float],
+    weekly_data: Dict[date, Dict[str, float]],
     monthly_data: Dict[Tuple[date, str], float],
     commodity: str
 ) -> bool:
@@ -610,7 +741,7 @@ def update_excel_file(
 
     Args:
         excel_path: Path to Excel file
-        weekly_data: Weekly totals by date
+        weekly_data: Weekly data - Dict[week_date, Dict[destination, value]]
         monthly_data: Monthly totals by (date, destination)
         commodity: Commodity name
 
@@ -633,19 +764,24 @@ def update_excel_file(
     try:
         wb = openpyxl.load_workbook(excel_path)
 
+        # Special row handling for Mexico inspections
+        special_rows = {}
+        if commodity.upper() == 'SOYBEANS':
+            special_rows['MEXICO'] = 300  # Inspections row for Mexico
+
         # Update Weekly sheet
         if WEEKLY_SHEET in wb.sheetnames:
             ws = wb[WEEKLY_SHEET]
-            _update_weekly_sheet(ws, weekly_data)
-            logger.info(f"Updated {WEEKLY_SHEET} with {len(weekly_data)} weeks")
+            updated_count = _update_weekly_sheet(ws, weekly_data, special_rows)
+            logger.info(f"Updated {WEEKLY_SHEET}: {updated_count} cells updated")
         else:
             logger.warning(f"Sheet '{WEEKLY_SHEET}' not found in workbook")
 
         # Update Monthly sheet
         if MONTHLY_SHEET in wb.sheetnames:
             ws = wb[MONTHLY_SHEET]
-            _update_monthly_sheet(ws, monthly_data)
-            logger.info(f"Updated {MONTHLY_SHEET} with {len(monthly_data)} entries")
+            updated_count = _update_monthly_sheet(ws, monthly_data, special_rows)
+            logger.info(f"Updated {MONTHLY_SHEET}: {updated_count} cells updated")
         else:
             logger.warning(f"Sheet '{MONTHLY_SHEET}' not found in workbook")
 
@@ -655,41 +791,166 @@ def update_excel_file(
 
     except Exception as e:
         logger.error(f"Failed to update Excel file: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
-def _update_weekly_sheet(ws, weekly_data: Dict[date, float]):
-    """Update the weekly inspections sheet"""
-    # Find date row (row 2)
-    date_row = 2
+def _update_weekly_sheet(ws, weekly_data: Dict[date, Dict[str, float]],
+                         special_rows: Dict[str, int] = None) -> int:
+    """
+    Update the weekly inspections sheet
+
+    Args:
+        ws: openpyxl worksheet
+        weekly_data: Dict mapping week_date to Dict[destination, thousand_bushels]
+        special_rows: Special destination->row mappings
+
+    Returns:
+        Number of cells updated
+    """
+    updated = 0
+    date_row = 2  # Dates are in row 2
 
     # Build mapping of existing dates to columns
     date_to_col = {}
-    for col in range(2, ws.max_column + 1):
+    max_col = ws.max_column
+
+    for col in range(2, max_col + 1):
         cell_value = ws.cell(row=date_row, column=col).value
-        if isinstance(cell_value, datetime):
-            date_to_col[cell_value.date()] = col
-        elif isinstance(cell_value, date):
-            date_to_col[cell_value] = col
+        if cell_value:
+            if isinstance(cell_value, datetime):
+                date_to_col[cell_value.date()] = col
+            elif isinstance(cell_value, date):
+                date_to_col[cell_value] = col
 
-    # Find the total row (usually row 3 or first data row)
-    # In the soybean file, row 3 is "European Union-28" which is a subtotal
-    # We need to find where to put the weekly total
+    # Build destination to row mapping
+    dest_to_row = build_destination_to_row_map(ws, special_rows)
 
-    # For now, just log what we would update
-    for week_date, value in sorted(weekly_data.items()):
-        if week_date in date_to_col:
-            col = date_to_col[week_date]
-            logger.debug(f"Would update column {col} for {week_date}: {value:.1f}")
+    # Track new columns needed
+    new_dates = []
+    for week_date in weekly_data.keys():
+        if week_date not in date_to_col:
+            new_dates.append(week_date)
+
+    # Add new date columns if needed (at the end)
+    if new_dates:
+        next_col = max_col + 1
+        for new_date in sorted(new_dates):
+            ws.cell(row=date_row, column=next_col).value = new_date
+            date_to_col[new_date] = next_col
+            logger.info(f"Added new date column {next_col} for {new_date}")
+            next_col += 1
+
+    # Update cells with data
+    for week_date, dest_values in weekly_data.items():
+        col = date_to_col.get(week_date)
+        if not col:
+            logger.warning(f"No column found for date {week_date}")
+            continue
+
+        for destination, value in dest_values.items():
+            # Normalize destination name
+            norm_dest = normalize_destination(destination)
+
+            # Find row for this destination
+            row = dest_to_row.get(norm_dest.upper())
+            if not row:
+                # Try the original name
+                row = dest_to_row.get(destination.upper())
+
+            if row:
+                # Only write non-zero values (blank for zeros per video instructions)
+                if value and value > 0:
+                    # Round to reasonable precision
+                    ws.cell(row=row, column=col).value = round(value, 3)
+                    updated += 1
+            else:
+                # Only log warning for significant values we couldn't place
+                if value and value > 1.0:
+                    logger.debug(f"No row found for destination: {destination} ({norm_dest})")
+
+    return updated
+
+
+def _update_monthly_sheet(ws, monthly_data: Dict[Tuple[date, str], float],
+                          special_rows: Dict[str, int] = None) -> int:
+    """
+    Update the monthly inspections sheet
+
+    Args:
+        ws: openpyxl worksheet
+        monthly_data: Dict mapping (month_date, destination) to thousand_bushels
+        special_rows: Special destination->row mappings
+
+    Returns:
+        Number of cells updated
+    """
+    updated = 0
+    date_row = 2  # Dates are in row 2
+
+    # Build mapping of existing dates to columns
+    date_to_col = {}
+    max_col = ws.max_column
+
+    for col in range(2, max_col + 1):
+        cell_value = ws.cell(row=date_row, column=col).value
+        if cell_value:
+            if isinstance(cell_value, datetime):
+                # Normalize to first of month
+                month_date = cell_value.date().replace(day=1)
+                date_to_col[month_date] = col
+            elif isinstance(cell_value, date):
+                month_date = cell_value.replace(day=1)
+                date_to_col[month_date] = col
+
+    # Build destination to row mapping
+    dest_to_row = build_destination_to_row_map(ws, special_rows)
+
+    # Track new month columns needed
+    new_months = set()
+    for (month_date, dest) in monthly_data.keys():
+        month_first = month_date.replace(day=1) if isinstance(month_date, date) else month_date
+        if month_first not in date_to_col:
+            new_months.add(month_first)
+
+    # Add new month columns if needed
+    if new_months:
+        next_col = max_col + 1
+        for new_month in sorted(new_months):
+            ws.cell(row=date_row, column=next_col).value = new_month
+            date_to_col[new_month] = next_col
+            logger.info(f"Added new month column {next_col} for {new_month}")
+            next_col += 1
+
+    # Update cells with data
+    for (month_date, destination), value in monthly_data.items():
+        # Normalize month date
+        month_first = month_date.replace(day=1) if isinstance(month_date, date) else month_date
+
+        col = date_to_col.get(month_first)
+        if not col:
+            logger.warning(f"No column found for month {month_first}")
+            continue
+
+        # Normalize destination name
+        norm_dest = normalize_destination(destination)
+
+        # Find row for this destination
+        row = dest_to_row.get(norm_dest.upper())
+        if not row:
+            row = dest_to_row.get(destination.upper())
+
+        if row:
+            # Only write non-zero values
+            if value and value > 0:
+                ws.cell(row=row, column=col).value = round(value, 3)
+                updated += 1
         else:
-            logger.debug(f"Date {week_date} not found in sheet, would need to add column")
+            if value and value > 1.0:
+                logger.debug(f"No row found for destination: {destination}")
 
-
-def _update_monthly_sheet(ws, monthly_data: Dict[Tuple[date, str], float]):
-    """Update the monthly inspections sheet"""
-    # Similar logic to weekly, but for monthly data
-    # This needs to match destinations to rows and months to columns
-    pass
+    return updated
 
 
 # =============================================================================
@@ -963,6 +1224,7 @@ def run_weekly_update(
 
     # Step 2: Aggregate data
     weekly_totals = aggregate_weekly_totals(all_records, commodity)
+    weekly_by_dest = aggregate_weekly_by_destination(all_records, commodity)
     monthly_by_dest = aggregate_monthly_by_destination(all_records, commodity)
     yearly_by_dest = aggregate_marketing_year_by_destination(all_records, commodity)
 
@@ -997,7 +1259,7 @@ def run_weekly_update(
         excel_file = EXCEL_FILES.get(commodity.upper())
         if excel_file:
             excel_path = project_root / excel_file
-            if update_excel_file(excel_path, weekly_totals, monthly_by_dest, commodity):
+            if update_excel_file(excel_path, weekly_by_dest, monthly_by_dest, commodity):
                 logger.info("Excel file updated successfully")
             else:
                 logger.warning("Failed to update Excel file")
