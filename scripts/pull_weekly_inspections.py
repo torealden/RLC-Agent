@@ -1022,7 +1022,10 @@ def save_to_database(records: List[Dict], connection_string: str = None) -> int:
     # Default to SQLite if no connection string provided
     if not connection_string:
         connection_string = f'sqlite:///{DEFAULT_DB_PATH}'
+        print(f"\nNo DATABASE_URL set - using SQLite: {DEFAULT_DB_PATH}")
         logger.info(f"Using default SQLite database: {DEFAULT_DB_PATH}")
+    else:
+        print(f"\nSaving {len(records)} records to database...")
 
     try:
         if connection_string.startswith('postgresql'):
@@ -1030,10 +1033,14 @@ def save_to_database(records: List[Dict], connection_string: str = None) -> int:
         elif connection_string.startswith('sqlite'):
             return _save_to_sqlite(records, connection_string)
         else:
+            print(f"ERROR: Unsupported database type: {connection_string.split(':')[0]}")
             logger.error(f"Unsupported database type: {connection_string.split(':')[0]}")
             return 0
     except Exception as e:
+        print(f"ERROR: Failed to save to database: {e}")
         logger.error(f"Failed to save to database: {e}")
+        import traceback
+        traceback.print_exc()
         return 0
 
 
@@ -1043,19 +1050,38 @@ def _save_to_postgresql(records: List[Dict], connection_string: str) -> int:
         import psycopg2
         from psycopg2.extras import execute_values
     except ImportError:
+        print("ERROR: psycopg2 not installed. Run: pip install psycopg2-binary")
         logger.error("psycopg2 not installed. Run: pip install psycopg2-binary")
         return 0
 
     from urllib.parse import urlparse
     parsed = urlparse(connection_string)
 
-    conn = psycopg2.connect(
-        host=parsed.hostname,
-        port=parsed.port or 5432,
-        database=parsed.path[1:],
-        user=parsed.username,
-        password=parsed.password
-    )
+    db_name = parsed.path[1:]
+    print(f"Connecting to PostgreSQL: {parsed.hostname}:{parsed.port or 5432}/{db_name}")
+
+    try:
+        conn = psycopg2.connect(
+            host=parsed.hostname,
+            port=parsed.port or 5432,
+            database=db_name,
+            user=parsed.username,
+            password=parsed.password
+        )
+    except psycopg2.OperationalError as e:
+        error_msg = str(e)
+        if 'does not exist' in error_msg:
+            print(f"\nERROR: Database '{db_name}' does not exist!")
+            print(f"Create it first with: psql -U postgres -h localhost -c \"CREATE DATABASE {db_name}\"")
+        elif 'password authentication failed' in error_msg:
+            print(f"\nERROR: Password authentication failed for user '{parsed.username}'")
+        elif 'Connection refused' in error_msg:
+            print(f"\nERROR: Could not connect to PostgreSQL at {parsed.hostname}:{parsed.port or 5432}")
+            print("Make sure PostgreSQL is running.")
+        else:
+            print(f"\nERROR connecting to PostgreSQL: {e}")
+        logger.error(f"PostgreSQL connection failed: {e}")
+        return 0
 
     cursor = conn.cursor()
 
@@ -1259,6 +1285,7 @@ def _save_to_postgresql(records: List[Dict], connection_string: str) -> int:
             logger.warning(f"Failed to insert record: {e}")
 
     conn.commit()
+    print(f"Inserted/updated {inserted} raw records in PostgreSQL")
     logger.info(f"Inserted/updated {inserted} raw records in PostgreSQL")
 
     # Update aggregation tables
@@ -1268,6 +1295,7 @@ def _save_to_postgresql(records: List[Dict], connection_string: str) -> int:
     cursor.close()
     conn.close()
 
+    print(f"SUCCESS: Saved {inserted} records to PostgreSQL with aggregation tables updated")
     return inserted
 
 
@@ -1552,6 +1580,7 @@ def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
             logger.warning(f"Failed to insert record: {e}")
 
     conn.commit()
+    print(f"Inserted/updated {inserted} raw records in SQLite")
     logger.info(f"Inserted/updated {inserted} raw records in SQLite")
 
     # Update aggregation tables
@@ -1561,6 +1590,7 @@ def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
     cursor.close()
     conn.close()
 
+    print(f"SUCCESS: Saved {inserted} records to SQLite with aggregation tables updated")
     return inserted
 
 
