@@ -1003,6 +1003,9 @@ def _update_monthly_sheet(ws, monthly_data: Dict[Tuple[date, str], float],
 # DATABASE OPERATIONS
 # =============================================================================
 
+# Default SQLite database path
+DEFAULT_DB_PATH = Path(__file__).parent.parent / 'data' / 'export_inspections.db'
+
 def save_to_database(records: List[Dict], connection_string: str = None) -> int:
     """
     Save inspection records to the RLC_commodities database
@@ -1016,9 +1019,10 @@ def save_to_database(records: List[Dict], connection_string: str = None) -> int:
     """
     connection_string = connection_string or os.getenv('DATABASE_URL')
 
+    # Default to SQLite if no connection string provided
     if not connection_string:
-        logger.error("No database connection string provided. Set DATABASE_URL environment variable.")
-        return 0
+        connection_string = f'sqlite:///{DEFAULT_DB_PATH}'
+        logger.info(f"Using default SQLite database: {DEFAULT_DB_PATH}")
 
     try:
         if connection_string.startswith('postgresql'):
@@ -1034,7 +1038,7 @@ def save_to_database(records: List[Dict], connection_string: str = None) -> int:
 
 
 def _save_to_postgresql(records: List[Dict], connection_string: str) -> int:
-    """Save records to PostgreSQL"""
+    """Save records to PostgreSQL with full quality metrics"""
     try:
         import psycopg2
         from psycopg2.extras import execute_values
@@ -1055,67 +1059,338 @@ def _save_to_postgresql(records: List[Dict], connection_string: str) -> int:
 
     cursor = conn.cursor()
 
-    # Create table if not exists
+    # Create main inspection records table with all quality metrics
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS export_inspections (
+        CREATE TABLE IF NOT EXISTS inspection_records (
             id BIGSERIAL PRIMARY KEY,
             week_ending DATE NOT NULL,
+            cert_date DATE,
             commodity VARCHAR(50) NOT NULL,
+            commodity_class VARCHAR(30),
             destination VARCHAR(100) NOT NULL,
-            pounds NUMERIC,
-            metric_tons NUMERIC,
-            thousand_bushels NUMERIC,
-            marketing_year VARCHAR(10),
-            port VARCHAR(50),
+            destination_region VARCHAR(50),
+            port VARCHAR(100),
             grade VARCHAR(50),
-            collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            pounds NUMERIC,
+            metric_tons NUMERIC(18,4),
+            thousand_bushels NUMERIC(18,4),
+            marketing_year VARCHAR(10),
+            calendar_year INTEGER,
+            -- Quality metrics
+            moisture_avg NUMERIC(8,4),
+            moisture_high NUMERIC(8,4),
+            moisture_low NUMERIC(8,4),
+            test_weight NUMERIC(8,3),
+            protein_avg NUMERIC(8,4),
+            protein_high NUMERIC(8,4),
+            protein_low NUMERIC(8,4),
+            oil_avg NUMERIC(8,4),
+            oil_high NUMERIC(8,4),
+            oil_low NUMERIC(8,4),
+            total_damage_avg NUMERIC(8,4),
+            heat_damage_avg NUMERIC(8,4),
+            foreign_material_avg NUMERIC(8,4),
+            splits_avg NUMERIC(8,4),
+            dockage_avg NUMERIC(8,4),
+            -- Audit
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE (week_ending, commodity, destination, port, grade)
         )
     """)
 
-    # Prepare data for insertion
-    values = [
-        (
-            r['week_ending'],
-            r['grain'],
-            r['destination'],
-            r.get('pounds'),
-            r.get('metric_tons'),
-            r.get('thousand_bushels'),
-            r.get('marketing_year'),
-            r.get('port'),
-            r.get('grade'),
+    # Create indexes
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_week_commodity ON inspection_records(week_ending, commodity)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_my_commodity ON inspection_records(marketing_year, commodity)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_dest ON inspection_records(destination)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_dest_region ON inspection_records(destination_region)")
+
+    # Create weekly summary table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS weekly_inspection_summary (
+            id BIGSERIAL PRIMARY KEY,
+            week_ending DATE NOT NULL,
+            commodity VARCHAR(50) NOT NULL,
+            destination VARCHAR(100) NOT NULL,
+            destination_region VARCHAR(50),
+            total_pounds NUMERIC,
+            total_metric_tons NUMERIC(18,4),
+            total_thousand_bushels NUMERIC(18,4),
+            marketing_year VARCHAR(10),
+            record_count INTEGER,
+            -- Quality averages
+            avg_moisture NUMERIC(8,4),
+            avg_protein NUMERIC(8,4),
+            avg_oil NUMERIC(8,4),
+            avg_test_weight NUMERIC(8,3),
+            calculated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (week_ending, commodity, destination)
         )
-        for r in records
-    ]
+    """)
 
-    # Insert with upsert
-    insert_sql = """
-        INSERT INTO export_inspections
-        (week_ending, commodity, destination, pounds, metric_tons,
-         thousand_bushels, marketing_year, port, grade)
-        VALUES %s
-        ON CONFLICT (week_ending, commodity, destination, port, grade)
-        DO UPDATE SET
-            pounds = EXCLUDED.pounds,
-            metric_tons = EXCLUDED.metric_tons,
-            thousand_bushels = EXCLUDED.thousand_bushels,
-            collected_at = CURRENT_TIMESTAMP
-    """
+    # Create monthly summary table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS monthly_inspection_summary (
+            id BIGSERIAL PRIMARY KEY,
+            month DATE NOT NULL,
+            commodity VARCHAR(50) NOT NULL,
+            destination VARCHAR(100) NOT NULL,
+            destination_region VARCHAR(50),
+            total_pounds NUMERIC,
+            total_metric_tons NUMERIC(18,4),
+            total_thousand_bushels NUMERIC(18,4),
+            marketing_year VARCHAR(10),
+            record_count INTEGER,
+            calculated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (month, commodity, destination)
+        )
+    """)
 
-    execute_values(cursor, insert_sql, values)
-    inserted = cursor.rowcount
+    # Create marketing year summary table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS marketing_year_inspection_summary (
+            id BIGSERIAL PRIMARY KEY,
+            marketing_year VARCHAR(10) NOT NULL,
+            commodity VARCHAR(50) NOT NULL,
+            destination VARCHAR(100) NOT NULL,
+            destination_region VARCHAR(50),
+            total_pounds NUMERIC,
+            total_metric_tons NUMERIC(18,4),
+            total_million_bushels NUMERIC(18,4),
+            record_count INTEGER,
+            calculated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (marketing_year, commodity, destination)
+        )
+    """)
+
+    # Create regional summary view
+    cursor.execute("""
+        CREATE OR REPLACE VIEW v_weekly_regional_summary AS
+        SELECT
+            week_ending,
+            commodity,
+            destination_region,
+            marketing_year,
+            SUM(total_pounds) as total_pounds,
+            SUM(total_metric_tons) as total_metric_tons,
+            SUM(total_thousand_bushels) as total_thousand_bushels,
+            SUM(record_count) as record_count
+        FROM weekly_inspection_summary
+        GROUP BY week_ending, commodity, destination_region, marketing_year
+    """)
+
+    # Create marketing year to date view
+    cursor.execute("""
+        CREATE OR REPLACE VIEW v_marketing_year_totals AS
+        SELECT
+            marketing_year,
+            commodity,
+            destination,
+            destination_region,
+            SUM(total_pounds) as total_pounds,
+            SUM(total_metric_tons) as total_metric_tons,
+            SUM(total_thousand_bushels) / 1000 as total_million_bushels,
+            SUM(record_count) as record_count
+        FROM weekly_inspection_summary
+        WHERE marketing_year IS NOT NULL
+        GROUP BY marketing_year, commodity, destination, destination_region
+        ORDER BY marketing_year DESC, total_pounds DESC
+    """)
 
     conn.commit()
+
+    # Insert raw records
+    inserted = 0
+    for r in records:
+        try:
+            cursor.execute("""
+                INSERT INTO inspection_records
+                (week_ending, cert_date, commodity, commodity_class, destination,
+                 destination_region, port, grade, pounds, metric_tons, thousand_bushels,
+                 marketing_year, calendar_year,
+                 moisture_avg, moisture_high, moisture_low, test_weight,
+                 protein_avg, protein_high, protein_low,
+                 oil_avg, oil_high, oil_low,
+                 total_damage_avg, heat_damage_avg, foreign_material_avg,
+                 splits_avg, dockage_avg, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                ON CONFLICT (week_ending, commodity, destination, port, grade)
+                DO UPDATE SET
+                    pounds = EXCLUDED.pounds,
+                    metric_tons = EXCLUDED.metric_tons,
+                    thousand_bushels = EXCLUDED.thousand_bushels,
+                    moisture_avg = EXCLUDED.moisture_avg,
+                    protein_avg = EXCLUDED.protein_avg,
+                    oil_avg = EXCLUDED.oil_avg,
+                    test_weight = EXCLUDED.test_weight,
+                    updated_at = CURRENT_TIMESTAMP
+            """, (
+                r['week_ending'] if r.get('week_ending') else None,
+                r['cert_date'] if r.get('cert_date') else None,
+                r.get('grain'),
+                r.get('commodity_class'),
+                r.get('destination'),
+                _get_destination_region(r.get('destination', '')),
+                r.get('port'),
+                r.get('grade'),
+                r.get('pounds'),
+                r.get('metric_tons'),
+                r.get('thousand_bushels'),
+                r.get('marketing_year'),
+                r['week_ending'].year if r.get('week_ending') else None,
+                r.get('moisture_avg'),
+                r.get('moisture_high'),
+                r.get('moisture_low'),
+                r.get('test_weight'),
+                r.get('protein_avg'),
+                r.get('protein_high'),
+                r.get('protein_low'),
+                r.get('oil_avg'),
+                r.get('oil_high'),
+                r.get('oil_low'),
+                r.get('total_damage_avg'),
+                r.get('heat_damage_avg'),
+                r.get('foreign_material_avg'),
+                r.get('splits_avg'),
+                r.get('dockage_avg'),
+            ))
+            inserted += 1
+        except psycopg2.Error as e:
+            logger.warning(f"Failed to insert record: {e}")
+
+    conn.commit()
+    logger.info(f"Inserted/updated {inserted} raw records in PostgreSQL")
+
+    # Update aggregation tables
+    _update_postgresql_aggregations(cursor, records)
+    conn.commit()
+
     cursor.close()
     conn.close()
 
-    logger.info(f"Inserted/updated {inserted} records in PostgreSQL")
     return inserted
 
 
+def _update_postgresql_aggregations(cursor, records: List[Dict]):
+    """Update PostgreSQL aggregation summary tables"""
+    from collections import defaultdict
+
+    # Aggregate weekly by destination
+    weekly_by_dest = defaultdict(lambda: {'pounds': 0, 'mt': 0, 'tb': 0, 'count': 0,
+                                          'moisture': [], 'protein': [], 'oil': [], 'tw': []})
+    monthly_by_dest = defaultdict(lambda: {'pounds': 0, 'mt': 0, 'tb': 0, 'count': 0})
+    my_by_dest = defaultdict(lambda: {'pounds': 0, 'mt': 0, 'tb': 0, 'count': 0})
+
+    for r in records:
+        if not r.get('week_ending') or not r.get('destination'):
+            continue
+
+        week_key = (r['week_ending'], r['grain'], r['destination'])
+        month_key = (r['week_ending'].replace(day=1), r['grain'], r['destination'])
+        my_key = (r.get('marketing_year', ''), r['grain'], r['destination'])
+
+        # Weekly aggregation
+        weekly_by_dest[week_key]['pounds'] += r.get('pounds') or 0
+        weekly_by_dest[week_key]['mt'] += r.get('metric_tons') or 0
+        weekly_by_dest[week_key]['tb'] += r.get('thousand_bushels') or 0
+        weekly_by_dest[week_key]['count'] += 1
+        weekly_by_dest[week_key]['region'] = _get_destination_region(r['destination'])
+        weekly_by_dest[week_key]['my'] = r.get('marketing_year')
+        if r.get('moisture_avg'):
+            weekly_by_dest[week_key]['moisture'].append(r['moisture_avg'])
+        if r.get('protein_avg'):
+            weekly_by_dest[week_key]['protein'].append(r['protein_avg'])
+        if r.get('oil_avg'):
+            weekly_by_dest[week_key]['oil'].append(r['oil_avg'])
+        if r.get('test_weight'):
+            weekly_by_dest[week_key]['tw'].append(r['test_weight'])
+
+        # Monthly aggregation
+        monthly_by_dest[month_key]['pounds'] += r.get('pounds') or 0
+        monthly_by_dest[month_key]['mt'] += r.get('metric_tons') or 0
+        monthly_by_dest[month_key]['tb'] += r.get('thousand_bushels') or 0
+        monthly_by_dest[month_key]['count'] += 1
+        monthly_by_dest[month_key]['region'] = _get_destination_region(r['destination'])
+        monthly_by_dest[month_key]['my'] = r.get('marketing_year')
+
+        # Marketing year aggregation
+        my_by_dest[my_key]['pounds'] += r.get('pounds') or 0
+        my_by_dest[my_key]['mt'] += r.get('metric_tons') or 0
+        my_by_dest[my_key]['tb'] += r.get('thousand_bushels') or 0
+        my_by_dest[my_key]['count'] += 1
+        my_by_dest[my_key]['region'] = _get_destination_region(r['destination'])
+
+    # Insert weekly summaries
+    for (week, commodity, dest), data in weekly_by_dest.items():
+        avg_moisture = sum(data['moisture']) / len(data['moisture']) if data['moisture'] else None
+        avg_protein = sum(data['protein']) / len(data['protein']) if data['protein'] else None
+        avg_oil = sum(data['oil']) / len(data['oil']) if data['oil'] else None
+        avg_tw = sum(data['tw']) / len(data['tw']) if data['tw'] else None
+
+        cursor.execute("""
+            INSERT INTO weekly_inspection_summary
+            (week_ending, commodity, destination, destination_region,
+             total_pounds, total_metric_tons, total_thousand_bushels,
+             marketing_year, record_count, avg_moisture, avg_protein, avg_oil, avg_test_weight,
+             calculated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+            ON CONFLICT (week_ending, commodity, destination)
+            DO UPDATE SET
+                total_pounds = EXCLUDED.total_pounds,
+                total_metric_tons = EXCLUDED.total_metric_tons,
+                total_thousand_bushels = EXCLUDED.total_thousand_bushels,
+                record_count = EXCLUDED.record_count,
+                avg_moisture = EXCLUDED.avg_moisture,
+                avg_protein = EXCLUDED.avg_protein,
+                avg_oil = EXCLUDED.avg_oil,
+                avg_test_weight = EXCLUDED.avg_test_weight,
+                calculated_at = CURRENT_TIMESTAMP
+        """, (week, commodity, dest, data['region'], data['pounds'], data['mt'],
+              data['tb'], data['my'], data['count'], avg_moisture, avg_protein, avg_oil, avg_tw))
+
+    # Insert monthly summaries
+    for (month, commodity, dest), data in monthly_by_dest.items():
+        cursor.execute("""
+            INSERT INTO monthly_inspection_summary
+            (month, commodity, destination, destination_region,
+             total_pounds, total_metric_tons, total_thousand_bushels,
+             marketing_year, record_count, calculated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+            ON CONFLICT (month, commodity, destination)
+            DO UPDATE SET
+                total_pounds = EXCLUDED.total_pounds,
+                total_metric_tons = EXCLUDED.total_metric_tons,
+                total_thousand_bushels = EXCLUDED.total_thousand_bushels,
+                record_count = EXCLUDED.record_count,
+                calculated_at = CURRENT_TIMESTAMP
+        """, (month, commodity, dest, data['region'], data['pounds'], data['mt'],
+              data['tb'], data['my'], data['count']))
+
+    # Insert marketing year summaries
+    for (my, commodity, dest), data in my_by_dest.items():
+        million_bushels = data['tb'] / 1000 if data['tb'] else 0
+        cursor.execute("""
+            INSERT INTO marketing_year_inspection_summary
+            (marketing_year, commodity, destination, destination_region,
+             total_pounds, total_metric_tons, total_million_bushels,
+             record_count, calculated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+            ON CONFLICT (marketing_year, commodity, destination)
+            DO UPDATE SET
+                total_pounds = EXCLUDED.total_pounds,
+                total_metric_tons = EXCLUDED.total_metric_tons,
+                total_million_bushels = EXCLUDED.total_million_bushels,
+                record_count = EXCLUDED.record_count,
+                calculated_at = CURRENT_TIMESTAMP
+        """, (my, commodity, dest, data['region'], data['pounds'], data['mt'],
+              million_bushels, data['count']))
+
+    logger.info(f"Updated PostgreSQL aggregations: {len(weekly_by_dest)} weekly, "
+                f"{len(monthly_by_dest)} monthly, {len(my_by_dest)} marketing year")
+
+
 def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
-    """Save records to SQLite"""
+    """Save records to SQLite with full quality metrics"""
     import sqlite3
 
     db_path = connection_string.replace('sqlite:///', '')
@@ -1124,54 +1399,302 @@ def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # Create table if not exists
+    # Create main inspection records table with all quality metrics
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS export_inspections (
+        CREATE TABLE IF NOT EXISTS inspection_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             week_ending TEXT NOT NULL,
+            cert_date TEXT,
             commodity TEXT NOT NULL,
+            commodity_class TEXT,
             destination TEXT NOT NULL,
+            destination_region TEXT,
+            port TEXT,
+            grade TEXT,
             pounds REAL,
             metric_tons REAL,
             thousand_bushels REAL,
             marketing_year TEXT,
-            port TEXT,
-            grade TEXT,
-            collected_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            calendar_year INTEGER,
+            -- Quality metrics
+            moisture_avg REAL,
+            moisture_high REAL,
+            moisture_low REAL,
+            test_weight REAL,
+            protein_avg REAL,
+            protein_high REAL,
+            protein_low REAL,
+            oil_avg REAL,
+            oil_high REAL,
+            oil_low REAL,
+            total_damage_avg REAL,
+            heat_damage_avg REAL,
+            foreign_material_avg REAL,
+            splits_avg REAL,
+            dockage_avg REAL,
+            -- Audit
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
             UNIQUE (week_ending, commodity, destination, port, grade)
         )
     """)
 
-    # Insert records
+    # Create indexes for common queries
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_week_commodity ON inspection_records(week_ending, commodity)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_my_commodity ON inspection_records(marketing_year, commodity)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_dest ON inspection_records(destination)")
+
+    # Create weekly summary table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS weekly_summary (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            week_ending TEXT NOT NULL,
+            commodity TEXT NOT NULL,
+            destination TEXT NOT NULL,
+            destination_region TEXT,
+            total_pounds REAL,
+            total_metric_tons REAL,
+            total_thousand_bushels REAL,
+            marketing_year TEXT,
+            record_count INTEGER,
+            -- Quality averages (weighted by pounds)
+            avg_moisture REAL,
+            avg_protein REAL,
+            avg_oil REAL,
+            avg_test_weight REAL,
+            calculated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (week_ending, commodity, destination)
+        )
+    """)
+
+    # Create monthly summary table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS monthly_summary (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            month TEXT NOT NULL,
+            commodity TEXT NOT NULL,
+            destination TEXT NOT NULL,
+            destination_region TEXT,
+            total_pounds REAL,
+            total_metric_tons REAL,
+            total_thousand_bushels REAL,
+            marketing_year TEXT,
+            record_count INTEGER,
+            calculated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (month, commodity, destination)
+        )
+    """)
+
+    # Create marketing year summary table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS marketing_year_summary (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            marketing_year TEXT NOT NULL,
+            commodity TEXT NOT NULL,
+            destination TEXT NOT NULL,
+            destination_region TEXT,
+            total_pounds REAL,
+            total_metric_tons REAL,
+            total_million_bushels REAL,
+            record_count INTEGER,
+            calculated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (marketing_year, commodity, destination)
+        )
+    """)
+
+    # Insert raw records
     inserted = 0
     for r in records:
         try:
             cursor.execute("""
-                INSERT OR REPLACE INTO export_inspections
-                (week_ending, commodity, destination, pounds, metric_tons,
-                 thousand_bushels, marketing_year, port, grade)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT OR REPLACE INTO inspection_records
+                (week_ending, cert_date, commodity, commodity_class, destination,
+                 destination_region, port, grade, pounds, metric_tons, thousand_bushels,
+                 marketing_year, calendar_year,
+                 moisture_avg, moisture_high, moisture_low, test_weight,
+                 protein_avg, protein_high, protein_low,
+                 oil_avg, oil_high, oil_low,
+                 total_damage_avg, heat_damage_avg, foreign_material_avg,
+                 splits_avg, dockage_avg, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             """, (
-                r['week_ending'].isoformat() if r['week_ending'] else None,
-                r['grain'],
-                r['destination'],
+                r['week_ending'].isoformat() if r.get('week_ending') else None,
+                r['cert_date'].isoformat() if r.get('cert_date') else None,
+                r.get('grain'),
+                r.get('commodity_class'),
+                r.get('destination'),
+                _get_destination_region(r.get('destination', '')),
+                r.get('port'),
+                r.get('grade'),
                 r.get('pounds'),
                 r.get('metric_tons'),
                 r.get('thousand_bushels'),
                 r.get('marketing_year'),
-                r.get('port'),
-                r.get('grade'),
+                r['week_ending'].year if r.get('week_ending') else None,
+                r.get('moisture_avg'),
+                r.get('moisture_high'),
+                r.get('moisture_low'),
+                r.get('test_weight'),
+                r.get('protein_avg'),
+                r.get('protein_high'),
+                r.get('protein_low'),
+                r.get('oil_avg'),
+                r.get('oil_high'),
+                r.get('oil_low'),
+                r.get('total_damage_avg'),
+                r.get('heat_damage_avg'),
+                r.get('foreign_material_avg'),
+                r.get('splits_avg'),
+                r.get('dockage_avg'),
             ))
             inserted += 1
         except sqlite3.Error as e:
             logger.warning(f"Failed to insert record: {e}")
 
     conn.commit()
+    logger.info(f"Inserted/updated {inserted} raw records in SQLite")
+
+    # Update aggregation tables
+    _update_sqlite_aggregations(cursor, records)
+    conn.commit()
+
     cursor.close()
     conn.close()
 
-    logger.info(f"Inserted/updated {inserted} records in SQLite")
     return inserted
+
+
+def _get_destination_region(destination: str) -> str:
+    """Map destination country to region"""
+    # Region mappings
+    ASIA_OCEANIA = ['CHINA', 'JAPAN', 'KOREA', 'TAIWAN', 'INDONESIA', 'MALAYSIA',
+                   'PHILIPPINES', 'THAILAND', 'VIETNAM', 'INDIA', 'PAKISTAN',
+                   'BANGLADESH', 'SRI LANKA', 'MYANMAR', 'AUSTRALIA', 'NEW ZEALAND',
+                   'SINGAPORE', 'HONG KONG']
+    EU = ['GERMANY', 'NETHERLANDS', 'SPAIN', 'ITALY', 'FRANCE', 'BELGIUM',
+          'PORTUGAL', 'UNITED KINGDOM', 'UK', 'IRELAND', 'POLAND', 'GREECE',
+          'DENMARK', 'SWEDEN', 'FINLAND', 'AUSTRIA', 'CZECH', 'ROMANIA', 'HUNGARY']
+    MIDDLE_EAST_AFRICA = ['EGYPT', 'MOROCCO', 'ALGERIA', 'TUNISIA', 'NIGERIA',
+                         'SOUTH AFRICA', 'TURKEY', 'ISRAEL', 'SAUDI ARABIA',
+                         'UNITED ARAB EMIRATES', 'UAE', 'IRAN', 'JORDAN', 'LEBANON']
+    WESTERN_HEMISPHERE = ['MEXICO', 'CANADA', 'BRAZIL', 'ARGENTINA', 'COLOMBIA',
+                         'VENEZUELA', 'PERU', 'CHILE', 'ECUADOR', 'GUATEMALA',
+                         'COSTA RICA', 'DOMINICAN REPUBLIC', 'JAMAICA', 'HONDURAS']
+    FSU = ['RUSSIA', 'UKRAINE', 'KAZAKHSTAN', 'BELARUS', 'UZBEKISTAN', 'GEORGIA',
+           'AZERBAIJAN', 'ARMENIA', 'MOLDOVA', 'TURKMENISTAN', 'TAJIKISTAN', 'KYRGYZSTAN']
+
+    dest_upper = destination.upper()
+
+    for country in ASIA_OCEANIA:
+        if country in dest_upper:
+            return 'ASIA_OCEANIA'
+    for country in EU:
+        if country in dest_upper:
+            return 'EU'
+    for country in MIDDLE_EAST_AFRICA:
+        if country in dest_upper:
+            return 'MIDDLE_EAST_AFRICA'
+    for country in WESTERN_HEMISPHERE:
+        if country in dest_upper:
+            return 'WESTERN_HEMISPHERE'
+    for country in FSU:
+        if country in dest_upper:
+            return 'FSU'
+
+    return 'OTHER'
+
+
+def _update_sqlite_aggregations(cursor, records: List[Dict]):
+    """Update aggregation summary tables"""
+    from collections import defaultdict
+
+    # Aggregate weekly by destination
+    weekly_by_dest = defaultdict(lambda: {'pounds': 0, 'mt': 0, 'tb': 0, 'count': 0,
+                                          'moisture': [], 'protein': [], 'oil': [], 'tw': []})
+    monthly_by_dest = defaultdict(lambda: {'pounds': 0, 'mt': 0, 'tb': 0, 'count': 0})
+    my_by_dest = defaultdict(lambda: {'pounds': 0, 'mt': 0, 'tb': 0, 'count': 0})
+
+    for r in records:
+        if not r.get('week_ending') or not r.get('destination'):
+            continue
+
+        week_key = (r['week_ending'].isoformat(), r['grain'], r['destination'])
+        month_key = (r['week_ending'].replace(day=1).isoformat(), r['grain'], r['destination'])
+        my_key = (r.get('marketing_year', ''), r['grain'], r['destination'])
+
+        # Weekly aggregation
+        weekly_by_dest[week_key]['pounds'] += r.get('pounds') or 0
+        weekly_by_dest[week_key]['mt'] += r.get('metric_tons') or 0
+        weekly_by_dest[week_key]['tb'] += r.get('thousand_bushels') or 0
+        weekly_by_dest[week_key]['count'] += 1
+        weekly_by_dest[week_key]['region'] = _get_destination_region(r['destination'])
+        weekly_by_dest[week_key]['my'] = r.get('marketing_year')
+        if r.get('moisture_avg'):
+            weekly_by_dest[week_key]['moisture'].append(r['moisture_avg'])
+        if r.get('protein_avg'):
+            weekly_by_dest[week_key]['protein'].append(r['protein_avg'])
+        if r.get('oil_avg'):
+            weekly_by_dest[week_key]['oil'].append(r['oil_avg'])
+        if r.get('test_weight'):
+            weekly_by_dest[week_key]['tw'].append(r['test_weight'])
+
+        # Monthly aggregation
+        monthly_by_dest[month_key]['pounds'] += r.get('pounds') or 0
+        monthly_by_dest[month_key]['mt'] += r.get('metric_tons') or 0
+        monthly_by_dest[month_key]['tb'] += r.get('thousand_bushels') or 0
+        monthly_by_dest[month_key]['count'] += 1
+        monthly_by_dest[month_key]['region'] = _get_destination_region(r['destination'])
+        monthly_by_dest[month_key]['my'] = r.get('marketing_year')
+
+        # Marketing year aggregation
+        my_by_dest[my_key]['pounds'] += r.get('pounds') or 0
+        my_by_dest[my_key]['mt'] += r.get('metric_tons') or 0
+        my_by_dest[my_key]['tb'] += r.get('thousand_bushels') or 0
+        my_by_dest[my_key]['count'] += 1
+        my_by_dest[my_key]['region'] = _get_destination_region(r['destination'])
+
+    # Insert weekly summaries
+    for (week, commodity, dest), data in weekly_by_dest.items():
+        avg_moisture = sum(data['moisture']) / len(data['moisture']) if data['moisture'] else None
+        avg_protein = sum(data['protein']) / len(data['protein']) if data['protein'] else None
+        avg_oil = sum(data['oil']) / len(data['oil']) if data['oil'] else None
+        avg_tw = sum(data['tw']) / len(data['tw']) if data['tw'] else None
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO weekly_summary
+            (week_ending, commodity, destination, destination_region,
+             total_pounds, total_metric_tons, total_thousand_bushels,
+             marketing_year, record_count, avg_moisture, avg_protein, avg_oil, avg_test_weight,
+             calculated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        """, (week, commodity, dest, data['region'], data['pounds'], data['mt'],
+              data['tb'], data['my'], data['count'], avg_moisture, avg_protein, avg_oil, avg_tw))
+
+    # Insert monthly summaries
+    for (month, commodity, dest), data in monthly_by_dest.items():
+        cursor.execute("""
+            INSERT OR REPLACE INTO monthly_summary
+            (month, commodity, destination, destination_region,
+             total_pounds, total_metric_tons, total_thousand_bushels,
+             marketing_year, record_count, calculated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        """, (month, commodity, dest, data['region'], data['pounds'], data['mt'],
+              data['tb'], data['my'], data['count']))
+
+    # Insert marketing year summaries
+    for (my, commodity, dest), data in my_by_dest.items():
+        million_bushels = data['tb'] / 1000 if data['tb'] else 0
+        cursor.execute("""
+            INSERT OR REPLACE INTO marketing_year_summary
+            (marketing_year, commodity, destination, destination_region,
+             total_pounds, total_metric_tons, total_million_bushels,
+             record_count, calculated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        """, (my, commodity, dest, data['region'], data['pounds'], data['mt'],
+              million_bushels, data['count']))
+
+    logger.info(f"Updated aggregations: {len(weekly_by_dest)} weekly, "
+                f"{len(monthly_by_dest)} monthly, {len(my_by_dest)} marketing year")
 
 
 # =============================================================================
