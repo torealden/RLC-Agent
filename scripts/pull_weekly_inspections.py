@@ -432,16 +432,75 @@ def parse_csv_file(file_path: Path, commodity_filter: str = None,
             with open(file_path, 'r', encoding=encoding, newline='') as f:
                 reader = csv.DictReader(f)
 
+                # Get actual column names for flexible matching
+                fieldnames = reader.fieldnames or []
+
+                # Debug: show available columns on first run
+                if fieldnames:
+                    logger.debug(f"CSV columns: {fieldnames[:20]}...")
+
+                # Find the right column names (case-insensitive matching)
+                def find_column(names: List[str]) -> Optional[str]:
+                    """Find a column by trying multiple possible names"""
+                    for name in names:
+                        # Try exact match first
+                        if name in fieldnames:
+                            return name
+                        # Try case-insensitive
+                        for fn in fieldnames:
+                            if fn.lower() == name.lower():
+                                return fn
+                            # Try partial match
+                            if name.lower() in fn.lower():
+                                return fn
+                    return None
+
+                # Map expected names to actual column names
+                grain_col = find_column(['Grain', 'GRAIN', 'Commodity', 'COMMODITY'])
+                week_col = find_column(['Thursday', 'THURSDAY', 'Week Ending', 'WEEK ENDING', 'WeekEnding'])
+                pounds_col = find_column(['Pounds', 'POUNDS', 'Lbs', 'LBS'])
+                mt_col = find_column(['Metric Ton', 'METRIC TON', 'Metric Tons', 'MT', 'MetricTon'])
+                dest_col = find_column(['Destination', 'DESTINATION', 'Dest', 'DEST', 'Country'])
+                cert_col = find_column(['Cert Date', 'CERT DATE', 'CertDate', 'Certification Date'])
+                port_col = find_column(['Port', 'PORT'])
+                grade_col = find_column(['Grade', 'GRADE'])
+                class_col = find_column(['Class', 'CLASS'])
+
+                # Quality metric columns
+                m_avg_col = find_column(['M AVG', 'MAVG', 'Moisture Avg', 'MoistureAvg'])
+                m_high_col = find_column(['M HIGH', 'MHIGH', 'Moisture High'])
+                m_low_col = find_column(['M LOW', 'MLOW', 'Moisture Low'])
+                tw_col = find_column(['TW', 'Test Weight', 'TestWeight'])
+                pro_avg_col = find_column(['PRO AVG', 'PROAVG', 'Protein Avg', 'ProteinAvg'])
+                pro_high_col = find_column(['PRO HIGH', 'PROHIGH', 'Protein High'])
+                pro_low_col = find_column(['PRO LOW', 'PROLOW', 'Protein Low'])
+                oil_avg_col = find_column(['OIL AVG', 'OILAVG', 'Oil Avg', 'OilAvg'])
+                oil_high_col = find_column(['OIL HIGH', 'OILHIGH', 'Oil High'])
+                oil_low_col = find_column(['OIL LOW', 'OILLOW', 'Oil Low'])
+                dm_avg_col = find_column(['DM AVG', 'DMAVG', 'Damage Avg', 'DamageAvg'])
+                hd_avg_col = find_column(['HD AVG', 'HDAVG', 'Heat Damage Avg'])
+                fm_avg_col = find_column(['FM AVG', 'FMAVG', 'Foreign Material Avg'])
+                spl_avg_col = find_column(['SPL AVG', 'SPLAVG', 'Splits Avg', 'SplitsAvg'])
+                dkg_avg_col = find_column(['DKG AVG', 'DKGAVG', 'Dockage Avg', 'DockageAvg'])
+
+                # Log which columns were found
+                if not grain_col:
+                    logger.warning(f"Could not find Grain column. Available: {fieldnames[:15]}")
+                if not week_col:
+                    logger.warning(f"Could not find Week Ending column. Available: {fieldnames[:15]}")
+                if not mt_col and not pounds_col:
+                    logger.warning(f"Could not find quantity column (Metric Ton or Pounds)")
+
                 for row in reader:
                     # Get grain type
-                    grain = row.get('Grain', '').strip().upper()
+                    grain = (row.get(grain_col, '') if grain_col else '').strip().upper()
 
                     # Apply commodity filter if specified
                     if commodity_filter and grain != commodity_filter.upper():
                         continue
 
                     # Parse week ending date
-                    week_ending = parse_date(row.get('Thursday', ''))
+                    week_ending = parse_date(row.get(week_col, '') if week_col else '')
                     if not week_ending:
                         continue
 
@@ -452,8 +511,8 @@ def parse_csv_file(file_path: Path, commodity_filter: str = None,
                         continue
 
                     # Parse quantities
-                    pounds = parse_number(row.get('Pounds', ''))
-                    metric_tons = parse_number(row.get('Metric Ton', ''))
+                    pounds = parse_number(row.get(pounds_col, '') if pounds_col else '')
+                    metric_tons = parse_number(row.get(mt_col, '') if mt_col else '')
 
                     if not pounds and not metric_tons:
                         continue
@@ -471,13 +530,13 @@ def parse_csv_file(file_path: Path, commodity_filter: str = None,
                         thousand_bushels = None
 
                     # Get destination and location info
-                    destination = row.get('Destination', '').strip()
+                    destination = (row.get(dest_col, '') if dest_col else '').strip()
 
                     # Calculate marketing year
                     marketing_year = get_marketing_year(grain, week_ending)
 
                     # Parse cert date (actual inspection date)
-                    cert_date = parse_date(row.get('Cert Date', ''))
+                    cert_date = parse_date(row.get(cert_col, '') if cert_col else '')
 
                     # Build base record
                     record = {
@@ -490,39 +549,26 @@ def parse_csv_file(file_path: Path, commodity_filter: str = None,
                         'thousand_bushels': thousand_bushels,
                         'marketing_year': marketing_year,
                         'month': week_ending.replace(day=1),
-                        'port': row.get('Port', '').strip(),
-                        'grade': row.get('Grade', '').strip(),
-                        'commodity_class': row.get('Class', '').strip(),
+                        'port': (row.get(port_col, '') if port_col else '').strip(),
+                        'grade': (row.get(grade_col, '') if grade_col else '').strip(),
+                        'commodity_class': (row.get(class_col, '') if class_col else '').strip(),
 
                         # Quality Metrics - these are valuable for analysis
-                        # Moisture (critical for soybeans - affects pricing/grading)
-                        'moisture_avg': parse_number(row.get('M AVG', '')),
-                        'moisture_high': parse_number(row.get('M HIGH', '')),
-                        'moisture_low': parse_number(row.get('M LOW', '')),
-
-                        # Test Weight (density indicator)
-                        'test_weight': parse_number(row.get('TW', '')),
-
-                        # Protein (important for meal value)
-                        'protein_avg': parse_number(row.get('PRO AVG', '')),
-                        'protein_high': parse_number(row.get('PRO HIGH', '')),
-                        'protein_low': parse_number(row.get('PRO LOW', '')),
-
-                        # Oil content (important for oil value)
-                        'oil_avg': parse_number(row.get('OIL AVG', '')),
-                        'oil_high': parse_number(row.get('OIL HIGH', '')),
-                        'oil_low': parse_number(row.get('OIL LOW', '')),
-
-                        # Damage metrics
-                        'total_damage_avg': parse_number(row.get('DM AVG', '')),
-                        'heat_damage_avg': parse_number(row.get('HD AVG', '')),
-                        'foreign_material_avg': parse_number(row.get('FM AVG', '')),
-
-                        # Splits (for soybeans)
-                        'splits_avg': parse_number(row.get('SPL AVG', '')),
-
-                        # Dockage
-                        'dockage_avg': parse_number(row.get('DKG AVG', '')),
+                        'moisture_avg': parse_number(row.get(m_avg_col, '') if m_avg_col else ''),
+                        'moisture_high': parse_number(row.get(m_high_col, '') if m_high_col else ''),
+                        'moisture_low': parse_number(row.get(m_low_col, '') if m_low_col else ''),
+                        'test_weight': parse_number(row.get(tw_col, '') if tw_col else ''),
+                        'protein_avg': parse_number(row.get(pro_avg_col, '') if pro_avg_col else ''),
+                        'protein_high': parse_number(row.get(pro_high_col, '') if pro_high_col else ''),
+                        'protein_low': parse_number(row.get(pro_low_col, '') if pro_low_col else ''),
+                        'oil_avg': parse_number(row.get(oil_avg_col, '') if oil_avg_col else ''),
+                        'oil_high': parse_number(row.get(oil_high_col, '') if oil_high_col else ''),
+                        'oil_low': parse_number(row.get(oil_low_col, '') if oil_low_col else ''),
+                        'total_damage_avg': parse_number(row.get(dm_avg_col, '') if dm_avg_col else ''),
+                        'heat_damage_avg': parse_number(row.get(hd_avg_col, '') if hd_avg_col else ''),
+                        'foreign_material_avg': parse_number(row.get(fm_avg_col, '') if fm_avg_col else ''),
+                        'splits_avg': parse_number(row.get(spl_avg_col, '') if spl_avg_col else ''),
+                        'dockage_avg': parse_number(row.get(dkg_avg_col, '') if dkg_avg_col else ''),
                     }
 
                     records.append(record)
