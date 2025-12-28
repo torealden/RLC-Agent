@@ -54,8 +54,16 @@ logger = logging.getLogger(__name__)
 # Census API base URL
 CENSUS_API_BASE = "https://api.census.gov/data/timeseries/intltrade"
 
-# HS Codes for commodities
+# HS Codes for commodities (use 6-digit codes for better API compatibility)
+# For exports, Census uses Schedule B codes which are 10-digit but we can query at 6-digit level
 HS_CODES = {
+    'SOYBEANS': '120190',      # 1201.90 - Soybeans, other than seed
+    'SOYBEAN_MEAL': '230400',  # 2304.00 - Soybean oilcake and meal
+    'SOYBEAN_OIL': '150710',   # 1507.10 - Crude soybean oil
+}
+
+# Alternative 4-digit codes for fallback
+HS_CODES_4DIGIT = {
     'SOYBEANS': '1201',
     'SOYBEAN_MEAL': '2304',
     'SOYBEAN_OIL': '1507',
@@ -345,6 +353,16 @@ def fetch_trade_data(
                     })
 
                 return records
+        elif response.status_code == 204:
+            # No content - no data for this period
+            logger.warning(f"API returned 204 for {flow}/{hs_code} {time_str}")
+        elif response.status_code == 400:
+            # Bad request - log the actual error response
+            try:
+                error_text = response.text[:200]
+                logger.warning(f"API returned 400 for {flow}/{hs_code} {time_str}: {error_text}")
+            except:
+                logger.warning(f"API returned 400 for {flow}/{hs_code} {time_str}")
         else:
             logger.warning(f"API returned {response.status_code} for {flow}/{hs_code} {time_str}")
 
@@ -374,13 +392,19 @@ def fetch_commodity_data(
     Returns:
         List of all trade records
     """
-    hs_code = HS_CODES.get(commodity.upper())
-    if not hs_code:
+    # Try 6-digit HS code first, then fall back to 4-digit
+    hs_code_6 = HS_CODES.get(commodity.upper())
+    hs_code_4 = HS_CODES_4DIGIT.get(commodity.upper())
+
+    if not hs_code_6 and not hs_code_4:
         logger.error(f"Unknown commodity: {commodity}")
         return []
 
     flows = ['exports', 'imports'] if flow == 'both' else [flow]
     all_records = []
+
+    # Track which HS code works for each flow
+    working_codes = {}
 
     # Iterate through months
     current = date(start_date.year, start_date.month, 1)
@@ -392,13 +416,45 @@ def fetch_commodity_data(
         months_processed += 1
 
         for trade_flow in flows:
-            records = fetch_trade_data(
-                flow=trade_flow,
-                hs_code=hs_code,
-                year=current.year,
-                month=current.month,
-                api_key=api_key
-            )
+            records = []
+
+            # Determine which HS code to use for this flow
+            if trade_flow in working_codes:
+                # Use the code that worked before
+                hs_code = working_codes[trade_flow]
+                records = fetch_trade_data(
+                    flow=trade_flow,
+                    hs_code=hs_code,
+                    year=current.year,
+                    month=current.month,
+                    api_key=api_key
+                )
+            else:
+                # Try 6-digit code first
+                if hs_code_6:
+                    records = fetch_trade_data(
+                        flow=trade_flow,
+                        hs_code=hs_code_6,
+                        year=current.year,
+                        month=current.month,
+                        api_key=api_key
+                    )
+                    if records:
+                        working_codes[trade_flow] = hs_code_6
+                        logger.info(f"Using 6-digit code {hs_code_6} for {trade_flow}")
+
+                # If 6-digit failed, try 4-digit
+                if not records and hs_code_4:
+                    records = fetch_trade_data(
+                        flow=trade_flow,
+                        hs_code=hs_code_4,
+                        year=current.year,
+                        month=current.month,
+                        api_key=api_key
+                    )
+                    if records:
+                        working_codes[trade_flow] = hs_code_4
+                        logger.info(f"Using 4-digit code {hs_code_4} for {trade_flow}")
 
             # Add commodity info to records
             for r in records:
@@ -1033,12 +1089,23 @@ def update_excel_file(
                 except Exception:
                     continue
 
+    print(f"  Found {len(date_columns)} date columns in {sheet_name}")
     logger.info(f"Found {len(date_columns)} date columns in {sheet_name}")
+
+    # Debug: show sample date columns
+    if date_columns:
+        sample_dates = list(date_columns.keys())[:5]
+        print(f"  Sample date columns: {sample_dates}")
+
+    # Debug: show sample destinations from data
+    sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
+    print(f"  Sample destinations in data: {sample_dests}")
 
     # Update cells
     updated = 0
     not_found_destinations = set()
     not_found_dates = set()
+    matched_destinations = set()
 
     for (year, month, destination), data in monthly_data.items():
         # Get row for this destination
@@ -1046,6 +1113,8 @@ def update_excel_file(
         if not row:
             not_found_destinations.add(destination)
             continue
+
+        matched_destinations.add(destination)
 
         # Get column for this date
         col = date_columns.get((year, month))
@@ -1062,6 +1131,11 @@ def update_excel_file(
             value_in_tmt = value / 1000.0
             ws.cell(row=row, column=col).value = round(value_in_tmt, 3)
             updated += 1
+
+    # Debug output
+    print(f"  Matched destinations: {len(matched_destinations)}")
+    if matched_destinations:
+        print(f"    Examples: {list(matched_destinations)[:5]}")
 
     # Save workbook
     try:
