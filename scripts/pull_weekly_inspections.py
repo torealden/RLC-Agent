@@ -1103,21 +1103,21 @@ def _save_to_postgresql(records: List[Dict], connection_string: str) -> int:
             marketing_year VARCHAR(10),
             calendar_year INTEGER,
             -- Quality metrics
-            moisture_avg NUMERIC(8,4),
-            moisture_high NUMERIC(8,4),
-            moisture_low NUMERIC(8,4),
-            test_weight NUMERIC(8,3),
-            protein_avg NUMERIC(8,4),
-            protein_high NUMERIC(8,4),
-            protein_low NUMERIC(8,4),
-            oil_avg NUMERIC(8,4),
-            oil_high NUMERIC(8,4),
-            oil_low NUMERIC(8,4),
-            total_damage_avg NUMERIC(8,4),
-            heat_damage_avg NUMERIC(8,4),
-            foreign_material_avg NUMERIC(8,4),
-            splits_avg NUMERIC(8,4),
-            dockage_avg NUMERIC(8,4),
+            moisture_avg NUMERIC(12,4),
+            moisture_high NUMERIC(12,4),
+            moisture_low NUMERIC(12,4),
+            test_weight NUMERIC(12,3),
+            protein_avg NUMERIC(12,4),
+            protein_high NUMERIC(12,4),
+            protein_low NUMERIC(12,4),
+            oil_avg NUMERIC(12,4),
+            oil_high NUMERIC(12,4),
+            oil_low NUMERIC(12,4),
+            total_damage_avg NUMERIC(12,4),
+            heat_damage_avg NUMERIC(12,4),
+            foreign_material_avg NUMERIC(12,4),
+            splits_avg NUMERIC(12,4),
+            dockage_avg NUMERIC(12,4),
             -- Audit
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -1130,6 +1130,30 @@ def _save_to_postgresql(records: List[Dict], connection_string: str) -> int:
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_my_commodity ON inspection_records(marketing_year, commodity)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_dest ON inspection_records(destination)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_dest_region ON inspection_records(destination_region)")
+
+    # Alter existing columns to increase precision (in case tables already exist)
+    alter_statements = [
+        "ALTER TABLE inspection_records ALTER COLUMN moisture_avg TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN moisture_high TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN moisture_low TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN test_weight TYPE NUMERIC(12,3)",
+        "ALTER TABLE inspection_records ALTER COLUMN protein_avg TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN protein_high TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN protein_low TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN oil_avg TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN oil_high TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN oil_low TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN total_damage_avg TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN heat_damage_avg TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN foreign_material_avg TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN splits_avg TYPE NUMERIC(12,4)",
+        "ALTER TABLE inspection_records ALTER COLUMN dockage_avg TYPE NUMERIC(12,4)",
+    ]
+    for stmt in alter_statements:
+        try:
+            cursor.execute(stmt)
+        except psycopg2.Error:
+            pass  # Column may not exist yet or already correct type
 
     # Create weekly summary table
     cursor.execute("""
@@ -1145,14 +1169,27 @@ def _save_to_postgresql(records: List[Dict], connection_string: str) -> int:
             marketing_year VARCHAR(10),
             record_count INTEGER,
             -- Quality averages
-            avg_moisture NUMERIC(8,4),
-            avg_protein NUMERIC(8,4),
-            avg_oil NUMERIC(8,4),
-            avg_test_weight NUMERIC(8,3),
+            avg_moisture NUMERIC(12,4),
+            avg_protein NUMERIC(12,4),
+            avg_oil NUMERIC(12,4),
+            avg_test_weight NUMERIC(12,3),
             calculated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE (week_ending, commodity, destination)
         )
     """)
+
+    # Alter weekly_inspection_summary columns for existing tables
+    weekly_alter = [
+        "ALTER TABLE weekly_inspection_summary ALTER COLUMN avg_moisture TYPE NUMERIC(12,4)",
+        "ALTER TABLE weekly_inspection_summary ALTER COLUMN avg_protein TYPE NUMERIC(12,4)",
+        "ALTER TABLE weekly_inspection_summary ALTER COLUMN avg_oil TYPE NUMERIC(12,4)",
+        "ALTER TABLE weekly_inspection_summary ALTER COLUMN avg_test_weight TYPE NUMERIC(12,3)",
+    ]
+    for stmt in weekly_alter:
+        try:
+            cursor.execute(stmt)
+        except psycopg2.Error:
+            pass
 
     # Create monthly summary table
     cursor.execute("""
