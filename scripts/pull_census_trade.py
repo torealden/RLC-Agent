@@ -75,19 +75,11 @@ EXCEL_FILES = {
     'SOYBEAN_OIL': 'Models/Oilseeds/US Soybean Trade.xlsx',
 }
 
-# Excel sheet names for Census data
-EXPORT_SHEET = 'Monthly Soybean Exports'
-IMPORT_SHEET = 'Monthly Soybean Imports'
-MEAL_EXPORT_SHEET = 'Monthly Meal Exports'
-MEAL_IMPORT_SHEET = 'Monthly Meal Imports'
-OIL_EXPORT_SHEET = 'Monthly Oil Exports'
-OIL_IMPORT_SHEET = 'Monthly Oil Imports'
-
-# Commodity to sheet mapping
+# Excel sheet names for Census data (matching actual sheet names in workbook)
 COMMODITY_SHEETS = {
-    'SOYBEANS': {'exports': EXPORT_SHEET, 'imports': IMPORT_SHEET},
-    'SOYBEAN_MEAL': {'exports': MEAL_EXPORT_SHEET, 'imports': MEAL_IMPORT_SHEET},
-    'SOYBEAN_OIL': {'exports': OIL_EXPORT_SHEET, 'imports': OIL_IMPORT_SHEET},
+    'SOYBEANS': {'exports': 'Soybean Exports', 'imports': 'Soybean Imports'},
+    'SOYBEAN_MEAL': {'exports': 'Meal Exports', 'imports': 'Meal Imports'},
+    'SOYBEAN_OIL': {'exports': 'Oil Exports', 'imports': 'Oil Imports'},
 }
 
 # Marketing year start months (same as inspections)
@@ -443,24 +435,73 @@ def parse_number(value: Any) -> Optional[float]:
 
 
 def clean_country_name(name: str) -> str:
-    """Clean and standardize country name"""
+    """Clean and standardize country name to match Excel destination names"""
     if not name:
         return ''
 
     name = name.upper().strip()
 
-    # Common replacements
+    # Comprehensive Census to Excel name mapping
     replacements = {
+        # Asia
         'KOREA, SOUTH': 'KOREA',
         'KOREA, REPUBLIC OF': 'KOREA',
+        'REPUBLIC OF KOREA': 'KOREA',
+        'KOREA, NORTH': 'NORTH KOREA',  # Exclude from mapping
+        'KOREA, DEMOCRATIC PEOPLES REPUBLIC OF': 'NORTH KOREA',
+        'DEMOCRATIC PEOPLES REPUBLIC OF KOREA': 'NORTH KOREA',
         'TAIWAN, PROVINCE OF CHINA': 'TAIWAN',
         'CHINA, PEOPLES REPUBLIC OF': 'CHINA',
+        'PEOPLES REPUBLIC OF CHINA': 'CHINA',
         'VIETNAM, SOCIALIST REPUBLIC OF': 'VIETNAM',
-        'RUSSIAN FEDERATION': 'RUSSIA',
-        'IRAN, ISLAMIC REPUBLIC OF': 'IRAN',
         'HONG KONG, CHINA': 'HONG KONG',
+        'HONG KONG SAR': 'HONG KONG',
+
+        # Europe
+        'RUSSIAN FEDERATION': 'RUSSIA',
+        'CZECH REPUBLIC': 'CZECH REPUBLIC',
+        'CZECHIA': 'CZECH REPUBLIC',
+        'UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND': 'UNITED KINGDOM',
+        'GREAT BRITAIN': 'UNITED KINGDOM',
+        'UK': 'UNITED KINGDOM',
+        'HOLLAND': 'NETHERLANDS',
+        'FEDERAL REPUBLIC OF GERMANY': 'GERMANY',
+
+        # Middle East
+        'IRAN, ISLAMIC REPUBLIC OF': 'IRAN',
+        'ISLAMIC REPUBLIC OF IRAN': 'IRAN',
+        'UNITED ARAB EMIRATES': 'UNITED ARAB EMIRATES',
+        'UAE': 'UNITED ARAB EMIRATES',
+        'SYRIAN ARAB REPUBLIC': 'SYRIA',
+
+        # Africa
         'COTE D\'IVOIRE': 'COTE D IVOIRE',
         'IVORY COAST': 'COTE D IVOIRE',
+        'DEMOCRATIC REPUBLIC OF THE CONGO': 'DR CONGO',
+        'CONGO, DEMOCRATIC REPUBLIC OF': 'DR CONGO',
+        'REPUBLIC OF SOUTH AFRICA': 'SOUTH AFRICA',
+
+        # Americas
+        'UNITED STATES': 'USA',  # Shouldn't appear but just in case
+        'BOLIVIA, PLURINATIONAL STATE OF': 'BOLIVIA',
+        'VENEZUELA, BOLIVARIAN REPUBLIC OF': 'VENEZUELA',
+
+        # Other variations Census might use
+        'BURMA': 'MYANMAR',
+        'REPUBLIC OF THE PHILIPPINES': 'PHILIPPINES',
+        'KINGDOM OF THAILAND': 'THAILAND',
+        'REPUBLIC OF INDONESIA': 'INDONESIA',
+        'FEDERATION OF MALAYSIA': 'MALAYSIA',
+        'SOCIALIST REPUBLIC OF VIETNAM': 'VIETNAM',
+        'REPUBLIC OF INDIA': 'INDIA',
+        'ISLAMIC REPUBLIC OF PAKISTAN': 'PAKISTAN',
+        'PEOPLES REPUBLIC OF BANGLADESH': 'BANGLADESH',
+        'ARAB REPUBLIC OF EGYPT': 'EGYPT',
+        'KINGDOM OF MOROCCO': 'MOROCCO',
+        'KINGDOM OF SAUDI ARABIA': 'SAUDI ARABIA',
+        'STATE OF ISRAEL': 'ISRAEL',
+        'REPUBLIC OF TURKEY': 'TURKEY',
+        'TURKIYE': 'TURKEY',
     }
 
     return replacements.get(name, name)
@@ -888,6 +929,211 @@ def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
 
 
 # =============================================================================
+# EXCEL UPDATE FUNCTIONS
+# =============================================================================
+
+def update_excel_file(
+    excel_path: Path,
+    monthly_data: Dict[Tuple, Dict],
+    commodity: str,
+    flow: str
+) -> bool:
+    """
+    Update the Excel file with Census trade data
+
+    Args:
+        excel_path: Path to Excel file
+        monthly_data: Monthly data - Dict[(year, month, destination), {value_usd, quantity, ...}]
+        commodity: Commodity name (SOYBEANS, SOYBEAN_MEAL, SOYBEAN_OIL)
+        flow: 'exports' or 'imports'
+
+    Returns:
+        True if successful
+    """
+    try:
+        import openpyxl
+        from openpyxl.utils import get_column_letter
+    except ImportError:
+        print("ERROR: openpyxl not installed. Run: pip install openpyxl")
+        logger.error("openpyxl not installed")
+        return False
+
+    if not excel_path.exists():
+        print(f"ERROR: Excel file not found: {excel_path}")
+        logger.error(f"Excel file not found: {excel_path}")
+        return False
+
+    # Get sheet name for this commodity/flow
+    sheets = COMMODITY_SHEETS.get(commodity.upper())
+    if not sheets:
+        print(f"ERROR: No sheet mapping for commodity: {commodity}")
+        return False
+
+    sheet_name = sheets.get(flow)
+    if not sheet_name:
+        print(f"ERROR: No sheet for {commodity} {flow}")
+        return False
+
+    try:
+        wb = openpyxl.load_workbook(excel_path)
+    except Exception as e:
+        print(f"ERROR: Failed to open Excel file: {e}")
+        logger.error(f"Failed to open Excel file: {e}")
+        return False
+
+    if sheet_name not in wb.sheetnames:
+        print(f"ERROR: Sheet '{sheet_name}' not found in workbook")
+        print(f"Available sheets: {wb.sheetnames}")
+        logger.error(f"Sheet '{sheet_name}' not found")
+        wb.close()
+        return False
+
+    ws = wb[sheet_name]
+
+    # Find date columns by scanning row 3 (header row with dates)
+    # Format expected: YYYY-MM or similar date format
+    date_columns = {}
+    header_row = 3  # Adjust if dates are in different row
+
+    for col in range(1, ws.max_column + 1):
+        cell_value = ws.cell(row=header_row, column=col).value
+        if cell_value:
+            try:
+                # Try to parse as date
+                if isinstance(cell_value, datetime):
+                    dt = cell_value.date()
+                    date_columns[(dt.year, dt.month)] = col
+                elif isinstance(cell_value, date):
+                    date_columns[(cell_value.year, cell_value.month)] = col
+                elif isinstance(cell_value, str):
+                    # Try parsing string dates
+                    for fmt in ['%Y-%m', '%m/%Y', '%b-%y', '%b %Y', '%Y/%m']:
+                        try:
+                            dt = datetime.strptime(cell_value, fmt)
+                            date_columns[(dt.year, dt.month)] = col
+                            break
+                        except ValueError:
+                            continue
+            except Exception:
+                continue
+
+    if not date_columns:
+        print(f"WARNING: Could not find date columns in row {header_row}")
+        print("Trying row 2...")
+        header_row = 2
+        for col in range(1, ws.max_column + 1):
+            cell_value = ws.cell(row=header_row, column=col).value
+            if cell_value:
+                try:
+                    if isinstance(cell_value, datetime):
+                        dt = cell_value.date()
+                        date_columns[(dt.year, dt.month)] = col
+                    elif isinstance(cell_value, date):
+                        date_columns[(cell_value.year, cell_value.month)] = col
+                except Exception:
+                    continue
+
+    logger.info(f"Found {len(date_columns)} date columns in {sheet_name}")
+
+    # Update cells
+    updated = 0
+    not_found_destinations = set()
+    not_found_dates = set()
+
+    for (year, month, destination), data in monthly_data.items():
+        # Get row for this destination
+        row = DESTINATION_ROWS.get(destination.upper())
+        if not row:
+            not_found_destinations.add(destination)
+            continue
+
+        # Get column for this date
+        col = date_columns.get((year, month))
+        if not col:
+            not_found_dates.add((year, month))
+            continue
+
+        # Get value to write (use quantity for volume, or value_usd for value sheets)
+        # Census data is typically in metric tons for quantity
+        value = data.get('quantity')  # Use quantity (metric tons)
+
+        if value and value > 0:
+            # Convert to thousand metric tons for consistency with inspections
+            value_in_tmt = value / 1000.0
+            ws.cell(row=row, column=col).value = round(value_in_tmt, 3)
+            updated += 1
+
+    # Save workbook
+    try:
+        wb.save(excel_path)
+        print(f"Updated {updated} cells in {sheet_name}")
+        logger.info(f"Updated {updated} cells in {sheet_name}")
+
+        if not_found_destinations:
+            unmapped = list(not_found_destinations)[:10]
+            print(f"  Unmapped destinations ({len(not_found_destinations)} total): {unmapped}")
+            logger.warning(f"Unmapped destinations: {not_found_destinations}")
+
+        if not_found_dates:
+            print(f"  Dates not in spreadsheet: {len(not_found_dates)}")
+
+        wb.close()
+        return True
+
+    except Exception as e:
+        print(f"ERROR: Failed to save Excel file: {e}")
+        logger.error(f"Failed to save Excel file: {e}")
+        wb.close()
+        return False
+
+
+def update_all_excel_sheets(
+    records: List[Dict],
+    commodity: str,
+    project_root: Path
+) -> Dict[str, int]:
+    """
+    Update all relevant Excel sheets for a commodity (both imports and exports)
+
+    Args:
+        records: List of trade records
+        commodity: Commodity name
+        project_root: Project root path
+
+    Returns:
+        Dict with update counts per sheet
+    """
+    results = {}
+
+    excel_file = EXCEL_FILES.get(commodity.upper())
+    if not excel_file:
+        print(f"No Excel file configured for {commodity}")
+        return results
+
+    excel_path = project_root / excel_file
+
+    for flow in ['exports', 'imports']:
+        # Filter records for this flow
+        flow_records = [r for r in records if r.get('flow') == flow]
+        if not flow_records:
+            continue
+
+        # Aggregate monthly by destination
+        monthly_data = aggregate_monthly_by_destination(flow_records, flow)
+
+        # Update Excel
+        sheet_name = COMMODITY_SHEETS.get(commodity.upper(), {}).get(flow, flow)
+        print(f"\nUpdating {sheet_name}...")
+
+        if update_excel_file(excel_path, monthly_data, commodity, flow):
+            results[f"{commodity}_{flow}"] = len(monthly_data)
+        else:
+            results[f"{commodity}_{flow}"] = 0
+
+    return results
+
+
+# =============================================================================
 # MAIN WORKFLOW
 # =============================================================================
 
@@ -922,6 +1168,8 @@ def run_census_update(
     if not api_key:
         print("WARNING: No CENSUS_API_KEY set. API calls will be rate-limited.")
         logger.warning("No Census API key. Rate limited to 500 calls/day.")
+
+    project_root = Path(__file__).parent.parent
 
     # Calculate date range
     end_date = date.today().replace(day=1) - timedelta(days=1)  # Last complete month
@@ -983,10 +1231,19 @@ def run_census_update(
         saved = save_to_database(all_records)
         results['records_saved'] = saved
 
-    # Update Excel (TODO: implement)
+    # Update Excel
     if update_excel:
-        print("\nExcel update not yet implemented for Census data")
-        # TODO: Implement Excel update similar to inspections
+        print("\n" + "=" * 60)
+        print("UPDATING EXCEL FILES")
+        print("=" * 60)
+
+        for comm in commodities:
+            # Get records for this commodity
+            comm_records = [r for r in all_records if r.get('commodity') == comm]
+            if comm_records:
+                excel_results = update_all_excel_sheets(comm_records, comm, project_root)
+                for sheet, count in excel_results.items():
+                    print(f"  {sheet}: {count} month/destination combinations")
 
     results['success'] = True
     return results
