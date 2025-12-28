@@ -86,8 +86,8 @@ EXCEL_FILES = {
 # Excel sheet names for Census data (matching actual sheet names in workbook)
 COMMODITY_SHEETS = {
     'SOYBEANS': {'exports': 'Soybean Exports', 'imports': 'Soybean Imports'},
-    'SOYBEAN_MEAL': {'exports': 'Meal Exports', 'imports': 'Meal Imports'},
-    'SOYBEAN_OIL': {'exports': 'Oil Exports', 'imports': 'Oil Imports'},
+    'SOYBEAN_MEAL': {'exports': 'Soymeal Exports', 'imports': 'Soymeal Imports'},
+    'SOYBEAN_OIL': {'exports': 'Soyoil Exports', 'imports': 'Soyoil Imports'},
 }
 
 # Marketing year start months (same as inspections)
