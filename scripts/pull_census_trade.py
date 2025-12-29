@@ -1176,6 +1176,134 @@ def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
 # EXCEL UPDATE FUNCTIONS (using win32com to preserve external links)
 # =============================================================================
 
+def parse_excel_date_header(cell_value, header_row: int = 2) -> Optional[Tuple[int, int]]:
+    """
+    Parse a date from an Excel header cell.
+
+    Handles various formats:
+    - datetime objects
+    - Excel serial date numbers
+    - String formats like "Nov-35", "Dec-35" (where 35 = 2035)
+    - Skip marketing year formats like "93/94", "94/95"
+
+    Args:
+        cell_value: The cell value to parse
+        header_row: Which row this is from (for context)
+
+    Returns:
+        Tuple of (year, month) or None if not a valid monthly date
+    """
+    if cell_value is None:
+        return None
+
+    # Handle datetime objects
+    # Excel may interpret "Nov-35" as November 1935, but we want 2035
+    if isinstance(cell_value, datetime):
+        year = cell_value.year
+        # Fix 2-digit year interpretation: years 1920-1970 should be 2020-2070
+        if 1920 <= year < 1970:
+            year += 100  # 1935 -> 2035
+        return (year, cell_value.month)
+
+    if isinstance(cell_value, date):
+        year = cell_value.year
+        # Fix 2-digit year interpretation: years 1920-1970 should be 2020-2070
+        if 1920 <= year < 1970:
+            year += 100  # 1935 -> 2035
+        return (year, cell_value.month)
+
+    # Handle Excel serial date numbers
+    if isinstance(cell_value, (int, float)) and cell_value > 1000:
+        # Excel serial dates are > 1000 for dates after ~1902
+        try:
+            excel_epoch = datetime(1899, 12, 30)
+            dt = excel_epoch + timedelta(days=int(cell_value))
+            year = dt.year
+            # Fix 2-digit year interpretation if needed
+            if 1920 <= year < 1970:
+                year += 100
+            return (year, dt.month)
+        except:
+            pass
+
+    # Handle string formats
+    if isinstance(cell_value, str):
+        cell_str = cell_value.strip()
+
+        # Skip marketing year formats like "93/94", "94/95", "00/01"
+        if '/' in cell_str and len(cell_str) <= 7:
+            parts = cell_str.split('/')
+            if len(parts) == 2 and all(p.isdigit() and len(p) <= 2 for p in parts):
+                # This is a marketing year column, skip it
+                return None
+
+        # Parse monthly formats like "Nov-35", "Dec-35", "Jan-36"
+        # These use 2-digit years where 35 = 2035, not 1935
+        for fmt in ['%b-%y', '%b %y', '%B-%y', '%B %y']:
+            try:
+                dt = datetime.strptime(cell_str, fmt)
+                year = dt.year
+                # Fix century: years 00-50 are 2000-2050, 51-99 are 1951-1999
+                if year < 100:
+                    year = 2000 + year if year <= 50 else 1900 + year
+                elif year < 1950:
+                    # strptime with %y gives 1900s for 00-68 in some Python versions
+                    # Fix: if year is 1935, it should be 2035
+                    if year < 1970:
+                        year += 100  # 1935 -> 2035
+                return (year, dt.month)
+            except ValueError:
+                continue
+
+        # Try other formats
+        for fmt in ['%Y-%m', '%m/%Y', '%Y/%m', '%m-%Y']:
+            try:
+                dt = datetime.strptime(cell_str, fmt)
+                return (dt.year, dt.month)
+            except ValueError:
+                continue
+
+    return None
+
+
+def find_country_rows(ws, max_row: int = 500) -> Dict[str, int]:
+    """
+    Dynamically find country/destination rows by scanning column A.
+
+    Args:
+        ws: Excel worksheet object
+        max_row: Maximum row to scan
+
+    Returns:
+        Dict mapping country name (uppercase) to row number
+    """
+    country_rows = {}
+
+    for row in range(1, max_row + 1):
+        cell_value = ws.Cells(row, 1).Value
+        if cell_value and isinstance(cell_value, str):
+            # Clean the country name
+            country = cell_value.strip().upper()
+
+            # Skip header rows, totals, and empty-ish values
+            skip_patterns = [
+                'EXPORTS', 'IMPORTS', 'MILLION', 'BUSHELS', 'TONNES',
+                'TOTAL', 'ACTUAL', 'ADJUSTED', 'SUM', 'HS CODE',
+                '120110', '120190', '230400', '150710'  # HS codes
+            ]
+
+            if any(pattern in country for pattern in skip_patterns):
+                continue
+
+            if len(country) < 3:
+                continue
+
+            # Store the row for this country
+            country_rows[country] = row
+
+    return country_rows
+
+
 def update_excel_file(
     excel_path: Path,
     monthly_data: Dict[Tuple, Dict],
@@ -1306,76 +1434,64 @@ def update_excel_file(
             pythoncom.CoUninitialize()
             return False
 
-        # Find date columns by scanning row 3 (header row with dates)
-        date_columns = {}
-        header_row = 3
-
-        # Get used range to find max column
+        # Get used range dimensions
         used_range = ws.UsedRange
         max_col = used_range.Columns.Count
+        max_row = used_range.Rows.Count
+
+        # Find date columns by scanning row 2 (where monthly dates like "Nov-35" are)
+        date_columns = {}
+        header_row = 2
+
+        print(f"  Scanning row {header_row} for date columns (up to {max_col} columns)...")
 
         for col in range(1, max_col + 1):
             cell_value = ws.Cells(header_row, col).Value
-            if cell_value:
-                try:
-                    # win32com returns datetime objects for Excel dates
-                    if isinstance(cell_value, datetime):
-                        date_columns[(cell_value.year, cell_value.month)] = col
-                    elif isinstance(cell_value, date):
-                        date_columns[(cell_value.year, cell_value.month)] = col
-                    elif isinstance(cell_value, (int, float)):
-                        # Excel serial date number - convert to datetime
-                        # Excel epoch is 1899-12-30
-                        try:
-                            from datetime import timedelta
-                            excel_epoch = datetime(1899, 12, 30)
-                            dt = excel_epoch + timedelta(days=int(cell_value))
-                            date_columns[(dt.year, dt.month)] = col
-                        except:
-                            pass
-                    elif isinstance(cell_value, str):
-                        # Try parsing string dates
-                        for fmt in ['%Y-%m', '%m/%Y', '%b-%y', '%b %Y', '%Y/%m']:
-                            try:
-                                dt = datetime.strptime(cell_value, fmt)
-                                date_columns[(dt.year, dt.month)] = col
-                                break
-                            except ValueError:
-                                continue
-                except Exception:
-                    continue
+            parsed = parse_excel_date_header(cell_value, header_row)
+            if parsed:
+                year, month = parsed
+                # Only include dates from 1990 onwards (skip obvious errors)
+                if year >= 1990:
+                    date_columns[(year, month)] = col
 
-        if not date_columns:
-            print(f"WARNING: Could not find date columns in row {header_row}")
-            print("Trying row 2...")
-            header_row = 2
-            for col in range(1, max_col + 1):
-                cell_value = ws.Cells(header_row, col).Value
-                if cell_value:
-                    try:
-                        if isinstance(cell_value, datetime):
-                            date_columns[(cell_value.year, cell_value.month)] = col
-                        elif isinstance(cell_value, date):
-                            date_columns[(cell_value.year, cell_value.month)] = col
-                        elif isinstance(cell_value, (int, float)):
-                            from datetime import timedelta
-                            excel_epoch = datetime(1899, 12, 30)
-                            dt = excel_epoch + timedelta(days=int(cell_value))
-                            date_columns[(dt.year, dt.month)] = col
-                    except Exception:
-                        continue
-
-        print(f"  Found {len(date_columns)} date columns in {sheet_name}")
+        print(f"  Found {len(date_columns)} monthly date columns in {sheet_name}")
         logger.info(f"Found {len(date_columns)} date columns in {sheet_name}")
 
-        # Debug: show sample date columns
+        # Debug: show date range found
         if date_columns:
-            sample_dates = list(date_columns.keys())[:5]
-            print(f"  Sample date columns: {sample_dates}")
+            years = sorted(set(y for y, m in date_columns.keys()))
+            print(f"  Date range: {min(years)} to {max(years)}")
+            # Show some dates from the target range (2020-2025)
+            recent_dates = sorted([d for d in date_columns.keys() if d[0] >= 2020])[:10]
+            if recent_dates:
+                print(f"  Recent dates found: {recent_dates}")
+            else:
+                print(f"  WARNING: No dates found in 2020+ range!")
+
+        # Dynamically find country rows by scanning column A
+        print(f"  Scanning column A for country names (up to row {max_row})...")
+        country_rows = find_country_rows(ws, max_row)
+        print(f"  Found {len(country_rows)} country/destination rows")
+
+        # Debug: show sample country rows
+        if country_rows:
+            sample_countries = list(country_rows.items())[:10]
+            print(f"  Sample country rows: {sample_countries}")
 
         # Debug: show sample destinations from data
         sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
         print(f"  Sample destinations in data: {sample_dests}")
+
+        # Debug: show year distribution of data vs date columns
+        data_years = sorted(set(y for (y, m, dest) in monthly_data.keys()))
+        column_years = sorted(set(y for y, m in date_columns.keys())) if date_columns else []
+        print(f"  Data years: {data_years}")
+        print(f"  Column years: {column_years}")
+
+        # Check for overlap
+        overlap_years = set(data_years) & set(column_years)
+        if not overlap_years:
+            print(f"  WARNING: No overlap between data years and column years!")
 
         # Update cells
         updated = 0
@@ -1384,8 +1500,18 @@ def update_excel_file(
         matched_destinations = set()
 
         for (year, month, destination), data in monthly_data.items():
-            # Get row for this destination
-            row = DESTINATION_ROWS.get(destination.upper())
+            # Get row for this destination (try exact match first, then variations)
+            dest_upper = destination.upper().strip()
+            row = country_rows.get(dest_upper)
+
+            # Try common name variations if exact match fails
+            if not row:
+                # Try without extra spaces
+                for country_name, country_row in country_rows.items():
+                    if dest_upper in country_name or country_name in dest_upper:
+                        row = country_row
+                        break
+
             if not row:
                 not_found_destinations.add(destination)
                 continue
@@ -1399,12 +1525,13 @@ def update_excel_file(
                 continue
 
             # Get value to write (use quantity for volume)
-            # Census data is typically in metric tons for quantity
+            # Census data is in kg, convert to 1000 metric tonnes
             value = data.get('quantity')
 
             if value and value > 0:
-                # Convert to thousand metric tons for consistency with inspections
-                value_in_tmt = value / 1000.0
+                # Census quantity is in KG, convert to 1000 MT (million kg)
+                # 1000 MT = 1,000,000 kg, so divide by 1,000,000
+                value_in_tmt = value / 1000000.0
                 ws.Cells(row, col).Value = round(value_in_tmt, 3)
                 updated += 1
 
@@ -1424,7 +1551,8 @@ def update_excel_file(
             logger.warning(f"Unmapped destinations: {not_found_destinations}")
 
         if not_found_dates:
-            print(f"  Dates not in spreadsheet: {len(not_found_dates)}")
+            missing_dates = sorted(list(not_found_dates))[:10]
+            print(f"  Dates not in spreadsheet ({len(not_found_dates)} total): {missing_dates}")
 
         # Close workbook and Excel
         wb.Close(SaveChanges=True)
