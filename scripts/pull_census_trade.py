@@ -4,7 +4,7 @@ Pull Census Bureau Trade Data
 
 Downloads monthly import/export data from US Census Bureau API and:
 1. Saves to PostgreSQL database
-2. Updates Excel model files
+2. Updates Excel model files (using win32com to preserve external links)
 
 Commodities tracked:
 - Soybeans (HS 1201)
@@ -33,6 +33,11 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Load .env from project root (not current working directory)
 load_dotenv(PROJECT_ROOT / '.env')
+
+# Also load from api Manager/.env if it exists (for database credentials)
+api_manager_env = PROJECT_ROOT / 'api Manager' / '.env'
+if api_manager_env.exists():
+    load_dotenv(api_manager_env)
 
 try:
     import requests
@@ -711,6 +716,42 @@ def aggregate_by_marketing_year(
 DEFAULT_DB_PATH = Path(__file__).parent.parent / 'data' / 'census_trade.db'
 
 
+def get_database_url() -> str:
+    """
+    Get database connection URL from environment variables.
+
+    Priority:
+    1. DATABASE_URL environment variable (if set)
+    2. Construct from individual DB_* variables (DB_HOST, DB_NAME, etc.)
+    3. Fall back to SQLite (last resort)
+
+    Returns:
+        Database connection string
+    """
+    # Check for explicit DATABASE_URL first
+    database_url = os.getenv('DATABASE_URL')
+    if database_url:
+        return database_url
+
+    # Try to construct from individual variables
+    db_type = os.getenv('DB_TYPE', 'postgresql')
+    db_host = os.getenv('DB_HOST', 'localhost')
+    db_port = os.getenv('DB_PORT', '5432')
+    db_name = os.getenv('DB_NAME', 'rlc_commodities')
+    db_user = os.getenv('DB_USER', 'postgres')
+    db_password = os.getenv('DB_PASSWORD', '')
+
+    if db_type == 'postgresql' and db_host and db_name and db_user:
+        # Construct PostgreSQL URL
+        if db_password:
+            return f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+        else:
+            return f"postgresql://{db_user}@{db_host}:{db_port}/{db_name}"
+
+    # Fall back to SQLite as last resort
+    return f'sqlite:///{DEFAULT_DB_PATH}'
+
+
 def save_to_database(records: List[Dict], connection_string: str = None) -> int:
     """
     Save trade records to database
@@ -722,14 +763,21 @@ def save_to_database(records: List[Dict], connection_string: str = None) -> int:
     Returns:
         Number of records saved
     """
-    connection_string = connection_string or os.getenv('DATABASE_URL')
+    connection_string = connection_string or get_database_url()
 
-    if not connection_string:
-        connection_string = f'sqlite:///{DEFAULT_DB_PATH}'
-        print(f"\nNo DATABASE_URL set - using SQLite: {DEFAULT_DB_PATH}")
-        logger.info(f"Using default SQLite database: {DEFAULT_DB_PATH}")
+    if connection_string.startswith('sqlite'):
+        print(f"\nUsing SQLite database: {connection_string.replace('sqlite:///', '')}")
+        logger.info(f"Using SQLite database: {connection_string}")
     else:
-        print(f"\nSaving {len(records)} records to database...")
+        # Mask password in log output
+        display_url = connection_string
+        if '@' in connection_string and ':' in connection_string.split('@')[0]:
+            parts = connection_string.split('@')
+            user_pass = parts[0].split('://')[-1]
+            if ':' in user_pass:
+                user = user_pass.split(':')[0]
+                display_url = f"postgresql://{user}:****@{parts[1]}"
+        print(f"\nSaving {len(records)} records to PostgreSQL: {display_url}")
 
     try:
         if connection_string.startswith('postgresql'):
@@ -1005,7 +1053,7 @@ def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
 
 
 # =============================================================================
-# EXCEL UPDATE FUNCTIONS (using xlwings to preserve external links)
+# EXCEL UPDATE FUNCTIONS (using win32com to preserve external links)
 # =============================================================================
 
 def update_excel_file(
@@ -1015,10 +1063,10 @@ def update_excel_file(
     flow: str
 ) -> bool:
     """
-    Update the Excel file with Census trade data using xlwings.
+    Update the Excel file with Census trade data using win32com.
 
-    xlwings uses Excel's COM interface, which preserves external links and formulas
-    that openpyxl corrupts.
+    win32com uses Excel's COM interface directly, which preserves external links,
+    formulas, and other Excel features that openpyxl corrupts.
 
     Args:
         excel_path: Path to Excel file
@@ -1030,16 +1078,18 @@ def update_excel_file(
         True if successful
     """
     try:
-        import xlwings as xw
+        import win32com.client
+        import pythoncom
     except ImportError:
-        print("ERROR: xlwings not installed. Run: pip install xlwings")
-        logger.error("xlwings not installed")
+        print("ERROR: pywin32 not installed. Run: pip install pywin32")
+        logger.error("pywin32 not installed")
         return False
 
     import shutil
     import tempfile
+    import time
 
-    # Resolve to absolute path - critical for xlwings on Windows
+    # Resolve to absolute path - critical for COM on Windows
     excel_path = Path(excel_path).resolve()
 
     if not excel_path.exists():
@@ -1069,31 +1119,46 @@ def update_excel_file(
         try:
             temp_dir = Path(tempfile.gettempdir())
             temp_path = temp_dir / f"temp_{excel_path.name}"
-            print(f"  Dropbox detected - copying to temp: {temp_path}")
+            print(f"  Cloud sync detected - copying to temp: {temp_path}")
             shutil.copy2(excel_path, temp_path)
             working_path = temp_path
         except Exception as e:
             print(f"  Warning: Could not create temp copy: {e}")
             working_path = excel_path
 
-    try:
-        # Open Excel in the background (visible=False for faster processing)
-        app = xw.App(visible=False, add_book=False)
-        app.display_alerts = False
-        app.screen_updating = False
+    excel = None
+    wb = None
 
-        # Use str() to convert Path to string for xlwings
-        wb = app.books.open(str(working_path))
+    try:
+        # Initialize COM for this thread
+        pythoncom.CoInitialize()
+
+        # Create Excel application instance
+        excel = win32com.client.Dispatch("Excel.Application")
+        excel.Visible = False
+        excel.DisplayAlerts = False
+        excel.ScreenUpdating = False
+
+        # Open workbook with UpdateLinks=0 to prevent link update prompts
+        # Arguments: Filename, UpdateLinks, ReadOnly, Format, Password
+        wb = excel.Workbooks.Open(
+            str(working_path),
+            UpdateLinks=0,  # Don't update links
+            ReadOnly=False
+        )
+
     except Exception as e:
         print(f"ERROR: Failed to open Excel file: {e}")
         print("  TIP: Make sure the file is closed in Excel before running this script.")
         print("  TIP: Try closing all Excel windows and running: taskkill /F /IM EXCEL.EXE")
         print(f"  Path attempted: {working_path}")
         logger.error(f"Failed to open Excel file: {e}")
-        try:
-            app.quit()
-        except:
-            pass
+        if excel:
+            try:
+                excel.Quit()
+            except:
+                pass
+        pythoncom.CoUninitialize()
         # Clean up temp file if created
         if temp_path and temp_path.exists():
             try:
@@ -1103,34 +1168,51 @@ def update_excel_file(
         return False
 
     try:
-        # Get the sheet
-        if sheet_name not in [s.name for s in wb.sheets]:
-            print(f"ERROR: Sheet '{sheet_name}' not found in workbook")
-            print(f"Available sheets: {[s.name for s in wb.sheets]}")
-            logger.error(f"Sheet '{sheet_name}' not found")
-            wb.close()
-            app.quit()
-            return False
+        # Get the sheet by name
+        ws = None
+        sheet_names = []
+        for i in range(1, wb.Sheets.Count + 1):
+            sheet_names.append(wb.Sheets(i).Name)
+            if wb.Sheets(i).Name == sheet_name:
+                ws = wb.Sheets(i)
+                break
 
-        ws = wb.sheets[sheet_name]
+        if ws is None:
+            print(f"ERROR: Sheet '{sheet_name}' not found in workbook")
+            print(f"Available sheets: {sheet_names}")
+            logger.error(f"Sheet '{sheet_name}' not found")
+            wb.Close(SaveChanges=False)
+            excel.Quit()
+            pythoncom.CoUninitialize()
+            return False
 
         # Find date columns by scanning row 3 (header row with dates)
         date_columns = {}
         header_row = 3
 
         # Get used range to find max column
-        used_range = ws.used_range
-        max_col = used_range.last_cell.column
+        used_range = ws.UsedRange
+        max_col = used_range.Columns.Count
 
         for col in range(1, max_col + 1):
-            cell_value = ws.range((header_row, col)).value
+            cell_value = ws.Cells(header_row, col).Value
             if cell_value:
                 try:
-                    # xlwings returns datetime objects directly
+                    # win32com returns datetime objects for Excel dates
                     if isinstance(cell_value, datetime):
                         date_columns[(cell_value.year, cell_value.month)] = col
                     elif isinstance(cell_value, date):
                         date_columns[(cell_value.year, cell_value.month)] = col
+                    elif isinstance(cell_value, (int, float)):
+                        # Excel serial date number - convert to datetime
+                        # Excel epoch is 1899-12-30
+                        try:
+                            from datetime import timedelta
+                            excel_epoch = datetime(1899, 12, 30)
+                            dt = excel_epoch + timedelta(days=int(cell_value))
+                            date_columns[(dt.year, dt.month)] = col
+                        except:
+                            pass
                     elif isinstance(cell_value, str):
                         # Try parsing string dates
                         for fmt in ['%Y-%m', '%m/%Y', '%b-%y', '%b %Y', '%Y/%m']:
@@ -1148,13 +1230,18 @@ def update_excel_file(
             print("Trying row 2...")
             header_row = 2
             for col in range(1, max_col + 1):
-                cell_value = ws.range((header_row, col)).value
+                cell_value = ws.Cells(header_row, col).Value
                 if cell_value:
                     try:
                         if isinstance(cell_value, datetime):
                             date_columns[(cell_value.year, cell_value.month)] = col
                         elif isinstance(cell_value, date):
                             date_columns[(cell_value.year, cell_value.month)] = col
+                        elif isinstance(cell_value, (int, float)):
+                            from datetime import timedelta
+                            excel_epoch = datetime(1899, 12, 30)
+                            dt = excel_epoch + timedelta(days=int(cell_value))
+                            date_columns[(dt.year, dt.month)] = col
                     except Exception:
                         continue
 
@@ -1198,7 +1285,7 @@ def update_excel_file(
             if value and value > 0:
                 # Convert to thousand metric tons for consistency with inspections
                 value_in_tmt = value / 1000.0
-                ws.range((row, col)).value = round(value_in_tmt, 3)
+                ws.Cells(row, col).Value = round(value_in_tmt, 3)
                 updated += 1
 
         # Debug output
@@ -1207,7 +1294,7 @@ def update_excel_file(
             print(f"    Examples: {list(matched_destinations)[:5]}")
 
         # Save workbook
-        wb.save()
+        wb.Save()
         print(f"Updated {updated} cells in {sheet_name}")
         logger.info(f"Updated {updated} cells in {sheet_name}")
 
@@ -1219,13 +1306,18 @@ def update_excel_file(
         if not_found_dates:
             print(f"  Dates not in spreadsheet: {len(not_found_dates)}")
 
-        wb.close()
-        app.quit()
+        # Close workbook and Excel
+        wb.Close(SaveChanges=True)
+        excel.Quit()
+        pythoncom.CoUninitialize()
+
+        # Small delay to ensure Excel fully releases the file
+        time.sleep(0.5)
 
         # If we used a temp file, copy it back to the original location
         if temp_path and temp_path.exists():
             try:
-                print(f"  Copying updated file back to Dropbox...")
+                print(f"  Copying updated file back to original location...")
                 shutil.copy2(temp_path, excel_path)
                 temp_path.unlink()  # Clean up temp file
                 print(f"  Successfully updated: {excel_path}")
@@ -1242,8 +1334,11 @@ def update_excel_file(
         import traceback
         traceback.print_exc()
         try:
-            wb.close()
-            app.quit()
+            if wb:
+                wb.Close(SaveChanges=False)
+            if excel:
+                excel.Quit()
+            pythoncom.CoUninitialize()
         except:
             pass
         return False
