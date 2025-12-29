@@ -114,10 +114,38 @@ MARKETING_YEAR_START = {
 
 # Conversion factors
 MT_PER_BUSHEL = {
-    'SOYBEANS': 0.0272155,      # 60 lbs/bu
+    'SOYBEANS': 0.0272155,      # 60 lbs/bu = 0.0272155 MT/bu
     'SOYBEAN_MEAL': 0.0272155,  # Short tons converted
     'SOYBEAN_HULLS': 0.0272155, # Same as meal
     'SOYBEAN_OIL': None,        # Reported in kg/liters
+}
+
+# Bushels per metric ton (inverse of above, for converting MT to bushels)
+BUSHELS_PER_MT = {
+    'SOYBEANS': 36.7437,        # 1 MT = 36.7437 bushels (60 lbs/bu)
+    'SOYBEAN_MEAL': 36.7437,    # Same conversion
+    'SOYBEAN_HULLS': 36.7437,   # Same conversion
+    'SOYBEAN_OIL': None,        # Oil uses different units (lbs or gallons)
+}
+
+# Unit configuration for different spreadsheets
+# US trade data uses imperial units (bushels), International uses metric (tonnes)
+EXCEL_UNIT_CONFIG = {
+    'US Soybean Trade.xlsx': {
+        'unit_type': 'imperial',      # US trade uses bushels
+        'display_unit': '1000 bushels',
+        'conversion': 'kg_to_thousand_bushels',
+    },
+    'World Rapeseed Trade.xlsx': {
+        'unit_type': 'metric',        # International trade uses tonnes
+        'display_unit': '1000 tonnes',
+        'conversion': 'kg_to_thousand_tonnes',
+    },
+    'World Soybean Trade.xlsx': {
+        'unit_type': 'metric',        # International trade uses tonnes
+        'display_unit': '1000 tonnes',
+        'conversion': 'kg_to_thousand_tonnes',
+    },
 }
 
 # Fallback price estimates for quantity estimation when Census doesn't provide quantity
@@ -430,8 +458,8 @@ def fetch_trade_data(
     else:
         commodity_field = 'E_COMMODITY'
         value_field = 'ALL_VAL_MO'
-        # Try multiple quantity fields for exports - some HS codes use different fields
-        qty_fields = ['QTY_1_MO', 'QTY_2_MO', 'AIR_WGT_MO', 'VESSEL_WGT_MO']
+        # Try both quantity fields for exports - only QTY_1_MO and QTY_2_MO are valid
+        qty_fields = ['QTY_1_MO', 'QTY_2_MO']
         unit_field = 'UNIT_QY1'
 
     # Build params - request all quantity fields
