@@ -54,8 +54,16 @@ logger = logging.getLogger(__name__)
 # Census API base URL
 CENSUS_API_BASE = "https://api.census.gov/data/timeseries/intltrade"
 
-# HS Codes for commodities
+# HS Codes for commodities (use 6-digit codes for better API compatibility)
+# For exports, Census uses Schedule B codes which are 10-digit but we can query at 6-digit level
 HS_CODES = {
+    'SOYBEANS': '120190',      # 1201.90 - Soybeans, other than seed
+    'SOYBEAN_MEAL': '230400',  # 2304.00 - Soybean oilcake and meal
+    'SOYBEAN_OIL': '150710',   # 1507.10 - Crude soybean oil
+}
+
+# Alternative 4-digit codes for fallback
+HS_CODES_4DIGIT = {
     'SOYBEANS': '1201',
     'SOYBEAN_MEAL': '2304',
     'SOYBEAN_OIL': '1507',
@@ -78,8 +86,8 @@ EXCEL_FILES = {
 # Excel sheet names for Census data (matching actual sheet names in workbook)
 COMMODITY_SHEETS = {
     'SOYBEANS': {'exports': 'Soybean Exports', 'imports': 'Soybean Imports'},
-    'SOYBEAN_MEAL': {'exports': 'Meal Exports', 'imports': 'Meal Imports'},
-    'SOYBEAN_OIL': {'exports': 'Oil Exports', 'imports': 'Oil Imports'},
+    'SOYBEAN_MEAL': {'exports': 'Soymeal Exports', 'imports': 'Soymeal Imports'},
+    'SOYBEAN_OIL': {'exports': 'Soyoil Exports', 'imports': 'Soyoil Imports'},
 }
 
 # Marketing year start months (same as inspections)
@@ -345,6 +353,16 @@ def fetch_trade_data(
                     })
 
                 return records
+        elif response.status_code == 204:
+            # No content - no data for this period
+            logger.warning(f"API returned 204 for {flow}/{hs_code} {time_str}")
+        elif response.status_code == 400:
+            # Bad request - log the actual error response
+            try:
+                error_text = response.text[:200]
+                logger.warning(f"API returned 400 for {flow}/{hs_code} {time_str}: {error_text}")
+            except:
+                logger.warning(f"API returned 400 for {flow}/{hs_code} {time_str}")
         else:
             logger.warning(f"API returned {response.status_code} for {flow}/{hs_code} {time_str}")
 
@@ -374,13 +392,19 @@ def fetch_commodity_data(
     Returns:
         List of all trade records
     """
-    hs_code = HS_CODES.get(commodity.upper())
-    if not hs_code:
+    # Try 6-digit HS code first, then fall back to 4-digit
+    hs_code_6 = HS_CODES.get(commodity.upper())
+    hs_code_4 = HS_CODES_4DIGIT.get(commodity.upper())
+
+    if not hs_code_6 and not hs_code_4:
         logger.error(f"Unknown commodity: {commodity}")
         return []
 
     flows = ['exports', 'imports'] if flow == 'both' else [flow]
     all_records = []
+
+    # Track which HS code works for each flow
+    working_codes = {}
 
     # Iterate through months
     current = date(start_date.year, start_date.month, 1)
@@ -392,13 +416,45 @@ def fetch_commodity_data(
         months_processed += 1
 
         for trade_flow in flows:
-            records = fetch_trade_data(
-                flow=trade_flow,
-                hs_code=hs_code,
-                year=current.year,
-                month=current.month,
-                api_key=api_key
-            )
+            records = []
+
+            # Determine which HS code to use for this flow
+            if trade_flow in working_codes:
+                # Use the code that worked before
+                hs_code = working_codes[trade_flow]
+                records = fetch_trade_data(
+                    flow=trade_flow,
+                    hs_code=hs_code,
+                    year=current.year,
+                    month=current.month,
+                    api_key=api_key
+                )
+            else:
+                # Try 6-digit code first
+                if hs_code_6:
+                    records = fetch_trade_data(
+                        flow=trade_flow,
+                        hs_code=hs_code_6,
+                        year=current.year,
+                        month=current.month,
+                        api_key=api_key
+                    )
+                    if records:
+                        working_codes[trade_flow] = hs_code_6
+                        logger.info(f"Using 6-digit code {hs_code_6} for {trade_flow}")
+
+                # If 6-digit failed, try 4-digit
+                if not records and hs_code_4:
+                    records = fetch_trade_data(
+                        flow=trade_flow,
+                        hs_code=hs_code_4,
+                        year=current.year,
+                        month=current.month,
+                        api_key=api_key
+                    )
+                    if records:
+                        working_codes[trade_flow] = hs_code_4
+                        logger.info(f"Using 4-digit code {hs_code_4} for {trade_flow}")
 
             # Add commodity info to records
             for r in records:
@@ -929,7 +985,7 @@ def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
 
 
 # =============================================================================
-# EXCEL UPDATE FUNCTIONS
+# EXCEL UPDATE FUNCTIONS (using xlwings to preserve external links)
 # =============================================================================
 
 def update_excel_file(
@@ -939,7 +995,10 @@ def update_excel_file(
     flow: str
 ) -> bool:
     """
-    Update the Excel file with Census trade data
+    Update the Excel file with Census trade data using xlwings.
+
+    xlwings uses Excel's COM interface, which preserves external links and formulas
+    that openpyxl corrupts.
 
     Args:
         excel_path: Path to Excel file
@@ -951,11 +1010,10 @@ def update_excel_file(
         True if successful
     """
     try:
-        import openpyxl
-        from openpyxl.utils import get_column_letter
+        import xlwings as xw
     except ImportError:
-        print("ERROR: openpyxl not installed. Run: pip install openpyxl")
-        logger.error("openpyxl not installed")
+        print("ERROR: xlwings not installed. Run: pip install xlwings")
+        logger.error("xlwings not installed")
         return False
 
     if not excel_path.exists():
@@ -975,97 +1033,124 @@ def update_excel_file(
         return False
 
     try:
-        wb = openpyxl.load_workbook(excel_path)
+        # Open Excel in the background (visible=False for faster processing)
+        # Use app=None to connect to existing Excel or start new one
+        app = xw.App(visible=False, add_book=False)
+        app.display_alerts = False
+        app.screen_updating = False
+
+        wb = app.books.open(str(excel_path))
     except Exception as e:
         print(f"ERROR: Failed to open Excel file: {e}")
         logger.error(f"Failed to open Excel file: {e}")
         return False
 
-    if sheet_name not in wb.sheetnames:
-        print(f"ERROR: Sheet '{sheet_name}' not found in workbook")
-        print(f"Available sheets: {wb.sheetnames}")
-        logger.error(f"Sheet '{sheet_name}' not found")
-        wb.close()
-        return False
+    try:
+        # Get the sheet
+        if sheet_name not in [s.name for s in wb.sheets]:
+            print(f"ERROR: Sheet '{sheet_name}' not found in workbook")
+            print(f"Available sheets: {[s.name for s in wb.sheets]}")
+            logger.error(f"Sheet '{sheet_name}' not found")
+            wb.close()
+            app.quit()
+            return False
 
-    ws = wb[sheet_name]
+        ws = wb.sheets[sheet_name]
 
-    # Find date columns by scanning row 3 (header row with dates)
-    # Format expected: YYYY-MM or similar date format
-    date_columns = {}
-    header_row = 3  # Adjust if dates are in different row
+        # Find date columns by scanning row 3 (header row with dates)
+        date_columns = {}
+        header_row = 3
 
-    for col in range(1, ws.max_column + 1):
-        cell_value = ws.cell(row=header_row, column=col).value
-        if cell_value:
-            try:
-                # Try to parse as date
-                if isinstance(cell_value, datetime):
-                    dt = cell_value.date()
-                    date_columns[(dt.year, dt.month)] = col
-                elif isinstance(cell_value, date):
-                    date_columns[(cell_value.year, cell_value.month)] = col
-                elif isinstance(cell_value, str):
-                    # Try parsing string dates
-                    for fmt in ['%Y-%m', '%m/%Y', '%b-%y', '%b %Y', '%Y/%m']:
-                        try:
-                            dt = datetime.strptime(cell_value, fmt)
-                            date_columns[(dt.year, dt.month)] = col
-                            break
-                        except ValueError:
-                            continue
-            except Exception:
-                continue
+        # Get used range to find max column
+        used_range = ws.used_range
+        max_col = used_range.last_cell.column
 
-    if not date_columns:
-        print(f"WARNING: Could not find date columns in row {header_row}")
-        print("Trying row 2...")
-        header_row = 2
-        for col in range(1, ws.max_column + 1):
-            cell_value = ws.cell(row=header_row, column=col).value
+        for col in range(1, max_col + 1):
+            cell_value = ws.range((header_row, col)).value
             if cell_value:
                 try:
+                    # xlwings returns datetime objects directly
                     if isinstance(cell_value, datetime):
-                        dt = cell_value.date()
-                        date_columns[(dt.year, dt.month)] = col
+                        date_columns[(cell_value.year, cell_value.month)] = col
                     elif isinstance(cell_value, date):
                         date_columns[(cell_value.year, cell_value.month)] = col
+                    elif isinstance(cell_value, str):
+                        # Try parsing string dates
+                        for fmt in ['%Y-%m', '%m/%Y', '%b-%y', '%b %Y', '%Y/%m']:
+                            try:
+                                dt = datetime.strptime(cell_value, fmt)
+                                date_columns[(dt.year, dt.month)] = col
+                                break
+                            except ValueError:
+                                continue
                 except Exception:
                     continue
 
-    logger.info(f"Found {len(date_columns)} date columns in {sheet_name}")
+        if not date_columns:
+            print(f"WARNING: Could not find date columns in row {header_row}")
+            print("Trying row 2...")
+            header_row = 2
+            for col in range(1, max_col + 1):
+                cell_value = ws.range((header_row, col)).value
+                if cell_value:
+                    try:
+                        if isinstance(cell_value, datetime):
+                            date_columns[(cell_value.year, cell_value.month)] = col
+                        elif isinstance(cell_value, date):
+                            date_columns[(cell_value.year, cell_value.month)] = col
+                    except Exception:
+                        continue
 
-    # Update cells
-    updated = 0
-    not_found_destinations = set()
-    not_found_dates = set()
+        print(f"  Found {len(date_columns)} date columns in {sheet_name}")
+        logger.info(f"Found {len(date_columns)} date columns in {sheet_name}")
 
-    for (year, month, destination), data in monthly_data.items():
-        # Get row for this destination
-        row = DESTINATION_ROWS.get(destination.upper())
-        if not row:
-            not_found_destinations.add(destination)
-            continue
+        # Debug: show sample date columns
+        if date_columns:
+            sample_dates = list(date_columns.keys())[:5]
+            print(f"  Sample date columns: {sample_dates}")
 
-        # Get column for this date
-        col = date_columns.get((year, month))
-        if not col:
-            not_found_dates.add((year, month))
-            continue
+        # Debug: show sample destinations from data
+        sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
+        print(f"  Sample destinations in data: {sample_dests}")
 
-        # Get value to write (use quantity for volume, or value_usd for value sheets)
-        # Census data is typically in metric tons for quantity
-        value = data.get('quantity')  # Use quantity (metric tons)
+        # Update cells
+        updated = 0
+        not_found_destinations = set()
+        not_found_dates = set()
+        matched_destinations = set()
 
-        if value and value > 0:
-            # Convert to thousand metric tons for consistency with inspections
-            value_in_tmt = value / 1000.0
-            ws.cell(row=row, column=col).value = round(value_in_tmt, 3)
-            updated += 1
+        for (year, month, destination), data in monthly_data.items():
+            # Get row for this destination
+            row = DESTINATION_ROWS.get(destination.upper())
+            if not row:
+                not_found_destinations.add(destination)
+                continue
 
-    # Save workbook
-    try:
-        wb.save(excel_path)
+            matched_destinations.add(destination)
+
+            # Get column for this date
+            col = date_columns.get((year, month))
+            if not col:
+                not_found_dates.add((year, month))
+                continue
+
+            # Get value to write (use quantity for volume)
+            # Census data is typically in metric tons for quantity
+            value = data.get('quantity')
+
+            if value and value > 0:
+                # Convert to thousand metric tons for consistency with inspections
+                value_in_tmt = value / 1000.0
+                ws.range((row, col)).value = round(value_in_tmt, 3)
+                updated += 1
+
+        # Debug output
+        print(f"  Matched destinations: {len(matched_destinations)}")
+        if matched_destinations:
+            print(f"    Examples: {list(matched_destinations)[:5]}")
+
+        # Save workbook
+        wb.save()
         print(f"Updated {updated} cells in {sheet_name}")
         logger.info(f"Updated {updated} cells in {sheet_name}")
 
@@ -1078,12 +1163,19 @@ def update_excel_file(
             print(f"  Dates not in spreadsheet: {len(not_found_dates)}")
 
         wb.close()
+        app.quit()
         return True
 
     except Exception as e:
-        print(f"ERROR: Failed to save Excel file: {e}")
-        logger.error(f"Failed to save Excel file: {e}")
-        wb.close()
+        print(f"ERROR: Failed to update Excel file: {e}")
+        logger.error(f"Failed to update Excel file: {e}")
+        import traceback
+        traceback.print_exc()
+        try:
+            wb.close()
+            app.quit()
+        except:
+            pass
         return False
 
 

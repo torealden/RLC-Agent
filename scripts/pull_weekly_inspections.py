@@ -783,7 +783,10 @@ def update_excel_file(
     commodity: str
 ) -> bool:
     """
-    Update the Excel file with new inspection data
+    Update the Excel file with new inspection data using xlwings.
+
+    xlwings uses Excel's COM interface, which preserves external links and formulas
+    that openpyxl corrupts.
 
     Args:
         excel_path: Path to Excel file
@@ -795,10 +798,10 @@ def update_excel_file(
         True if successful
     """
     try:
-        import openpyxl
-        from openpyxl.utils import get_column_letter
+        import xlwings as xw
     except ImportError:
-        logger.error("openpyxl not installed. Run: pip install openpyxl")
+        logger.error("xlwings not installed. Run: pip install xlwings")
+        print("ERROR: xlwings not installed. Run: pip install xlwings")
         return False
 
     if not excel_path.exists():
@@ -806,49 +809,71 @@ def update_excel_file(
         return False
 
     logger.info(f"Updating {excel_path}...")
+    print(f"Updating {excel_path}...")
 
     try:
-        wb = openpyxl.load_workbook(excel_path)
+        # Open Excel in the background (visible=False for faster processing)
+        app = xw.App(visible=False, add_book=False)
+        app.display_alerts = False
+        app.screen_updating = False
+
+        wb = app.books.open(str(excel_path))
 
         # Special row handling for Mexico inspections
         special_rows = {}
         if commodity.upper() == 'SOYBEANS':
             special_rows['MEXICO'] = 300  # Inspections row for Mexico
 
+        sheet_names = [s.name for s in wb.sheets]
+
         # Update Weekly sheet
-        if WEEKLY_SHEET in wb.sheetnames:
-            ws = wb[WEEKLY_SHEET]
-            updated_count = _update_weekly_sheet(ws, weekly_data, special_rows)
+        if WEEKLY_SHEET in sheet_names:
+            ws = wb.sheets[WEEKLY_SHEET]
+            updated_count = _update_weekly_sheet_xlwings(ws, weekly_data, special_rows)
             logger.info(f"Updated {WEEKLY_SHEET}: {updated_count} cells updated")
+            print(f"Updated {WEEKLY_SHEET}: {updated_count} cells")
         else:
             logger.warning(f"Sheet '{WEEKLY_SHEET}' not found in workbook")
+            print(f"WARNING: Sheet '{WEEKLY_SHEET}' not found")
 
         # Update Monthly sheet
-        if MONTHLY_SHEET in wb.sheetnames:
-            ws = wb[MONTHLY_SHEET]
-            updated_count = _update_monthly_sheet(ws, monthly_data, special_rows)
+        if MONTHLY_SHEET in sheet_names:
+            ws = wb.sheets[MONTHLY_SHEET]
+            updated_count = _update_monthly_sheet_xlwings(ws, monthly_data, special_rows)
             logger.info(f"Updated {MONTHLY_SHEET}: {updated_count} cells updated")
+            print(f"Updated {MONTHLY_SHEET}: {updated_count} cells")
         else:
             logger.warning(f"Sheet '{MONTHLY_SHEET}' not found in workbook")
+            print(f"WARNING: Sheet '{MONTHLY_SHEET}' not found")
 
-        wb.save(excel_path)
+        wb.save()
+        wb.close()
+        app.quit()
+
         logger.info(f"Saved {excel_path}")
+        print(f"Saved {excel_path}")
         return True
 
     except Exception as e:
         logger.error(f"Failed to update Excel file: {e}")
+        print(f"ERROR: Failed to update Excel file: {e}")
         import traceback
         traceback.print_exc()
+        try:
+            wb.close()
+            app.quit()
+        except:
+            pass
         return False
 
 
-def _update_weekly_sheet(ws, weekly_data: Dict[date, Dict[str, float]],
-                         special_rows: Dict[str, int] = None) -> int:
+def _update_weekly_sheet_xlwings(ws, weekly_data: Dict[date, Dict[str, float]],
+                                  special_rows: Dict[str, int] = None) -> int:
     """
-    Update the weekly inspections sheet
+    Update the weekly inspections sheet using xlwings
 
     Args:
-        ws: openpyxl worksheet
+        ws: xlwings worksheet
         weekly_data: Dict mapping week_date to Dict[destination, thousand_bushels]
         special_rows: Special destination->row mappings
 
@@ -858,12 +883,14 @@ def _update_weekly_sheet(ws, weekly_data: Dict[date, Dict[str, float]],
     updated = 0
     date_row = 2  # Dates are in row 2
 
+    # Get used range to find max column
+    used_range = ws.used_range
+    max_col = used_range.last_cell.column
+
     # Build mapping of existing dates to columns
     date_to_col = {}
-    max_col = ws.max_column
-
     for col in range(2, max_col + 1):
-        cell_value = ws.cell(row=date_row, column=col).value
+        cell_value = ws.range((date_row, col)).value
         if cell_value:
             if isinstance(cell_value, datetime):
                 date_to_col[cell_value.date()] = col
@@ -871,7 +898,7 @@ def _update_weekly_sheet(ws, weekly_data: Dict[date, Dict[str, float]],
                 date_to_col[cell_value] = col
 
     # Build destination to row mapping
-    dest_to_row = build_destination_to_row_map(ws, special_rows)
+    dest_to_row = build_destination_to_row_map_xlwings(ws, special_rows)
 
     # Track new columns needed
     new_dates = []
@@ -883,7 +910,7 @@ def _update_weekly_sheet(ws, weekly_data: Dict[date, Dict[str, float]],
     if new_dates:
         next_col = max_col + 1
         for new_date in sorted(new_dates):
-            ws.cell(row=date_row, column=next_col).value = new_date
+            ws.range((date_row, next_col)).value = new_date
             date_to_col[new_date] = next_col
             logger.info(f"Added new date column {next_col} for {new_date}")
             next_col += 1
@@ -909,7 +936,7 @@ def _update_weekly_sheet(ws, weekly_data: Dict[date, Dict[str, float]],
                 # Only write non-zero values (blank for zeros per video instructions)
                 if value and value > 0:
                     # Round to reasonable precision
-                    ws.cell(row=row, column=col).value = round(value, 3)
+                    ws.range((row, col)).value = round(value, 3)
                     updated += 1
             else:
                 # Only log warning for significant values we couldn't place
@@ -919,13 +946,13 @@ def _update_weekly_sheet(ws, weekly_data: Dict[date, Dict[str, float]],
     return updated
 
 
-def _update_monthly_sheet(ws, monthly_data: Dict[Tuple[date, str], float],
-                          special_rows: Dict[str, int] = None) -> int:
+def _update_monthly_sheet_xlwings(ws, monthly_data: Dict[Tuple[date, str], float],
+                                   special_rows: Dict[str, int] = None) -> int:
     """
-    Update the monthly inspections sheet
+    Update the monthly inspections sheet using xlwings
 
     Args:
-        ws: openpyxl worksheet
+        ws: xlwings worksheet
         monthly_data: Dict mapping (month_date, destination) to thousand_bushels
         special_rows: Special destination->row mappings
 
@@ -935,12 +962,14 @@ def _update_monthly_sheet(ws, monthly_data: Dict[Tuple[date, str], float],
     updated = 0
     date_row = 2  # Dates are in row 2
 
+    # Get used range to find max column
+    used_range = ws.used_range
+    max_col = used_range.last_cell.column
+
     # Build mapping of existing dates to columns
     date_to_col = {}
-    max_col = ws.max_column
-
     for col in range(2, max_col + 1):
-        cell_value = ws.cell(row=date_row, column=col).value
+        cell_value = ws.range((date_row, col)).value
         if cell_value:
             if isinstance(cell_value, datetime):
                 # Normalize to first of month
@@ -951,7 +980,7 @@ def _update_monthly_sheet(ws, monthly_data: Dict[Tuple[date, str], float],
                 date_to_col[month_date] = col
 
     # Build destination to row mapping
-    dest_to_row = build_destination_to_row_map(ws, special_rows)
+    dest_to_row = build_destination_to_row_map_xlwings(ws, special_rows)
 
     # Track new month columns needed
     new_months = set()
@@ -964,7 +993,7 @@ def _update_monthly_sheet(ws, monthly_data: Dict[Tuple[date, str], float],
     if new_months:
         next_col = max_col + 1
         for new_month in sorted(new_months):
-            ws.cell(row=date_row, column=next_col).value = new_month
+            ws.range((date_row, next_col)).value = new_month
             date_to_col[new_month] = next_col
             logger.info(f"Added new month column {next_col} for {new_month}")
             next_col += 1
@@ -990,13 +1019,40 @@ def _update_monthly_sheet(ws, monthly_data: Dict[Tuple[date, str], float],
         if row:
             # Only write non-zero values
             if value and value > 0:
-                ws.cell(row=row, column=col).value = round(value, 3)
+                ws.range((row, col)).value = round(value, 3)
                 updated += 1
         else:
             if value and value > 1.0:
                 logger.debug(f"No row found for destination: {destination}")
 
     return updated
+
+
+def build_destination_to_row_map_xlwings(ws, special_rows: Dict[str, int] = None) -> Dict[str, int]:
+    """
+    Build a mapping of destination names to row numbers using xlwings.
+
+    Args:
+        ws: xlwings worksheet
+        special_rows: Special overrides for certain destinations
+
+    Returns:
+        Dict mapping destination name (uppercase) to row number
+    """
+    dest_to_row = dict(special_rows or {})
+
+    # Scan column A for destination names
+    used_range = ws.used_range
+    max_row = used_range.last_cell.row
+
+    for row in range(1, min(max_row + 1, 350)):  # Don't scan past row 350
+        cell_value = ws.range((row, 1)).value
+        if cell_value and isinstance(cell_value, str):
+            dest_name = cell_value.strip().upper()
+            if dest_name and dest_name not in dest_to_row:
+                dest_to_row[dest_name] = row
+
+    return dest_to_row
 
 
 # =============================================================================
