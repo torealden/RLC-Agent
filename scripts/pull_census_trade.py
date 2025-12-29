@@ -120,6 +120,16 @@ MT_PER_BUSHEL = {
     'SOYBEAN_OIL': None,        # Reported in kg/liters
 }
 
+# Fallback price estimates for quantity estimation when Census doesn't provide quantity
+# These are approximate average export prices in USD per metric ton
+# Used only when quantity data is missing
+FALLBACK_PRICES_USD_PER_MT = {
+    'SOYBEANS': 450,       # ~$12/bu average
+    'SOYBEAN_MEAL': 400,   # ~$360-440/short ton
+    'SOYBEAN_HULLS': 200,  # Lower value product
+    'SOYBEAN_OIL': 1000,   # ~$0.45/lb average
+}
+
 # Destination to row mapping (same as inspections for consistency)
 # These match the Excel file layout
 DESTINATION_ROWS = {
@@ -410,21 +420,25 @@ def fetch_trade_data(
     # Field names differ between imports and exports
     # See: https://api.census.gov/data/timeseries/intltrade/exports/hs/variables.html
     # See: https://api.census.gov/data/timeseries/intltrade/imports/hs/variables.html
+    # Request MULTIPLE quantity fields since some may be empty
     if flow == 'imports':
         commodity_field = 'I_COMMODITY'
         value_field = 'GEN_VAL_MO'
-        qty_field = 'GEN_QY1_MO'
+        # Try multiple quantity fields for imports
+        qty_fields = ['GEN_QY1_MO', 'CON_QY1_MO']
         unit_field = 'UNIT_QY1'
     else:
         commodity_field = 'E_COMMODITY'
         value_field = 'ALL_VAL_MO'
-        qty_field = 'QTY_1_MO'  # Note: exports uses underscore format QTY_1_MO, not QY1_MO
+        # Try multiple quantity fields for exports - some HS codes use different fields
+        qty_fields = ['QTY_1_MO', 'QTY_2_MO', 'AIR_WGT_MO', 'VESSEL_WGT_MO']
         unit_field = 'UNIT_QY1'
 
-    # Build params
+    # Build params - request all quantity fields
     time_str = f"{year}-{month:02d}"
+    get_fields = f'{value_field},{",".join(qty_fields)},{unit_field},UNIT_QY2,CTY_CODE,CTY_NAME'
     params = {
-        'get': f'{value_field},{qty_field},{unit_field},CTY_CODE,CTY_NAME',
+        'get': get_fields,
         commodity_field: hs_code,
         'time': time_str,
     }
@@ -466,8 +480,23 @@ def fetch_trade_data(
 
                         # Parse values
                         value_usd = parse_number(record.get(value_field))
-                        quantity = parse_number(record.get(qty_field))
 
+                        # Try each quantity field until we find one with data
+                        quantity = None
+                        unit = None
+                        for qty_field in qty_fields:
+                            q = parse_number(record.get(qty_field))
+                            if q is not None and q > 0:
+                                quantity = q
+                                # Get corresponding unit
+                                if 'QY1' in qty_field or qty_field == qty_fields[0]:
+                                    unit = record.get('UNIT_QY1', '')
+                                else:
+                                    unit = record.get('UNIT_QY2', record.get('UNIT_QY1', ''))
+                                break
+
+                        # If no quantity found but we have value, skip this record's quantity
+                        # (we'll still save it to DB with quantity=None)
                         if value_usd is None and quantity is None:
                             continue
 
@@ -481,7 +510,7 @@ def fetch_trade_data(
                             'country_name': clean_country_name(record.get('CTY_NAME', '')),
                             'value_usd': value_usd,
                             'quantity': quantity,
-                            'unit': record.get(unit_field, ''),
+                            'unit': unit or '',
                         })
 
                     return records
@@ -657,6 +686,34 @@ def parse_number(value: Any) -> Optional[float]:
         return float(str(value).replace(',', ''))
     except (ValueError, TypeError):
         return None
+
+
+def estimate_quantity_from_value(value_usd: float, commodity: str) -> Optional[float]:
+    """
+    Estimate quantity (in kg) from USD value using fallback prices.
+
+    Used when Census API doesn't return quantity data.
+    Returns quantity in KG to match Census quantity format.
+
+    Args:
+        value_usd: Trade value in USD
+        commodity: Commodity name (SOYBEANS, SOYBEAN_MEAL, etc.)
+
+    Returns:
+        Estimated quantity in KG, or None if can't estimate
+    """
+    if value_usd is None or value_usd <= 0:
+        return None
+
+    price_per_mt = FALLBACK_PRICES_USD_PER_MT.get(commodity.upper())
+    if not price_per_mt:
+        return None
+
+    # Calculate quantity in MT, then convert to KG
+    quantity_mt = value_usd / price_per_mt
+    quantity_kg = quantity_mt * 1000
+
+    return quantity_kg
 
 
 def clean_country_name(name: str) -> str:
@@ -1535,6 +1592,7 @@ def update_excel_file(
         matched_destinations = set()
         skipped_aggregates = set()
         zero_values = 0
+        estimated_count = 0
 
         # Debug: Check what values we have
         sample_values = []
@@ -1579,6 +1637,15 @@ def update_excel_file(
             # Get value to write (use quantity for volume)
             # Census data is in kg, convert to 1000 metric tonnes
             value = data.get('quantity')
+            value_usd = data.get('value_usd')
+            used_estimate = False
+
+            # If quantity is missing but value_usd is available, estimate quantity
+            if (not value or value <= 0) and value_usd and value_usd > 0:
+                estimated_qty = estimate_quantity_from_value(value_usd, commodity)
+                if estimated_qty:
+                    value = estimated_qty
+                    used_estimate = True
 
             if value and value > 0:
                 # Census quantity is in KG, convert to 1000 MT (million kg)
@@ -1586,6 +1653,8 @@ def update_excel_file(
                 value_in_tmt = value / 1000000.0
                 ws.Cells(row, col).Value = round(value_in_tmt, 3)
                 updated += 1
+                if used_estimate:
+                    estimated_count += 1
             else:
                 zero_values += 1
 
@@ -1594,9 +1663,11 @@ def update_excel_file(
         if matched_destinations:
             print(f"    Examples: {list(matched_destinations)[:5]}")
 
+        if estimated_count > 0:
+            print(f"  Used value-based quantity estimates: {estimated_count}")
+
         if zero_values > 0:
-            print(f"  Records with zero/null quantity: {zero_values}")
-            print(f"  TIP: If all quantities are 0, Census may not return quantity data for this HS code.")
+            print(f"  Records with zero/null quantity (even after estimation): {zero_values}")
 
         if skipped_aggregates:
             print(f"  Skipped Census aggregates (calculated in Excel): {list(skipped_aggregates)[:5]}")
