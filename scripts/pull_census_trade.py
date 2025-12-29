@@ -1036,6 +1036,9 @@ def update_excel_file(
         logger.error("xlwings not installed")
         return False
 
+    import shutil
+    import tempfile
+
     # Resolve to absolute path - critical for xlwings on Windows
     excel_path = Path(excel_path).resolve()
 
@@ -1057,24 +1060,46 @@ def update_excel_file(
 
     print(f"  Opening: {excel_path}")
 
+    # For Dropbox/OneDrive files, copy to temp location to avoid sync locks
+    temp_path = None
+    working_path = excel_path
+    is_cloud_sync = any(x in str(excel_path).lower() for x in ['dropbox', 'onedrive', 'google drive'])
+
+    if is_cloud_sync:
+        try:
+            temp_dir = Path(tempfile.gettempdir())
+            temp_path = temp_dir / f"temp_{excel_path.name}"
+            print(f"  Dropbox detected - copying to temp: {temp_path}")
+            shutil.copy2(excel_path, temp_path)
+            working_path = temp_path
+        except Exception as e:
+            print(f"  Warning: Could not create temp copy: {e}")
+            working_path = excel_path
+
     try:
         # Open Excel in the background (visible=False for faster processing)
-        # Use app=None to connect to existing Excel or start new one
         app = xw.App(visible=False, add_book=False)
         app.display_alerts = False
         app.screen_updating = False
 
         # Use str() to convert Path to string for xlwings
-        wb = app.books.open(str(excel_path))
+        wb = app.books.open(str(working_path))
     except Exception as e:
         print(f"ERROR: Failed to open Excel file: {e}")
         print("  TIP: Make sure the file is closed in Excel before running this script.")
-        print(f"  Path attempted: {excel_path}")
+        print("  TIP: Try closing all Excel windows and running: taskkill /F /IM EXCEL.EXE")
+        print(f"  Path attempted: {working_path}")
         logger.error(f"Failed to open Excel file: {e}")
         try:
             app.quit()
         except:
             pass
+        # Clean up temp file if created
+        if temp_path and temp_path.exists():
+            try:
+                temp_path.unlink()
+            except:
+                pass
         return False
 
     try:
@@ -1196,6 +1221,19 @@ def update_excel_file(
 
         wb.close()
         app.quit()
+
+        # If we used a temp file, copy it back to the original location
+        if temp_path and temp_path.exists():
+            try:
+                print(f"  Copying updated file back to Dropbox...")
+                shutil.copy2(temp_path, excel_path)
+                temp_path.unlink()  # Clean up temp file
+                print(f"  Successfully updated: {excel_path}")
+            except Exception as e:
+                print(f"  WARNING: Could not copy back to original: {e}")
+                print(f"  Updated file saved at: {temp_path}")
+                logger.warning(f"Could not copy temp file back: {e}")
+
         return True
 
     except Exception as e:
