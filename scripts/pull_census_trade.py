@@ -54,16 +54,16 @@ logger = logging.getLogger(__name__)
 # Census API base URL
 CENSUS_API_BASE = "https://api.census.gov/data/timeseries/intltrade"
 
-# HS Codes for commodities (use 6-digit codes for better API compatibility)
-# For exports, Census uses Schedule B codes which are 10-digit but we can query at 6-digit level
-# Multiple codes per commodity are supported as lists
+# HS Codes for commodities (6-digit codes from RLC HS codes reference)
+# Multiple codes per commodity - will fetch and aggregate data from all codes
+# Source: Models/HS codes reference sheet
 HS_CODES = {
-    'SOYBEANS': ['120110', '120190'],  # 1201.10 - Seed, 1201.90 - Other than seed
-    'SOYBEAN_MEAL': ['230400'],        # 2304.00 - Soybean oilcake and meal
-    'SOYBEAN_OIL': ['150710'],         # 1507.10 - Crude soybean oil
+    'SOYBEANS': ['120110', '120190'],           # 1201.10 - Seed, 1201.90 - Other
+    'SOYBEAN_MEAL': ['230400', '230499'],       # 2304.00 and 2304.99 - Oilcake and meal
+    'SOYBEAN_OIL': ['150710', '150790'],        # 1507.10 - Crude, 1507.90 - Other
 }
 
-# Alternative 4-digit codes for fallback
+# Alternative 4-digit codes for fallback (GTT codes)
 HS_CODES_4DIGIT = {
     'SOYBEANS': ['1201'],
     'SOYBEAN_MEAL': ['2304'],
