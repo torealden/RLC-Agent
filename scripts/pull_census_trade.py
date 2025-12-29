@@ -305,6 +305,18 @@ REGION_TOTAL_ROWS = {
     'WORLD_TOTAL': 290,
 }
 
+# Rows that contain SUM formulas - these should NOT be cleared when updating columns
+# These are regional totals that sum the country rows below them
+SUM_FORMULA_ROWS = {
+    4,    # EU / Europe total (or Asia depending on sheet layout)
+    37,   # Europe / EU-28 total
+    59,   # Middle East & Africa total
+    74,   # Western Hemisphere total
+    164,  # FSU (Former Soviet Union) total
+    290,  # World Total
+    # Add any other sum rows specific to sheets
+}
+
 # Map Census aggregate/total names to Excel row numbers
 # Census returns aggregates like "TOTAL FOR ALL COUNTRIES", "ASIA", "EUROPE", etc.
 CENSUS_AGGREGATE_ROWS = {
@@ -1642,6 +1654,28 @@ def update_excel_file(
         if not overlap_years:
             print(f"  WARNING: No overlap between data years and column years!")
 
+        # Determine which columns we'll be updating (so we can clear them first)
+        columns_to_update = set()
+        for (year, month, destination) in monthly_data.keys():
+            col = date_columns.get((year, month))
+            if col:
+                columns_to_update.add(col)
+
+        # Clear columns before writing (remove old projections)
+        # Clear rows 5-290 except SUM_FORMULA_ROWS
+        if columns_to_update:
+            print(f"  Clearing {len(columns_to_update)} columns before writing (rows 5-290, preserving sum rows)...")
+            cleared_cells = 0
+            for col in columns_to_update:
+                for row in range(5, 291):  # Rows 5 to 290 inclusive
+                    if row not in SUM_FORMULA_ROWS:
+                        # Clear the cell value but preserve formatting
+                        cell = ws.Cells(row, col)
+                        if cell.Value is not None:
+                            cell.Value = None
+                            cleared_cells += 1
+            print(f"  Cleared {cleared_cells} cells with existing values")
+
         # Update cells
         updated = 0
         not_found_destinations = set()
@@ -1656,6 +1690,9 @@ def update_excel_file(
         for (y, m, d), data in list(monthly_data.items())[:5]:
             sample_values.append((y, m, d, data.get('quantity'), data.get('value_usd')))
         print(f"  Sample data values: {sample_values}")
+
+        # Debug: Show first few writes in detail
+        debug_writes = []
 
         for (year, month, destination), data in monthly_data.items():
             dest_upper = destination.upper().strip()
@@ -1721,11 +1758,30 @@ def update_excel_file(
                 updated += 1
                 if used_estimate:
                     estimated_count += 1
+
+                # Capture debug info for first 5 writes
+                if len(debug_writes) < 5:
+                    debug_writes.append({
+                        'dest': destination,
+                        'date': f"{year}-{month:02d}",
+                        'row': row,
+                        'col': col,
+                        'raw_kg': value,
+                        'converted': round(converted_value, 3),
+                        'estimated': used_estimate
+                    })
             else:
                 zero_values += 1
 
         # Debug output
         print(f"  Matched destinations: {len(matched_destinations)}")
+
+        # Show sample writes
+        if debug_writes:
+            print(f"  First {len(debug_writes)} writes (verify in Excel):")
+            for w in debug_writes:
+                est_marker = " [EST]" if w['estimated'] else ""
+                print(f"    {w['dest']} {w['date']}: Row {w['row']}, Col {w['col']} = {w['converted']}{est_marker}")
         if matched_destinations:
             print(f"    Examples: {list(matched_destinations)[:5]}")
 
@@ -1742,6 +1798,14 @@ def update_excel_file(
         wb.Save()
         print(f"Updated {updated} cells in {sheet_name}")
         logger.info(f"Updated {updated} cells in {sheet_name}")
+
+        # Verify write worked - read back first debug write cell
+        if debug_writes:
+            test_cell = debug_writes[0]
+            verify_value = ws.Cells(test_cell['row'], test_cell['col']).Value
+            print(f"  VERIFY: Cell ({test_cell['row']}, {test_cell['col']}) after save = {verify_value}")
+            if verify_value != test_cell['converted']:
+                print(f"  WARNING: Expected {test_cell['converted']}, got {verify_value}!")
 
         if not_found_destinations:
             unmapped = list(not_found_destinations)[:10]
