@@ -247,6 +247,30 @@ REGION_TOTAL_ROWS = {
     'WORLD_TOTAL': 290,
 }
 
+# Map Census aggregate/total names to Excel row numbers
+# Census returns aggregates like "TOTAL FOR ALL COUNTRIES", "ASIA", "EUROPE", etc.
+CENSUS_AGGREGATE_ROWS = {
+    'TOTAL FOR ALL COUNTRIES': 290,
+    'ASIA': 4,  # Asia/Oceania region total
+    'EUROPE': 37,  # EU region total
+    'AFRICA': 59,  # Middle East/Africa total
+    'NORTH AMERICA': 74,  # Part of Western Hemisphere
+    # Additional aggregates that Census returns - skip these as they're calculated in Excel:
+    'OECD': None,  # Skip - calculated in Excel
+    'APEC': None,  # Skip
+    'NATO': None,  # Skip
+    'LAFTA': None,  # Skip
+    'PACIFIC RIM COUNTRIES': None,  # Skip
+    'TWENTY LATIN AMERICAN REPUBLICS': None,  # Skip
+    'USMCA (NAFTA)': None,  # Skip
+    'CAFTA-DR': None,  # Skip
+    'CACM': None,  # Skip
+    'ASEAN': None,  # Skip
+    'EURO AREA': None,  # Skip
+    'SOUTH AMERICA': None,  # Skip
+    'CENTRAL AMERICA': None,  # Skip
+}
+
 # Census country codes to names mapping (partial - add more as needed)
 CENSUS_COUNTRY_CODES = {
     '5700': 'CHINA',
@@ -1301,6 +1325,17 @@ def find_country_rows(ws, max_row: int = 500) -> Dict[str, int]:
             # Store the row for this country
             country_rows[country] = row
 
+            # Also store normalized versions for common variations
+            # EUROPEAN UNION-28 -> also match EUROPEAN UNION
+            if '-28' in country:
+                base_name = country.replace('-28', '')
+                if base_name not in country_rows:
+                    country_rows[base_name] = row
+            if '-27' in country:
+                base_name = country.replace('-27', '')
+                if base_name not in country_rows:
+                    country_rows[base_name] = row
+
     return country_rows
 
 
@@ -1498,19 +1533,36 @@ def update_excel_file(
         not_found_destinations = set()
         not_found_dates = set()
         matched_destinations = set()
+        skipped_aggregates = set()
+        zero_values = 0
+
+        # Debug: Check what values we have
+        sample_values = []
+        for (y, m, d), data in list(monthly_data.items())[:5]:
+            sample_values.append((y, m, d, data.get('quantity'), data.get('value_usd')))
+        print(f"  Sample data values: {sample_values}")
 
         for (year, month, destination), data in monthly_data.items():
-            # Get row for this destination (try exact match first, then variations)
             dest_upper = destination.upper().strip()
-            row = country_rows.get(dest_upper)
 
-            # Try common name variations if exact match fails
-            if not row:
-                # Try without extra spaces
-                for country_name, country_row in country_rows.items():
-                    if dest_upper in country_name or country_name in dest_upper:
-                        row = country_row
-                        break
+            # First check if this is a Census aggregate that maps to a specific row
+            if dest_upper in CENSUS_AGGREGATE_ROWS:
+                agg_row = CENSUS_AGGREGATE_ROWS[dest_upper]
+                if agg_row is None:
+                    # Skip this aggregate - it's calculated in Excel
+                    skipped_aggregates.add(dest_upper)
+                    continue
+                row = agg_row
+            else:
+                # Get row for this destination (try exact match first)
+                row = country_rows.get(dest_upper)
+
+                # Try common name variations if exact match fails
+                if not row:
+                    for country_name, country_row in country_rows.items():
+                        if dest_upper in country_name or country_name in dest_upper:
+                            row = country_row
+                            break
 
             if not row:
                 not_found_destinations.add(destination)
@@ -1534,11 +1586,20 @@ def update_excel_file(
                 value_in_tmt = value / 1000000.0
                 ws.Cells(row, col).Value = round(value_in_tmt, 3)
                 updated += 1
+            else:
+                zero_values += 1
 
         # Debug output
         print(f"  Matched destinations: {len(matched_destinations)}")
         if matched_destinations:
             print(f"    Examples: {list(matched_destinations)[:5]}")
+
+        if zero_values > 0:
+            print(f"  Records with zero/null quantity: {zero_values}")
+            print(f"  TIP: If all quantities are 0, Census may not return quantity data for this HS code.")
+
+        if skipped_aggregates:
+            print(f"  Skipped Census aggregates (calculated in Excel): {list(skipped_aggregates)[:5]}")
 
         # Save workbook
         wb.Save()
