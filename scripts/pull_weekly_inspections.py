@@ -804,12 +804,16 @@ def update_excel_file(
         print("ERROR: xlwings not installed. Run: pip install xlwings")
         return False
 
+    # Resolve to absolute path - critical for xlwings on Windows
+    excel_path = Path(excel_path).resolve()
+
     if not excel_path.exists():
         logger.error(f"Excel file not found: {excel_path}")
+        print(f"ERROR: Excel file not found: {excel_path}")
         return False
 
     logger.info(f"Updating {excel_path}...")
-    print(f"Updating {excel_path}...")
+    print(f"Opening: {excel_path}...")
 
     try:
         # Open Excel in the background (visible=False for faster processing)

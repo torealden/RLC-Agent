@@ -299,6 +299,8 @@ def fetch_trade_data(
     url = f"{CENSUS_API_BASE}/{flow}/hs"
 
     # Field names differ between imports and exports
+    # See: https://api.census.gov/data/timeseries/intltrade/exports/hs/variables.html
+    # See: https://api.census.gov/data/timeseries/intltrade/imports/hs/variables.html
     if flow == 'imports':
         commodity_field = 'I_COMMODITY'
         value_field = 'GEN_VAL_MO'
@@ -307,7 +309,7 @@ def fetch_trade_data(
     else:
         commodity_field = 'E_COMMODITY'
         value_field = 'ALL_VAL_MO'
-        qty_field = 'QY1_MO'
+        qty_field = 'QTY_1_MO'  # Note: exports uses underscore format QTY_1_MO, not QY1_MO
         unit_field = 'UNIT_QY1'
 
     # Build params
@@ -1016,6 +1018,9 @@ def update_excel_file(
         logger.error("xlwings not installed")
         return False
 
+    # Resolve to absolute path - critical for xlwings on Windows
+    excel_path = Path(excel_path).resolve()
+
     if not excel_path.exists():
         print(f"ERROR: Excel file not found: {excel_path}")
         logger.error(f"Excel file not found: {excel_path}")
@@ -1032,6 +1037,8 @@ def update_excel_file(
         print(f"ERROR: No sheet for {commodity} {flow}")
         return False
 
+    print(f"  Opening: {excel_path}")
+
     try:
         # Open Excel in the background (visible=False for faster processing)
         # Use app=None to connect to existing Excel or start new one
@@ -1039,10 +1046,17 @@ def update_excel_file(
         app.display_alerts = False
         app.screen_updating = False
 
+        # Use str() to convert Path to string for xlwings
         wb = app.books.open(str(excel_path))
     except Exception as e:
         print(f"ERROR: Failed to open Excel file: {e}")
+        print("  TIP: Make sure the file is closed in Excel before running this script.")
+        print(f"  Path attempted: {excel_path}")
         logger.error(f"Failed to open Excel file: {e}")
+        try:
+            app.quit()
+        except:
+            pass
         return False
 
     try:
