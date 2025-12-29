@@ -88,11 +88,13 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    # Load .env from project root (not current working directory)
+    load_dotenv(PROJECT_ROOT / '.env')
 except ImportError:
     pass  # dotenv is optional
 

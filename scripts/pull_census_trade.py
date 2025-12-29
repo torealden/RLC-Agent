@@ -27,12 +27,12 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
-
-# Add project root to path
+# Add project root to path and load environment variables from project root
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+# Load .env from project root (not current working directory)
+load_dotenv(PROJECT_ROOT / '.env')
 
 try:
     import requests
@@ -56,17 +56,18 @@ CENSUS_API_BASE = "https://api.census.gov/data/timeseries/intltrade"
 
 # HS Codes for commodities (use 6-digit codes for better API compatibility)
 # For exports, Census uses Schedule B codes which are 10-digit but we can query at 6-digit level
+# Multiple codes per commodity are supported as lists
 HS_CODES = {
-    'SOYBEANS': '120190',      # 1201.90 - Soybeans, other than seed
-    'SOYBEAN_MEAL': '230400',  # 2304.00 - Soybean oilcake and meal
-    'SOYBEAN_OIL': '150710',   # 1507.10 - Crude soybean oil
+    'SOYBEANS': ['120110', '120190'],  # 1201.10 - Seed, 1201.90 - Other than seed
+    'SOYBEAN_MEAL': ['230400'],        # 2304.00 - Soybean oilcake and meal
+    'SOYBEAN_OIL': ['150710'],         # 1507.10 - Crude soybean oil
 }
 
 # Alternative 4-digit codes for fallback
 HS_CODES_4DIGIT = {
-    'SOYBEANS': '1201',
-    'SOYBEAN_MEAL': '2304',
-    'SOYBEAN_OIL': '1507',
+    'SOYBEANS': ['1201'],
+    'SOYBEAN_MEAL': ['2304'],
+    'SOYBEAN_OIL': ['1507'],
 }
 
 # Commodity display names
@@ -394,18 +395,18 @@ def fetch_commodity_data(
     Returns:
         List of all trade records
     """
-    # Try 6-digit HS code first, then fall back to 4-digit
-    hs_code_6 = HS_CODES.get(commodity.upper())
-    hs_code_4 = HS_CODES_4DIGIT.get(commodity.upper())
+    # Get HS codes (now lists to support multiple codes per commodity)
+    hs_codes_6 = HS_CODES.get(commodity.upper(), [])
+    hs_codes_4 = HS_CODES_4DIGIT.get(commodity.upper(), [])
 
-    if not hs_code_6 and not hs_code_4:
+    if not hs_codes_6 and not hs_codes_4:
         logger.error(f"Unknown commodity: {commodity}")
         return []
 
     flows = ['exports', 'imports'] if flow == 'both' else [flow]
     all_records = []
 
-    # Track which HS code works for each flow
+    # Track which HS codes work for each flow
     working_codes = {}
 
     # Iterate through months
@@ -418,45 +419,54 @@ def fetch_commodity_data(
         months_processed += 1
 
         for trade_flow in flows:
-            records = []
+            flow_records = []
 
-            # Determine which HS code to use for this flow
+            # Use working codes if we've already found them
             if trade_flow in working_codes:
-                # Use the code that worked before
-                hs_code = working_codes[trade_flow]
-                records = fetch_trade_data(
-                    flow=trade_flow,
-                    hs_code=hs_code,
-                    year=current.year,
-                    month=current.month,
-                    api_key=api_key
-                )
+                for hs_code in working_codes[trade_flow]:
+                    records = fetch_trade_data(
+                        flow=trade_flow,
+                        hs_code=hs_code,
+                        year=current.year,
+                        month=current.month,
+                        api_key=api_key
+                    )
+                    flow_records.extend(records)
             else:
-                # Try 6-digit code first
-                if hs_code_6:
+                # Try 6-digit codes first
+                codes_that_work = []
+                for hs_code in hs_codes_6:
                     records = fetch_trade_data(
                         flow=trade_flow,
-                        hs_code=hs_code_6,
+                        hs_code=hs_code,
                         year=current.year,
                         month=current.month,
                         api_key=api_key
                     )
                     if records:
-                        working_codes[trade_flow] = hs_code_6
-                        logger.info(f"Using 6-digit code {hs_code_6} for {trade_flow}")
+                        codes_that_work.append(hs_code)
+                        flow_records.extend(records)
+                        logger.info(f"Using 6-digit code {hs_code} for {trade_flow}")
 
-                # If 6-digit failed, try 4-digit
-                if not records and hs_code_4:
-                    records = fetch_trade_data(
-                        flow=trade_flow,
-                        hs_code=hs_code_4,
-                        year=current.year,
-                        month=current.month,
-                        api_key=api_key
-                    )
-                    if records:
-                        working_codes[trade_flow] = hs_code_4
-                        logger.info(f"Using 4-digit code {hs_code_4} for {trade_flow}")
+                # If no 6-digit codes worked, try 4-digit
+                if not flow_records and hs_codes_4:
+                    for hs_code in hs_codes_4:
+                        records = fetch_trade_data(
+                            flow=trade_flow,
+                            hs_code=hs_code,
+                            year=current.year,
+                            month=current.month,
+                            api_key=api_key
+                        )
+                        if records:
+                            codes_that_work.append(hs_code)
+                            flow_records.extend(records)
+                            logger.info(f"Using 4-digit code {hs_code} for {trade_flow}")
+
+                if codes_that_work:
+                    working_codes[trade_flow] = codes_that_work
+
+            records = flow_records
 
             # Add commodity info to records
             for r in records:
