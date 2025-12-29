@@ -60,6 +60,7 @@ CENSUS_API_BASE = "https://api.census.gov/data/timeseries/intltrade"
 HS_CODES = {
     'SOYBEANS': ['120110', '120190'],           # 1201.10 - Seed, 1201.90 - Other
     'SOYBEAN_MEAL': ['230400', '230499'],       # 2304.00 and 2304.99 - Oilcake and meal
+    'SOYBEAN_HULLS': ['230250'],                # 2302.50 - Soybean meal hulls (separate)
     'SOYBEAN_OIL': ['150710', '150790'],        # 1507.10 - Crude, 1507.90 - Other
 }
 
@@ -67,6 +68,7 @@ HS_CODES = {
 HS_CODES_4DIGIT = {
     'SOYBEANS': ['1201'],
     'SOYBEAN_MEAL': ['2304'],
+    'SOYBEAN_HULLS': ['2302'],
     'SOYBEAN_OIL': ['1507'],
 }
 
@@ -74,6 +76,7 @@ HS_CODES_4DIGIT = {
 COMMODITY_NAMES = {
     'SOYBEANS': 'Soybeans',
     'SOYBEAN_MEAL': 'Soybean Meal',
+    'SOYBEAN_HULLS': 'Soybean Hulls',
     'SOYBEAN_OIL': 'Soybean Oil',
 }
 
@@ -81,13 +84,16 @@ COMMODITY_NAMES = {
 EXCEL_FILES = {
     'SOYBEANS': 'Models/Oilseeds/US Soybean Trade.xlsx',
     'SOYBEAN_MEAL': 'Models/Oilseeds/US Soybean Trade.xlsx',
+    'SOYBEAN_HULLS': 'Models/Oilseeds/US Soybean Trade.xlsx',
     'SOYBEAN_OIL': 'Models/Oilseeds/US Soybean Trade.xlsx',
 }
 
 # Excel sheet names for Census data (matching actual sheet names in workbook)
+# Note: Hulls data goes to specific rows within the Soymeal sheets
 COMMODITY_SHEETS = {
     'SOYBEANS': {'exports': 'Soybean Exports', 'imports': 'Soybean Imports'},
     'SOYBEAN_MEAL': {'exports': 'Soymeal Exports', 'imports': 'Soymeal Imports'},
+    'SOYBEAN_HULLS': {'exports': 'Soymeal Exports', 'imports': 'Soymeal Imports'},  # Same sheet, different rows
     'SOYBEAN_OIL': {'exports': 'Soyoil Exports', 'imports': 'Soyoil Imports'},
 }
 
@@ -95,6 +101,7 @@ COMMODITY_SHEETS = {
 MARKETING_YEAR_START = {
     'SOYBEANS': 9,      # September
     'SOYBEAN_MEAL': 10, # October (follows crush)
+    'SOYBEAN_HULLS': 10, # October (follows crush, same as meal)
     'SOYBEAN_OIL': 10,  # October (follows crush)
     'CORN': 9,
     'WHEAT': 6,
@@ -104,6 +111,7 @@ MARKETING_YEAR_START = {
 MT_PER_BUSHEL = {
     'SOYBEANS': 0.0272155,      # 60 lbs/bu
     'SOYBEAN_MEAL': 0.0272155,  # Short tons converted
+    'SOYBEAN_HULLS': 0.0272155, # Same as meal
     'SOYBEAN_OIL': None,        # Reported in kg/liters
 }
 
@@ -1374,7 +1382,7 @@ def main():
     parser.add_argument(
         '--commodity', '-c',
         default='SOYBEANS',
-        choices=['SOYBEANS', 'SOYBEAN_MEAL', 'SOYBEAN_OIL', 'ALL'],
+        choices=['SOYBEANS', 'SOYBEAN_MEAL', 'SOYBEAN_HULLS', 'SOYBEAN_OIL', 'ALL'],
         help='Commodity to process (default: SOYBEANS)'
     )
 
