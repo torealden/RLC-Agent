@@ -289,12 +289,79 @@ def get_api_key() -> Optional[str]:
     return os.getenv('CENSUS_API_KEY')
 
 
+def test_census_api(api_key: str = None) -> bool:
+    """
+    Test the Census API connection with a simple request.
+
+    Returns True if the API is working, False otherwise.
+    Prints diagnostic information.
+    """
+    print("\n--- Census API Connection Test ---")
+
+    # Test with a known good query: Soybeans exports for a recent complete month
+    test_url = f"{CENSUS_API_BASE}/exports/hs"
+    test_params = {
+        'get': 'ALL_VAL_MO,CTY_NAME',
+        'E_COMMODITY': '120190',
+        'time': '2024-01',  # Use a known complete month
+    }
+
+    if api_key:
+        test_params['key'] = api_key
+        print(f"  Using API key: {api_key[:8]}...")
+    else:
+        print("  No API key (using public access)")
+
+    print(f"  Test URL: {test_url}")
+    print(f"  Test params: {test_params}")
+
+    try:
+        response = requests.get(test_url, params=test_params, timeout=30)
+        print(f"  Response status: {response.status_code}")
+        print(f"  Response headers: {dict(response.headers)}")
+
+        if response.status_code == 200:
+            # Check content type
+            content_type = response.headers.get('Content-Type', '')
+            print(f"  Content-Type: {content_type}")
+
+            # Show first 500 chars of response
+            content_preview = response.text[:500] if response.text else "(empty)"
+            print(f"  Response preview: {content_preview}")
+
+            if 'json' in content_type.lower() or response.text.strip().startswith('['):
+                try:
+                    data = response.json()
+                    print(f"  JSON parsed successfully: {len(data)} rows")
+                    if len(data) > 1:
+                        print(f"  Sample data: {data[1][:3] if len(data[1]) > 3 else data[1]}")
+                    print("  API TEST: SUCCESS")
+                    return True
+                except Exception as e:
+                    print(f"  JSON parse error: {e}")
+                    print("  API TEST: FAILED (invalid JSON)")
+                    return False
+            else:
+                print("  API TEST: FAILED (not JSON response)")
+                return False
+        else:
+            print(f"  Response text: {response.text[:500]}")
+            print(f"  API TEST: FAILED (status {response.status_code})")
+            return False
+
+    except Exception as e:
+        print(f"  Request error: {e}")
+        print("  API TEST: FAILED (connection error)")
+        return False
+
+
 def fetch_trade_data(
     flow: str,
     hs_code: str,
     year: int,
     month: int,
-    api_key: str = None
+    api_key: str = None,
+    max_retries: int = 3
 ) -> List[Dict]:
     """
     Fetch trade data from Census API for a specific month
@@ -305,10 +372,14 @@ def fetch_trade_data(
         year: Year
         month: Month (1-12)
         api_key: Census API key (optional but recommended)
+        max_retries: Maximum number of retry attempts
 
     Returns:
         List of trade records
     """
+    import time as time_module
+    import json
+
     # Build URL
     url = f"{CENSUS_API_BASE}/{flow}/hs"
 
@@ -337,53 +408,102 @@ def fetch_trade_data(
     if api_key:
         params['key'] = api_key
 
-    try:
-        response = requests.get(url, params=params, timeout=30)
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, params=params, timeout=30)
 
-        if response.status_code == 200:
-            data = response.json()
-            if data and len(data) > 1:
-                headers = data[0]
-                records = []
-                for row in data[1:]:
-                    record = dict(zip(headers, row))
+            if response.status_code == 200:
+                # Check if response is empty or not JSON
+                if not response.text or response.text.strip() == '':
+                    logger.warning(f"Empty response for {flow}/{hs_code} {time_str}")
+                    return []
 
-                    # Parse values
-                    value_usd = parse_number(record.get(value_field))
-                    quantity = parse_number(record.get(qty_field))
+                try:
+                    data = response.json()
+                except json.JSONDecodeError as e:
+                    # Log the actual response content for debugging
+                    content_preview = response.text[:200] if response.text else "(empty)"
+                    logger.error(f"JSON decode error for {flow}/{hs_code} {time_str}: {e}")
+                    logger.debug(f"Response content: {content_preview}")
 
-                    if value_usd is None and quantity is None:
+                    # Retry on JSON errors (might be transient)
+                    if attempt < max_retries - 1:
+                        wait_time = 2 ** attempt  # Exponential backoff: 1, 2, 4 seconds
+                        logger.info(f"Retrying in {wait_time}s...")
+                        time_module.sleep(wait_time)
                         continue
+                    return []
 
-                    records.append({
-                        'year': year,
-                        'month': month,
-                        'date': date(year, month, 1),
-                        'flow': flow,
-                        'hs_code': hs_code,
-                        'country_code': record.get('CTY_CODE', ''),
-                        'country_name': clean_country_name(record.get('CTY_NAME', '')),
-                        'value_usd': value_usd,
-                        'quantity': quantity,
-                        'unit': record.get(unit_field, ''),
-                    })
+                if data and len(data) > 1:
+                    headers = data[0]
+                    records = []
+                    for row in data[1:]:
+                        record = dict(zip(headers, row))
 
-                return records
-        elif response.status_code == 204:
-            # No content - no data for this period
-            logger.warning(f"API returned 204 for {flow}/{hs_code} {time_str}")
-        elif response.status_code == 400:
-            # Bad request - log the actual error response
-            try:
-                error_text = response.text[:200]
+                        # Parse values
+                        value_usd = parse_number(record.get(value_field))
+                        quantity = parse_number(record.get(qty_field))
+
+                        if value_usd is None and quantity is None:
+                            continue
+
+                        records.append({
+                            'year': year,
+                            'month': month,
+                            'date': date(year, month, 1),
+                            'flow': flow,
+                            'hs_code': hs_code,
+                            'country_code': record.get('CTY_CODE', ''),
+                            'country_name': clean_country_name(record.get('CTY_NAME', '')),
+                            'value_usd': value_usd,
+                            'quantity': quantity,
+                            'unit': record.get(unit_field, ''),
+                        })
+
+                    return records
+                else:
+                    # Valid JSON but no data
+                    return []
+
+            elif response.status_code == 204:
+                # No content - no data for this period (normal for recent months)
+                logger.warning(f"API returned 204 for {flow}/{hs_code} {time_str}")
+                return []
+
+            elif response.status_code == 400:
+                # Bad request - log the actual error response
+                error_text = response.text[:300] if response.text else "(empty)"
                 logger.warning(f"API returned 400 for {flow}/{hs_code} {time_str}: {error_text}")
-            except:
-                logger.warning(f"API returned 400 for {flow}/{hs_code} {time_str}")
-        else:
-            logger.warning(f"API returned {response.status_code} for {flow}/{hs_code} {time_str}")
+                return []
 
-    except requests.RequestException as e:
-        logger.error(f"Request failed for {flow}/{hs_code} {time_str}: {e}")
+            elif response.status_code in (429, 500, 502, 503, 504):
+                # Rate limit or server error - retry with backoff
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** (attempt + 1)  # 2, 4, 8 seconds
+                    logger.warning(f"API returned {response.status_code} for {flow}/{hs_code} {time_str}, retrying in {wait_time}s...")
+                    time_module.sleep(wait_time)
+                    continue
+                else:
+                    logger.error(f"API returned {response.status_code} for {flow}/{hs_code} {time_str} after {max_retries} attempts")
+                    return []
+            else:
+                logger.warning(f"API returned {response.status_code} for {flow}/{hs_code} {time_str}")
+                return []
+
+        except requests.exceptions.ConnectionError as e:
+            # Connection reset, timeout, etc - retry
+            if attempt < max_retries - 1:
+                wait_time = 2 ** (attempt + 1)
+                logger.warning(f"Connection error for {flow}/{hs_code} {time_str}: {e}, retrying in {wait_time}s...")
+                time_module.sleep(wait_time)
+                continue
+            else:
+                logger.error(f"Connection error for {flow}/{hs_code} {time_str} after {max_retries} attempts: {e}")
+                return []
+
+        except requests.RequestException as e:
+            logger.error(f"Request failed for {flow}/{hs_code} {time_str}: {e}")
+            return []
 
     return []
 
@@ -1545,11 +1665,30 @@ def main():
         help='Update Excel model files'
     )
 
+    parser.add_argument(
+        '--test',
+        action='store_true',
+        help='Test Census API connection before fetching data'
+    )
+
     args = parser.parse_args()
 
     print("\n" + "=" * 60)
     print("CENSUS BUREAU TRADE DATA COLLECTOR")
     print("=" * 60)
+
+    api_key = get_api_key()
+
+    # Run API test if requested
+    if args.test:
+        if not test_census_api(api_key):
+            print("\nAPI test failed. Please check the error messages above.")
+            print("Common issues:")
+            print("  - Census API may be temporarily unavailable")
+            print("  - Network/firewall issues")
+            print("  - API key may be invalid")
+            sys.exit(1)
+        print("\nAPI test passed. Proceeding with data fetch...\n")
 
     results = run_census_update(
         commodity=args.commodity,
