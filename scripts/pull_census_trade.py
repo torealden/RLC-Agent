@@ -112,40 +112,60 @@ MARKETING_YEAR_START = {
     'WHEAT': 6,
 }
 
-# Conversion factors
-MT_PER_BUSHEL = {
-    'SOYBEANS': 0.0272155,      # 60 lbs/bu = 0.0272155 MT/bu
-    'SOYBEAN_MEAL': 0.0272155,  # Short tons converted
-    'SOYBEAN_HULLS': 0.0272155, # Same as meal
-    'SOYBEAN_OIL': None,        # Reported in kg/liters
-}
+# =============================================================================
+# UNIT CONVERSION FACTORS
+# =============================================================================
+# US units by commodity type:
+#   - Grains (soybeans, corn, wheat): Bushels
+#   - Oilseed products (meal, hulls): Short tons
+#   - Oils/fats/greases: Pounds
+# International: Metric tons for everything
 
-# Bushels per metric ton (inverse of above, for converting MT to bushels)
-BUSHELS_PER_MT = {
-    'SOYBEANS': 36.7437,        # 1 MT = 36.7437 bushels (60 lbs/bu)
-    'SOYBEAN_MEAL': 36.7437,    # Same conversion
-    'SOYBEAN_HULLS': 36.7437,   # Same conversion
-    'SOYBEAN_OIL': None,        # Oil uses different units (lbs or gallons)
-}
+# Conversion constants
+KG_PER_MT = 1000.0              # 1 metric ton = 1000 kg
+LBS_PER_MT = 2204.62            # 1 metric ton = 2204.62 lbs
+LBS_PER_SHORT_TON = 2000.0      # 1 short ton = 2000 lbs
+SHORT_TONS_PER_MT = 1.10231     # 1 metric ton = 1.10231 short tons
+LBS_PER_BUSHEL_SOYBEANS = 60.0  # 1 bushel soybeans = 60 lbs
+BUSHELS_PER_MT_SOYBEANS = 36.7437  # 1 MT = 36.7437 bushels (60 lbs/bu)
 
-# Unit configuration for different spreadsheets
-# US trade data uses imperial units (bushels), International uses metric (tonnes)
-EXCEL_UNIT_CONFIG = {
-    'US Soybean Trade.xlsx': {
-        'unit_type': 'imperial',      # US trade uses bushels
+# Unit configuration per commodity for US trade files
+# Census data comes in KG - these define how to convert for each commodity
+US_UNIT_CONFIG = {
+    'SOYBEANS': {
+        'unit': 'bushels',
         'display_unit': '1000 bushels',
-        'conversion': 'kg_to_thousand_bushels',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * BUSHELS_PER_MT_SOYBEANS / 1000,  # KG -> 1000 bu
     },
-    'World Rapeseed Trade.xlsx': {
-        'unit_type': 'metric',        # International trade uses tonnes
-        'display_unit': '1000 tonnes',
-        'conversion': 'kg_to_thousand_tonnes',
+    'SOYBEAN_MEAL': {
+        'unit': 'short_tons',
+        'display_unit': '1000 short tons',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT / 1000,  # KG -> 1000 ST
     },
-    'World Soybean Trade.xlsx': {
-        'unit_type': 'metric',        # International trade uses tonnes
-        'display_unit': '1000 tonnes',
-        'conversion': 'kg_to_thousand_tonnes',
+    'SOYBEAN_HULLS': {
+        'unit': 'short_tons',
+        'display_unit': '1000 short tons',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT / 1000,  # KG -> 1000 ST
     },
+    'SOYBEAN_OIL': {
+        'unit': 'pounds',
+        'display_unit': 'million lbs',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * LBS_PER_MT / 1000000,  # KG -> million lbs
+    },
+}
+
+# International trade files use metric tons
+INTL_UNIT_CONFIG = {
+    'unit': 'metric_tons',
+    'display_unit': '1000 tonnes',
+    'kg_to_display': lambda kg: kg / 1000000,  # KG -> 1000 MT (million kg)
+}
+
+# Map Excel files to unit systems
+EXCEL_UNIT_SYSTEM = {
+    'US Soybean Trade.xlsx': 'US',      # Uses commodity-specific US units
+    'World Rapeseed Trade.xlsx': 'INTL',  # Uses metric tons
+    'World Soybean Trade.xlsx': 'INTL',   # Uses metric tons
 }
 
 # Fallback price estimates for quantity estimation when Census doesn't provide quantity
@@ -1598,6 +1618,15 @@ def update_excel_file(
             sample_countries = list(country_rows.items())[:10]
             print(f"  Sample country rows: {sample_countries}")
 
+        # Show unit configuration being used
+        excel_filename = excel_path.name
+        unit_system = EXCEL_UNIT_SYSTEM.get(excel_filename, 'INTL')
+        if unit_system == 'US' and commodity.upper() in US_UNIT_CONFIG:
+            config = US_UNIT_CONFIG[commodity.upper()]
+            print(f"  Unit system: US - {config['display_unit']} ({config['unit']})")
+        else:
+            print(f"  Unit system: International - {INTL_UNIT_CONFIG['display_unit']}")
+
         # Debug: show sample destinations from data
         sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
         print(f"  Sample destinations in data: {sample_dests}")
@@ -1663,7 +1692,7 @@ def update_excel_file(
                 continue
 
             # Get value to write (use quantity for volume)
-            # Census data is in kg, convert to 1000 metric tonnes
+            # Census data is in kg - convert based on file type and commodity
             value = data.get('quantity')
             value_usd = data.get('value_usd')
             used_estimate = False
@@ -1676,10 +1705,19 @@ def update_excel_file(
                     used_estimate = True
 
             if value and value > 0:
-                # Census quantity is in KG, convert to 1000 MT (million kg)
-                # 1000 MT = 1,000,000 kg, so divide by 1,000,000
-                value_in_tmt = value / 1000000.0
-                ws.Cells(row, col).Value = round(value_in_tmt, 3)
+                # Determine unit system based on Excel file
+                excel_filename = excel_path.name
+                unit_system = EXCEL_UNIT_SYSTEM.get(excel_filename, 'INTL')
+
+                if unit_system == 'US' and commodity.upper() in US_UNIT_CONFIG:
+                    # Use commodity-specific US conversion
+                    config = US_UNIT_CONFIG[commodity.upper()]
+                    converted_value = config['kg_to_display'](value)
+                else:
+                    # Use international metric tons (1000 MT)
+                    converted_value = INTL_UNIT_CONFIG['kg_to_display'](value)
+
+                ws.Cells(row, col).Value = round(converted_value, 3)
                 updated += 1
                 if used_estimate:
                     estimated_count += 1
