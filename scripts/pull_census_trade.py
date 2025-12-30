@@ -67,7 +67,7 @@ CENSUS_API_BASE = "https://api.census.gov/data/timeseries/intltrade"
 # Source: Models/HS codes reference sheet
 HS_CODES = {
     'SOYBEANS': ['120110', '120190'],           # 1201.10 - Seed, 1201.90 - Other
-    'SOYBEAN_MEAL': ['230400', '230499'],       # 2304.00 and 2304.99 - Oilcake and meal
+    'SOYBEAN_MEAL': ['120810', '230400', '230499'],  # 1208.10 - Soy flour/meal, 2304.00/99 - Oilcake
     'SOYBEAN_HULLS': ['230250'],                # 2302.50 - Soybean meal hulls (separate)
     'SOYBEAN_OIL': ['150710', '150790'],        # 1507.10 - Crude, 1507.90 - Other
 }
@@ -75,7 +75,7 @@ HS_CODES = {
 # Alternative 4-digit codes for fallback (GTT codes)
 HS_CODES_4DIGIT = {
     'SOYBEANS': ['1201'],
-    'SOYBEAN_MEAL': ['2304'],
+    'SOYBEAN_MEAL': ['1208', '2304'],  # Both soy flour and oilcake
     'SOYBEAN_HULLS': ['2302'],
     'SOYBEAN_OIL': ['1507'],
 }
