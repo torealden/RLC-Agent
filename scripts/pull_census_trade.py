@@ -518,23 +518,31 @@ def fetch_trade_data(
     # Field names differ between imports and exports
     # See: https://api.census.gov/data/timeseries/intltrade/exports/hs/variables.html
     # See: https://api.census.gov/data/timeseries/intltrade/imports/hs/variables.html
-    # Request MULTIPLE quantity fields since some may be empty
+    # IMPORTANT: Census API returns 0 for BOTH true zeros AND missing values!
+    # We must request the FLAG fields to distinguish between them.
+    # Flag values: blank = real data, 'A' = suppressed, 'N' = not available
     if flow == 'imports':
         commodity_field = 'I_COMMODITY'
         value_field = 'GEN_VAL_MO'
-        # Try multiple quantity fields for imports
+        # Quantity fields and their corresponding flag fields for imports
         qty_fields = ['GEN_QY1_MO', 'CON_QY1_MO']
+        qty_flag_fields = ['GEN_QY1_MO_FLAG', 'CON_QY1_MO_FLAG']
         unit_field = 'UNIT_QY1'
     else:
         commodity_field = 'E_COMMODITY'
         value_field = 'ALL_VAL_MO'
-        # Try both quantity fields for exports - only QTY_1_MO and QTY_2_MO are valid
+        # Quantity fields and their corresponding flag fields for exports
         qty_fields = ['QTY_1_MO', 'QTY_2_MO']
+        qty_flag_fields = ['QTY_1_MO_FLAG', 'QTY_2_MO_FLAG']
         unit_field = 'UNIT_QY1'
 
-    # Build params - request all quantity fields
+    # Build params - request quantity fields WITH their flags
     time_str = f"{year}-{month:02d}"
-    get_fields = f'{value_field},{",".join(qty_fields)},{unit_field},UNIT_QY2,CTY_CODE,CTY_NAME'
+    # Include flag fields to distinguish real zeros from missing values
+    all_qty_fields = []
+    for qf, ff in zip(qty_fields, qty_flag_fields):
+        all_qty_fields.extend([qf, ff])
+    get_fields = f'{value_field},{",".join(all_qty_fields)},{unit_field},UNIT_QY2,CTY_CODE,CTY_NAME'
     params = {
         'get': get_fields,
         commodity_field: hs_code,
@@ -573,25 +581,51 @@ def fetch_trade_data(
                 if data and len(data) > 1:
                     headers = data[0]
                     records = []
+
+                    # Debug: Log the headers we received (first time only per session)
+                    if len(data) > 1:
+                        logger.info(f"Census API returned headers for {flow}/{hs_code}: {headers}")
+                        # Log first row to check flag values
+                        sample = dict(zip(headers, data[1]))
+                        qty_info = []
+                        for qf in qty_fields:
+                            ff = qf + '_FLAG' if qf.endswith('_MO') else qf.replace('_MO', '_MO_FLAG')
+                            qty_info.append(f"{qf}={sample.get(qf)}, {ff}={sample.get(ff, 'N/A')}")
+                        logger.info(f"Sample quantity data: {'; '.join(qty_info)}")
+
                     for row in data[1:]:
                         record = dict(zip(headers, row))
 
                         # Parse values
                         value_usd = parse_number(record.get(value_field))
 
-                        # Try each quantity field until we find one with data
+                        # Try each quantity field until we find one with REAL data
+                        # IMPORTANT: Check the FLAG field to distinguish real zeros from missing values
+                        # Flag values: blank/empty = real data, 'A' = suppressed, 'N' = not available
                         quantity = None
                         unit = None
-                        for qty_field in qty_fields:
+                        for i, qty_field in enumerate(qty_fields):
+                            flag_field = qty_flag_fields[i]
+                            flag_value = record.get(flag_field, '')
+
+                            # Only use quantity if flag is blank (real data)
+                            # If flag has a value ('A', 'N', etc.), the 0 is actually missing data
+                            if flag_value and flag_value.strip():
+                                # Flag indicates missing/suppressed data, skip this quantity field
+                                logger.debug(f"Skipping {qty_field}: flag={flag_value} (suppressed/missing)")
+                                continue
+
                             q = parse_number(record.get(qty_field))
-                            if q is not None and q > 0:
+                            # Accept the quantity even if it's 0 - since flag is blank, 0 is a real value
+                            if q is not None:
                                 quantity = q
                                 # Get corresponding unit
-                                if 'QY1' in qty_field or qty_field == qty_fields[0]:
+                                if 'QY1' in qty_field or i == 0:
                                     unit = record.get('UNIT_QY1', '')
                                 else:
                                     unit = record.get('UNIT_QY2', record.get('UNIT_QY1', ''))
-                                break
+                                if quantity > 0:
+                                    break  # Found real non-zero data, use it
 
                         # NORMALIZE QUANTITY TO KG
                         # Census reports different units for different HS codes:
@@ -1767,6 +1801,12 @@ def update_excel_file(
         # The hull total is added to the meal total in the Excel formula
         if commodity.upper() == 'SOYBEAN_HULLS':
             print(f"  SOYBEAN_HULLS: Writing monthly totals to row 294 only")
+            print(f"  Hull data records: {len(monthly_data)}")
+
+            # Debug: Show sample hull data
+            sample_hull_data = list(monthly_data.items())[:5]
+            for (y, m, d), data in sample_hull_data:
+                print(f"    {y}-{m:02d} {d}: qty={data.get('quantity')}, val=${data.get('value_usd')}")
 
             # Aggregate all country data by (year, month) into monthly totals
             hull_monthly_totals = {}
@@ -1776,6 +1816,8 @@ def update_excel_file(
                     hull_monthly_totals[key] = {'quantity': 0, 'value_usd': 0}
                 hull_monthly_totals[key]['quantity'] += data.get('quantity') or 0
                 hull_monthly_totals[key]['value_usd'] += data.get('value_usd') or 0
+
+            print(f"  Aggregated to {len(hull_monthly_totals)} monthly totals")
 
             # Write hull totals to row 294
             hull_row = 294
@@ -1798,6 +1840,13 @@ def update_excel_file(
                     converted_value = config['kg_to_display'](value)
                     ws.Cells(hull_row, col).Value = round(converted_value, 3)
                     updated += 1
+                    # Debug: Show what we're writing
+                    if updated <= 3:
+                        print(f"    Writing row {hull_row}, col {col}: {year}-{month:02d} = {round(converted_value, 3)} short tons")
+                else:
+                    # Debug: Show why we're not writing
+                    if len(not_found_dates) < 3:
+                        print(f"    Skipping {year}-{month:02d}: quantity={value}, value_usd={value_usd}")
 
             print(f"  Updated {updated} hull monthly totals in row 294")
 
