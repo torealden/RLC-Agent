@@ -107,12 +107,30 @@ MARKETING_YEAR_START = {
     'WHEAT': 6,
 }
 
-# Conversion factors
-MT_PER_BUSHEL = {
-    'SOYBEANS': 0.0272155,      # 60 lbs/bu
-    'SOYBEAN_MEAL': 0.0272155,  # Short tons converted
-    'SOYBEAN_HULLS': 0.0272155, # Same as meal
-    'SOYBEAN_OIL': None,        # Reported in kg/liters
+# Conversion factors - Census API reports quantity in KILOGRAMS
+# Each commodity has different target units in Excel
+# Format: commodity -> (target_unit_name, kg_to_target_multiplier)
+UNIT_CONVERSIONS = {
+    # Soybeans: Census kg -> 1000 bushels (Excel uses 1000 bu)
+    # 1 kg = 0.0367437 bushels, so 1000 bu = 1000/0.0367437 kg = 27,217.7 kg
+    'SOYBEANS': ('1000 BU', 0.0367437 / 1000),  # kg to 1000 bushels
+
+    # Soybean Meal: Census kg -> short tons (Excel uses short tons)
+    # 1 short ton = 907.185 kg
+    'SOYBEAN_MEAL': ('ST', 1 / 907.185),  # kg to short tons
+
+    # Soybean Hulls: same as meal
+    'SOYBEAN_HULLS': ('ST', 1 / 907.185),  # kg to short tons
+
+    # Soybean Oil: Census kg -> 1000 pounds (Excel uses 1000 lbs)
+    # 1 kg = 2.20462 lbs
+    'SOYBEAN_OIL': ('1000 LBS', 2.20462 / 1000),  # kg to 1000 lbs
+}
+
+# Special commodity total rows (for commodities that aggregate to a single row)
+# Used for hulls which go to a specific row in the Soymeal sheets
+COMMODITY_TOTAL_ROWS = {
+    'SOYBEAN_HULLS': 294,  # Hulls total row in Soymeal Exports/Imports sheets
 }
 
 # Destination to row mapping (same as inspections for consistency)
@@ -1170,41 +1188,82 @@ def update_excel_file(
         sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
         print(f"  Sample destinations in data: {sample_dests}")
 
-        # Update cells
+        # Debug: show sample raw quantities from Census (in kg)
+        sample_qty = [(k, v.get('quantity')) for k, v in list(monthly_data.items())[:5] if v.get('quantity')]
+        if sample_qty:
+            print(f"  Sample raw quantities (kg from Census):")
+            for key, qty in sample_qty[:3]:
+                print(f"    {key}: {qty:,.0f} kg")
+
+        # Get unit conversion for this commodity
+        conversion = UNIT_CONVERSIONS.get(commodity.upper())
+        if conversion:
+            unit_name, multiplier = conversion
+            print(f"  Converting from kg to {unit_name} (multiplier: {multiplier:.6f})")
+        else:
+            unit_name = 'TMT'
+            multiplier = 1 / 1000000.0  # Fallback: kg to TMT
+            print(f"  WARNING: No conversion for {commodity}, using fallback kg->TMT")
+
+        # Check if this commodity uses a special total row (e.g., hulls)
+        special_row = COMMODITY_TOTAL_ROWS.get(commodity.upper())
+
         updated = 0
         not_found_destinations = set()
         not_found_dates = set()
         matched_destinations = set()
 
-        for (year, month, destination), data in monthly_data.items():
-            # Get row for this destination
-            row = DESTINATION_ROWS.get(destination.upper())
-            if not row:
-                not_found_destinations.add(destination)
-                continue
+        if special_row:
+            # Special handling: aggregate all countries to a single row per month
+            print(f"  Writing aggregated totals to row {special_row}")
+            monthly_totals = defaultdict(float)
 
-            matched_destinations.add(destination)
+            for (year, month, destination), data in monthly_data.items():
+                raw_quantity_kg = data.get('quantity') or 0
+                if raw_quantity_kg > 0:
+                    monthly_totals[(year, month)] += raw_quantity_kg
 
-            # Get column for this date
-            col = date_columns.get((year, month))
-            if not col:
-                not_found_dates.add((year, month))
-                continue
+            for (year, month), total_kg in monthly_totals.items():
+                col = date_columns.get((year, month))
+                if not col:
+                    not_found_dates.add((year, month))
+                    continue
 
-            # Get value to write (use quantity for volume)
-            # Census data is typically in metric tons for quantity
-            value = data.get('quantity')
-
-            if value and value > 0:
-                # Convert to thousand metric tons for consistency with inspections
-                value_in_tmt = value / 1000.0
-                ws.range((row, col)).value = round(value_in_tmt, 3)
+                converted_value = total_kg * multiplier
+                ws.range((special_row, col)).value = round(converted_value, 3)
                 updated += 1
 
-        # Debug output
-        print(f"  Matched destinations: {len(matched_destinations)}")
-        if matched_destinations:
-            print(f"    Examples: {list(matched_destinations)[:5]}")
+            print(f"  Wrote {updated} monthly totals to row {special_row}")
+        else:
+            # Normal handling: write to individual country rows
+            for (year, month, destination), data in monthly_data.items():
+                # Get row for this destination
+                row = DESTINATION_ROWS.get(destination.upper())
+                if not row:
+                    not_found_destinations.add(destination)
+                    continue
+
+                matched_destinations.add(destination)
+
+                # Get column for this date
+                col = date_columns.get((year, month))
+                if not col:
+                    not_found_dates.add((year, month))
+                    continue
+
+                # Get value to write (use quantity for volume)
+                # Census API reports quantity in KILOGRAMS
+                raw_quantity_kg = data.get('quantity')
+
+                if raw_quantity_kg and raw_quantity_kg > 0:
+                    converted_value = raw_quantity_kg * multiplier
+                    ws.range((row, col)).value = round(converted_value, 3)
+                    updated += 1
+
+            # Debug output
+            print(f"  Matched destinations: {len(matched_destinations)}")
+            if matched_destinations:
+                print(f"    Examples: {list(matched_destinations)[:5]}")
 
         # Save workbook
         wb.save()
