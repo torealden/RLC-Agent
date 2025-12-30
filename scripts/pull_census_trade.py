@@ -316,7 +316,8 @@ SUM_FORMULA_ROWS = {
     59,   # Middle East & Africa total
     74,   # Western Hemisphere total
     164,  # FSU (Former Soviet Union) total
-    290,  # World Total
+    289,  # World Total SUM formula (preserve this!)
+    # Row 290 is external link data, NOT a sum - so it can be cleared
     # Add any other sum rows specific to sheets
 }
 
@@ -1724,6 +1725,11 @@ def update_excel_file(
 
             if not row:
                 not_found_destinations.add(destination)
+                continue
+
+            # Skip rows that contain SUM formulas (except row 290 which gets Census aggregate data)
+            if row in SUM_FORMULA_ROWS and row != 290:
+                skipped_aggregates.add(f"{destination} (row {row} has formula)")
                 continue
 
             matched_destinations.add(destination)
