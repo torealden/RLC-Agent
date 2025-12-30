@@ -1666,14 +1666,16 @@ def update_excel_file(
         if columns_to_update:
             print(f"  Clearing {len(columns_to_update)} columns before writing (rows 5-290, preserving sum rows)...")
             cleared_cells = 0
+            # Activate the sheet first (required for Select to work, but we'll use direct assignment)
+            ws.Activate()
             for col in columns_to_update:
                 for row in range(5, 291):  # Rows 5 to 290 inclusive
                     if row not in SUM_FORMULA_ROWS:
                         # Clear the cell value but preserve formatting
-                        # Match VBA pattern: Select cell, then set ActiveCell.Value
-                        ws.Cells(row, col).Select()
-                        if excel.ActiveCell.Value is not None:
-                            excel.ActiveCell.Value = None
+                        # Use direct assignment (simpler and works without Select)
+                        cell = ws.Cells(row, col)
+                        if cell.Value is not None:
+                            cell.Value = None
                             cleared_cells += 1
             print(f"  Cleared {cleared_cells} cells with existing values")
 
@@ -1755,9 +1757,8 @@ def update_excel_file(
                     # Use international metric tons (1000 MT)
                     converted_value = INTL_UNIT_CONFIG['kg_to_display'](value)
 
-                # Match VBA pattern: Select cell, then set ActiveCell.Value
-                ws.Cells(row, col).Select()
-                excel.ActiveCell.Value = round(converted_value, 3)
+                # Direct cell assignment (works without needing to Select)
+                ws.Cells(row, col).Value = round(converted_value, 3)
                 updated += 1
                 if used_estimate:
                     estimated_count += 1
