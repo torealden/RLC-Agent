@@ -512,13 +512,9 @@ def fetch_trade_data(
         qty_flag_fields = ['QTY_1_MO_FLAG', 'QTY_2_MO_FLAG']
         unit_field = 'UNIT_QY1'
 
-    # Build params - request quantity fields WITH their flags
+    # Build params - request quantity fields (WITHOUT flag fields - they cause API errors)
     time_str = f"{year}-{month:02d}"
-    # Include flag fields to distinguish real zeros from missing values
-    all_qty_fields = []
-    for qf, ff in zip(qty_fields, qty_flag_fields):
-        all_qty_fields.extend([qf, ff])
-    get_fields = f'{value_field},{",".join(all_qty_fields)},{unit_field},UNIT_QY2,CTY_CODE,CTY_NAME'
+    get_fields = f'{value_field},{",".join(qty_fields)},{unit_field},UNIT_QY2,CTY_CODE,CTY_NAME'
     params = {
         'get': get_fields,
         commodity_field: hs_code,
@@ -530,6 +526,10 @@ def fetch_trade_data(
 
     for attempt in range(max_retries):
         try:
+            # Debug: show URL on first attempt
+            if attempt == 0:
+                print(f"  Fetching {flow}/{hs_code} for {time_str}...")
+
             response = requests.get(url, params=params, timeout=30)
 
             if response.status_code == 200:
@@ -542,9 +542,10 @@ def fetch_trade_data(
                     data = response.json()
                 except json.JSONDecodeError as e:
                     # Log the actual response content for debugging
-                    content_preview = response.text[:200] if response.text else "(empty)"
+                    content_preview = response.text[:500] if response.text else "(empty)"
                     logger.error(f"JSON decode error for {flow}/{hs_code} {time_str}: {e}")
-                    logger.debug(f"Response content: {content_preview}")
+                    print(f"  ERROR: Census API returned non-JSON:")
+                    print(f"  {content_preview[:300]}")
 
                     # Retry on JSON errors (might be transient)
                     if attempt < max_retries - 1:
@@ -558,16 +559,10 @@ def fetch_trade_data(
                     headers = data[0]
                     records = []
 
-                    # Debug: Log the headers we received (first time only per session)
+                    # Debug: Log the headers and sample data we received
                     if len(data) > 1:
-                        logger.info(f"Census API returned headers for {flow}/{hs_code}: {headers}")
-                        # Log first row to check flag values
                         sample = dict(zip(headers, data[1]))
-                        qty_info = []
-                        for qf in qty_fields:
-                            ff = qf + '_FLAG' if qf.endswith('_MO') else qf.replace('_MO', '_MO_FLAG')
-                            qty_info.append(f"{qf}={sample.get(qf)}, {ff}={sample.get(ff, 'N/A')}")
-                        logger.info(f"Sample quantity data: {'; '.join(qty_info)}")
+                        print(f"  Got {len(data)-1} records. Sample: QTY_1={sample.get('QTY_1_MO') or sample.get('GEN_QY1_MO')}, UNIT={sample.get('UNIT_QY1')}")
 
                     for row in data[1:]:
                         record = dict(zip(headers, row))
@@ -575,33 +570,19 @@ def fetch_trade_data(
                         # Parse values
                         value_usd = parse_number(record.get(value_field))
 
-                        # Try each quantity field until we find one with REAL data
-                        # IMPORTANT: Check the FLAG field to distinguish real zeros from missing values
-                        # Flag values: blank/empty = real data, 'A' = suppressed, 'N' = not available
+                        # Try each quantity field until we find one with non-zero data
                         quantity = None
                         unit = None
                         for i, qty_field in enumerate(qty_fields):
-                            flag_field = qty_flag_fields[i]
-                            flag_value = record.get(flag_field, '')
-
-                            # Only use quantity if flag is blank (real data)
-                            # If flag has a value ('A', 'N', etc.), the 0 is actually missing data
-                            if flag_value and flag_value.strip():
-                                # Flag indicates missing/suppressed data, skip this quantity field
-                                logger.debug(f"Skipping {qty_field}: flag={flag_value} (suppressed/missing)")
-                                continue
-
                             q = parse_number(record.get(qty_field))
-                            # Accept the quantity even if it's 0 - since flag is blank, 0 is a real value
-                            if q is not None:
+                            if q is not None and q > 0:
                                 quantity = q
                                 # Get corresponding unit
                                 if 'QY1' in qty_field or i == 0:
                                     unit = record.get('UNIT_QY1', '')
                                 else:
                                     unit = record.get('UNIT_QY2', record.get('UNIT_QY1', ''))
-                                if quantity > 0:
-                                    break  # Found real non-zero data, use it
+                                break  # Found non-zero data
 
                         # NORMALIZE QUANTITY TO KG
                         # Census reports different units for different HS codes:
