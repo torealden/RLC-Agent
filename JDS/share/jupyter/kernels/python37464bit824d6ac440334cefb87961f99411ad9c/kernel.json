@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "C:\\Users\\doomr\\AppData\\Local\\Programs\\Python\\Python37\\python.exe",
+    "-m",
+    "ipykernel_launcher",
+    "-f",
+    "{connection_file}"
+  ],
+  "display_name": "Python 3.7.4 64-bit",
+  "language": "python",
+  "env": {},
+  "metadata": {
+    "interpreter": {
+      "architecture": 3,
+      "path": "C:\\Users\\doomr\\AppData\\Local\\Programs\\Python\\Python37\\python.exe",
+      "version": {
+        "options": {
+          "loose": false,
+          "includePrerelease": false
+        },
+        "loose": false,
+        "raw": "3.7.4-final",
+        "major": 3,
+        "minor": 7,
+        "patch": 4,
+        "prerelease": [
+          "final"
+        ],
+        "build": [],
+        "version": "3.7.4-final"
+      },
+      "sysPrefix": "C:\\Users\\doomr\\AppData\\Local\\Programs\\Python\\Python37",
+      "fileHash": "2b8dc90dc2831b27da369124c172db864517e6a9dd8e93a5d71a8c1b2ddeb5c308d3cd89bad24ae20c12bbec32227bebaf0dc64870ec62177510873d0d4bc839",
+      "companyDisplayName": "Python Software Foundation",
+      "type": "Unknown",
+      "displayName": "Python 3.7.4 64-bit"
+    }
+  }
+}
