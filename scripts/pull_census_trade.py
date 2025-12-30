@@ -134,6 +134,7 @@ BUSHELS_PER_MT_SOYBEANS = 36.7437  # 1 MT = 36.7437 bushels (60 lbs/bu)
 
 # Unit configuration per commodity for US trade files
 # Census data comes in KG - these define how to convert for each commodity
+# NOTE: Trade sheets use WHOLE NUMBERS (not thousands) - display may show "1,000 short tons" as unit label
 US_UNIT_CONFIG = {
     'SOYBEANS': {
         'unit': 'bushels',
@@ -142,13 +143,13 @@ US_UNIT_CONFIG = {
     },
     'SOYBEAN_MEAL': {
         'unit': 'short_tons',
-        'display_unit': '1000 short tons',
-        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT / 1000,  # KG -> 1000 ST
+        'display_unit': 'short tons',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT,  # KG -> whole short tons
     },
     'SOYBEAN_HULLS': {
         'unit': 'short_tons',
-        'display_unit': '1000 short tons',
-        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT / 1000,  # KG -> 1000 ST
+        'display_unit': 'short tons',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT,  # KG -> whole short tons
     },
     'SOYBEAN_OIL': {
         'unit': 'pounds',
