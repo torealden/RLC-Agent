@@ -67,7 +67,7 @@ CENSUS_API_BASE = "https://api.census.gov/data/timeseries/intltrade"
 # Source: Models/HS codes reference sheet
 HS_CODES = {
     'SOYBEANS': ['120110', '120190'],           # 1201.10 - Seed, 1201.90 - Other
-    'SOYBEAN_MEAL': ['230400', '230499'],       # 2304.00 and 2304.99 - Oilcake and meal
+    'SOYBEAN_MEAL': ['120810', '230400', '230499'],  # 1208.10 - Soy flour/meal, 2304.00/99 - Oilcake
     'SOYBEAN_HULLS': ['230250'],                # 2302.50 - Soybean meal hulls (separate)
     'SOYBEAN_OIL': ['150710', '150790'],        # 1507.10 - Crude, 1507.90 - Other
 }
@@ -75,7 +75,7 @@ HS_CODES = {
 # Alternative 4-digit codes for fallback (GTT codes)
 HS_CODES_4DIGIT = {
     'SOYBEANS': ['1201'],
-    'SOYBEAN_MEAL': ['2304'],
+    'SOYBEAN_MEAL': ['1208', '2304'],  # Both soy flour and oilcake
     'SOYBEAN_HULLS': ['2302'],
     'SOYBEAN_OIL': ['1507'],
 }
@@ -134,6 +134,7 @@ BUSHELS_PER_MT_SOYBEANS = 36.7437  # 1 MT = 36.7437 bushels (60 lbs/bu)
 
 # Unit configuration per commodity for US trade files
 # Census data comes in KG - these define how to convert for each commodity
+# NOTE: Trade sheets use WHOLE NUMBERS (not thousands) - display may show "1,000 short tons" as unit label
 US_UNIT_CONFIG = {
     'SOYBEANS': {
         'unit': 'bushels',
@@ -142,18 +143,21 @@ US_UNIT_CONFIG = {
     },
     'SOYBEAN_MEAL': {
         'unit': 'short_tons',
-        'display_unit': '1000 short tons',
-        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT / 1000,  # KG -> 1000 ST
+        'display_unit': 'short tons',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT,  # KG -> whole short tons
     },
     'SOYBEAN_HULLS': {
         'unit': 'short_tons',
-        'display_unit': '1000 short tons',
-        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT / 1000,  # KG -> 1000 ST
+        'display_unit': 'short tons',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT,  # KG -> whole short tons
     },
     'SOYBEAN_OIL': {
         'unit': 'pounds',
-        'display_unit': 'million lbs',
-        'kg_to_display': lambda kg: kg / KG_PER_MT * LBS_PER_MT / 1000000,  # KG -> million lbs
+        'display_unit': '1000 lbs',
+        # Census reports quantity in KG for soybean oil
+        # Convert: KG -> lbs -> 1000 lbs
+        # 1 KG = 2.20462 lbs, divide by 1000 for "thousand lbs"
+        'kg_to_display': lambda kg: (kg * LBS_PER_MT / KG_PER_MT) / 1000,  # KG -> 1000 lbs
     },
 }
 
@@ -564,6 +568,22 @@ def fetch_trade_data(
                                 else:
                                     unit = record.get('UNIT_QY2', record.get('UNIT_QY1', ''))
                                 break
+
+                        # NORMALIZE QUANTITY TO KG
+                        # Census reports different units for different HS codes:
+                        # - 150710 (crude SBO): MT (metric tons)
+                        # - 150790 (refined SBO): KG (kilograms)
+                        # Normalize everything to KG for consistent downstream processing
+                        if quantity is not None and unit:
+                            unit_upper = unit.upper().strip()
+                            if unit_upper in ('MT', 'T', 'METRIC TON', 'METRIC TONS'):
+                                # Convert MT to KG (multiply by 1000)
+                                quantity = quantity * 1000
+                                logger.debug(f"Converted {quantity/1000} MT to {quantity} KG for HS {hs_code}")
+                            elif unit_upper in ('LB', 'LBS', 'POUND', 'POUNDS'):
+                                # Convert LBS to KG (divide by 2.20462)
+                                quantity = quantity / 2.20462
+                            # KG stays as-is
 
                         # If no quantity found but we have value, skip this record's quantity
                         # (we'll still save it to DB with quantity=None)
