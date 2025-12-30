@@ -308,41 +308,43 @@ REGION_TOTAL_ROWS = {
     'WORLD_TOTAL': 290,
 }
 
-# Rows that contain SUM formulas - these should NOT be cleared when updating columns
+# Rows that contain SUM formulas - these should NOT be cleared or overwritten
 # These are regional totals that sum the country rows below them
 SUM_FORMULA_ROWS = {
-    4,    # EU / Europe total (or Asia depending on sheet layout)
+    4,    # Region total (Asia/Oceania or EU depending on sheet)
     37,   # Europe / EU-28 total
     59,   # Middle East & Africa total
     74,   # Western Hemisphere total
     164,  # FSU (Former Soviet Union) total
+    231,  # Additional region total
     289,  # World Total SUM formula (preserve this!)
-    # Row 290 is external link data, NOT a sum - so it can be cleared
-    # Add any other sum rows specific to sheets
+    # Row 290 is external link data, NOT a sum - so it can be cleared/written
 }
 
 # Map Census aggregate/total names to Excel row numbers
 # Census returns aggregates like "TOTAL FOR ALL COUNTRIES", "ASIA", "EUROPE", etc.
+# Set to None for aggregates that should be SKIPPED (calculated by formulas in Excel)
 CENSUS_AGGREGATE_ROWS = {
-    'TOTAL FOR ALL COUNTRIES': 290,
-    'ASIA': 4,  # Asia/Oceania region total
-    'EUROPE': 37,  # EU region total
-    'AFRICA': 59,  # Middle East/Africa total
-    'NORTH AMERICA': 74,  # Part of Western Hemisphere
+    'TOTAL FOR ALL COUNTRIES': 290,  # Row 290 gets Census total (external link data)
+    # Skip regional aggregates - they have SUM formulas in Excel:
+    'ASIA': None,          # Skip - row 4 has formula
+    'EUROPE': None,        # Skip - row 37 has formula
+    'AFRICA': None,        # Skip - row 59 has formula
+    'NORTH AMERICA': None, # Skip - row 74 has formula
     # Additional aggregates that Census returns - skip these as they're calculated in Excel:
-    'OECD': None,  # Skip - calculated in Excel
-    'APEC': None,  # Skip
-    'NATO': None,  # Skip
-    'LAFTA': None,  # Skip
-    'PACIFIC RIM COUNTRIES': None,  # Skip
-    'TWENTY LATIN AMERICAN REPUBLICS': None,  # Skip
-    'USMCA (NAFTA)': None,  # Skip
-    'CAFTA-DR': None,  # Skip
-    'CACM': None,  # Skip
-    'ASEAN': None,  # Skip
-    'EURO AREA': None,  # Skip
-    'SOUTH AMERICA': None,  # Skip
-    'CENTRAL AMERICA': None,  # Skip
+    'OECD': None,
+    'APEC': None,
+    'NATO': None,
+    'LAFTA': None,
+    'PACIFIC RIM COUNTRIES': None,
+    'TWENTY LATIN AMERICAN REPUBLICS': None,
+    'USMCA (NAFTA)': None,
+    'CAFTA-DR': None,
+    'CACM': None,
+    'ASEAN': None,
+    'EURO AREA': None,
+    'SOUTH AMERICA': None,
+    'CENTRAL AMERICA': None,
 }
 
 # Census country codes to names mapping (partial - add more as needed)
