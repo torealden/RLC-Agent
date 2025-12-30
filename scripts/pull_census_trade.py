@@ -142,6 +142,7 @@ UNIT_CONVERSIONS = {
 # Used for hulls which go to a specific row in the Soymeal sheets
 COMMODITY_TOTAL_ROWS = {
     'SOYBEAN_HULLS': 294,  # Hulls total row in Soymeal Exports/Imports sheets
+}
 # =============================================================================
 # UNIT CONVERSION FACTORS
 # =============================================================================
