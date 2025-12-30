@@ -133,6 +133,16 @@ COMMODITY_TOTAL_ROWS = {
     'SOYBEAN_HULLS': 294,  # Hulls total row in Soymeal Exports/Imports sheets
 }
 
+# HS code to specific total row mapping (for commodities where different HS codes
+# go to different rows, like crude vs refined oil)
+# Format: commodity -> {hs_code: row_number}
+HS_CODE_TOTAL_ROWS = {
+    'SOYBEAN_OIL': {
+        '150710': 11,  # Crude soybean oil total row
+        '150790': 17,  # Other/refined soybean oil total row
+    },
+}
+
 # Destination to row mapping (same as inspections for consistency)
 # These match the Excel file layout
 DESTINATION_ROWS = {
@@ -302,12 +312,17 @@ def get_api_key() -> Optional[str]:
     return os.getenv('CENSUS_API_KEY')
 
 
+# Track what units Census returns for debugging
+_census_units_seen = set()
+
+
 def fetch_trade_data(
     flow: str,
     hs_code: str,
     year: int,
     month: int,
-    api_key: str = None
+    api_key: str = None,
+    debug: bool = False
 ) -> List[Dict]:
     """
     Fetch trade data from Census API for a specific month
@@ -318,10 +333,13 @@ def fetch_trade_data(
         year: Year
         month: Month (1-12)
         api_key: Census API key (optional but recommended)
+        debug: Print debug info about API response
 
     Returns:
         List of trade records
     """
+    global _census_units_seen
+
     # Build URL
     url = f"{CENSUS_API_BASE}/{flow}/hs"
 
@@ -368,6 +386,12 @@ def fetch_trade_data(
                     if value_usd is None and quantity is None:
                         continue
 
+                    # Track units seen for debugging
+                    unit = record.get(unit_field, '')
+                    if unit and unit not in _census_units_seen:
+                        _census_units_seen.add(unit)
+                        logger.info(f"Census API unit discovered: '{unit}' for HS {hs_code}")
+
                     records.append({
                         'year': year,
                         'month': month,
@@ -378,8 +402,14 @@ def fetch_trade_data(
                         'country_name': clean_country_name(record.get('CTY_NAME', '')),
                         'value_usd': value_usd,
                         'quantity': quantity,
-                        'unit': record.get(unit_field, ''),
+                        'unit': unit,
                     })
+
+                # Debug output for specific HS code/period combinations
+                if debug and records:
+                    total_qty = sum(r.get('quantity', 0) or 0 for r in records)
+                    sample_unit = records[0].get('unit', 'UNKNOWN')
+                    print(f"    DEBUG {flow}/{hs_code} {time_str}: {len(records)} countries, total qty={total_qty:,.0f} {sample_unit}")
 
                 return records
         elif response.status_code == 204:
@@ -690,6 +720,39 @@ def aggregate_monthly_by_destination(
         monthly[key]['quantity'] += r.get('quantity') or 0
         monthly[key]['count'] += 1
         monthly[key]['region'] = get_destination_region(r['country_name'])
+        monthly[key]['marketing_year'] = r.get('marketing_year')
+
+    return dict(monthly)
+
+
+def aggregate_monthly_by_hs_code(
+    records: List[Dict],
+    flow: str = 'exports'
+) -> Dict[Tuple, Dict]:
+    """
+    Aggregate records to monthly totals by HS code (sum across all countries).
+    Used for commodities like soybean oil where crude and refined oil
+    go to separate total rows.
+
+    Returns:
+        Dict mapping (year, month, hs_code) to aggregated data
+    """
+    monthly = defaultdict(lambda: {
+        'value_usd': 0,
+        'quantity': 0,
+        'count': 0,
+        'marketing_year': None
+    })
+
+    for r in records:
+        if r.get('flow') != flow:
+            continue
+
+        hs_code = r.get('hs_code', '')
+        key = (r['year'], r['month'], hs_code)
+        monthly[key]['value_usd'] += r.get('value_usd') or 0
+        monthly[key]['quantity'] += r.get('quantity') or 0
+        monthly[key]['count'] += 1
         monthly[key]['marketing_year'] = r.get('marketing_year')
 
     return dict(monthly)
@@ -1030,7 +1093,8 @@ def update_excel_file(
     excel_path: Path,
     monthly_data: Dict[Tuple, Dict],
     commodity: str,
-    flow: str
+    flow: str,
+    uses_hs_code_rows: bool = False
 ) -> bool:
     """
     Update the Excel file with Census trade data using xlwings.
@@ -1041,8 +1105,11 @@ def update_excel_file(
     Args:
         excel_path: Path to Excel file
         monthly_data: Monthly data - Dict[(year, month, destination), {value_usd, quantity, ...}]
+                      OR Dict[(year, month, hs_code), {...}] if uses_hs_code_rows=True
         commodity: Commodity name (SOYBEANS, SOYBEAN_MEAL, SOYBEAN_OIL)
         flow: 'exports' or 'imports'
+        uses_hs_code_rows: If True, data is aggregated by HS code and written to
+                           HS code-specific total rows (e.g., crude vs refined oil)
 
     Returns:
         True if successful
@@ -1184,9 +1251,13 @@ def update_excel_file(
             sample_dates = list(date_columns.keys())[:5]
             print(f"  Sample date columns: {sample_dates}")
 
-        # Debug: show sample destinations from data
-        sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
-        print(f"  Sample destinations in data: {sample_dests}")
+        # Debug: show sample data keys (destinations or HS codes depending on mode)
+        if uses_hs_code_rows:
+            hs_codes_in_data = list(set(hs for (y, m, hs) in list(monthly_data.keys())[:20]))
+            print(f"  HS codes in data: {hs_codes_in_data}")
+        else:
+            sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
+            print(f"  Sample destinations in data: {sample_dests}")
 
         # Debug: show sample raw quantities from Census (in kg)
         sample_qty = [(k, v.get('quantity')) for k, v in list(monthly_data.items())[:5] if v.get('quantity')]
@@ -1208,12 +1279,47 @@ def update_excel_file(
         # Check if this commodity uses a special total row (e.g., hulls)
         special_row = COMMODITY_TOTAL_ROWS.get(commodity.upper())
 
+        # Check if this commodity uses HS code-specific rows (e.g., soybean oil)
+        hs_code_rows = HS_CODE_TOTAL_ROWS.get(commodity.upper(), {})
+
         updated = 0
         not_found_destinations = set()
         not_found_dates = set()
         matched_destinations = set()
 
-        if special_row:
+        if uses_hs_code_rows and hs_code_rows:
+            # HS code handling: write each HS code's total to its specific row
+            print(f"  Writing HS code totals to rows: {hs_code_rows}")
+
+            for (year, month, hs_code), data in monthly_data.items():
+                # Get row for this HS code
+                row = hs_code_rows.get(hs_code)
+                if not row:
+                    logger.warning(f"No row mapping for HS code {hs_code}")
+                    continue
+
+                # Get column for this date
+                col = date_columns.get((year, month))
+                if not col:
+                    not_found_dates.add((year, month))
+                    continue
+
+                raw_quantity_kg = data.get('quantity') or 0
+                if raw_quantity_kg > 0:
+                    converted_value = raw_quantity_kg * multiplier
+                    ws.range((row, col)).value = round(converted_value, 3)
+                    updated += 1
+
+            # Show summary per HS code
+            for hs_code, row in hs_code_rows.items():
+                hs_data = [(k, v) for k, v in monthly_data.items() if k[2] == hs_code]
+                if hs_data:
+                    total = sum(v.get('quantity', 0) or 0 for _, v in hs_data)
+                    print(f"    HS {hs_code} -> row {row}: {len(hs_data)} months, total {total * multiplier:,.0f} {unit_name}")
+
+            print(f"  Wrote {updated} HS code totals")
+
+        elif special_row:
             # Special handling: aggregate all countries to a single row per month
             print(f"  Writing aggregated totals to row {special_row}")
             monthly_totals = defaultdict(float)
@@ -1333,20 +1439,30 @@ def update_all_excel_sheets(
 
     excel_path = project_root / excel_file
 
+    # Check if this commodity needs HS code separation (e.g., soybean oil)
+    uses_hs_code_rows = commodity.upper() in HS_CODE_TOTAL_ROWS
+
     for flow in ['exports', 'imports']:
         # Filter records for this flow
         flow_records = [r for r in records if r.get('flow') == flow]
         if not flow_records:
             continue
 
-        # Aggregate monthly by destination
-        monthly_data = aggregate_monthly_by_destination(flow_records, flow)
+        # Aggregate differently based on commodity type
+        if uses_hs_code_rows:
+            # For commodities like soybean oil, aggregate by HS code
+            # and write totals to HS code-specific rows
+            monthly_data = aggregate_monthly_by_hs_code(flow_records, flow)
+            print(f"\n  Using HS code aggregation for {commodity}")
+        else:
+            # Normal: aggregate by destination country
+            monthly_data = aggregate_monthly_by_destination(flow_records, flow)
 
         # Update Excel
         sheet_name = COMMODITY_SHEETS.get(commodity.upper(), {}).get(flow, flow)
         print(f"\nUpdating {sheet_name}...")
 
-        if update_excel_file(excel_path, monthly_data, commodity, flow):
+        if update_excel_file(excel_path, monthly_data, commodity, flow, uses_hs_code_rows):
             results[f"{commodity}_{flow}"] = len(monthly_data)
         else:
             results[f"{commodity}_{flow}"] = 0
@@ -1470,6 +1586,134 @@ def run_census_update(
     return results
 
 
+def debug_census_data(commodity: str, year: int, month: int, flow: str = 'exports'):
+    """
+    Debug function to analyze Census API data for a specific month.
+    Helps verify unit conversions and detect double-counting.
+    """
+    api_key = get_api_key()
+
+    hs_codes = HS_CODES.get(commodity.upper(), [])
+    if not hs_codes:
+        print(f"ERROR: Unknown commodity: {commodity}")
+        return
+
+    print(f"\n{'=' * 70}")
+    print(f"DEBUG: Census {flow} data for {COMMODITY_NAMES.get(commodity, commodity)}")
+    print(f"Period: {year}-{month:02d}")
+    print(f"HS Codes: {hs_codes}")
+    print(f"{'=' * 70}")
+
+    all_records = []
+    hs_code_totals = {}
+
+    for hs_code in hs_codes:
+        records = fetch_trade_data(
+            flow=flow,
+            hs_code=hs_code,
+            year=year,
+            month=month,
+            api_key=api_key,
+            debug=True
+        )
+
+        if records:
+            total_qty = sum(r.get('quantity', 0) or 0 for r in records)
+            total_value = sum(r.get('value_usd', 0) or 0 for r in records)
+            sample_unit = records[0].get('unit', 'UNKNOWN')
+
+            hs_code_totals[hs_code] = {
+                'records': len(records),
+                'quantity': total_qty,
+                'value_usd': total_value,
+                'unit': sample_unit,
+            }
+
+            print(f"\nHS Code {hs_code}:")
+            print(f"  Records: {len(records)}")
+            print(f"  Total quantity: {total_qty:,.0f} {sample_unit}")
+            print(f"  Total value: ${total_value:,.0f}")
+
+            # Show top 5 destinations
+            by_country = defaultdict(float)
+            for r in records:
+                by_country[r['country_name']] += r.get('quantity', 0) or 0
+
+            print(f"  Top 5 destinations:")
+            for dest, qty in sorted(by_country.items(), key=lambda x: -x[1])[:5]:
+                print(f"    {dest}: {qty:,.0f} {sample_unit}")
+
+            all_records.extend(records)
+
+    # Check for duplicate countries across HS codes
+    if len(hs_codes) > 1:
+        print(f"\n{'=' * 70}")
+        print("CHECKING FOR OVERLAP BETWEEN HS CODES")
+        print(f"{'=' * 70}")
+
+        country_by_hs = defaultdict(set)
+        country_qty_by_hs = defaultdict(lambda: defaultdict(float))
+
+        for r in all_records:
+            country_by_hs[r['hs_code']].add(r['country_name'])
+            country_qty_by_hs[r['hs_code']][r['country_name']] += r.get('quantity', 0) or 0
+
+        # Find countries that appear in multiple HS codes
+        if len(hs_codes) == 2:
+            hs1, hs2 = hs_codes
+            overlap = country_by_hs[hs1] & country_by_hs[hs2]
+            only_hs1 = country_by_hs[hs1] - country_by_hs[hs2]
+            only_hs2 = country_by_hs[hs2] - country_by_hs[hs1]
+
+            print(f"\nCountries in BOTH {hs1} and {hs2}: {len(overlap)}")
+            if overlap:
+                print(f"  Overlapping countries (first 10): {list(overlap)[:10]}")
+                print(f"\n  Quantities for overlapping countries:")
+                for country in sorted(overlap)[:10]:
+                    qty1 = country_qty_by_hs[hs1][country]
+                    qty2 = country_qty_by_hs[hs2][country]
+                    print(f"    {country}: {hs1}={qty1:,.0f}, {hs2}={qty2:,.0f}")
+
+            print(f"\nCountries only in {hs1}: {len(only_hs1)}")
+            print(f"Countries only in {hs2}: {len(only_hs2)}")
+
+    # Calculate expected conversion
+    print(f"\n{'=' * 70}")
+    print("UNIT CONVERSION ANALYSIS")
+    print(f"{'=' * 70}")
+
+    if not hs_code_totals:
+        print("\nNo data returned from Census API")
+        print("(This may be due to network restrictions or invalid date)")
+        return
+
+    conversion = UNIT_CONVERSIONS.get(commodity.upper())
+    if conversion:
+        unit_name, multiplier = conversion
+        grand_total_raw = sum(d['quantity'] for d in hs_code_totals.values())
+        raw_unit = list(hs_code_totals.values())[0].get('unit', 'UNKNOWN')
+        converted_total = grand_total_raw * multiplier
+
+        print(f"\nRaw Census total: {grand_total_raw:,.0f} {raw_unit}")
+        print(f"Conversion: × {multiplier:.8f} → {unit_name}")
+        print(f"Converted total: {converted_total:,.3f} {unit_name}")
+
+        # For soybean oil, show breakdown by HS code
+        if commodity.upper() == 'SOYBEAN_OIL':
+            print(f"\nSoybean Oil breakdown (for Excel rows P11 and P17):")
+            for hs_code, data in hs_code_totals.items():
+                raw_qty = data['quantity']
+                converted = raw_qty * multiplier
+                if hs_code == '150710':
+                    print(f"  HS 150710 (Crude): {raw_qty:,.0f} kg = {converted:,.3f} {unit_name}")
+                else:
+                    print(f"  HS 150790 (Other): {raw_qty:,.0f} kg = {converted:,.3f} {unit_name}")
+
+    print(f"\n{'=' * 70}")
+    print(f"Census API units seen: {_census_units_seen}")
+    print(f"{'=' * 70}")
+
+
 def main():
     """Command-line entry point"""
     parser = argparse.ArgumentParser(
@@ -1509,7 +1753,24 @@ def main():
         help='Update Excel model files'
     )
 
+    parser.add_argument(
+        '--debug-month',
+        type=str,
+        help='Debug a specific month (format: YYYY-MM). Shows detailed Census API analysis.'
+    )
+
     args = parser.parse_args()
+
+    # If debug-month is specified, run debug analysis instead
+    if args.debug_month:
+        try:
+            year, month = map(int, args.debug_month.split('-'))
+        except ValueError:
+            print("ERROR: --debug-month must be in YYYY-MM format (e.g., 2025-09)")
+            return
+
+        debug_census_data(args.commodity, year, month, args.flow.split(',')[0] if ',' in args.flow else ('exports' if args.flow == 'both' else args.flow))
+        return
 
     print("\n" + "=" * 60)
     print("CENSUS BUREAU TRADE DATA COLLECTOR")
