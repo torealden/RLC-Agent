@@ -171,7 +171,19 @@ MEXICO_SPECIAL_HANDLING = {
 }
 
 # Countries that need special handling due to inspection vs Census differences
+# These countries have their totals placed in special rows OUTSIDE the main body
+# Their "body" rows (below row 290) should be left blank in inspections tabs
 BORDER_COUNTRIES = ['MEXICO', 'CANADA']
+
+# Special row assignments for US Soybean Trade file
+# Only applies to Weekly Export Inspections and Monthly Export Inspections tabs
+SPECIAL_DESTINATION_ROWS = {
+    'SOYBEANS': {
+        'TOTAL': 290,      # Total for all destinations goes here
+        'MEXICO': 300,     # Mexico total goes here (not in body)
+        'CANADA': 308,     # Canada total goes here (not in body)
+    }
+}
 
 
 # =============================================================================
@@ -825,17 +837,19 @@ def update_excel_file(
 
         wb = app.books.open(str(excel_path))
 
-        # Special row handling for Mexico inspections
+        # Special row handling for border countries (Mexico, Canada)
+        # These countries have their totals placed in special rows outside the main body
         special_rows = {}
         if commodity.upper() == 'SOYBEANS':
             special_rows['MEXICO'] = 300  # Inspections row for Mexico
+            special_rows['CANADA'] = 308  # Inspections row for Canada
 
         sheet_names = [s.name for s in wb.sheets]
 
         # Update Weekly sheet
         if WEEKLY_SHEET in sheet_names:
             ws = wb.sheets[WEEKLY_SHEET]
-            updated_count = _update_weekly_sheet_xlwings(ws, weekly_data, special_rows)
+            updated_count = _update_weekly_sheet_xlwings(ws, weekly_data, special_rows, commodity)
             logger.info(f"Updated {WEEKLY_SHEET}: {updated_count} cells updated")
             print(f"Updated {WEEKLY_SHEET}: {updated_count} cells")
         else:
@@ -845,7 +859,7 @@ def update_excel_file(
         # Update Monthly sheet
         if MONTHLY_SHEET in sheet_names:
             ws = wb.sheets[MONTHLY_SHEET]
-            updated_count = _update_monthly_sheet_xlwings(ws, monthly_data, special_rows)
+            updated_count = _update_monthly_sheet_xlwings(ws, monthly_data, special_rows, commodity)
             logger.info(f"Updated {MONTHLY_SHEET}: {updated_count} cells updated")
             print(f"Updated {MONTHLY_SHEET}: {updated_count} cells")
         else:
@@ -874,7 +888,8 @@ def update_excel_file(
 
 
 def _update_weekly_sheet_xlwings(ws, weekly_data: Dict[date, Dict[str, float]],
-                                  special_rows: Dict[str, int] = None) -> int:
+                                  special_rows: Dict[str, int] = None,
+                                  commodity: str = 'SOYBEANS') -> int:
     """
     Update the weekly inspections sheet using xlwings
 
@@ -882,12 +897,19 @@ def _update_weekly_sheet_xlwings(ws, weekly_data: Dict[date, Dict[str, float]],
         ws: xlwings worksheet
         weekly_data: Dict mapping week_date to Dict[destination, thousand_bushels]
         special_rows: Special destination->row mappings
+        commodity: Commodity name for special row lookups
 
     Returns:
         Number of cells updated
     """
     updated = 0
     date_row = 2  # Dates are in row 2
+
+    # Get special row config for this commodity
+    special_config = SPECIAL_DESTINATION_ROWS.get(commodity.upper(), {})
+    total_row = special_config.get('TOTAL', 290)
+    mexico_row = special_config.get('MEXICO', 300)
+    canada_row = special_config.get('CANADA', 308)
 
     # Get used range to find max column
     used_range = ws.used_range
@@ -928,12 +950,33 @@ def _update_weekly_sheet_xlwings(ws, weekly_data: Dict[date, Dict[str, float]],
             logger.warning(f"No column found for date {week_date}")
             continue
 
+        # Calculate and write weekly total to row 290
+        week_total = sum(v for v in dest_values.values() if v and v > 0)
+        if week_total > 0:
+            ws.range((total_row, col)).value = round(week_total, 3)
+            updated += 1
+
         for destination, value in dest_values.items():
             # Normalize destination name
             norm_dest = normalize_destination(destination)
+            dest_upper = norm_dest.upper() if norm_dest else destination.upper()
 
-            # Find row for this destination
-            row = dest_to_row.get(norm_dest.upper())
+            # Special handling for border countries (Mexico, Canada)
+            # Write to their special rows, NOT to body rows
+            if 'MEXICO' in dest_upper:
+                if value and value > 0:
+                    ws.range((mexico_row, col)).value = round(value, 3)
+                    updated += 1
+                continue  # Don't write to body row
+
+            if 'CANADA' in dest_upper:
+                if value and value > 0:
+                    ws.range((canada_row, col)).value = round(value, 3)
+                    updated += 1
+                continue  # Don't write to body row
+
+            # Find row for this destination (regular countries)
+            row = dest_to_row.get(dest_upper)
             if not row:
                 # Try the original name
                 row = dest_to_row.get(destination.upper())
@@ -953,7 +996,8 @@ def _update_weekly_sheet_xlwings(ws, weekly_data: Dict[date, Dict[str, float]],
 
 
 def _update_monthly_sheet_xlwings(ws, monthly_data: Dict[Tuple[date, str], float],
-                                   special_rows: Dict[str, int] = None) -> int:
+                                   special_rows: Dict[str, int] = None,
+                                   commodity: str = 'SOYBEANS') -> int:
     """
     Update the monthly inspections sheet using xlwings
 
@@ -961,12 +1005,19 @@ def _update_monthly_sheet_xlwings(ws, monthly_data: Dict[Tuple[date, str], float
         ws: xlwings worksheet
         monthly_data: Dict mapping (month_date, destination) to thousand_bushels
         special_rows: Special destination->row mappings
+        commodity: Commodity name for special row lookups
 
     Returns:
         Number of cells updated
     """
     updated = 0
     date_row = 2  # Dates are in row 2
+
+    # Get special row config for this commodity
+    special_config = SPECIAL_DESTINATION_ROWS.get(commodity.upper(), {})
+    total_row = special_config.get('TOTAL', 290)
+    mexico_row = special_config.get('MEXICO', 300)
+    canada_row = special_config.get('CANADA', 308)
 
     # Get used range to find max column
     used_range = ws.used_range
@@ -1004,6 +1055,22 @@ def _update_monthly_sheet_xlwings(ws, monthly_data: Dict[Tuple[date, str], float
             logger.info(f"Added new month column {next_col} for {new_month}")
             next_col += 1
 
+    # First, calculate monthly totals for row 290
+    monthly_totals = {}
+    for (month_date, destination), value in monthly_data.items():
+        month_first = month_date.replace(day=1) if isinstance(month_date, date) else month_date
+        if month_first not in monthly_totals:
+            monthly_totals[month_first] = 0
+        if value and value > 0:
+            monthly_totals[month_first] += value
+
+    # Write monthly totals to row 290
+    for month_first, total in monthly_totals.items():
+        col = date_to_col.get(month_first)
+        if col and total > 0:
+            ws.range((total_row, col)).value = round(total, 3)
+            updated += 1
+
     # Update cells with data
     for (month_date, destination), value in monthly_data.items():
         # Normalize month date
@@ -1016,9 +1083,24 @@ def _update_monthly_sheet_xlwings(ws, monthly_data: Dict[Tuple[date, str], float
 
         # Normalize destination name
         norm_dest = normalize_destination(destination)
+        dest_upper = norm_dest.upper() if norm_dest else destination.upper()
 
-        # Find row for this destination
-        row = dest_to_row.get(norm_dest.upper())
+        # Special handling for border countries (Mexico, Canada)
+        # Write to their special rows, NOT to body rows
+        if 'MEXICO' in dest_upper:
+            if value and value > 0:
+                ws.range((mexico_row, col)).value = round(value, 3)
+                updated += 1
+            continue  # Don't write to body row
+
+        if 'CANADA' in dest_upper:
+            if value and value > 0:
+                ws.range((canada_row, col)).value = round(value, 3)
+                updated += 1
+            continue  # Don't write to body row
+
+        # Find row for this destination (regular countries)
+        row = dest_to_row.get(dest_upper)
         if not row:
             row = dest_to_row.get(destination.upper())
 
