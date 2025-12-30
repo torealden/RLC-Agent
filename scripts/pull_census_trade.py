@@ -14,6 +14,9 @@ Commodities tracked:
 Usage:
     python scripts/pull_census_trade.py --commodity soybeans --years 5
     python scripts/pull_census_trade.py --commodity all --save-to-db --update-excel
+
+    # Test with Models folder outside Dropbox (on Desktop):
+    python scripts/pull_census_trade.py --commodity SOYBEANS --years 1 --update-excel --models-path "C:\\Users\\torem\\OneDrive\\Desktop\\Models\\Oilseeds"
 """
 
 import argparse
@@ -1861,7 +1864,7 @@ def update_excel_file(
 def update_all_excel_sheets(
     records: List[Dict],
     commodity: str,
-    project_root: Path
+    models_base: Path
 ) -> Dict[str, int]:
     """
     Update all relevant Excel sheets for a commodity (both imports and exports)
@@ -1869,7 +1872,7 @@ def update_all_excel_sheets(
     Args:
         records: List of trade records
         commodity: Commodity name
-        project_root: Project root path
+        models_base: Base path to Models folder (or custom path like Desktop/Models/Oilseeds)
 
     Returns:
         Dict with update counts per sheet
@@ -1881,7 +1884,25 @@ def update_all_excel_sheets(
         print(f"No Excel file configured for {commodity}")
         return results
 
-    excel_path = project_root / excel_file
+    # Build the Excel path
+    # EXCEL_FILES entries look like "Models/Oilseeds/US Soybean Trade.xlsx"
+    # If models_base already ends with "Oilseeds" or similar, adjust path construction
+    models_base = Path(models_base)
+
+    # Check if this is a custom path that already contains the subfolder
+    # e.g., "C:\Users\torem\OneDrive\Desktop\Models\Oilseeds"
+    if models_base.name == 'Oilseeds' or models_base.name == 'Grains':
+        # Custom path already includes the subfolder, just need filename
+        excel_filename = Path(excel_file).name  # "US Soybean Trade.xlsx"
+        excel_path = models_base / excel_filename
+    elif 'Models' in str(models_base):
+        # Custom path includes "Models" - extract relative path from EXCEL_FILES
+        # EXCEL_FILES = "Models/Oilseeds/file.xlsx" -> "Oilseeds/file.xlsx"
+        relative_from_models = '/'.join(excel_file.split('/')[1:])  # Remove "Models/"
+        excel_path = models_base / relative_from_models
+    else:
+        # Standard case: models_base is the project root, use full relative path
+        excel_path = models_base / excel_file
 
     for flow in ['exports', 'imports']:
         # Filter records for this flow
@@ -1913,7 +1934,8 @@ def run_census_update(
     years: int = 5,
     flow: str = 'both',
     save_to_db: bool = False,
-    update_excel: bool = False
+    update_excel: bool = False,
+    models_path: str = None
 ) -> Dict:
     """
     Run the Census trade data update workflow
@@ -1924,6 +1946,7 @@ def run_census_update(
         flow: 'exports', 'imports', or 'both'
         save_to_db: Save to database
         update_excel: Update Excel files
+        models_path: Custom path to Models folder (to test outside Dropbox/OneDrive)
 
     Returns:
         Results summary
@@ -2008,11 +2031,21 @@ def run_census_update(
         print("UPDATING EXCEL FILES")
         print("=" * 60)
 
+        # Determine the base path for Models folder
+        if models_path:
+            # Use custom models path provided by user
+            models_base = Path(models_path)
+            print(f"Using custom Models path: {models_base}")
+        else:
+            # Default: project_root/Models
+            models_base = project_root / "Models"
+            print(f"Using default Models path: {models_base}")
+
         for comm in commodities:
             # Get records for this commodity
             comm_records = [r for r in all_records if r.get('commodity') == comm]
             if comm_records:
-                excel_results = update_all_excel_sheets(comm_records, comm, project_root)
+                excel_results = update_all_excel_sheets(comm_records, comm, models_base)
                 for sheet, count in excel_results.items():
                     print(f"  {sheet}: {count} month/destination combinations")
 
@@ -2065,6 +2098,13 @@ def main():
         help='Test Census API connection before fetching data'
     )
 
+    parser.add_argument(
+        '--models-path',
+        type=str,
+        default=None,
+        help='Custom path to Models folder (e.g., C:\\Users\\torem\\Desktop\\Models). Use this to test outside Dropbox.'
+    )
+
     args = parser.parse_args()
 
     print("\n" + "=" * 60)
@@ -2089,7 +2129,8 @@ def main():
         years=args.years,
         flow=args.flow,
         save_to_db=args.save_to_db,
-        update_excel=args.update_excel
+        update_excel=args.update_excel,
+        models_path=args.models_path
     )
 
     print("\n" + "=" * 60)
