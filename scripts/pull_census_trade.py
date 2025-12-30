@@ -569,6 +569,22 @@ def fetch_trade_data(
                                     unit = record.get('UNIT_QY2', record.get('UNIT_QY1', ''))
                                 break
 
+                        # NORMALIZE QUANTITY TO KG
+                        # Census reports different units for different HS codes:
+                        # - 150710 (crude SBO): MT (metric tons)
+                        # - 150790 (refined SBO): KG (kilograms)
+                        # Normalize everything to KG for consistent downstream processing
+                        if quantity is not None and unit:
+                            unit_upper = unit.upper().strip()
+                            if unit_upper in ('MT', 'T', 'METRIC TON', 'METRIC TONS'):
+                                # Convert MT to KG (multiply by 1000)
+                                quantity = quantity * 1000
+                                logger.debug(f"Converted {quantity/1000} MT to {quantity} KG for HS {hs_code}")
+                            elif unit_upper in ('LB', 'LBS', 'POUND', 'POUNDS'):
+                                # Convert LBS to KG (divide by 2.20462)
+                                quantity = quantity / 2.20462
+                            # KG stays as-is
+
                         # If no quantity found but we have value, skip this record's quantity
                         # (we'll still save it to DB with quantity=None)
                         if value_usd is None and quantity is None:
