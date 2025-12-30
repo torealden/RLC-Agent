@@ -4,7 +4,7 @@ Pull Census Bureau Trade Data
 
 Downloads monthly import/export data from US Census Bureau API and:
 1. Saves to PostgreSQL database
-2. Updates Excel model files
+2. Updates Excel model files (using win32com to preserve external links)
 
 Commodities tracked:
 - Soybeans (HS 1201)
@@ -14,6 +14,9 @@ Commodities tracked:
 Usage:
     python scripts/pull_census_trade.py --commodity soybeans --years 5
     python scripts/pull_census_trade.py --commodity all --save-to-db --update-excel
+
+    # Test with Models folder outside Dropbox (on Desktop):
+    python scripts/pull_census_trade.py --commodity SOYBEANS --years 1 --update-excel --models-path "C:\\Users\\torem\\OneDrive\\Desktop\\Models\\Oilseeds"
 """
 
 import argparse
@@ -33,6 +36,11 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Load .env from project root (not current working directory)
 load_dotenv(PROJECT_ROOT / '.env')
+
+# Also load from api Manager/.env if it exists (for database credentials)
+api_manager_env = PROJECT_ROOT / 'api Manager' / '.env'
+if api_manager_env.exists():
+    load_dotenv(api_manager_env)
 
 try:
     import requests
@@ -59,7 +67,7 @@ CENSUS_API_BASE = "https://api.census.gov/data/timeseries/intltrade"
 # Source: Models/HS codes reference sheet
 HS_CODES = {
     'SOYBEANS': ['120110', '120190'],           # 1201.10 - Seed, 1201.90 - Other
-    'SOYBEAN_MEAL': ['230400', '230499'],       # 2304.00 and 2304.99 - Oilcake and meal
+    'SOYBEAN_MEAL': ['120810', '230400', '230499'],  # 1208.10 - Soy flour/meal, 2304.00/99 - Oilcake
     'SOYBEAN_HULLS': ['230250'],                # 2302.50 - Soybean meal hulls (separate)
     'SOYBEAN_OIL': ['150710', '150790'],        # 1507.10 - Crude, 1507.90 - Other
 }
@@ -67,7 +75,7 @@ HS_CODES = {
 # Alternative 4-digit codes for fallback (GTT codes)
 HS_CODES_4DIGIT = {
     'SOYBEANS': ['1201'],
-    'SOYBEAN_MEAL': ['2304'],
+    'SOYBEAN_MEAL': ['1208', '2304'],  # Both soy flour and oilcake
     'SOYBEAN_HULLS': ['2302'],
     'SOYBEAN_OIL': ['1507'],
 }
@@ -131,6 +139,74 @@ UNIT_CONVERSIONS = {
 # Used for hulls which go to a specific row in the Soymeal sheets
 COMMODITY_TOTAL_ROWS = {
     'SOYBEAN_HULLS': 294,  # Hulls total row in Soymeal Exports/Imports sheets
+# =============================================================================
+# UNIT CONVERSION FACTORS
+# =============================================================================
+# US units by commodity type:
+#   - Grains (soybeans, corn, wheat): Bushels
+#   - Oilseed products (meal, hulls): Short tons
+#   - Oils/fats/greases: Pounds
+# International: Metric tons for everything
+
+# Conversion constants
+KG_PER_MT = 1000.0              # 1 metric ton = 1000 kg
+LBS_PER_MT = 2204.62            # 1 metric ton = 2204.62 lbs
+LBS_PER_SHORT_TON = 2000.0      # 1 short ton = 2000 lbs
+SHORT_TONS_PER_MT = 1.10231     # 1 metric ton = 1.10231 short tons
+LBS_PER_BUSHEL_SOYBEANS = 60.0  # 1 bushel soybeans = 60 lbs
+BUSHELS_PER_MT_SOYBEANS = 36.7437  # 1 MT = 36.7437 bushels (60 lbs/bu)
+
+# Unit configuration per commodity for US trade files
+# Census data comes in KG - these define how to convert for each commodity
+# NOTE: Trade sheets use WHOLE NUMBERS (not thousands) - display may show "1,000 short tons" as unit label
+US_UNIT_CONFIG = {
+    'SOYBEANS': {
+        'unit': 'bushels',
+        'display_unit': '1000 bushels',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * BUSHELS_PER_MT_SOYBEANS / 1000,  # KG -> 1000 bu
+    },
+    'SOYBEAN_MEAL': {
+        'unit': 'short_tons',
+        'display_unit': 'short tons',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT,  # KG -> whole short tons
+    },
+    'SOYBEAN_HULLS': {
+        'unit': 'short_tons',
+        'display_unit': 'short tons',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * SHORT_TONS_PER_MT,  # KG -> whole short tons
+    },
+    'SOYBEAN_OIL': {
+        'unit': 'pounds',
+        'display_unit': '1000 lbs',
+        # Census reports quantity in KG for soybean oil
+        # Convert: KG -> lbs -> 1000 lbs
+        # 1 KG = 2.20462 lbs, divide by 1000 for "thousand lbs"
+        'kg_to_display': lambda kg: (kg * LBS_PER_MT / KG_PER_MT) / 1000,  # KG -> 1000 lbs
+    },
+}
+
+# International trade files use metric tons
+INTL_UNIT_CONFIG = {
+    'unit': 'metric_tons',
+    'display_unit': '1000 tonnes',
+    'kg_to_display': lambda kg: kg / 1000000,  # KG -> 1000 MT (million kg)
+}
+
+# Map Excel files to unit systems
+EXCEL_UNIT_SYSTEM = {
+    'US Soybean Trade.xlsx': 'US',      # Uses commodity-specific US units
+    'World Rapeseed Trade.xlsx': 'INTL',  # Uses metric tons
+    'World Soybean Trade.xlsx': 'INTL',   # Uses metric tons
+}
+
+# Fallback price estimates for quantity estimation when Census doesn't provide quantity
+# These are approximate average export prices in USD per metric ton
+# Used only when quantity data is missing
+FALLBACK_PRICES_USD_PER_MT = {
+    'SOYBEANS': 450,       # ~$12/bu average
+    'SOYBEAN_MEAL': 400,   # ~$360-440/short ton
+    'SOYBEAN_HULLS': 200,  # Lower value product
+    'SOYBEAN_OIL': 1000,   # ~$0.45/lb average
 }
 
 # Destination to row mapping (same as inspections for consistency)
@@ -260,6 +336,49 @@ REGION_TOTAL_ROWS = {
     'WORLD_TOTAL': 290,
 }
 
+# Rows that contain SUM formulas - these should NOT be cleared or overwritten
+# These are regional totals that sum the country rows below them
+SUM_FORMULA_ROWS = {
+    4,    # Region total (Asia/Oceania or EU depending on sheet)
+    37,   # Europe / EU-28 total
+    59,   # Middle East & Africa total
+    74,   # Western Hemisphere total
+    164,  # FSU (Former Soviet Union) total
+    231,  # Additional region total
+    289,  # World Total SUM formula (preserve this!)
+    # Row 290 is external link data, NOT a sum - so it can be cleared/written
+    # Rows 291+ are outside clearing range (5-290) but listing for documentation:
+    # 293 = Meal total (formula)
+    # 294 = Hull total (written by SOYBEAN_HULLS)
+    # 295 = Grand total = 293 + 294 (formula)
+}
+
+# Map Census aggregate/total names to Excel row numbers
+# Census returns aggregates like "TOTAL FOR ALL COUNTRIES", "ASIA", "EUROPE", etc.
+# Set to None for aggregates that should be SKIPPED (calculated by formulas in Excel)
+CENSUS_AGGREGATE_ROWS = {
+    'TOTAL FOR ALL COUNTRIES': 290,  # Row 290 gets Census total (external link data)
+    # Skip regional aggregates - they have SUM formulas in Excel:
+    'ASIA': None,          # Skip - row 4 has formula
+    'EUROPE': None,        # Skip - row 37 has formula
+    'AFRICA': None,        # Skip - row 59 has formula
+    'NORTH AMERICA': None, # Skip - row 74 has formula
+    # Additional aggregates that Census returns - skip these as they're calculated in Excel:
+    'OECD': None,
+    'APEC': None,
+    'NATO': None,
+    'LAFTA': None,
+    'PACIFIC RIM COUNTRIES': None,
+    'TWENTY LATIN AMERICAN REPUBLICS': None,
+    'USMCA (NAFTA)': None,
+    'CAFTA-DR': None,
+    'CACM': None,
+    'ASEAN': None,
+    'EURO AREA': None,
+    'SOUTH AMERICA': None,
+    'CENTRAL AMERICA': None,
+}
+
 # Census country codes to names mapping (partial - add more as needed)
 CENSUS_COUNTRY_CODES = {
     '5700': 'CHINA',
@@ -302,12 +421,79 @@ def get_api_key() -> Optional[str]:
     return os.getenv('CENSUS_API_KEY')
 
 
+def test_census_api(api_key: str = None) -> bool:
+    """
+    Test the Census API connection with a simple request.
+
+    Returns True if the API is working, False otherwise.
+    Prints diagnostic information.
+    """
+    print("\n--- Census API Connection Test ---")
+
+    # Test with a known good query: Soybeans exports for a recent complete month
+    test_url = f"{CENSUS_API_BASE}/exports/hs"
+    test_params = {
+        'get': 'ALL_VAL_MO,CTY_NAME',
+        'E_COMMODITY': '120190',
+        'time': '2024-01',  # Use a known complete month
+    }
+
+    if api_key:
+        test_params['key'] = api_key
+        print(f"  Using API key: {api_key[:8]}...")
+    else:
+        print("  No API key (using public access)")
+
+    print(f"  Test URL: {test_url}")
+    print(f"  Test params: {test_params}")
+
+    try:
+        response = requests.get(test_url, params=test_params, timeout=30)
+        print(f"  Response status: {response.status_code}")
+        print(f"  Response headers: {dict(response.headers)}")
+
+        if response.status_code == 200:
+            # Check content type
+            content_type = response.headers.get('Content-Type', '')
+            print(f"  Content-Type: {content_type}")
+
+            # Show first 500 chars of response
+            content_preview = response.text[:500] if response.text else "(empty)"
+            print(f"  Response preview: {content_preview}")
+
+            if 'json' in content_type.lower() or response.text.strip().startswith('['):
+                try:
+                    data = response.json()
+                    print(f"  JSON parsed successfully: {len(data)} rows")
+                    if len(data) > 1:
+                        print(f"  Sample data: {data[1][:3] if len(data[1]) > 3 else data[1]}")
+                    print("  API TEST: SUCCESS")
+                    return True
+                except Exception as e:
+                    print(f"  JSON parse error: {e}")
+                    print("  API TEST: FAILED (invalid JSON)")
+                    return False
+            else:
+                print("  API TEST: FAILED (not JSON response)")
+                return False
+        else:
+            print(f"  Response text: {response.text[:500]}")
+            print(f"  API TEST: FAILED (status {response.status_code})")
+            return False
+
+    except Exception as e:
+        print(f"  Request error: {e}")
+        print("  API TEST: FAILED (connection error)")
+        return False
+
+
 def fetch_trade_data(
     flow: str,
     hs_code: str,
     year: int,
     month: int,
-    api_key: str = None
+    api_key: str = None,
+    max_retries: int = 3
 ) -> List[Dict]:
     """
     Fetch trade data from Census API for a specific month
@@ -318,31 +504,39 @@ def fetch_trade_data(
         year: Year
         month: Month (1-12)
         api_key: Census API key (optional but recommended)
+        max_retries: Maximum number of retry attempts
 
     Returns:
         List of trade records
     """
+    import time as time_module
+    import json
+
     # Build URL
     url = f"{CENSUS_API_BASE}/{flow}/hs"
 
     # Field names differ between imports and exports
     # See: https://api.census.gov/data/timeseries/intltrade/exports/hs/variables.html
     # See: https://api.census.gov/data/timeseries/intltrade/imports/hs/variables.html
+    # Request MULTIPLE quantity fields since some may be empty
     if flow == 'imports':
         commodity_field = 'I_COMMODITY'
         value_field = 'GEN_VAL_MO'
-        qty_field = 'GEN_QY1_MO'
+        # Try multiple quantity fields for imports
+        qty_fields = ['GEN_QY1_MO', 'CON_QY1_MO']
         unit_field = 'UNIT_QY1'
     else:
         commodity_field = 'E_COMMODITY'
         value_field = 'ALL_VAL_MO'
-        qty_field = 'QTY_1_MO'  # Note: exports uses underscore format QTY_1_MO, not QY1_MO
+        # Try both quantity fields for exports - only QTY_1_MO and QTY_2_MO are valid
+        qty_fields = ['QTY_1_MO', 'QTY_2_MO']
         unit_field = 'UNIT_QY1'
 
-    # Build params
+    # Build params - request all quantity fields
     time_str = f"{year}-{month:02d}"
+    get_fields = f'{value_field},{",".join(qty_fields)},{unit_field},UNIT_QY2,CTY_CODE,CTY_NAME'
     params = {
-        'get': f'{value_field},{qty_field},{unit_field},CTY_CODE,CTY_NAME',
+        'get': get_fields,
         commodity_field: hs_code,
         'time': time_str,
     }
@@ -350,53 +544,133 @@ def fetch_trade_data(
     if api_key:
         params['key'] = api_key
 
-    try:
-        response = requests.get(url, params=params, timeout=30)
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, params=params, timeout=30)
 
-        if response.status_code == 200:
-            data = response.json()
-            if data and len(data) > 1:
-                headers = data[0]
-                records = []
-                for row in data[1:]:
-                    record = dict(zip(headers, row))
+            if response.status_code == 200:
+                # Check if response is empty or not JSON
+                if not response.text or response.text.strip() == '':
+                    logger.warning(f"Empty response for {flow}/{hs_code} {time_str}")
+                    return []
 
-                    # Parse values
-                    value_usd = parse_number(record.get(value_field))
-                    quantity = parse_number(record.get(qty_field))
+                try:
+                    data = response.json()
+                except json.JSONDecodeError as e:
+                    # Log the actual response content for debugging
+                    content_preview = response.text[:200] if response.text else "(empty)"
+                    logger.error(f"JSON decode error for {flow}/{hs_code} {time_str}: {e}")
+                    logger.debug(f"Response content: {content_preview}")
 
-                    if value_usd is None and quantity is None:
+                    # Retry on JSON errors (might be transient)
+                    if attempt < max_retries - 1:
+                        wait_time = 2 ** attempt  # Exponential backoff: 1, 2, 4 seconds
+                        logger.info(f"Retrying in {wait_time}s...")
+                        time_module.sleep(wait_time)
                         continue
+                    return []
 
-                    records.append({
-                        'year': year,
-                        'month': month,
-                        'date': date(year, month, 1),
-                        'flow': flow,
-                        'hs_code': hs_code,
-                        'country_code': record.get('CTY_CODE', ''),
-                        'country_name': clean_country_name(record.get('CTY_NAME', '')),
-                        'value_usd': value_usd,
-                        'quantity': quantity,
-                        'unit': record.get(unit_field, ''),
-                    })
+                if data and len(data) > 1:
+                    headers = data[0]
+                    records = []
+                    for row in data[1:]:
+                        record = dict(zip(headers, row))
 
-                return records
-        elif response.status_code == 204:
-            # No content - no data for this period
-            logger.warning(f"API returned 204 for {flow}/{hs_code} {time_str}")
-        elif response.status_code == 400:
-            # Bad request - log the actual error response
-            try:
-                error_text = response.text[:200]
+                        # Parse values
+                        value_usd = parse_number(record.get(value_field))
+
+                        # Try each quantity field until we find one with data
+                        quantity = None
+                        unit = None
+                        for qty_field in qty_fields:
+                            q = parse_number(record.get(qty_field))
+                            if q is not None and q > 0:
+                                quantity = q
+                                # Get corresponding unit
+                                if 'QY1' in qty_field or qty_field == qty_fields[0]:
+                                    unit = record.get('UNIT_QY1', '')
+                                else:
+                                    unit = record.get('UNIT_QY2', record.get('UNIT_QY1', ''))
+                                break
+
+                        # NORMALIZE QUANTITY TO KG
+                        # Census reports different units for different HS codes:
+                        # - 150710 (crude SBO): MT (metric tons)
+                        # - 150790 (refined SBO): KG (kilograms)
+                        # Normalize everything to KG for consistent downstream processing
+                        if quantity is not None and unit:
+                            unit_upper = unit.upper().strip()
+                            if unit_upper in ('MT', 'T', 'METRIC TON', 'METRIC TONS'):
+                                # Convert MT to KG (multiply by 1000)
+                                quantity = quantity * 1000
+                                logger.debug(f"Converted {quantity/1000} MT to {quantity} KG for HS {hs_code}")
+                            elif unit_upper in ('LB', 'LBS', 'POUND', 'POUNDS'):
+                                # Convert LBS to KG (divide by 2.20462)
+                                quantity = quantity / 2.20462
+                            # KG stays as-is
+
+                        # If no quantity found but we have value, skip this record's quantity
+                        # (we'll still save it to DB with quantity=None)
+                        if value_usd is None and quantity is None:
+                            continue
+
+                        records.append({
+                            'year': year,
+                            'month': month,
+                            'date': date(year, month, 1),
+                            'flow': flow,
+                            'hs_code': hs_code,
+                            'country_code': record.get('CTY_CODE', ''),
+                            'country_name': clean_country_name(record.get('CTY_NAME', '')),
+                            'value_usd': value_usd,
+                            'quantity': quantity,
+                            'unit': unit or '',
+                        })
+
+                    return records
+                else:
+                    # Valid JSON but no data
+                    return []
+
+            elif response.status_code == 204:
+                # No content - no data for this period (normal for recent months)
+                logger.warning(f"API returned 204 for {flow}/{hs_code} {time_str}")
+                return []
+
+            elif response.status_code == 400:
+                # Bad request - log the actual error response
+                error_text = response.text[:300] if response.text else "(empty)"
                 logger.warning(f"API returned 400 for {flow}/{hs_code} {time_str}: {error_text}")
-            except:
-                logger.warning(f"API returned 400 for {flow}/{hs_code} {time_str}")
-        else:
-            logger.warning(f"API returned {response.status_code} for {flow}/{hs_code} {time_str}")
+                return []
 
-    except requests.RequestException as e:
-        logger.error(f"Request failed for {flow}/{hs_code} {time_str}: {e}")
+            elif response.status_code in (429, 500, 502, 503, 504):
+                # Rate limit or server error - retry with backoff
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** (attempt + 1)  # 2, 4, 8 seconds
+                    logger.warning(f"API returned {response.status_code} for {flow}/{hs_code} {time_str}, retrying in {wait_time}s...")
+                    time_module.sleep(wait_time)
+                    continue
+                else:
+                    logger.error(f"API returned {response.status_code} for {flow}/{hs_code} {time_str} after {max_retries} attempts")
+                    return []
+            else:
+                logger.warning(f"API returned {response.status_code} for {flow}/{hs_code} {time_str}")
+                return []
+
+        except requests.exceptions.ConnectionError as e:
+            # Connection reset, timeout, etc - retry
+            if attempt < max_retries - 1:
+                wait_time = 2 ** (attempt + 1)
+                logger.warning(f"Connection error for {flow}/{hs_code} {time_str}: {e}, retrying in {wait_time}s...")
+                time_module.sleep(wait_time)
+                continue
+            else:
+                logger.error(f"Connection error for {flow}/{hs_code} {time_str} after {max_retries} attempts: {e}")
+                return []
+
+        except requests.RequestException as e:
+            logger.error(f"Request failed for {flow}/{hs_code} {time_str}: {e}")
+            return []
 
     return []
 
@@ -526,6 +800,34 @@ def parse_number(value: Any) -> Optional[float]:
         return float(str(value).replace(',', ''))
     except (ValueError, TypeError):
         return None
+
+
+def estimate_quantity_from_value(value_usd: float, commodity: str) -> Optional[float]:
+    """
+    Estimate quantity (in kg) from USD value using fallback prices.
+
+    Used when Census API doesn't return quantity data.
+    Returns quantity in KG to match Census quantity format.
+
+    Args:
+        value_usd: Trade value in USD
+        commodity: Commodity name (SOYBEANS, SOYBEAN_MEAL, etc.)
+
+    Returns:
+        Estimated quantity in KG, or None if can't estimate
+    """
+    if value_usd is None or value_usd <= 0:
+        return None
+
+    price_per_mt = FALLBACK_PRICES_USD_PER_MT.get(commodity.upper())
+    if not price_per_mt:
+        return None
+
+    # Calculate quantity in MT, then convert to KG
+    quantity_mt = value_usd / price_per_mt
+    quantity_kg = quantity_mt * 1000
+
+    return quantity_kg
 
 
 def clean_country_name(name: str) -> str:
@@ -729,6 +1031,42 @@ def aggregate_by_marketing_year(
 DEFAULT_DB_PATH = Path(__file__).parent.parent / 'data' / 'census_trade.db'
 
 
+def get_database_url() -> str:
+    """
+    Get database connection URL from environment variables.
+
+    Priority:
+    1. DATABASE_URL environment variable (if set)
+    2. Construct from individual DB_* variables (DB_HOST, DB_NAME, etc.)
+    3. Fall back to SQLite (last resort)
+
+    Returns:
+        Database connection string
+    """
+    # Check for explicit DATABASE_URL first
+    database_url = os.getenv('DATABASE_URL')
+    if database_url:
+        return database_url
+
+    # Try to construct from individual variables
+    db_type = os.getenv('DB_TYPE', 'postgresql')
+    db_host = os.getenv('DB_HOST', 'localhost')
+    db_port = os.getenv('DB_PORT', '5432')
+    db_name = os.getenv('DB_NAME', 'rlc_commodities')
+    db_user = os.getenv('DB_USER', 'postgres')
+    db_password = os.getenv('DB_PASSWORD', '')
+
+    if db_type == 'postgresql' and db_host and db_name and db_user:
+        # Construct PostgreSQL URL
+        if db_password:
+            return f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+        else:
+            return f"postgresql://{db_user}@{db_host}:{db_port}/{db_name}"
+
+    # Fall back to SQLite as last resort
+    return f'sqlite:///{DEFAULT_DB_PATH}'
+
+
 def save_to_database(records: List[Dict], connection_string: str = None) -> int:
     """
     Save trade records to database
@@ -740,14 +1078,21 @@ def save_to_database(records: List[Dict], connection_string: str = None) -> int:
     Returns:
         Number of records saved
     """
-    connection_string = connection_string or os.getenv('DATABASE_URL')
+    connection_string = connection_string or get_database_url()
 
-    if not connection_string:
-        connection_string = f'sqlite:///{DEFAULT_DB_PATH}'
-        print(f"\nNo DATABASE_URL set - using SQLite: {DEFAULT_DB_PATH}")
-        logger.info(f"Using default SQLite database: {DEFAULT_DB_PATH}")
+    if connection_string.startswith('sqlite'):
+        print(f"\nUsing SQLite database: {connection_string.replace('sqlite:///', '')}")
+        logger.info(f"Using SQLite database: {connection_string}")
     else:
-        print(f"\nSaving {len(records)} records to database...")
+        # Mask password in log output
+        display_url = connection_string
+        if '@' in connection_string and ':' in connection_string.split('@')[0]:
+            parts = connection_string.split('@')
+            user_pass = parts[0].split('://')[-1]
+            if ':' in user_pass:
+                user = user_pass.split(':')[0]
+                display_url = f"postgresql://{user}:****@{parts[1]}"
+        print(f"\nSaving {len(records)} records to PostgreSQL: {display_url}")
 
     try:
         if connection_string.startswith('postgresql'):
@@ -1023,8 +1368,147 @@ def _save_to_sqlite(records: List[Dict], connection_string: str) -> int:
 
 
 # =============================================================================
-# EXCEL UPDATE FUNCTIONS (using xlwings to preserve external links)
+# EXCEL UPDATE FUNCTIONS (using win32com to preserve external links)
 # =============================================================================
+
+def parse_excel_date_header(cell_value, header_row: int = 2) -> Optional[Tuple[int, int]]:
+    """
+    Parse a date from an Excel header cell.
+
+    Handles various formats:
+    - datetime objects
+    - Excel serial date numbers
+    - String formats like "Nov-35", "Dec-35" (where 35 = 2035)
+    - Skip marketing year formats like "93/94", "94/95"
+
+    Args:
+        cell_value: The cell value to parse
+        header_row: Which row this is from (for context)
+
+    Returns:
+        Tuple of (year, month) or None if not a valid monthly date
+    """
+    if cell_value is None:
+        return None
+
+    # Handle datetime objects
+    # Excel may interpret "Nov-35" as November 1935, but we want 2035
+    if isinstance(cell_value, datetime):
+        year = cell_value.year
+        # Fix 2-digit year interpretation: years 1920-1970 should be 2020-2070
+        if 1920 <= year < 1970:
+            year += 100  # 1935 -> 2035
+        return (year, cell_value.month)
+
+    if isinstance(cell_value, date):
+        year = cell_value.year
+        # Fix 2-digit year interpretation: years 1920-1970 should be 2020-2070
+        if 1920 <= year < 1970:
+            year += 100  # 1935 -> 2035
+        return (year, cell_value.month)
+
+    # Handle Excel serial date numbers
+    if isinstance(cell_value, (int, float)) and cell_value > 1000:
+        # Excel serial dates are > 1000 for dates after ~1902
+        try:
+            excel_epoch = datetime(1899, 12, 30)
+            dt = excel_epoch + timedelta(days=int(cell_value))
+            year = dt.year
+            # Fix 2-digit year interpretation if needed
+            if 1920 <= year < 1970:
+                year += 100
+            return (year, dt.month)
+        except:
+            pass
+
+    # Handle string formats
+    if isinstance(cell_value, str):
+        cell_str = cell_value.strip()
+
+        # Skip marketing year formats like "93/94", "94/95", "00/01"
+        if '/' in cell_str and len(cell_str) <= 7:
+            parts = cell_str.split('/')
+            if len(parts) == 2 and all(p.isdigit() and len(p) <= 2 for p in parts):
+                # This is a marketing year column, skip it
+                return None
+
+        # Parse monthly formats like "Nov-35", "Dec-35", "Jan-36"
+        # These use 2-digit years where 35 = 2035, not 1935
+        for fmt in ['%b-%y', '%b %y', '%B-%y', '%B %y']:
+            try:
+                dt = datetime.strptime(cell_str, fmt)
+                year = dt.year
+                # Fix century: years 00-50 are 2000-2050, 51-99 are 1951-1999
+                if year < 100:
+                    year = 2000 + year if year <= 50 else 1900 + year
+                elif year < 1950:
+                    # strptime with %y gives 1900s for 00-68 in some Python versions
+                    # Fix: if year is 1935, it should be 2035
+                    if year < 1970:
+                        year += 100  # 1935 -> 2035
+                return (year, dt.month)
+            except ValueError:
+                continue
+
+        # Try other formats
+        for fmt in ['%Y-%m', '%m/%Y', '%Y/%m', '%m-%Y']:
+            try:
+                dt = datetime.strptime(cell_str, fmt)
+                return (dt.year, dt.month)
+            except ValueError:
+                continue
+
+    return None
+
+
+def find_country_rows(ws, max_row: int = 500) -> Dict[str, int]:
+    """
+    Dynamically find country/destination rows by scanning column A.
+
+    Args:
+        ws: Excel worksheet object
+        max_row: Maximum row to scan
+
+    Returns:
+        Dict mapping country name (uppercase) to row number
+    """
+    country_rows = {}
+
+    for row in range(1, max_row + 1):
+        cell_value = ws.Cells(row, 1).Value
+        if cell_value and isinstance(cell_value, str):
+            # Clean the country name
+            country = cell_value.strip().upper()
+
+            # Skip header rows, totals, and empty-ish values
+            skip_patterns = [
+                'EXPORTS', 'IMPORTS', 'MILLION', 'BUSHELS', 'TONNES',
+                'TOTAL', 'ACTUAL', 'ADJUSTED', 'SUM', 'HS CODE',
+                '120110', '120190', '230400', '150710'  # HS codes
+            ]
+
+            if any(pattern in country for pattern in skip_patterns):
+                continue
+
+            if len(country) < 3:
+                continue
+
+            # Store the row for this country
+            country_rows[country] = row
+
+            # Also store normalized versions for common variations
+            # EUROPEAN UNION-28 -> also match EUROPEAN UNION
+            if '-28' in country:
+                base_name = country.replace('-28', '')
+                if base_name not in country_rows:
+                    country_rows[base_name] = row
+            if '-27' in country:
+                base_name = country.replace('-27', '')
+                if base_name not in country_rows:
+                    country_rows[base_name] = row
+
+    return country_rows
+
 
 def update_excel_file(
     excel_path: Path,
@@ -1033,10 +1517,10 @@ def update_excel_file(
     flow: str
 ) -> bool:
     """
-    Update the Excel file with Census trade data using xlwings.
+    Update the Excel file with Census trade data using win32com.
 
-    xlwings uses Excel's COM interface, which preserves external links and formulas
-    that openpyxl corrupts.
+    win32com uses Excel's COM interface directly, which preserves external links,
+    formulas, and other Excel features that openpyxl corrupts.
 
     Args:
         excel_path: Path to Excel file
@@ -1048,16 +1532,18 @@ def update_excel_file(
         True if successful
     """
     try:
-        import xlwings as xw
+        import win32com.client
+        import pythoncom
     except ImportError:
-        print("ERROR: xlwings not installed. Run: pip install xlwings")
-        logger.error("xlwings not installed")
+        print("ERROR: pywin32 not installed. Run: pip install pywin32")
+        logger.error("pywin32 not installed")
         return False
 
     import shutil
     import tempfile
+    import time
 
-    # Resolve to absolute path - critical for xlwings on Windows
+    # Resolve to absolute path - critical for COM on Windows
     excel_path = Path(excel_path).resolve()
 
     if not excel_path.exists():
@@ -1087,31 +1573,46 @@ def update_excel_file(
         try:
             temp_dir = Path(tempfile.gettempdir())
             temp_path = temp_dir / f"temp_{excel_path.name}"
-            print(f"  Dropbox detected - copying to temp: {temp_path}")
+            print(f"  Cloud sync detected - copying to temp: {temp_path}")
             shutil.copy2(excel_path, temp_path)
             working_path = temp_path
         except Exception as e:
             print(f"  Warning: Could not create temp copy: {e}")
             working_path = excel_path
 
-    try:
-        # Open Excel in the background (visible=False for faster processing)
-        app = xw.App(visible=False, add_book=False)
-        app.display_alerts = False
-        app.screen_updating = False
+    excel = None
+    wb = None
 
-        # Use str() to convert Path to string for xlwings
-        wb = app.books.open(str(working_path))
+    try:
+        # Initialize COM for this thread
+        pythoncom.CoInitialize()
+
+        # Create Excel application instance
+        excel = win32com.client.Dispatch("Excel.Application")
+        excel.Visible = False
+        excel.DisplayAlerts = False
+        excel.ScreenUpdating = False
+
+        # Open workbook with UpdateLinks=0 to prevent link update prompts
+        # Arguments: Filename, UpdateLinks, ReadOnly, Format, Password
+        wb = excel.Workbooks.Open(
+            str(working_path),
+            UpdateLinks=0,  # Don't update links
+            ReadOnly=False
+        )
+
     except Exception as e:
         print(f"ERROR: Failed to open Excel file: {e}")
         print("  TIP: Make sure the file is closed in Excel before running this script.")
         print("  TIP: Try closing all Excel windows and running: taskkill /F /IM EXCEL.EXE")
         print(f"  Path attempted: {working_path}")
         logger.error(f"Failed to open Excel file: {e}")
-        try:
-            app.quit()
-        except:
-            pass
+        if excel:
+            try:
+                excel.Quit()
+            except:
+                pass
+        pythoncom.CoUninitialize()
         # Clean up temp file if created
         if temp_path and temp_path.exists():
             try:
@@ -1121,68 +1622,76 @@ def update_excel_file(
         return False
 
     try:
-        # Get the sheet
-        if sheet_name not in [s.name for s in wb.sheets]:
+        # Get the sheet by name
+        ws = None
+        sheet_names = []
+        for i in range(1, wb.Sheets.Count + 1):
+            sheet_names.append(wb.Sheets(i).Name)
+            if wb.Sheets(i).Name == sheet_name:
+                ws = wb.Sheets(i)
+                break
+
+        if ws is None:
             print(f"ERROR: Sheet '{sheet_name}' not found in workbook")
-            print(f"Available sheets: {[s.name for s in wb.sheets]}")
+            print(f"Available sheets: {sheet_names}")
             logger.error(f"Sheet '{sheet_name}' not found")
-            wb.close()
-            app.quit()
+            wb.Close(SaveChanges=False)
+            excel.Quit()
+            pythoncom.CoUninitialize()
             return False
 
-        ws = wb.sheets[sheet_name]
+        # Get used range dimensions
+        used_range = ws.UsedRange
+        max_col = used_range.Columns.Count
+        max_row = used_range.Rows.Count
 
-        # Find date columns by scanning row 3 (header row with dates)
+        # Find date columns by scanning row 2 (where monthly dates like "Nov-35" are)
         date_columns = {}
-        header_row = 3
+        header_row = 2
 
-        # Get used range to find max column
-        used_range = ws.used_range
-        max_col = used_range.last_cell.column
+        print(f"  Scanning row {header_row} for date columns (up to {max_col} columns)...")
 
         for col in range(1, max_col + 1):
-            cell_value = ws.range((header_row, col)).value
-            if cell_value:
-                try:
-                    # xlwings returns datetime objects directly
-                    if isinstance(cell_value, datetime):
-                        date_columns[(cell_value.year, cell_value.month)] = col
-                    elif isinstance(cell_value, date):
-                        date_columns[(cell_value.year, cell_value.month)] = col
-                    elif isinstance(cell_value, str):
-                        # Try parsing string dates
-                        for fmt in ['%Y-%m', '%m/%Y', '%b-%y', '%b %Y', '%Y/%m']:
-                            try:
-                                dt = datetime.strptime(cell_value, fmt)
-                                date_columns[(dt.year, dt.month)] = col
-                                break
-                            except ValueError:
-                                continue
-                except Exception:
-                    continue
+            cell_value = ws.Cells(header_row, col).Value
+            parsed = parse_excel_date_header(cell_value, header_row)
+            if parsed:
+                year, month = parsed
+                # Only include dates from 1990 onwards (skip obvious errors)
+                if year >= 1990:
+                    date_columns[(year, month)] = col
 
-        if not date_columns:
-            print(f"WARNING: Could not find date columns in row {header_row}")
-            print("Trying row 2...")
-            header_row = 2
-            for col in range(1, max_col + 1):
-                cell_value = ws.range((header_row, col)).value
-                if cell_value:
-                    try:
-                        if isinstance(cell_value, datetime):
-                            date_columns[(cell_value.year, cell_value.month)] = col
-                        elif isinstance(cell_value, date):
-                            date_columns[(cell_value.year, cell_value.month)] = col
-                    except Exception:
-                        continue
-
-        print(f"  Found {len(date_columns)} date columns in {sheet_name}")
+        print(f"  Found {len(date_columns)} monthly date columns in {sheet_name}")
         logger.info(f"Found {len(date_columns)} date columns in {sheet_name}")
 
-        # Debug: show sample date columns
+        # Debug: show date range found
         if date_columns:
-            sample_dates = list(date_columns.keys())[:5]
-            print(f"  Sample date columns: {sample_dates}")
+            years = sorted(set(y for y, m in date_columns.keys()))
+            print(f"  Date range: {min(years)} to {max(years)}")
+            # Show some dates from the target range (2020-2025)
+            recent_dates = sorted([d for d in date_columns.keys() if d[0] >= 2020])[:10]
+            if recent_dates:
+                print(f"  Recent dates found: {recent_dates}")
+            else:
+                print(f"  WARNING: No dates found in 2020+ range!")
+
+        # Dynamically find country rows by scanning column A
+        print(f"  Scanning column A for country names (up to row {max_row})...")
+        country_rows = find_country_rows(ws, max_row)
+        print(f"  Found {len(country_rows)} country/destination rows")
+
+        # Debug: show sample country rows
+        if country_rows:
+            sample_countries = list(country_rows.items())[:10]
+            print(f"  Sample country rows: {sample_countries}")
+
+        # Show unit configuration being used
+        excel_filename = excel_path.name
+        unit_system = EXCEL_UNIT_SYSTEM.get(excel_filename, 'INTL')
+        if unit_system == 'US' and commodity.upper() in US_UNIT_CONFIG:
+            config = US_UNIT_CONFIG[commodity.upper()]
+            print(f"  Unit system: US - {config['display_unit']} ({config['unit']})")
+        else:
+            print(f"  Unit system: International - {INTL_UNIT_CONFIG['display_unit']}")
 
         # Debug: show sample destinations from data
         sample_dests = list(set(dest for (y, m, dest) in list(monthly_data.keys())[:20]))[:10]
@@ -1208,15 +1717,151 @@ def update_excel_file(
         # Check if this commodity uses a special total row (e.g., hulls)
         special_row = COMMODITY_TOTAL_ROWS.get(commodity.upper())
 
+        # Debug: show year distribution of data vs date columns
+        data_years = sorted(set(y for (y, m, dest) in monthly_data.keys()))
+        column_years = sorted(set(y for y, m in date_columns.keys())) if date_columns else []
+        print(f"  Data years: {data_years}")
+        print(f"  Column years: {column_years}")
+
+        # Check for overlap
+        overlap_years = set(data_years) & set(column_years)
+        if not overlap_years:
+            print(f"  WARNING: No overlap between data years and column years!")
+
+        # Determine which columns we'll be updating (so we can clear them first)
+        columns_to_update = set()
+        for (year, month, destination) in monthly_data.keys():
+            col = date_columns.get((year, month))
+            if col:
+                columns_to_update.add(col)
+
+        # Clear columns before writing (remove old projections)
+        # Clear rows 5-290 except SUM_FORMULA_ROWS
+        if columns_to_update:
+            print(f"  Clearing {len(columns_to_update)} columns before writing (rows 5-290, preserving sum rows)...")
+            cleared_cells = 0
+            # Activate the sheet first (required for Select to work, but we'll use direct assignment)
+            ws.Activate()
+            for col in columns_to_update:
+                for row in range(5, 291):  # Rows 5 to 290 inclusive
+                    if row not in SUM_FORMULA_ROWS:
+                        # Clear the cell value but preserve formatting
+                        # Use direct assignment (simpler and works without Select)
+                        cell = ws.Cells(row, col)
+                        if cell.Value is not None:
+                            cell.Value = None
+                            cleared_cells += 1
+            print(f"  Cleared {cleared_cells} cells with existing values")
+
+        # Update cells
         updated = 0
         not_found_destinations = set()
         not_found_dates = set()
         matched_destinations = set()
+        skipped_aggregates = set()
+        zero_values = 0
+        estimated_count = 0
+
+        # SPECIAL CASE: SOYBEAN_HULLS
+        # For hulls, we only write the TOTAL to row 294 (not individual country breakdowns)
+        # The hull total is added to the meal total in the Excel formula
+        if commodity.upper() == 'SOYBEAN_HULLS':
+            print(f"  SOYBEAN_HULLS: Writing monthly totals to row 294 only")
+
+            # Aggregate all country data by (year, month) into monthly totals
+            hull_monthly_totals = {}
+            for (year, month, destination), data in monthly_data.items():
+                key = (year, month)
+                if key not in hull_monthly_totals:
+                    hull_monthly_totals[key] = {'quantity': 0, 'value_usd': 0}
+                hull_monthly_totals[key]['quantity'] += data.get('quantity') or 0
+                hull_monthly_totals[key]['value_usd'] += data.get('value_usd') or 0
+
+            # Write hull totals to row 294
+            hull_row = 294
+            for (year, month), data in hull_monthly_totals.items():
+                col = date_columns.get((year, month))
+                if not col:
+                    not_found_dates.add((year, month))
+                    continue
+
+                value = data.get('quantity')
+                value_usd = data.get('value_usd')
+
+                # Estimate from value if no quantity
+                if (not value or value <= 0) and value_usd and value_usd > 0:
+                    value = estimate_quantity_from_value(value_usd, 'SOYBEAN_HULLS')
+
+                if value and value > 0:
+                    # Use US short tons conversion (same as meal)
+                    config = US_UNIT_CONFIG['SOYBEAN_HULLS']
+                    converted_value = config['kg_to_display'](value)
+                    ws.Cells(hull_row, col).Value = round(converted_value, 3)
+                    updated += 1
+
+            print(f"  Updated {updated} hull monthly totals in row 294")
+
+            # Save and close for hulls
+            wb.Save()
+            wb.Close(SaveChanges=True)
+            excel.Quit()
+            pythoncom.CoUninitialize()
+
+            # Copy back if temp file
+            if temp_path and temp_path.exists():
+                try:
+                    shutil.copy2(temp_path, excel_path)
+                    temp_path.unlink()
+                except Exception as e:
+                    print(f"  Warning: Could not copy back: {e}")
+
+            return True
+
+        # Debug: Check what values we have
+        sample_values = []
+        for (y, m, d), data in list(monthly_data.items())[:5]:
+            sample_values.append((y, m, d, data.get('quantity'), data.get('value_usd')))
+        print(f"  Sample data values: {sample_values}")
+
+        # Debug: Show first few writes in detail
+        debug_writes = []
 
         if special_row:
             # Special handling: aggregate all countries to a single row per month
             print(f"  Writing aggregated totals to row {special_row}")
             monthly_totals = defaultdict(float)
+        for (year, month, destination), data in monthly_data.items():
+            dest_upper = destination.upper().strip()
+
+            # First check if this is a Census aggregate that maps to a specific row
+            if dest_upper in CENSUS_AGGREGATE_ROWS:
+                agg_row = CENSUS_AGGREGATE_ROWS[dest_upper]
+                if agg_row is None:
+                    # Skip this aggregate - it's calculated in Excel
+                    skipped_aggregates.add(dest_upper)
+                    continue
+                row = agg_row
+            else:
+                # Get row for this destination (try exact match first)
+                row = country_rows.get(dest_upper)
+
+                # Try common name variations if exact match fails
+                if not row:
+                    for country_name, country_row in country_rows.items():
+                        if dest_upper in country_name or country_name in dest_upper:
+                            row = country_row
+                            break
+
+            if not row:
+                not_found_destinations.add(destination)
+                continue
+
+            # Skip rows that contain SUM formulas (except row 290 which gets Census aggregate data)
+            if row in SUM_FORMULA_ROWS and row != 290:
+                skipped_aggregates.add(f"{destination} (row {row} has formula)")
+                continue
+
+            matched_destinations.add(destination)
 
             for (year, month, destination), data in monthly_data.items():
                 raw_quantity_kg = data.get('quantity') or 0
@@ -1231,7 +1876,51 @@ def update_excel_file(
 
                 converted_value = total_kg * multiplier
                 ws.range((special_row, col)).value = round(converted_value, 3)
+            # Get value to write (use quantity for volume)
+            # Census data is in kg - convert based on file type and commodity
+            value = data.get('quantity')
+            value_usd = data.get('value_usd')
+            used_estimate = False
+
+            # If quantity is missing but value_usd is available, estimate quantity
+            if (not value or value <= 0) and value_usd and value_usd > 0:
+                estimated_qty = estimate_quantity_from_value(value_usd, commodity)
+                if estimated_qty:
+                    value = estimated_qty
+                    used_estimate = True
+
+            if value and value > 0:
+                # Determine unit system based on Excel file
+                excel_filename = excel_path.name
+                unit_system = EXCEL_UNIT_SYSTEM.get(excel_filename, 'INTL')
+
+                if unit_system == 'US' and commodity.upper() in US_UNIT_CONFIG:
+                    # Use commodity-specific US conversion
+                    config = US_UNIT_CONFIG[commodity.upper()]
+                    converted_value = config['kg_to_display'](value)
+                else:
+                    # Use international metric tons (1000 MT)
+                    converted_value = INTL_UNIT_CONFIG['kg_to_display'](value)
+
+                # Direct cell assignment (works without needing to Select)
+                ws.Cells(row, col).Value = round(converted_value, 3)
                 updated += 1
+                if used_estimate:
+                    estimated_count += 1
+
+                # Capture debug info for first 5 writes
+                if len(debug_writes) < 5:
+                    debug_writes.append({
+                        'dest': destination,
+                        'date': f"{year}-{month:02d}",
+                        'row': row,
+                        'col': col,
+                        'raw_kg': value,
+                        'converted': round(converted_value, 3),
+                        'estimated': used_estimate
+                    })
+            else:
+                zero_values += 1
 
             print(f"  Wrote {updated} monthly totals to row {special_row}")
         else:
@@ -1264,11 +1953,39 @@ def update_excel_file(
             print(f"  Matched destinations: {len(matched_destinations)}")
             if matched_destinations:
                 print(f"    Examples: {list(matched_destinations)[:5]}")
+        # Debug output
+        print(f"  Matched destinations: {len(matched_destinations)}")
+
+        # Show sample writes
+        if debug_writes:
+            print(f"  First {len(debug_writes)} writes (verify in Excel):")
+            for w in debug_writes:
+                est_marker = " [EST]" if w['estimated'] else ""
+                print(f"    {w['dest']} {w['date']}: Row {w['row']}, Col {w['col']} = {w['converted']}{est_marker}")
+        if matched_destinations:
+            print(f"    Examples: {list(matched_destinations)[:5]}")
+
+        if estimated_count > 0:
+            print(f"  Used value-based quantity estimates: {estimated_count}")
+
+        if zero_values > 0:
+            print(f"  Records with zero/null quantity (even after estimation): {zero_values}")
+
+        if skipped_aggregates:
+            print(f"  Skipped Census aggregates (calculated in Excel): {list(skipped_aggregates)[:5]}")
 
         # Save workbook
-        wb.save()
+        wb.Save()
         print(f"Updated {updated} cells in {sheet_name}")
         logger.info(f"Updated {updated} cells in {sheet_name}")
+
+        # Verify write worked - read back first debug write cell
+        if debug_writes:
+            test_cell = debug_writes[0]
+            verify_value = ws.Cells(test_cell['row'], test_cell['col']).Value
+            print(f"  VERIFY: Cell ({test_cell['row']}, {test_cell['col']}) after save = {verify_value}")
+            if verify_value != test_cell['converted']:
+                print(f"  WARNING: Expected {test_cell['converted']}, got {verify_value}!")
 
         if not_found_destinations:
             unmapped = list(not_found_destinations)[:10]
@@ -1276,15 +1993,21 @@ def update_excel_file(
             logger.warning(f"Unmapped destinations: {not_found_destinations}")
 
         if not_found_dates:
-            print(f"  Dates not in spreadsheet: {len(not_found_dates)}")
+            missing_dates = sorted(list(not_found_dates))[:10]
+            print(f"  Dates not in spreadsheet ({len(not_found_dates)} total): {missing_dates}")
 
-        wb.close()
-        app.quit()
+        # Close workbook and Excel
+        wb.Close(SaveChanges=True)
+        excel.Quit()
+        pythoncom.CoUninitialize()
+
+        # Small delay to ensure Excel fully releases the file
+        time.sleep(0.5)
 
         # If we used a temp file, copy it back to the original location
         if temp_path and temp_path.exists():
             try:
-                print(f"  Copying updated file back to Dropbox...")
+                print(f"  Copying updated file back to original location...")
                 shutil.copy2(temp_path, excel_path)
                 temp_path.unlink()  # Clean up temp file
                 print(f"  Successfully updated: {excel_path}")
@@ -1301,8 +2024,11 @@ def update_excel_file(
         import traceback
         traceback.print_exc()
         try:
-            wb.close()
-            app.quit()
+            if wb:
+                wb.Close(SaveChanges=False)
+            if excel:
+                excel.Quit()
+            pythoncom.CoUninitialize()
         except:
             pass
         return False
@@ -1311,7 +2037,7 @@ def update_excel_file(
 def update_all_excel_sheets(
     records: List[Dict],
     commodity: str,
-    project_root: Path
+    models_base: Path
 ) -> Dict[str, int]:
     """
     Update all relevant Excel sheets for a commodity (both imports and exports)
@@ -1319,7 +2045,7 @@ def update_all_excel_sheets(
     Args:
         records: List of trade records
         commodity: Commodity name
-        project_root: Project root path
+        models_base: Base path to Models folder (or custom path like Desktop/Models/Oilseeds)
 
     Returns:
         Dict with update counts per sheet
@@ -1331,7 +2057,25 @@ def update_all_excel_sheets(
         print(f"No Excel file configured for {commodity}")
         return results
 
-    excel_path = project_root / excel_file
+    # Build the Excel path
+    # EXCEL_FILES entries look like "Models/Oilseeds/US Soybean Trade.xlsx"
+    # If models_base already ends with "Oilseeds" or similar, adjust path construction
+    models_base = Path(models_base)
+
+    # Check if this is a custom path that already contains the subfolder
+    # e.g., "C:\Users\torem\OneDrive\Desktop\Models\Oilseeds"
+    if models_base.name == 'Oilseeds' or models_base.name == 'Grains':
+        # Custom path already includes the subfolder, just need filename
+        excel_filename = Path(excel_file).name  # "US Soybean Trade.xlsx"
+        excel_path = models_base / excel_filename
+    elif 'Models' in str(models_base):
+        # Custom path includes "Models" - extract relative path from EXCEL_FILES
+        # EXCEL_FILES = "Models/Oilseeds/file.xlsx" -> "Oilseeds/file.xlsx"
+        relative_from_models = '/'.join(excel_file.split('/')[1:])  # Remove "Models/"
+        excel_path = models_base / relative_from_models
+    else:
+        # Standard case: models_base is the project root, use full relative path
+        excel_path = models_base / excel_file
 
     for flow in ['exports', 'imports']:
         # Filter records for this flow
@@ -1363,7 +2107,8 @@ def run_census_update(
     years: int = 5,
     flow: str = 'both',
     save_to_db: bool = False,
-    update_excel: bool = False
+    update_excel: bool = False,
+    models_path: str = None
 ) -> Dict:
     """
     Run the Census trade data update workflow
@@ -1374,6 +2119,7 @@ def run_census_update(
         flow: 'exports', 'imports', or 'both'
         save_to_db: Save to database
         update_excel: Update Excel files
+        models_path: Custom path to Models folder (to test outside Dropbox/OneDrive)
 
     Returns:
         Results summary
@@ -1458,11 +2204,21 @@ def run_census_update(
         print("UPDATING EXCEL FILES")
         print("=" * 60)
 
+        # Determine the base path for Models folder
+        if models_path:
+            # Use custom models path provided by user
+            models_base = Path(models_path)
+            print(f"Using custom Models path: {models_base}")
+        else:
+            # Default: project_root/Models
+            models_base = project_root / "Models"
+            print(f"Using default Models path: {models_base}")
+
         for comm in commodities:
             # Get records for this commodity
             comm_records = [r for r in all_records if r.get('commodity') == comm]
             if comm_records:
-                excel_results = update_all_excel_sheets(comm_records, comm, project_root)
+                excel_results = update_all_excel_sheets(comm_records, comm, models_base)
                 for sheet, count in excel_results.items():
                     print(f"  {sheet}: {count} month/destination combinations")
 
@@ -1509,18 +2265,45 @@ def main():
         help='Update Excel model files'
     )
 
+    parser.add_argument(
+        '--test',
+        action='store_true',
+        help='Test Census API connection before fetching data'
+    )
+
+    parser.add_argument(
+        '--models-path',
+        type=str,
+        default=None,
+        help='Custom path to Models folder (e.g., C:\\Users\\torem\\Desktop\\Models). Use this to test outside Dropbox.'
+    )
+
     args = parser.parse_args()
 
     print("\n" + "=" * 60)
     print("CENSUS BUREAU TRADE DATA COLLECTOR")
     print("=" * 60)
 
+    api_key = get_api_key()
+
+    # Run API test if requested
+    if args.test:
+        if not test_census_api(api_key):
+            print("\nAPI test failed. Please check the error messages above.")
+            print("Common issues:")
+            print("  - Census API may be temporarily unavailable")
+            print("  - Network/firewall issues")
+            print("  - API key may be invalid")
+            sys.exit(1)
+        print("\nAPI test passed. Proceeding with data fetch...\n")
+
     results = run_census_update(
         commodity=args.commodity,
         years=args.years,
         flow=args.flow,
         save_to_db=args.save_to_db,
-        update_excel=args.update_excel
+        update_excel=args.update_excel,
+        models_path=args.models_path
     )
 
     print("\n" + "=" * 60)
