@@ -1670,9 +1670,10 @@ def update_excel_file(
                 for row in range(5, 291):  # Rows 5 to 290 inclusive
                     if row not in SUM_FORMULA_ROWS:
                         # Clear the cell value but preserve formatting
-                        cell = ws.Cells(row, col)
-                        if cell.Value is not None:
-                            cell.Value = None
+                        # Match VBA pattern: Select cell, then set ActiveCell.Value
+                        ws.Cells(row, col).Select()
+                        if excel.ActiveCell.Value is not None:
+                            excel.ActiveCell.Value = None
                             cleared_cells += 1
             print(f"  Cleared {cleared_cells} cells with existing values")
 
@@ -1754,7 +1755,9 @@ def update_excel_file(
                     # Use international metric tons (1000 MT)
                     converted_value = INTL_UNIT_CONFIG['kg_to_display'](value)
 
-                ws.Cells(row, col).Value = round(converted_value, 3)
+                # Match VBA pattern: Select cell, then set ActiveCell.Value
+                ws.Cells(row, col).Select()
+                excel.ActiveCell.Value = round(converted_value, 3)
                 updated += 1
                 if used_estimate:
                     estimated_count += 1
