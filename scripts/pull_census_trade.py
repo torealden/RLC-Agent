@@ -153,8 +153,8 @@ US_UNIT_CONFIG = {
     },
     'SOYBEAN_OIL': {
         'unit': 'pounds',
-        'display_unit': 'million lbs',
-        'kg_to_display': lambda kg: kg / KG_PER_MT * LBS_PER_MT / 1000000,  # KG -> million lbs
+        'display_unit': '1000 lbs',
+        'kg_to_display': lambda kg: kg / KG_PER_MT * LBS_PER_MT / 1000,  # KG -> 1000 lbs (trade sheets)
     },
 }
 
