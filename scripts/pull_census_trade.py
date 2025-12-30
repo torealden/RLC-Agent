@@ -319,6 +319,10 @@ SUM_FORMULA_ROWS = {
     231,  # Additional region total
     289,  # World Total SUM formula (preserve this!)
     # Row 290 is external link data, NOT a sum - so it can be cleared/written
+    # Rows 291+ are outside clearing range (5-290) but listing for documentation:
+    # 293 = Meal total (formula)
+    # 294 = Hull total (written by SOYBEAN_HULLS)
+    # 295 = Grand total = 293 + 294 (formula)
 }
 
 # Map Census aggregate/total names to Excel row numbers
@@ -1693,6 +1697,61 @@ def update_excel_file(
         skipped_aggregates = set()
         zero_values = 0
         estimated_count = 0
+
+        # SPECIAL CASE: SOYBEAN_HULLS
+        # For hulls, we only write the TOTAL to row 294 (not individual country breakdowns)
+        # The hull total is added to the meal total in the Excel formula
+        if commodity.upper() == 'SOYBEAN_HULLS':
+            print(f"  SOYBEAN_HULLS: Writing monthly totals to row 294 only")
+
+            # Aggregate all country data by (year, month) into monthly totals
+            hull_monthly_totals = {}
+            for (year, month, destination), data in monthly_data.items():
+                key = (year, month)
+                if key not in hull_monthly_totals:
+                    hull_monthly_totals[key] = {'quantity': 0, 'value_usd': 0}
+                hull_monthly_totals[key]['quantity'] += data.get('quantity') or 0
+                hull_monthly_totals[key]['value_usd'] += data.get('value_usd') or 0
+
+            # Write hull totals to row 294
+            hull_row = 294
+            for (year, month), data in hull_monthly_totals.items():
+                col = date_columns.get((year, month))
+                if not col:
+                    not_found_dates.add((year, month))
+                    continue
+
+                value = data.get('quantity')
+                value_usd = data.get('value_usd')
+
+                # Estimate from value if no quantity
+                if (not value or value <= 0) and value_usd and value_usd > 0:
+                    value = estimate_quantity_from_value(value_usd, 'SOYBEAN_HULLS')
+
+                if value and value > 0:
+                    # Use US short tons conversion (same as meal)
+                    config = US_UNIT_CONFIG['SOYBEAN_HULLS']
+                    converted_value = config['kg_to_display'](value)
+                    ws.Cells(hull_row, col).Value = round(converted_value, 3)
+                    updated += 1
+
+            print(f"  Updated {updated} hull monthly totals in row 294")
+
+            # Save and close for hulls
+            wb.Save()
+            wb.Close(SaveChanges=True)
+            excel.Quit()
+            pythoncom.CoUninitialize()
+
+            # Copy back if temp file
+            if temp_path and temp_path.exists():
+                try:
+                    shutil.copy2(temp_path, excel_path)
+                    temp_path.unlink()
+                except Exception as e:
+                    print(f"  Warning: Could not copy back: {e}")
+
+            return True
 
         # Debug: Check what values we have
         sample_values = []
