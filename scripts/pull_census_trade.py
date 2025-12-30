@@ -555,6 +555,8 @@ def fetch_trade_data(
         qty_flag_fields = ['QTY_1_MO_FLAG', 'QTY_2_MO_FLAG']
         unit_field = 'UNIT_QY1'
 
+    # Build params - request quantity fields (WITHOUT flag fields - they cause API errors)
+    time_str = f"{year}-{month:02d}"
     # Build params - request quantity fields
     # NOTE: FLAG fields (QTY_1_MO_FLAG, etc.) may not be available in all API endpoints
     # If they cause errors, we fall back to just the quantity fields
@@ -574,6 +576,10 @@ def fetch_trade_data(
 
     for attempt in range(max_retries):
         try:
+            # Debug: show URL on first attempt
+            if attempt == 0:
+                print(f"  Fetching {flow}/{hs_code} for {time_str}...")
+
             response = requests.get(url, params=params, timeout=30)
 
             if response.status_code == 200:
@@ -621,6 +627,8 @@ def fetch_trade_data(
                     # Log the actual response content for debugging
                     content_preview = response.text[:500] if response.text else "(empty)"
                     logger.error(f"JSON decode error for {flow}/{hs_code} {time_str}: {e}")
+                    print(f"  ERROR: Census API returned non-JSON:")
+                    print(f"  {content_preview[:300]}")
                     print(f"  ERROR: Census API returned non-JSON response:")
                     print(f"  {content_preview}")
 
@@ -638,6 +646,8 @@ def fetch_trade_data(
 
                     # Debug: Log the headers and sample data we received
                     if len(data) > 1:
+                        sample = dict(zip(headers, data[1]))
+                        print(f"  Got {len(data)-1} records. Sample: QTY_1={sample.get('QTY_1_MO') or sample.get('GEN_QY1_MO')}, UNIT={sample.get('UNIT_QY1')}")
                         logger.info(f"Census API returned headers for {flow}/{hs_code}: {headers}")
                         # Log first row to see quantity values
                         sample = dict(zip(headers, data[1]))
@@ -653,6 +663,7 @@ def fetch_trade_data(
                         # Parse values
                         value_usd = parse_number(record.get(value_field))
 
+                        # Try each quantity field until we find one with non-zero data
                         # Try each quantity field until we find one with data
                         # Note: Census returns 0 for missing values, so we look for non-zero values
                         quantity = None
@@ -666,6 +677,7 @@ def fetch_trade_data(
                                     unit = record.get('UNIT_QY1', '')
                                 else:
                                     unit = record.get('UNIT_QY2', record.get('UNIT_QY1', ''))
+                                break  # Found non-zero data
                                 break  # Found non-zero data, use it
 
                         # NORMALIZE QUANTITY TO KG
