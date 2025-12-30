@@ -154,7 +154,10 @@ US_UNIT_CONFIG = {
     'SOYBEAN_OIL': {
         'unit': 'pounds',
         'display_unit': '1000 lbs',
-        'kg_to_display': lambda kg: kg / KG_PER_MT * LBS_PER_MT / 1000,  # KG -> 1000 lbs (trade sheets)
+        # Census reports quantity in KG for soybean oil
+        # Convert: KG -> lbs -> 1000 lbs
+        # 1 KG = 2.20462 lbs, divide by 1000 for "thousand lbs"
+        'kg_to_display': lambda kg: (kg * LBS_PER_MT / KG_PER_MT) / 1000,  # KG -> 1000 lbs
     },
 }
 
