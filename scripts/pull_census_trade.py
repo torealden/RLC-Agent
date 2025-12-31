@@ -2617,6 +2617,45 @@ def run_census_update(
             # Print summary
             print(f"\nFetched {len(records)} records for {comm}")
 
+            # DIAGNOSTIC: Show monthly totals by HS code for comparison with Census spreadsheet
+            if flow in ['exports', 'both']:
+                export_records = [r for r in records if r['flow'] == 'exports']
+                if export_records:
+                    # Aggregate by (year, month, hs_code)
+                    monthly_by_hs = {}
+                    for r in export_records:
+                        key = (r['year'], r['month'], r['hs_code'])
+                        if key not in monthly_by_hs:
+                            monthly_by_hs[key] = {'quantity_kg': 0, 'value_usd': 0, 'count': 0}
+                        monthly_by_hs[key]['quantity_kg'] += r.get('quantity') or 0
+                        monthly_by_hs[key]['value_usd'] += r.get('value_usd') or 0
+                        monthly_by_hs[key]['count'] += 1
+
+                    # Show monthly totals for comparison
+                    print(f"\n--- EXPORT MONTHLY TOTALS BY HS CODE (for verification) ---")
+                    print(f"{'Month':<10} {'HS Code':<8} {'Weight (KG)':<15} {'1000 lbs':<12} {'Value USD':<15}")
+                    print("-" * 60)
+
+                    # Get unique months sorted
+                    months = sorted(set((y, m) for y, m, _ in monthly_by_hs.keys()))
+                    for year, month in months[-12:]:  # Show last 12 months
+                        month_total_kg = 0
+                        month_total_usd = 0
+                        for hs in sorted(set(hs for _, _, hs in monthly_by_hs.keys())):
+                            key = (year, month, hs)
+                            if key in monthly_by_hs:
+                                data = monthly_by_hs[key]
+                                qty_kg = data['quantity_kg']
+                                qty_1000lbs = qty_kg * 2.20462 / 1000
+                                val_usd = data['value_usd']
+                                print(f"{year}-{month:02d}   {hs:<8} {qty_kg:>14,.0f} {qty_1000lbs:>11,.2f} ${val_usd:>13,.0f}")
+                                month_total_kg += qty_kg
+                                month_total_usd += val_usd
+                        # Print month total
+                        month_total_1000lbs = month_total_kg * 2.20462 / 1000
+                        print(f"{year}-{month:02d}   {'TOTAL':<8} {month_total_kg:>14,.0f} {month_total_1000lbs:>11,.2f} ${month_total_usd:>13,.0f}")
+                        print()
+
             # Show top destinations for exports
             if flow in ['exports', 'both']:
                 export_records = [r for r in records if r['flow'] == 'exports']
