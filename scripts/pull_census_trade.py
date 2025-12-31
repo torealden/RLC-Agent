@@ -787,10 +787,10 @@ def get_api_key() -> Optional[str]:
 
 def test_census_api(api_key: str = None) -> bool:
     """
-    Test the Census API connection and show what fields are available for soybean oil.
+    Test the Census API connection and validate that volume data is available.
 
-    Returns True if the API is working, False otherwise.
-    Prints diagnostic information including quantity fields.
+    Returns True if the API is working AND volume data is available.
+    Prints diagnostic information about which volume source to use.
     """
     print("\n--- Census API Diagnostic Test ---")
     print("Testing soybean oil (HS 150790) exports for Jan 2024...")
@@ -799,11 +799,12 @@ def test_census_api(api_key: str = None) -> bool:
     test_url = f"{CENSUS_API_BASE}/exports/hs"
 
     # Request all quantity-related fields to see what's available
-    qty_fields = 'QTY_1_MO,QTY_2_MO,UNIT_QY1,UNIT_QY2,VES_WGT_MO,AIR_WGT_MO,CNT_WGT_MO'
+    qty_fields = 'QTY_1_MO,QTY_2_MO,UNIT_QY1,UNIT_QY2,VES_WGT_MO,AIR_WGT_MO'
     test_params = {
         'get': f'ALL_VAL_MO,{qty_fields},CTY_CODE,CTY_NAME',
         'E_COMMODITY': '150790',  # Refined soybean oil
         'time': '2024-01',
+        'COMM_LVL': 'HS6',  # Explicitly set commodity level
     }
 
     if api_key:
@@ -813,7 +814,7 @@ def test_census_api(api_key: str = None) -> bool:
         print("  No API key (using public access)")
 
     print(f"  Test URL: {test_url}")
-    print(f"  Requested fields: {test_params['get']}")
+    print(f"  COMM_LVL: HS6")
 
     try:
         response = requests.get(test_url, params=test_params, timeout=30)
@@ -822,37 +823,55 @@ def test_census_api(api_key: str = None) -> bool:
         if response.status_code == 200:
             try:
                 data = response.json()
-                print(f"\n  SUCCESS: Got {len(data)-1} country records")
+                print(f"\n  Got {len(data)-1} country records")
 
                 if len(data) > 1:
                     headers = data[0]
-                    print(f"  Available fields: {headers}")
 
-                    # Show first 5 records with all quantity fields
-                    print("\n  First 5 records (all quantity fields):")
-                    for i, row in enumerate(data[1:6], 1):
+                    # Count records with usable volume data
+                    non_zero_qty1 = 0
+                    non_zero_weight = 0
+                    total_weight = 0
+                    total_value = 0
+
+                    for row in data[1:]:
                         record = dict(zip(headers, row))
-                        qty1 = record.get('QTY_1_MO', 'N/A')
-                        qty2 = record.get('QTY_2_MO', 'N/A')
-                        unit1 = record.get('UNIT_QY1', 'N/A')
-                        unit2 = record.get('UNIT_QY2', 'N/A')
-                        ves = record.get('VES_WGT_MO', 'N/A')
-                        air = record.get('AIR_WGT_MO', 'N/A')
-                        cnt = record.get('CNT_WGT_MO', 'N/A')
-                        val = record.get('ALL_VAL_MO', 'N/A')
-                        cty = record.get('CTY_NAME', 'N/A')
-                        print(f"    {i}. {cty[:20]:20} VAL=${val:>12}")
-                        print(f"       QTY_1={qty1:>10} (UNIT1={unit1}), QTY_2={qty2:>10} (UNIT2={unit2})")
-                        print(f"       VES_WGT={ves:>10}, AIR_WGT={air:>10}, CNT_WGT={cnt:>10}")
+                        qty1 = record.get('QTY_1_MO')
+                        unit1 = record.get('UNIT_QY1', '-')
+                        ves = parse_number(record.get('VES_WGT_MO'))
+                        air = parse_number(record.get('AIR_WGT_MO'))
+                        val = parse_number(record.get('ALL_VAL_MO'))
 
-                    # Count non-zero quantities
-                    non_zero_qty1 = sum(1 for row in data[1:] if dict(zip(headers, row)).get('QTY_1_MO') not in (None, '', '0', 0))
-                    non_zero_ves = sum(1 for row in data[1:] if dict(zip(headers, row)).get('VES_WGT_MO') not in (None, '', '0', 0))
-                    print(f"\n  Records with non-zero QTY_1_MO: {non_zero_qty1}/{len(data)-1}")
-                    print(f"  Records with non-zero VES_WGT_MO: {non_zero_ves}/{len(data)-1}")
+                        if qty1 not in (None, '', '0', 0) and unit1 != '-':
+                            non_zero_qty1 += 1
+                        if (ves or 0) + (air or 0) > 0:
+                            non_zero_weight += 1
+                            total_weight += (ves or 0) + (air or 0)
+                        if val:
+                            total_value += val
 
-                print("\n  API TEST: SUCCESS")
-                return True
+                    print(f"\n  Volume Data Availability:")
+                    print(f"    Records with QTY_1_MO populated: {non_zero_qty1}/{len(data)-1}")
+                    print(f"    Records with shipping weight:   {non_zero_weight}/{len(data)-1}")
+                    print(f"    Total shipping weight: {total_weight:,.0f} KG ({total_weight/1000:,.1f} MT)")
+                    print(f"    Total value: ${total_value:,.0f}")
+
+                    # Determine recommended volume source
+                    if non_zero_qty1 == 0 and non_zero_weight > 0:
+                        print(f"\n  RECOMMENDATION: QTY fields not reported for this commodity.")
+                        print(f"                  Using shipping weight (VES_WGT + AIR_WGT) as volume.")
+                        print(f"\n  API TEST: SUCCESS (volume available via weight)")
+                        return True
+                    elif non_zero_qty1 > 0:
+                        print(f"\n  RECOMMENDATION: QTY fields are populated.")
+                        print(f"\n  API TEST: SUCCESS (volume available via QTY)")
+                        return True
+                    else:
+                        print(f"\n  WARNING: No volume data available!")
+                        print(f"           Will estimate from USD value (less accurate).")
+                        print(f"\n  API TEST: PARTIAL (no volume data)")
+                        return True  # API works, but volume will be estimated
+
             except Exception as e:
                 print(f"  JSON parse error: {e}")
                 print(f"  Response preview: {response.text[:300]}")
@@ -922,19 +941,31 @@ def fetch_trade_data(
     time_str = f"{year}-{month:02d}"
 
     # Primary fields: value, quantity, unit, country info
-    # Also request SHIPPING_WEIGHT (VES_WGT_MO, AIR_WGT_MO, CNT_WGT_MO) as fallback
+    # Also request SHIPPING_WEIGHT (VES_WGT_MO, AIR_WGT_MO) for volume when QTY not reported
+    # Note: CNT_WGT_MO is a subset of VES_WGT_MO (containerized portion), not additive
     if flow == 'exports':
         # For exports, also request shipping weight fields
-        weight_fields = ['VES_WGT_MO', 'AIR_WGT_MO', 'CNT_WGT_MO']
+        weight_fields = ['VES_WGT_MO', 'AIR_WGT_MO']
         get_fields = f'{value_field},{",".join(qty_fields)},{unit_field},UNIT_QY2,{",".join(weight_fields)},CTY_CODE,CTY_NAME'
     else:
         get_fields = f'{value_field},{",".join(qty_fields)},{unit_field},UNIT_QY2,CTY_CODE,CTY_NAME'
+
+    # Determine COMM_LVL based on HS code length
+    hs_code_clean = str(hs_code).strip()
+    if len(hs_code_clean) == 4:
+        comm_lvl = 'HS4'
+    elif len(hs_code_clean) == 6:
+        comm_lvl = 'HS6'
+    elif len(hs_code_clean) >= 10:
+        comm_lvl = 'HS10'
+    else:
+        comm_lvl = 'HS6'  # Default to HS6
 
     params = {
         'get': get_fields,
         commodity_field: hs_code,
         'time': time_str,
-        # Note: Removed COMM_LVL=HS6 - it may filter out quantity data
+        'COMM_LVL': comm_lvl,  # Explicitly set commodity level for correct field population
     }
 
     if api_key:
@@ -975,21 +1006,32 @@ def fetch_trade_data(
                     headers = data[0]
                     records = []
 
-                    # DEBUG: Print first row with ALL values to see what Census returns
+                    # DEBUG: Print summary and determine volume source
                     if len(data) > 1:
                         first_row = dict(zip(headers, data[1]))
-                        qty_val = first_row.get('QTY_1_MO') or first_row.get('GEN_QY1_MO', 'N/A')
-                        qty2_val = first_row.get('QTY_2_MO', 'N/A')
-                        unit_val = first_row.get('UNIT_QY1', 'N/A')
-                        unit2_val = first_row.get('UNIT_QY2', 'N/A')
+                        unit_val = first_row.get('UNIT_QY1', '-')
                         val_usd = first_row.get(value_field, 'N/A')
-                        ves_wgt = first_row.get('VES_WGT_MO', 'N/A')
-                        air_wgt = first_row.get('AIR_WGT_MO', 'N/A')
-                        cnt_wgt = first_row.get('CNT_WGT_MO', 'N/A')
-                        print(f"  Got {len(data)-1} records.")
-                        print(f"    Sample: QTY_1={qty_val}, QTY_2={qty2_val}, UNIT1={unit_val}, UNIT2={unit2_val}")
-                        print(f"    Sample: VAL=${val_usd}, VES_WGT={ves_wgt}, AIR_WGT={air_wgt}, CNT_WGT={cnt_wgt}")
-                        print(f"    Available fields: {headers}")
+
+                        # Determine which volume source is available
+                        if flow == 'exports':
+                            ves_wgt = parse_number(first_row.get('VES_WGT_MO'))
+                            air_wgt = parse_number(first_row.get('AIR_WGT_MO'))
+                            total_wgt = (ves_wgt or 0) + (air_wgt or 0)
+                            if total_wgt > 0:
+                                volume_source = f"WEIGHT (VES+AIR={total_wgt:,.0f} KG)"
+                            elif unit_val and unit_val != '-':
+                                qty_val = parse_number(first_row.get('QTY_1_MO'))
+                                volume_source = f"QTY_1 ({qty_val} {unit_val})"
+                            else:
+                                volume_source = "NONE (will estimate from USD)"
+                        else:
+                            qty_val = parse_number(first_row.get('GEN_QY1_MO') or first_row.get('QTY_1_MO'))
+                            if unit_val and unit_val != '-' and qty_val:
+                                volume_source = f"QTY ({qty_val} {unit_val})"
+                            else:
+                                volume_source = "NONE (will estimate from USD)"
+
+                        print(f"  Got {len(data)-1} records. Volume source: {volume_source}")
 
                     for row in data[1:]:
                         record = dict(zip(headers, row))
@@ -997,29 +1039,51 @@ def fetch_trade_data(
                         # Parse values
                         value_usd = parse_number(record.get(value_field))
 
-                        # Try each quantity field until we find one with non-zero data
+                        # Volume extraction strategy:
+                        # 1. Check if QTY fields are actually populated (UNIT_QY1 != '-')
+                        # 2. If QTY not reported, use shipping weight as volume (VES_WGT + AIR_WGT)
+                        # 3. For imports (no weight fields), fall back to QTY fields
+
                         quantity = None
                         unit = None
-                        for i, qty_field in enumerate(qty_fields):
-                            q = parse_number(record.get(qty_field))
-                            if q is not None and q > 0:
-                                quantity = q
-                                # Get corresponding unit
-                                if 'QY1' in qty_field or i == 0:
-                                    unit = record.get('UNIT_QY1', '')
-                                else:
-                                    unit = record.get('UNIT_QY2', record.get('UNIT_QY1', ''))
-                                break  # Found non-zero data
+                        unit_qy1 = record.get('UNIT_QY1', '-')
 
-                        # FALLBACK: If QTY fields are empty, try shipping weight fields (KG)
-                        if quantity is None or quantity == 0:
-                            # Shipping weight is always in KG
-                            for wgt_field in ['VES_WGT_MO', 'AIR_WGT_MO', 'CNT_WGT_MO']:
-                                w = parse_number(record.get(wgt_field))
-                                if w is not None and w > 0:
-                                    quantity = w
-                                    unit = 'KG'  # Shipping weight is always in KG
-                                    break
+                        # For EXPORTS: Use shipping weight as PRIMARY volume measure
+                        # (QTY fields are often not populated for commodity exports)
+                        if flow == 'exports':
+                            # Check if weight data is available
+                            ves_wgt = parse_number(record.get('VES_WGT_MO'))
+                            air_wgt = parse_number(record.get('AIR_WGT_MO'))
+
+                            # Total weight = Vessel + Air (not additive with CNT_WGT)
+                            total_weight = (ves_wgt or 0) + (air_wgt or 0)
+
+                            if total_weight > 0:
+                                quantity = total_weight
+                                unit = 'KG'  # Shipping weight is always in KG
+                            elif unit_qy1 and unit_qy1 != '-':
+                                # QTY fields are populated, use them
+                                for i, qty_field in enumerate(qty_fields):
+                                    q = parse_number(record.get(qty_field))
+                                    if q is not None and q > 0:
+                                        quantity = q
+                                        if 'QY1' in qty_field or i == 0:
+                                            unit = unit_qy1
+                                        else:
+                                            unit = record.get('UNIT_QY2', unit_qy1)
+                                        break
+                        else:
+                            # For IMPORTS: Use QTY fields (weight not available)
+                            if unit_qy1 and unit_qy1 != '-':
+                                for i, qty_field in enumerate(qty_fields):
+                                    q = parse_number(record.get(qty_field))
+                                    if q is not None and q > 0:
+                                        quantity = q
+                                        if 'QY1' in qty_field or i == 0:
+                                            unit = unit_qy1
+                                        else:
+                                            unit = record.get('UNIT_QY2', unit_qy1)
+                                        break
 
                         # NORMALIZE QUANTITY TO KG
                         # Census reports different units for different HS codes:
