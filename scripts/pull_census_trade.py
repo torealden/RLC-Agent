@@ -787,19 +787,23 @@ def get_api_key() -> Optional[str]:
 
 def test_census_api(api_key: str = None) -> bool:
     """
-    Test the Census API connection with a simple request.
+    Test the Census API connection and show what fields are available for soybean oil.
 
     Returns True if the API is working, False otherwise.
-    Prints diagnostic information.
+    Prints diagnostic information including quantity fields.
     """
-    print("\n--- Census API Connection Test ---")
+    print("\n--- Census API Diagnostic Test ---")
+    print("Testing soybean oil (HS 150790) exports for Jan 2024...")
 
-    # Test with a known good query: Soybeans exports for a recent complete month
+    # Test with soybean oil to see what quantity fields are available
     test_url = f"{CENSUS_API_BASE}/exports/hs"
+
+    # Request all quantity-related fields to see what's available
+    qty_fields = 'QTY_1_MO,QTY_2_MO,UNIT_QY1,UNIT_QY2,VES_WGT_MO,AIR_WGT_MO,CNT_WGT_MO'
     test_params = {
-        'get': 'ALL_VAL_MO,CTY_NAME',
-        'E_COMMODITY': '120190',
-        'time': '2024-01',  # Use a known complete month
+        'get': f'ALL_VAL_MO,{qty_fields},CTY_CODE,CTY_NAME',
+        'E_COMMODITY': '150790',  # Refined soybean oil
+        'time': '2024-01',
     }
 
     if api_key:
@@ -809,36 +813,49 @@ def test_census_api(api_key: str = None) -> bool:
         print("  No API key (using public access)")
 
     print(f"  Test URL: {test_url}")
-    print(f"  Test params: {test_params}")
+    print(f"  Requested fields: {test_params['get']}")
 
     try:
         response = requests.get(test_url, params=test_params, timeout=30)
         print(f"  Response status: {response.status_code}")
-        print(f"  Response headers: {dict(response.headers)}")
 
         if response.status_code == 200:
-            # Check content type
-            content_type = response.headers.get('Content-Type', '')
-            print(f"  Content-Type: {content_type}")
+            try:
+                data = response.json()
+                print(f"\n  SUCCESS: Got {len(data)-1} country records")
 
-            # Show first 500 chars of response
-            content_preview = response.text[:500] if response.text else "(empty)"
-            print(f"  Response preview: {content_preview}")
+                if len(data) > 1:
+                    headers = data[0]
+                    print(f"  Available fields: {headers}")
 
-            if 'json' in content_type.lower() or response.text.strip().startswith('['):
-                try:
-                    data = response.json()
-                    print(f"  JSON parsed successfully: {len(data)} rows")
-                    if len(data) > 1:
-                        print(f"  Sample data: {data[1][:3] if len(data[1]) > 3 else data[1]}")
-                    print("  API TEST: SUCCESS")
-                    return True
-                except Exception as e:
-                    print(f"  JSON parse error: {e}")
-                    print("  API TEST: FAILED (invalid JSON)")
-                    return False
-            else:
-                print("  API TEST: FAILED (not JSON response)")
+                    # Show first 5 records with all quantity fields
+                    print("\n  First 5 records (all quantity fields):")
+                    for i, row in enumerate(data[1:6], 1):
+                        record = dict(zip(headers, row))
+                        qty1 = record.get('QTY_1_MO', 'N/A')
+                        qty2 = record.get('QTY_2_MO', 'N/A')
+                        unit1 = record.get('UNIT_QY1', 'N/A')
+                        unit2 = record.get('UNIT_QY2', 'N/A')
+                        ves = record.get('VES_WGT_MO', 'N/A')
+                        air = record.get('AIR_WGT_MO', 'N/A')
+                        cnt = record.get('CNT_WGT_MO', 'N/A')
+                        val = record.get('ALL_VAL_MO', 'N/A')
+                        cty = record.get('CTY_NAME', 'N/A')
+                        print(f"    {i}. {cty[:20]:20} VAL=${val:>12}")
+                        print(f"       QTY_1={qty1:>10} (UNIT1={unit1}), QTY_2={qty2:>10} (UNIT2={unit2})")
+                        print(f"       VES_WGT={ves:>10}, AIR_WGT={air:>10}, CNT_WGT={cnt:>10}")
+
+                    # Count non-zero quantities
+                    non_zero_qty1 = sum(1 for row in data[1:] if dict(zip(headers, row)).get('QTY_1_MO') not in (None, '', '0', 0))
+                    non_zero_ves = sum(1 for row in data[1:] if dict(zip(headers, row)).get('VES_WGT_MO') not in (None, '', '0', 0))
+                    print(f"\n  Records with non-zero QTY_1_MO: {non_zero_qty1}/{len(data)-1}")
+                    print(f"  Records with non-zero VES_WGT_MO: {non_zero_ves}/{len(data)-1}")
+
+                print("\n  API TEST: SUCCESS")
+                return True
+            except Exception as e:
+                print(f"  JSON parse error: {e}")
+                print(f"  Response preview: {response.text[:300]}")
                 return False
         else:
             print(f"  Response text: {response.text[:500]}")
@@ -901,12 +918,23 @@ def fetch_trade_data(
         unit_field = 'UNIT_QY1'
 
     # Build params - request quantity fields (WITHOUT flag fields - they cause API errors)
+    # Also request shipping weight fields as alternative data sources
     time_str = f"{year}-{month:02d}"
-    get_fields = f'{value_field},{",".join(qty_fields)},{unit_field},UNIT_QY2,CTY_CODE,CTY_NAME'
+
+    # Primary fields: value, quantity, unit, country info
+    # Also request SHIPPING_WEIGHT (VES_WGT_MO, AIR_WGT_MO, CNT_WGT_MO) as fallback
+    if flow == 'exports':
+        # For exports, also request shipping weight fields
+        weight_fields = ['VES_WGT_MO', 'AIR_WGT_MO', 'CNT_WGT_MO']
+        get_fields = f'{value_field},{",".join(qty_fields)},{unit_field},UNIT_QY2,{",".join(weight_fields)},CTY_CODE,CTY_NAME'
+    else:
+        get_fields = f'{value_field},{",".join(qty_fields)},{unit_field},UNIT_QY2,CTY_CODE,CTY_NAME'
+
     params = {
         'get': get_fields,
         commodity_field: hs_code,
         'time': time_str,
+        # Note: Removed COMM_LVL=HS6 - it may filter out quantity data
     }
 
     if api_key:
@@ -947,10 +975,21 @@ def fetch_trade_data(
                     headers = data[0]
                     records = []
 
-                    # Debug: Log the headers and sample data we received
+                    # DEBUG: Print first row with ALL values to see what Census returns
                     if len(data) > 1:
-                        sample = dict(zip(headers, data[1]))
-                        print(f"  Got {len(data)-1} records. Sample: QTY_1={sample.get('QTY_1_MO') or sample.get('GEN_QY1_MO')}, UNIT={sample.get('UNIT_QY1')}")
+                        first_row = dict(zip(headers, data[1]))
+                        qty_val = first_row.get('QTY_1_MO') or first_row.get('GEN_QY1_MO', 'N/A')
+                        qty2_val = first_row.get('QTY_2_MO', 'N/A')
+                        unit_val = first_row.get('UNIT_QY1', 'N/A')
+                        unit2_val = first_row.get('UNIT_QY2', 'N/A')
+                        val_usd = first_row.get(value_field, 'N/A')
+                        ves_wgt = first_row.get('VES_WGT_MO', 'N/A')
+                        air_wgt = first_row.get('AIR_WGT_MO', 'N/A')
+                        cnt_wgt = first_row.get('CNT_WGT_MO', 'N/A')
+                        print(f"  Got {len(data)-1} records.")
+                        print(f"    Sample: QTY_1={qty_val}, QTY_2={qty2_val}, UNIT1={unit_val}, UNIT2={unit2_val}")
+                        print(f"    Sample: VAL=${val_usd}, VES_WGT={ves_wgt}, AIR_WGT={air_wgt}, CNT_WGT={cnt_wgt}")
+                        print(f"    Available fields: {headers}")
 
                     for row in data[1:]:
                         record = dict(zip(headers, row))
@@ -971,6 +1010,16 @@ def fetch_trade_data(
                                 else:
                                     unit = record.get('UNIT_QY2', record.get('UNIT_QY1', ''))
                                 break  # Found non-zero data
+
+                        # FALLBACK: If QTY fields are empty, try shipping weight fields (KG)
+                        if quantity is None or quantity == 0:
+                            # Shipping weight is always in KG
+                            for wgt_field in ['VES_WGT_MO', 'AIR_WGT_MO', 'CNT_WGT_MO']:
+                                w = parse_number(record.get(wgt_field))
+                                if w is not None and w > 0:
+                                    quantity = w
+                                    unit = 'KG'  # Shipping weight is always in KG
+                                    break
 
                         # NORMALIZE QUANTITY TO KG
                         # Census reports different units for different HS codes:
