@@ -1,3 +1,0 @@
-source,source_report,source_report_id,report_type,fetch_timestamp,api_reportSection,api_reportSections,api_stats,api_results
-USDA_AMS,Kansas City Board of Trade Daily Wheat Bids,3148,grain,2025-12-04T14:42:57.395304,Report Header,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
-USDA_AMS,Kansas City Board of Trade Daily Wheat Bids,3148,grain,2025-12-04T14:42:57.395353,Report Detail,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
