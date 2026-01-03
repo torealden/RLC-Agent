@@ -1,98 +1,102 @@
-# Database Migrations
+# Database Migration - Bronze/Silver/Gold
 
-This directory contains versioned migration scripts for the RLC database.
+Migration scripts to set up the medallion architecture and migrate existing data.
 
-## Naming Convention
+## Prerequisites
 
-```
-YYYYMMDD_HHMMSS_description.sql
-```
+1. PostgreSQL running locally (or update connection settings in scripts)
+2. Python 3.8+ with `psycopg2` installed:
+   ```bash
+   pip install psycopg2-binary
+   ```
 
-Example:
-```
-20240115_120000_add_weather_tables.sql
-```
+## Quick Start
 
-## Migration Best Practices
-
-1. **Idempotent**: Migrations should be safe to run multiple times
-2. **Reversible**: Include rollback statements where possible
-3. **Tested**: Test on a copy of production data first
-4. **Small**: Keep migrations focused on a single change
-5. **Documented**: Include comments explaining the change
-
-## Template
-
-```sql
--- ============================================================================
--- Migration: [DESCRIPTION]
--- Date: [YYYY-MM-DD]
--- Author: [NAME]
--- ============================================================================
--- Description:
---   [What this migration does]
---
--- Rollback:
---   [How to undo this migration]
--- ============================================================================
-
--- Check preconditions (optional)
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM core.series WHERE series_key = 'example') THEN
-        RAISE EXCEPTION 'Precondition failed: expected series not found';
-    END IF;
-END $$;
-
--- Forward migration
-ALTER TABLE core.series ADD COLUMN IF NOT EXISTS new_column VARCHAR(100);
-
--- Update data
-UPDATE core.series SET new_column = 'default' WHERE new_column IS NULL;
-
--- Rollback (commented out, for reference)
--- ALTER TABLE core.series DROP COLUMN IF EXISTS new_column;
-
--- Verification
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'core' AND table_name = 'series' AND column_name = 'new_column'
-    ) THEN
-        RAISE EXCEPTION 'Migration verification failed: new_column not found';
-    END IF;
-    RAISE NOTICE 'Migration completed successfully';
-END $$;
-```
-
-## Running Migrations
-
+Run the full migration:
 ```bash
-# Run a specific migration
-psql -U postgres -d rlc -f migrations/20240115_120000_add_weather_tables.sql
-
-# Run all migrations in order
-for f in migrations/*.sql; do
-    echo "Running $f..."
-    psql -U postgres -d rlc -f "$f"
-done
+cd database/migrations
+python run_full_migration.py
 ```
 
-## Migration Tracking
+Or run steps individually:
 
-Consider using a migration tracking table:
+## Step-by-Step Migration
 
-```sql
-CREATE TABLE IF NOT EXISTS audit.schema_migrations (
-    id SERIAL PRIMARY KEY,
-    filename VARCHAR(255) NOT NULL UNIQUE,
-    applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    applied_by VARCHAR(100) DEFAULT current_user
-);
+### Step 1: Inventory Existing Data
+```bash
+python 01_inventory_postgres.py
+```
+- Lists all schemas and tables in PostgreSQL
+- Shows row counts
+- Saves inventory to `postgres_inventory.json`
 
--- Before running a migration:
--- 1. Check if already applied
--- 2. Run migration
--- 3. Record in schema_migrations
+### Step 2: Deploy Medallion Schema
+```bash
+python 02_deploy_medallion_schema.py
+```
+- Creates `core`, `audit`, `bronze`, `silver`, `gold` schemas
+- Sets up dimension tables, audit tables, and views
+- Runs SQL files from parent directory
+
+### Step 3: Migrate Existing PostgreSQL Data
+```bash
+python 03_migrate_existing_to_bronze.py
+```
+- Copies data from `public.*` tables to `bronze.raw_*` tables
+- Preserves original tables (non-destructive)
+- Adds audit columns (migrated_at, source_table)
+
+### Step 4: Migrate SQLite Data
+```bash
+python 04_migrate_sqlite_to_bronze.py
+```
+- Reads from `data/rlc_commodities.db`
+- Creates `bronze.sqlite_*` tables
+- Migrates 104,768 rows from commodity_balance_sheets
+
+## Connection Settings
+
+Default PostgreSQL settings (update in each script if different):
+```python
+PG_HOST = "localhost"
+PG_PORT = "5432"
+PG_DATABASE = "rlc_commodities"
+PG_USER = "postgres"
+PG_PASSWORD = "SoupBoss1"
+```
+
+## After Migration
+
+### Power BI Connection
+Connect to the new schema tables:
+- `bronze.*` - Raw source data
+- `silver.observation` - Standardized time-series
+- `gold.*` - Business-ready views
+
+### Update Collectors
+Change collectors to write to bronze schema:
+```python
+# Old: INSERT INTO public.commodity_balance_sheets
+# New: INSERT INTO bronze.wasde_cell
+```
+
+## Schema Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        GOLD LAYER                                │
+│  Business-ready views for Power BI and reports                  │
+│  (gold.us_corn_balance_sheet, gold.wasde_changes, etc.)        │
+├─────────────────────────────────────────────────────────────────┤
+│                       SILVER LAYER                               │
+│  Standardized time-series: (series_id, time, value)            │
+│  (silver.observation)                                            │
+├─────────────────────────────────────────────────────────────────┤
+│                       BRONZE LAYER                               │
+│  Raw source data, exactly as received                           │
+│  (bronze.wasde_cell, bronze.sqlite_commodity_balance_sheets)    │
+├─────────────────────────────────────────────────────────────────┤
+│                     DIMENSION TABLES                             │
+│  (core.data_source, core.commodity, core.series, core.unit)    │
+└─────────────────────────────────────────────────────────────────┘
 ```
