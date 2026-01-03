@@ -1,3 +1,0 @@
-source,source_report,source_report_id,report_type,fetch_timestamp,api_reportSection,api_reportSections,api_stats,api_results
-USDA_AMS,Weekly Ethanol Report,3616,ethanol,2025-12-04T14:39:56.824408,Report Header,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
-USDA_AMS,Weekly Ethanol Report,3616,ethanol,2025-12-04T14:39:56.824477,Report Detail,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
