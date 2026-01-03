@@ -1,0 +1,17 @@
+Name,Location,Size_KB,Function,Schedule,Input_Source,Output_Destination,Commodities,Status
+pull_census_trade.py,scripts/,105,Downloads US Census Bureau import/export trade data,Monthly,Census API,"PostgreSQL DB, Excel Models","Soybeans, Soy Meal, Soy Oil",Active
+pull_census_trade_git.py,scripts/,100,Variant of census trade script with git integration,Monthly,Census API,"PostgreSQL DB, Excel Models","Soybeans, Soy Meal, Soy Oil",Active
+pull_census_trade_modified.py,scripts/,11,Modified census trade script,Monthly,Census API,"PostgreSQL DB","Soybeans, Soy Meal, Soy Oil",Active
+pull_weekly_inspections.py,scripts/,86,Downloads FGIS export inspection data with correction handling,Weekly,FGIS CSV Files,"PostgreSQL DB, Excel Models","Soybeans, Corn, Wheat",Active
+pull_cgc_trade.py,scripts/,37,Downloads Canadian Grain Commission weekly trade data,Weekly,CGC Website,"PostgreSQL DB","Wheat, Canola, Barley",Active
+pull_statcan_trade.py,scripts/,21,Downloads Statistics Canada trade data,Monthly,StatCan API,"PostgreSQL DB","Canadian agricultural commodities",Active
+load_historical_data.py,scripts/,21,Loads historical data into database,On-demand,Excel Files,PostgreSQL DB,All commodities,Active
+export_for_powerbi.py,scripts/,13,Exports database data for Power BI consumption,On-demand,PostgreSQL DB,CSV/Excel,All commodities,Active
+create_powerbi_export.py,scripts/,11,Creates Power BI export files,On-demand,PostgreSQL DB,PBIX Files,All commodities,Active
+collect.py,scripts/,11,Generic data collection utility,On-demand,Various APIs,PostgreSQL DB,All commodities,Active
+load_cached_to_db.py,scripts/,11,Migrates cached data files to database,On-demand,JSON Cache Files,PostgreSQL DB,All commodities,Active
+init_database.py,scripts/,9,Initializes database schema and tables,Setup,SQL Scripts,PostgreSQL DB,N/A,Active
+export_cached_data.py,scripts/,8,Exports data to cache files,On-demand,PostgreSQL DB,JSON Files,All commodities,Active
+pull_historical_weather.py,scripts/,15,Collects historical weather data,On-demand,Weather APIs,PostgreSQL DB,Weather data,Active
+test_all_collectors.py,scripts/,10,Tests all data collectors for connectivity,Testing,All APIs,Console Output,All commodities,Active
+test_excel_write.py,scripts/,3,Tests Excel file writing capabilities,Testing,Test Data,Excel Files,N/A,Active

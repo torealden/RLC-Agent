@@ -1,0 +1,6 @@
+Name,Location,File,Size_KB,Output_Type,Frequency,Destination,Description,Status
+HB Weekly Report Writer,commodity_pipeline/hb_weekly_report_writer/,main.py,12,Word Document,Weekly,Dropbox,Generates HigbyBarrett weekly commodity market reports,Active
+DocumentBuilder,commodity_pipeline/hb_weekly_report_writer/services/,document_builder.py,17,Word Document,On-demand,Local/Dropbox,Builds formatted report documents from agent outputs,Active
+ReportGenerator,api Manager/,report_generator.py,2,Various,On-demand,Various,General report generation utility,Prototype
+ReportTemplateGenerator,api Manager/,report_template_generator.py,1,Templates,On-demand,Local,Template-based report creation,Prototype
+DashboardGenerator,api Manager/,dashboard_generator.py,1,Dashboard,On-demand,Power BI,Dashboard generation utility,Prototype

@@ -1,0 +1,7 @@
+Name,Location,File,Size_KB,Function,Managed_Components,Schedule,Status
+HBReportOrchestrator,commodity_pipeline/hb_weekly_report_writer/services/,orchestrator.py,20,Coordinates HB weekly report generation,"InternalDataAgent, MarketResearchAgent, PriceDataAgent, ReportWriterAgent",Weekly (Tuesday),Active
+TradeDataOrchestrator,commodity_pipeline/south_america_trade_data/services/,orchestrator.py,27,Coordinates South America monthly trade data collection,"BrazilAgent, ArgentinaAgent, ColombiaAgent, ParaguayAgent, UruguayAgent",Monthly,Active
+LineupDataOrchestrator,commodity_pipeline/south_america_trade_data/services/,orchestrator.py,27,Coordinates port lineup data collection,"BrazilLineupAgent, BaseLineupAgent",Weekly,Active
+PipelineOrchestrator,commodity_pipeline/usda_ams_agent/core/,pipeline_orchestrator.py,15,Coordinates USDA AMS ETL pipeline,"USDACollector, DatabaseAgent, VerificationAgent",Daily,Active
+RLCMasterAgent,api Manager/,master_orchestrator.py,2,Central daily workflow coordinator,"DataIngestionOrchestrator, CleaningPipeline, AnalysisOrchestrator, ReportGenerator",Daily,Prototype
+DataIngestionOrchestrator,api Manager/,data_ingest_orchestrator.py,1,Data intake management,All collectors,On-demand,Prototype

@@ -1,0 +1,28 @@
+Name,Class_Name,File,Data_Source,Region,Country,Auth_Type,Frequency,Commodities,API_URL,Status
+CFTC COT,CFTCCOTCollector,cftc_cot_collector.py,CFTC Commitments of Traders,North America,US,FREE,Weekly,"Corn, Wheat, Soybeans, Soy Oil, Soy Meal, Crude Oil",https://publicreporting.cftc.gov/,Active
+USDA FAS,USDATFASCollector,usda_fas_collector.py,USDA Foreign Agricultural Service,North America,US,FREE,Weekly/Monthly,"All agricultural commodities",https://apps.fas.usda.gov/OpenData/api/,Active
+USDA NASS,NASSCollector,usda_nass_collector.py,USDA National Agricultural Statistics,North America,US,API_KEY,Weekly,"Crop Progress, Acreage, Production",https://quickstats.nass.usda.gov/api/,Active
+USDA AMS Tallow/Protein,TallowProteinCollector,usda_ams_collector.py,USDA Agricultural Marketing Service,North America,US,FREE,Daily,"Tallow, Grease, DDGS prices",https://marsapi.ams.usda.gov/,Active
+USDA AMS Grain Co-Products,GrainCoProductsCollector,usda_ams_collector.py,USDA Agricultural Marketing Service,North America,US,FREE,Daily,"DDGS, Corn Gluten",https://marsapi.ams.usda.gov/,Active
+USDA ERS Feed Grains,FeedGrainsCollector,usda_ers_collector.py,USDA Economic Research Service,North America,US,FREE,Monthly,"Corn, Sorghum, Barley, Oats",https://www.ers.usda.gov/data-products/,Active
+USDA ERS Oil Crops,OilCropsCollector,usda_ers_collector.py,USDA Economic Research Service,North America,US,FREE,Monthly,"Soybeans, Soy Oil, Soy Meal",https://www.ers.usda.gov/data-products/,Active
+USDA ERS Wheat,WheatDataCollector,usda_ers_collector.py,USDA Economic Research Service,North America,US,FREE,Monthly,"Wheat varieties",https://www.ers.usda.gov/data-products/,Active
+EIA Ethanol,EIAEthanolCollector,eia_ethanol_collector.py,Energy Information Administration,North America,US,API_KEY,Weekly,"Ethanol production, stocks, blending",https://api.eia.gov/v2/,Active
+EIA Petroleum,EIAPetroleumCollector,eia_petroleum_collector.py,Energy Information Administration,North America,US,API_KEY,Weekly,"Crude oil, gasoline, diesel, natural gas",https://api.eia.gov/v2/,Active
+EPA RFS,EPARFSCollector,epa_rfs_collector.py,Environmental Protection Agency,North America,US,FREE,Monthly,"RIN generation, RFS compliance",https://www.epa.gov/fuels-registration-reporting-and-compliance-help/,Active
+Drought Monitor,DroughtCollector,drought_collector.py,US Drought Monitor,North America,US,FREE,Weekly,"Drought conditions by region",https://droughtmonitor.unl.edu/,Active
+Census Trade,CensusTradeCollector,census_trade_collector.py,US Census Bureau,North America,US,Optional API,Monthly,"All trade commodities by HS code",https://api.census.gov/data/timeseries/intltrade/,Active
+CME Settlements,CMESettlementsCollector,cme_settlements_collector.py,Chicago Mercantile Exchange,North America,US,FREE,Daily,"All CME futures contracts",https://www.cmegroup.com/,Active
+Canadian Grain Commission,CGCCollector,canada_cgc_collector.py,Canadian Grain Commission,North America,Canada,FREE,Weekly,"Wheat, Canola, Barley exports",https://www.grainscanada.gc.ca/,Active
+Statistics Canada,StatsCanCollector,canada_statscan_collector.py,Statistics Canada,North America,Canada,FREE,Monthly,"Production, stocks, crush",https://www150.statcan.gc.ca/,Active
+Canola Council,CanolaCouncilCollector,canada_statscan_collector.py,Canola Council of Canada,North America,Canada,FREE,Monthly,"Canola industry statistics",https://www.canolacouncil.org/,Active
+MPOB,MPOBCollector,mpob_collector.py,Malaysian Palm Oil Board,Asia Pacific,Malaysia,SCRAPE,Monthly,"Palm oil production, exports, stocks",https://bepi.mpob.gov.my/,Active
+ABIOVE,ABIOVECollector,abiove_collector.py,Brazilian Vegetable Oil Association,South America,Brazil,SCRAPE,Monthly,"Soy crush, soy oil, soy meal",https://abiove.org.br/,Active
+CONAB,CONABCollector,conab_collector.py,Brazil National Supply Company,South America,Brazil,FREE,Monthly,"Crop estimates, production",https://www.conab.gov.br/,Active
+IBGE SIDRA,IBGESidraCollector,ibge_sidra_collector.py,Brazilian Institute of Geography and Statistics,South America,Brazil,FREE,Monthly,"Agricultural production statistics",https://sidra.ibge.gov.br/,Active
+IMEA,IMEACollector,imea_collector.py,Mato Grosso Institute of Agricultural Economics,South America,Brazil,SCRAPE,Weekly,"Regional crop data, prices",https://www.imea.com.br/,Active
+MAGYP,MAGYPCollector,magyp_collector.py,Argentina Ministry of Agriculture,South America,Argentina,FREE,Monthly,"Production, exports, stocks",https://www.magyp.gob.ar/,Active
+FAO Statistics,FAOStatCollector,faostat_collector.py,Food and Agriculture Organization,Global,International,FREE,Annual,"Global production, trade, food balance",https://www.fao.org/faostat/,Active
+Interactive Brokers,IBKRCollector,ibkr_collector.py,Interactive Brokers,North America,US,PAID,Real-time,"Futures, options market data",https://www.interactivebrokers.com/,Planned
+TradeStation,TradestationCollector,tradestation_collector.py,TradeStation,North America,US,PAID,Real-time,"Futures, options market data",https://www.tradestation.com/,Planned
+Futures Data,FuturesDataCollector,futures_data_collector.py,Various exchanges,North America,US,Varies,Daily,"Generic futures data collection",Various,Active
