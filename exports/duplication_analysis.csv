@@ -1,0 +1,14 @@
+Category,File_Pattern,Current_Count,Keep_Count,Delete_Count,Canonical_Location,Action
+USDA AMS Collector,usda_ams_collector*.py,10,2,8,commodity_pipeline/usda_ams_agent/,Delete 8 older versions
+Email Manager,email_manager*.py,21,1,20,rlc_master_agent/email_agent.py,Delete 20 archive versions
+Google API Setup,google_api_setup*.py,5,1,4,deployment/setup_google_oauth.py,Delete 4 archive versions
+Verification Agent,verification_agent.py,3,2,1,"rlc_master_agent/ and usda_ams_agent/agents/",Delete empty archive version
+Database Agent,database_agent.py,2,1,1,commodity_pipeline/usda_ams_agent/agents/,Delete archive version
+Other Files Archive,*.py in Other Files/Archive/,20,0,20,N/A,Delete all - obsolete
+Other Files Desktop Assistant,*.py in Other Files/Desktop Assistant/,18,0,18,N/A,Delete all - obsolete
+Other Files Email Setup,*.py in Other Files/Email and Calendar Set Up/,15,0,15,N/A,Delete all - obsolete
+Other Files API Manager,All files in Other Files/api Manager/,26,0,26,api Manager/ (main),Delete all - duplicate
+Other Files Commodity Pipeline,All files in Other Files/commodity_pipeline/,12,0,12,commodity_pipeline/ (main),Delete all - duplicate
+Planning Documents,*.docx in Other Files/Planning/,45,45,0,Move to docs/planning/,Move - valuable content
+HB Report Samples,Files in Other Files/HB Report Samples/,3,3,0,Move to docs/samples/,Move - valuable content
+ZIP Archives,*.zip in Other Files/,2,0,2,N/A,Delete - obsolete packages
