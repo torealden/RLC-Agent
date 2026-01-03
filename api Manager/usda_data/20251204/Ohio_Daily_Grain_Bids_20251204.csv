@@ -1,3 +1,0 @@
-source,source_report,source_report_id,report_type,fetch_timestamp,api_reportSection,api_reportSections,api_stats,api_results
-USDA_AMS,Ohio Daily Grain Bids,3225,grain,2025-12-04T14:39:57.111618,Report Header,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
-USDA_AMS,Ohio Daily Grain Bids,3225,grain,2025-12-04T14:39:57.111685,Report Detail,"['Report Header', 'Report Detail']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]

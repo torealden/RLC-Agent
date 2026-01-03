@@ -1,3 +1,0 @@
-source,source_report,source_report_id,report_type,fetch_timestamp,api_reportSection,api_reportSections,api_stats,api_results
-USDA_AMS,Illinois Production Cost Report (Bi-Weekly),3195,ethanol,2025-12-04T14:39:57.085517,Report Header,"['Report Header', 'Report Details - Prices']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
-USDA_AMS,Illinois Production Cost Report (Bi-Weekly),3195,ethanol,2025-12-04T14:39:57.085587,Report Details - Prices,"['Report Header', 'Report Details - Prices']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]

@@ -1,5 +1,0 @@
-source,source_report,source_report_id,report_type,fetch_timestamp,api_reportSection,api_reportSections,api_stats,api_results
-USDA_AMS,National Weekly Grain Co-Products Report,3618,ethanol,2025-12-04T14:39:56.789912,Report Header,"['Report Header', 'Report Input Cost', 'Report Detail', 'Report EPV']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
-USDA_AMS,National Weekly Grain Co-Products Report,3618,ethanol,2025-12-04T14:39:56.789987,Report Input Cost,"['Report Header', 'Report Input Cost', 'Report Detail', 'Report EPV']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
-USDA_AMS,National Weekly Grain Co-Products Report,3618,ethanol,2025-12-04T14:39:56.790018,Report Detail,"['Report Header', 'Report Input Cost', 'Report Detail', 'Report EPV']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
-USDA_AMS,National Weekly Grain Co-Products Report,3618,ethanol,2025-12-04T14:39:56.790039,Report EPV,"['Report Header', 'Report Input Cost', 'Report Detail', 'Report EPV']","{'returnedRows': 0, 'userAllowedRows': 100000, 'totalRows': 0}",[]
