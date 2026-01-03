@@ -33,28 +33,33 @@ def migrate_sqlite_to_bronze():
     print("Migrating SQLite Data to PostgreSQL Bronze Layer")
     print("=" * 60)
 
-    # Check SQLite file exists
-    if not SQLITE_PATH.exists():
+    # Find SQLite database
+    sqlite_path = SQLITE_PATH
+
+    if not sqlite_path.exists():
         # Try alternate paths
         alt_paths = [
             Path("C:/RLC/projects/rlc-agent/data/rlc_commodities.db"),
             Path("./data/rlc_commodities.db"),
             Path("../data/rlc_commodities.db"),
+            Path("../../data/rlc_commodities.db"),
         ]
         for alt in alt_paths:
             if alt.exists():
-                global SQLITE_PATH
-                SQLITE_PATH = alt
+                sqlite_path = alt
                 break
         else:
             print(f"ERROR: SQLite database not found at {SQLITE_PATH}")
+            print("Tried alternate paths:")
+            for p in alt_paths:
+                print(f"  - {p}")
             print("Please update SQLITE_PATH in this script.")
             return False
 
-    print(f"SQLite: {SQLITE_PATH}")
+    print(f"SQLite: {sqlite_path}")
 
     # Connect to SQLite
-    sqlite_conn = sqlite3.connect(str(SQLITE_PATH))
+    sqlite_conn = sqlite3.connect(str(sqlite_path))
     sqlite_conn.row_factory = sqlite3.Row
     sqlite_cursor = sqlite_conn.cursor()
 
