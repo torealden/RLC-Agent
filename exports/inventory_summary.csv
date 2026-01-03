@@ -1,0 +1,14 @@
+Category,Count,Primary_Location,Description
+Data Collectors,26,commodity_pipeline/data_collectors/collectors/,Automated data collection from government and market sources
+Agents,20,Various,Specialized AI agents for different data domains and tasks
+Orchestrators,6,Various,Workflow coordination and management
+Schedulers,4,Various,Time-based job scheduling using APScheduler
+Report Writers,5,Various,Document and report generation
+Standalone Scripts,16,scripts/,Utility scripts for data operations
+Deployment Tools,15,deployment/,Server deployment and management tools
+Services,6,Various,API integration services
+Special Systems,7,Various,Specialized systems like BioTrack AI
+Database Files,7,database/,PostgreSQL schema and SQLite database
+Documentation,17,docs/,Guides and technical documentation
+PowerBI Templates,3,PowerBI/,Dashboard templates
+Total Components,121,Repository-wide,All automated data flow components

@@ -1,0 +1,22 @@
+Name,Type,Location,File,Size_KB,Status,Dependencies,Description
+RLCMasterAgent,Master,rlc_master_agent/,master_agent.py,31,Active,"ApprovalManager, MemoryManager, VerificationAgent, DataAgent, EmailAgent, CalendarAgent",Central orchestrator - coordinates all sub-agents and manages plan-act-observe loop
+ApprovalManager,Manager,rlc_master_agent/,approval_manager.py,19,Active,None,Manages human-in-the-loop approval workflows with autonomy levels
+CalendarAgent,Sub-agent,rlc_master_agent/,calendar_agent.py,26,Active,Google Calendar API,Google Calendar integration for scheduling and event management
+DataAgent,Sub-agent,rlc_master_agent/,data_agent.py,24,Active,Database,Data fetching and management operations
+EmailAgent,Sub-agent,rlc_master_agent/,email_agent.py,22,Active,Gmail API,Gmail integration for email handling and communication
+VerificationAgent,Sub-agent,rlc_master_agent/,verification_agent.py,20,Active,None,Data verification and validation
+MemoryManager,Manager,rlc_master_agent/,memory_manager.py,22,Active,None,Persistent memory and state management across sessions
+BrazilComexStatAgent,Trade Agent,commodity_pipeline/south_america_trade_data/agents/,brazil_agent.py,18,Active,None,Brazil ComexStat monthly trade data collection
+BrazilLineupAgent,Lineup Agent,commodity_pipeline/south_america_trade_data/agents/,brazil_lineup_agent.py,28,Active,None,Brazil port lineup and vessel tracking data
+ArgentinaINDECAgent,Trade Agent,commodity_pipeline/south_america_trade_data/agents/,argentina_agent.py,19,Active,None,Argentina INDEC trade statistics collection
+ColombiaDANEAgent,Trade Agent,commodity_pipeline/south_america_trade_data/agents/,colombia_agent.py,18,Active,None,Colombia DANE trade data collection
+ParaguayAgent,Trade Agent,commodity_pipeline/south_america_trade_data/agents/,paraguay_agent.py,23,Active,None,Paraguay trade data collection
+UruguayDNAAgent,Trade Agent,commodity_pipeline/south_america_trade_data/agents/,uruguay_agent.py,17,Active,None,Uruguay DNA trade data collection
+BaseLineupAgent,Base Class,commodity_pipeline/south_america_trade_data/agents/,base_lineup_agent.py,24,Active,None,Base class for all port lineup agents
+BaseTradeAgent,Base Class,commodity_pipeline/south_america_trade_data/agents/,base_trade_agent.py,21,Active,None,Base class for all trade data agents
+InternalDataAgent,Report Agent,commodity_pipeline/hb_weekly_report_writer/agents/,internal_data_agent.py,18,Active,Database,Fetches internal market data for HB reports
+MarketResearchAgent,Report Agent,commodity_pipeline/hb_weekly_report_writer/agents/,market_research_agent.py,25,Active,Web APIs,Market analysis and research compilation
+PriceDataAgent,Report Agent,commodity_pipeline/hb_weekly_report_writer/agents/,price_data_agent.py,18,Active,CME Data,Price data compilation and formatting
+ReportWriterAgent,Report Agent,commodity_pipeline/hb_weekly_report_writer/agents/,report_writer_agent.py,22,Active,All HB agents,Report composition and document generation
+DatabaseAgent,USDA Agent,commodity_pipeline/usda_ams_agent/agents/,database_agent.py,25,Active,PostgreSQL/SQLite,Database operations for USDA AMS data
+USDAVerificationAgent,USDA Agent,commodity_pipeline/usda_ams_agent/agents/,verification_agent.py,20,Active,None,USDA data verification and quality checks

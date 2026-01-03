@@ -1,0 +1,7 @@
+Name,Location,File,Size_KB,Function,API_Integration,Status
+Census API Service,rlc_master_agent/services/,census_api.py,13,Census Bureau API integration for trade data,US Census Bureau,Active
+USDA API Service,rlc_master_agent/services/,usda_api.py,10,USDA API integration for agricultural data,USDA APIs,Active
+Weather API Service,rlc_master_agent/services/,weather_api.py,16,Weather data API integration,Various weather APIs,Active
+World Weather Service,rlc_master_agent/services/,world_weather_service.py,33,Global weather data service for commodity regions,Multiple sources,Active
+USDA AMS Source Plugin,api Manager/plugins/,usda_ams_source.py,11,USDA AMS data source plugin for API Manager,USDA AMS,Active
+Eurostat Source Plugin,api Manager/plugins/,eurostat_source.py,2,Eurostat data source plugin for API Manager,Eurostat,Planned

@@ -1,0 +1,18 @@
+Name,Location,Size_KB,Topic,Description
+ARCHITECTURE_PLAN.md,docs/,28,System Architecture,Comprehensive multi-agent architecture plan with hierarchical agent structure
+DATA_SOURCE_REGISTRY.md,docs/,23,Data Sources,Master registry of all agricultural commodity data sources with API details
+HB_REPORT_AUTOMATION_GUIDE.md,docs/,27,Report Automation,Guide for automating HigbyBarrett weekly report generation
+FORECAST_TRACKING_GUIDE.md,docs/,22,Forecast Tracking,Guide for capturing forecasts and measuring accuracy
+POWERBI_DASHBOARD_GUIDE.md,docs/,17,Visualization,Power BI dashboard setup and configuration guide
+POWERBI_ODBC_SETUP.md,docs/,26,Database Connection,ODBC setup for Power BI to PostgreSQL connection
+NORTH_AMERICA_DATA_SOURCES.md,docs/,20,Data Sources,Detailed documentation of North American data sources
+HISTORICAL_DATABASE_SETUP.md,docs/,15,Database,Historical data loading and database initialization guide
+VISUALIZATION_INSPIRATION.md,docs/,27,Design,Dashboard design inspiration and best practices
+CONSOLIDATION_PLAN.md,docs/,12,Architecture,Plan for consolidating duplicate code and systems
+SCREEN_RECORDING_FOR_LLM.md,docs/,10,Training,Guide for screen recording to train LLM agents
+LLM_TRAINING_STRATEGY.md,docs/,9,Training,Strategy for training AI agents on RLC processes
+BALANCE_SHEET_KNOWLEDGE.md,docs/,8,Domain Knowledge,Balance sheet handling and commodity knowledge
+CREDENTIALS_REQUIRED.md,docs/,7,Configuration,List of required API credentials and keys
+FILE_ORGANIZATION_PLAN.md,docs/,6,Architecture,File structure and organization plan
+CODE_REVIEW.md,docs/,3,Development,Code review guidelines and standards
+DATABASE_DESIGN.md,database/,15,Database,PostgreSQL schema design documentation

@@ -1,0 +1,5 @@
+Name,Location,File,Size_KB,Function,Managed_Jobs,Technology,Status
+Master Report Scheduler,commodity_pipeline/scheduler/,report_scheduler.py,28,Master scheduler managing all data collection based on official release schedules,"CME Settlements (Daily 5PM), USDA NASS (Monday 4PM), CFTC COT (Friday 3:30PM), EIA (Wednesday 10:30AM), all collectors",APScheduler,Active
+HB Report Scheduler,commodity_pipeline/hb_weekly_report_writer/services/,scheduler.py,11,Schedules weekly HB report generation,HBReportOrchestrator,APScheduler,Active
+Trade Data Scheduler,commodity_pipeline/south_america_trade_data/services/,scheduler.py,25,Schedules South America trade data collection,TradeDataOrchestrator,APScheduler,Active
+Lineup Scheduler,commodity_pipeline/south_america_trade_data/services/,scheduler.py,25,Schedules port lineup data collection,LineupDataOrchestrator,APScheduler,Active

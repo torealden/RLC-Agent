@@ -1,0 +1,16 @@
+Name,Location,Size_KB,Function,Input,Output,Status
+agent_tools.py,deployment/,85,Comprehensive tools for Master Agent including file operations DB queries and collector execution,Various,ToolResult objects,Active
+forecast_tracker.py,deployment/,42,Captures forecasts compares to actuals and computes accuracy metrics (MAPE RMSE MAE),Forecast data,Accuracy reports,Active
+balance_sheet_extractor.py,deployment/,29,Extracts data from RLC commodity balance sheet Excel files,Excel files,Database records,Active
+excel_to_database.py,deployment/,30,Migrates Excel spreadsheet data to PostgreSQL database,Excel files,PostgreSQL,Active
+document_rag.py,deployment/,22,Semantic search using Ollama embeddings for document retrieval,Documents,Search results,Active
+fast_extractor.py,deployment/,17,Quick data extraction utility for common patterns,Various,Extracted data,Active
+start_agent.py,deployment/,16,Agent startup script with configuration,Config,Running agent,Active
+usda_api.py,deployment/,13,USDA API client wrapper,API calls,JSON data,Active
+extract_feed_grains.py,deployment/,13,Feed grains specific data extraction,USDA ERS,Database records,Active
+setup_google_oauth.py,deployment/,9,Google OAuth setup and token management,Credentials,OAuth tokens,Active
+powerbi_export.py,deployment/,9,Power BI data export utility,Database,PBIX/CSV,Active
+transfer_calendar.py,deployment/,7,Calendar data migration between systems,Source calendar,Target calendar,Active
+db_config.py,deployment/,6,Database configuration and connection management,Environment vars,DB connections,Active
+deploy_to_rlc_server.py,deployment/,6,Deployment script for RLC server,Local files,Remote server,Active
+setup_rlc_server.ps1,deployment/,8,PowerShell server setup script,None,Configured server,Active

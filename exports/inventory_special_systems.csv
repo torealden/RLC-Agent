@@ -1,0 +1,8 @@
+Name,Location,File,Size_KB,Function,Technology,Status
+BioTrack AI,biotrack/,biotrack_ai.py,38,YOLOv8-based rail car detection for biofuel feedstock volume estimation,YOLOv8 Computer Vision,Prototype
+Notion Integration,api Manager/,notion_manager.py,1.5,Maintains living documentation in Notion databases,Notion API,Prototype
+Data Validator,api Manager/,data_validator.py,1.2,Validates incoming data against rules,Python validation,Active
+Data Cleaner,api Manager/,data_cleaner.py,1.2,Cleans and normalizes data,Pandas,Active
+Price Forecaster,api Manager/,price_forecaster.py,1.2,Price prediction utilities,Statistical models,Prototype
+Fundamental Analyzer,api Manager/,fundamental_analyzer.py,1.1,Fundamental analysis of commodity markets,Python analysis,Prototype
+Spread and Basis Analyzer,api Manager/,spread_and_basis_analyzer.py,0.9,Analyzes spreads and basis relationships,Python analysis,Prototype

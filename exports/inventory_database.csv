@@ -1,0 +1,8 @@
+Name,Location,Size_KB,Layer,Function,Tables_Views
+001_schema_foundation.sql,database/,16,Foundation,Core PostgreSQL schema with enums and base tables,"commodities, countries, data_sources, units"
+002_bronze_layer.sql,database/,13,Bronze,Raw data ingestion layer - data as received,"raw_prices, raw_trade, raw_production, raw_stocks"
+003_silver_layer.sql,database/,14,Silver,Cleaned and transformed data layer,"cleaned_prices, standardized_trade, normalized_production"
+004_gold_layer.sql,database/,14,Gold,Business-ready views and aggregations,"daily_prices_view, weekly_exports_view, monthly_balance_sheet"
+005_roles_and_security.sql,database/,9,Security,Role-based access control setup,"rlc_admin, rlc_analyst, rlc_readonly roles"
+006_operational_guidance.sql,database/,11,Operational,Stored procedures and maintenance,"data_refresh_proc, cleanup_proc, audit_triggers"
+rlc_commodities.db,data/,40960,SQLite,Local SQLite database for development/backup,All tables
