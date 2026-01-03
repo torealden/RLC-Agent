@@ -1,0 +1,61 @@
+Directory,Subdirectory,Purpose,Source_Files,Status
+src/agents/base,base_agent.py,Abstract base for all agents,New,Create
+src/agents/base,base_collector.py,Base class for collectors,commodity_pipeline/data_collectors/collectors/base_collector.py,Move
+src/agents/base,base_trade_agent.py,Base class for trade agents,commodity_pipeline/south_america_trade_data/agents/base_trade_agent.py,Move
+src/agents/base,base_lineup_agent.py,Base class for lineup agents,commodity_pipeline/south_america_trade_data/agents/base_lineup_agent.py,Move
+src/agents/collectors/us,usda_ams_collector.py,USDA AMS data collection,commodity_pipeline/usda_ams_agent/usda_ams_collector_asynch.py,Move
+src/agents/collectors/us,usda_fas_collector.py,USDA FAS export sales,commodity_pipeline/data_collectors/collectors/usda_fas_collector.py,Move
+src/agents/collectors/us,usda_nass_collector.py,USDA NASS crop data,commodity_pipeline/data_collectors/collectors/usda_nass_collector.py,Move
+src/agents/collectors/us,usda_ers_collector.py,USDA ERS databases,commodity_pipeline/data_collectors/collectors/usda_ers_collector.py,Move
+src/agents/collectors/us,cftc_cot_collector.py,CFTC positioning data,commodity_pipeline/data_collectors/collectors/cftc_cot_collector.py,Move
+src/agents/collectors/us,eia_ethanol_collector.py,EIA ethanol data,commodity_pipeline/data_collectors/collectors/eia_ethanol_collector.py,Move
+src/agents/collectors/us,eia_petroleum_collector.py,EIA petroleum data,commodity_pipeline/data_collectors/collectors/eia_petroleum_collector.py,Move
+src/agents/collectors/us,epa_rfs_collector.py,EPA RFS RIN data,commodity_pipeline/data_collectors/collectors/epa_rfs_collector.py,Move
+src/agents/collectors/us,census_trade_collector.py,Census trade data,commodity_pipeline/data_collectors/collectors/census_trade_collector.py,Move
+src/agents/collectors/us,drought_collector.py,Drought monitor data,commodity_pipeline/data_collectors/collectors/drought_collector.py,Move
+src/agents/collectors/canada,cgc_collector.py,Canadian Grain Commission,commodity_pipeline/data_collectors/collectors/canada_cgc_collector.py,Move
+src/agents/collectors/canada,statscan_collector.py,Statistics Canada,commodity_pipeline/data_collectors/collectors/canada_statscan_collector.py,Move
+src/agents/collectors/south_america,brazil_agent.py,Brazil ComexStat,commodity_pipeline/south_america_trade_data/agents/brazil_agent.py,Move
+src/agents/collectors/south_america,brazil_lineup_agent.py,Brazil port lineups,commodity_pipeline/south_america_trade_data/agents/brazil_lineup_agent.py,Move
+src/agents/collectors/south_america,argentina_agent.py,Argentina INDEC,commodity_pipeline/south_america_trade_data/agents/argentina_agent.py,Move
+src/agents/collectors/south_america,colombia_agent.py,Colombia DANE,commodity_pipeline/south_america_trade_data/agents/colombia_agent.py,Move
+src/agents/collectors/south_america,paraguay_agent.py,Paraguay trade,commodity_pipeline/south_america_trade_data/agents/paraguay_agent.py,Move
+src/agents/collectors/south_america,uruguay_agent.py,Uruguay DNA,commodity_pipeline/south_america_trade_data/agents/uruguay_agent.py,Move
+src/agents/collectors/south_america,abiove_collector.py,Brazil ABIOVE,commodity_pipeline/data_collectors/collectors/abiove_collector.py,Move
+src/agents/collectors/south_america,conab_collector.py,Brazil CONAB,commodity_pipeline/data_collectors/collectors/conab_collector.py,Move
+src/agents/collectors/south_america,ibge_sidra_collector.py,Brazil IBGE,commodity_pipeline/data_collectors/collectors/ibge_sidra_collector.py,Move
+src/agents/collectors/south_america,imea_collector.py,Brazil IMEA,commodity_pipeline/data_collectors/collectors/imea_collector.py,Move
+src/agents/collectors/south_america,magyp_collector.py,Argentina MAGYP,commodity_pipeline/data_collectors/collectors/magyp_collector.py,Move
+src/agents/collectors/asia,mpob_collector.py,Malaysia palm oil,commodity_pipeline/data_collectors/collectors/mpob_collector.py,Move
+src/agents/collectors/global,faostat_collector.py,FAO statistics,commodity_pipeline/data_collectors/collectors/faostat_collector.py,Move
+src/agents/collectors/market,cme_settlements_collector.py,CME futures,commodity_pipeline/data_collectors/collectors/cme_settlements_collector.py,Move
+src/agents/collectors/market,futures_data_collector.py,Generic futures,commodity_pipeline/data_collectors/collectors/futures_data_collector.py,Move
+src/agents/collectors/market,ibkr_collector.py,Interactive Brokers,commodity_pipeline/data_collectors/collectors/ibkr_collector.py,Move
+src/agents/collectors/market,tradestation_collector.py,TradeStation,commodity_pipeline/data_collectors/collectors/tradestation_collector.py,Move
+src/agents/analysis,price_forecaster.py,Price prediction,api Manager/price_forecaster.py,Move
+src/agents/analysis,fundamental_analyzer.py,Fundamental analysis,api Manager/fundamental_analyzer.py,Move
+src/agents/analysis,spread_basis_analyzer.py,Spread analysis,api Manager/spread_and_basis_analyzer.py,Move
+src/agents/reporting,report_writer_agent.py,Report composition,commodity_pipeline/hb_weekly_report_writer/agents/report_writer_agent.py,Move
+src/agents/reporting,market_research_agent.py,Market research,commodity_pipeline/hb_weekly_report_writer/agents/market_research_agent.py,Move
+src/agents/reporting,internal_data_agent.py,Internal data,commodity_pipeline/hb_weekly_report_writer/agents/internal_data_agent.py,Move
+src/agents/reporting,price_data_agent.py,Price data,commodity_pipeline/hb_weekly_report_writer/agents/price_data_agent.py,Move
+src/agents/publishing,social_media_agent.py,Social media posting,New,Create
+src/agents/publishing,blog_agent.py,Blog generation,New,Create
+src/agents/publishing,newsletter_agent.py,Newsletter generation,New,Create
+src/agents/integration,email_agent.py,Gmail integration,rlc_master_agent/email_agent.py,Move
+src/agents/integration,calendar_agent.py,Calendar integration,rlc_master_agent/calendar_agent.py,Move
+src/agents/integration,notion_agent.py,Notion integration,api Manager/notion_manager.py,Move
+src/agents/core,master_agent.py,Central orchestrator,rlc_master_agent/master_agent.py,Move
+src/agents/core,data_agent.py,Data management,rlc_master_agent/data_agent.py,Move
+src/agents/core,verification_agent.py,Verification,rlc_master_agent/verification_agent.py,Move
+src/agents/core,database_agent.py,Database operations,commodity_pipeline/usda_ams_agent/agents/database_agent.py,Move
+src/agents/core,approval_manager.py,Approval workflow,rlc_master_agent/approval_manager.py,Move
+src/agents/core,memory_manager.py,Memory management,rlc_master_agent/memory_manager.py,Move
+src/orchestrators,daily_workflow.py,Daily collection,Consolidate from multiple,Create
+src/orchestrators,weekly_report_workflow.py,Weekly reports,commodity_pipeline/hb_weekly_report_writer/services/orchestrator.py,Move
+src/orchestrators,monthly_report_workflow.py,Monthly trade data,commodity_pipeline/south_america_trade_data/services/orchestrator.py,Move
+src/schedulers,master_scheduler.py,Task scheduling,commodity_pipeline/scheduler/report_scheduler.py,Move
+src/tools,file_tools.py,File operations,deployment/agent_tools.py,Extract
+src/tools,database_tools.py,DB queries,deployment/agent_tools.py,Extract
+src/tools,collector_tools.py,Run collectors,deployment/agent_tools.py,Extract
+src/tools,publishing_tools.py,Social media,New,Create
