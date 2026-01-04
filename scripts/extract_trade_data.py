@@ -1,0 +1,564 @@
+"""
+Trade Data Extractor
+Extracts historical trade data from RLC Excel trade sheets and loads to PostgreSQL.
+
+Usage:
+    python scripts/extract_trade_data.py --scan        # Scan and list files
+    python scripts/extract_trade_data.py --preview    # Preview data from one file
+    python scripts/extract_trade_data.py --migrate    # Full migration to database
+"""
+
+import os
+import re
+import argparse
+from pathlib import Path
+from datetime import datetime
+from typing import Dict, List, Tuple, Optional
+import pandas as pd
+import psycopg2
+from psycopg2.extras import execute_values
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+# Source directory for trade sheets
+TRADE_SHEETS_DIR = Path(r"C:\Users\torem\Dropbox\RLC Documents\LLM Model and Documents\Projects\RLC-Agent\Models\Oilseeds")
+
+# PostgreSQL configuration
+PG_HOST = "localhost"
+PG_PORT = "5432"
+PG_DATABASE = "rlc_commodities"
+PG_USER = "postgres"
+PG_PASSWORD = "SoupBoss1"
+
+# Patterns to identify trade-related sheets
+TRADE_SHEET_PATTERNS = [
+    r'trade',
+    r'export',
+    r'import',
+    r'inspection',
+    r'sales',
+    r'shipment',
+]
+
+# Month abbreviations to full month mapping
+MONTH_MAP = {
+    'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+    'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
+}
+
+# ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+
+def parse_marketing_year(col_name: str) -> Optional[str]:
+    """
+    Parse marketing year from column header like "'19/20" or "19/20".
+    Returns normalized format like "2019/20".
+    """
+    if not col_name:
+        return None
+
+    col_str = str(col_name).strip().replace("'", "")
+
+    # Match patterns like "19/20" or "2019/20"
+    match = re.match(r"(\d{2,4})/(\d{2})", col_str)
+    if match:
+        year1 = match.group(1)
+        year2 = match.group(2)
+
+        # Convert 2-digit year to 4-digit
+        if len(year1) == 2:
+            year1_int = int(year1)
+            if year1_int > 50:
+                year1 = f"19{year1}"
+            else:
+                year1 = f"20{year1}"
+
+        return f"{year1}/{year2}"
+
+    return None
+
+
+def parse_month_year(col_name: str) -> Optional[Tuple[int, int]]:
+    """
+    Parse month and year from column header like "Sep 93" or "Oct-23".
+    Returns (month_num, full_year) tuple.
+    """
+    if not col_name:
+        return None
+
+    col_str = str(col_name).strip().lower()
+
+    # Match patterns like "sep 93", "sep-93", "sep93"
+    match = re.match(r"([a-z]{3})[\s\-]?(\d{2,4})", col_str)
+    if match:
+        month_str = match.group(1)
+        year_str = match.group(2)
+
+        month_num = MONTH_MAP.get(month_str)
+        if not month_num:
+            return None
+
+        # Convert 2-digit year to 4-digit
+        year_int = int(year_str)
+        if len(year_str) == 2:
+            if year_int > 50:
+                year_int = 1900 + year_int
+            else:
+                year_int = 2000 + year_int
+
+        return (month_num, year_int)
+
+    return None
+
+
+def classify_columns(df: pd.DataFrame) -> Dict[str, List[str]]:
+    """
+    Classify columns into accumulator (marketing year) vs monthly columns.
+    """
+    result = {
+        'accumulator': [],  # Marketing year totals like '19/20
+        'monthly': [],      # Monthly data like Sep 93
+        'other': []         # Country names, labels, etc.
+    }
+
+    for col in df.columns:
+        col_str = str(col).strip()
+
+        if parse_marketing_year(col_str):
+            result['accumulator'].append(col)
+        elif parse_month_year(col_str):
+            result['monthly'].append(col)
+        else:
+            result['other'].append(col)
+
+    return result
+
+
+def extract_trade_data_from_sheet(
+    file_path: Path,
+    sheet_name: str,
+    commodity: str = None
+) -> List[Dict]:
+    """
+    Extract trade data from a single sheet.
+
+    Returns list of records with:
+    - commodity
+    - country (destination or origin)
+    - flow_type (export/import)
+    - period_type (monthly/marketing_year)
+    - period_date or marketing_year
+    - value
+    - source_file
+    - sheet_name
+    """
+    records = []
+
+    try:
+        # Read the sheet
+        df = pd.read_excel(file_path, sheet_name=sheet_name, header=None)
+
+        if df.empty:
+            return records
+
+        # Find the header row (usually row 0-2)
+        header_row = 0
+        for i in range(min(5, len(df))):
+            row_values = df.iloc[i].astype(str).tolist()
+            # Look for month patterns in the row
+            month_count = sum(1 for v in row_values if parse_month_year(v))
+            if month_count >= 3:
+                header_row = i
+                break
+
+        # Set headers
+        df.columns = df.iloc[header_row]
+        df = df.iloc[header_row + 1:].reset_index(drop=True)
+
+        # Classify columns
+        col_types = classify_columns(df)
+
+        # First column is usually country/region
+        country_col = col_types['other'][0] if col_types['other'] else df.columns[0]
+
+        # Infer commodity from filename if not provided
+        if not commodity:
+            commodity = infer_commodity_from_filename(file_path.stem)
+
+        # Infer flow type from sheet name
+        flow_type = infer_flow_type(sheet_name)
+
+        # Process each row (country)
+        for idx, row in df.iterrows():
+            country = str(row[country_col]).strip() if pd.notna(row[country_col]) else None
+
+            # Skip empty rows, totals, headers
+            if not country or country.lower() in ['total', 'totals', 'nan', '', 'none']:
+                continue
+            if any(skip in country.lower() for skip in ['region', 'subtotal', '---']):
+                continue
+
+            # Extract monthly data
+            for col in col_types['monthly']:
+                value = row[col]
+                if pd.notna(value) and value != 0:
+                    try:
+                        value_float = float(value)
+                        if value_float != 0:
+                            month_year = parse_month_year(str(col))
+                            if month_year:
+                                month, year = month_year
+                                records.append({
+                                    'commodity': commodity,
+                                    'country': country,
+                                    'flow_type': flow_type,
+                                    'period_type': 'monthly',
+                                    'year': year,
+                                    'month': month,
+                                    'marketing_year': None,
+                                    'value': value_float,
+                                    'unit': 'MT',  # Assume metric tons
+                                    'source_file': file_path.name,
+                                    'sheet_name': sheet_name
+                                })
+                    except (ValueError, TypeError):
+                        continue
+
+            # Extract accumulator (marketing year) data
+            for col in col_types['accumulator']:
+                value = row[col]
+                if pd.notna(value) and value != 0:
+                    try:
+                        value_float = float(value)
+                        if value_float != 0:
+                            my = parse_marketing_year(str(col))
+                            if my:
+                                records.append({
+                                    'commodity': commodity,
+                                    'country': country,
+                                    'flow_type': flow_type,
+                                    'period_type': 'marketing_year',
+                                    'year': None,
+                                    'month': None,
+                                    'marketing_year': my,
+                                    'value': value_float,
+                                    'unit': 'MT',
+                                    'source_file': file_path.name,
+                                    'sheet_name': sheet_name
+                                })
+                    except (ValueError, TypeError):
+                        continue
+
+        return records
+
+    except Exception as e:
+        print(f"  Error processing {sheet_name}: {e}")
+        return records
+
+
+def infer_commodity_from_filename(filename: str) -> str:
+    """Infer commodity from filename."""
+    filename_lower = filename.lower()
+
+    commodities = {
+        'soybean': 'Soybeans',
+        'soy': 'Soybeans',
+        'corn': 'Corn',
+        'wheat': 'Wheat',
+        'rapeseed': 'Rapeseed',
+        'canola': 'Canola',
+        'sunflower': 'Sunflower',
+        'palm': 'Palm Oil',
+        'cotton': 'Cotton',
+        'barley': 'Barley',
+        'sorghum': 'Sorghum',
+        'meal': 'Soybean Meal',
+        'oil': 'Soybean Oil',
+    }
+
+    for key, value in commodities.items():
+        if key in filename_lower:
+            return value
+
+    return filename  # Use filename as commodity if no match
+
+
+def infer_flow_type(sheet_name: str) -> str:
+    """Infer flow type from sheet name."""
+    sheet_lower = sheet_name.lower()
+
+    if 'export' in sheet_lower or 'shipment' in sheet_lower:
+        return 'export'
+    elif 'import' in sheet_lower:
+        return 'import'
+    elif 'inspection' in sheet_lower:
+        return 'inspection'
+    elif 'sales' in sheet_lower:
+        return 'sales'
+    else:
+        return 'trade'
+
+
+def is_trade_sheet(sheet_name: str) -> bool:
+    """Check if sheet name suggests trade data."""
+    sheet_lower = sheet_name.lower()
+    return any(re.search(pattern, sheet_lower) for pattern in TRADE_SHEET_PATTERNS)
+
+
+# ============================================================================
+# MAIN FUNCTIONS
+# ============================================================================
+
+def scan_trade_files(directory: Path) -> List[Dict]:
+    """Scan directory for Excel files with trade data."""
+    results = []
+
+    if not directory.exists():
+        print(f"ERROR: Directory not found: {directory}")
+        return results
+
+    print(f"\nScanning: {directory}")
+    print("=" * 70)
+
+    excel_files = list(directory.glob("*.xlsx")) + list(directory.glob("*.xls"))
+    print(f"Found {len(excel_files)} Excel files\n")
+
+    for file_path in sorted(excel_files):
+        try:
+            xl = pd.ExcelFile(file_path)
+            trade_sheets = [s for s in xl.sheet_names if is_trade_sheet(s)]
+
+            if trade_sheets:
+                results.append({
+                    'file': file_path.name,
+                    'path': str(file_path),
+                    'trade_sheets': trade_sheets,
+                    'total_sheets': len(xl.sheet_names)
+                })
+
+                print(f"📁 {file_path.name}")
+                for sheet in trade_sheets:
+                    print(f"   └─ {sheet}")
+
+        except Exception as e:
+            print(f"❌ {file_path.name}: {e}")
+
+    print(f"\n{'=' * 70}")
+    print(f"Files with trade data: {len(results)}")
+    print(f"Total trade sheets: {sum(len(r['trade_sheets']) for r in results)}")
+
+    return results
+
+
+def preview_file(file_path: Path, max_sheets: int = 2):
+    """Preview data from a trade file."""
+    print(f"\nPreviewing: {file_path.name}")
+    print("=" * 70)
+
+    try:
+        xl = pd.ExcelFile(file_path)
+        trade_sheets = [s for s in xl.sheet_names if is_trade_sheet(s)]
+
+        if not trade_sheets:
+            print("No trade sheets found in this file.")
+            return
+
+        for sheet_name in trade_sheets[:max_sheets]:
+            print(f"\n📋 Sheet: {sheet_name}")
+            print("-" * 50)
+
+            records = extract_trade_data_from_sheet(file_path, sheet_name)
+
+            if records:
+                # Show summary
+                countries = set(r['country'] for r in records)
+                monthly_records = [r for r in records if r['period_type'] == 'monthly']
+                my_records = [r for r in records if r['period_type'] == 'marketing_year']
+
+                print(f"  Total records: {len(records)}")
+                print(f"  Countries: {len(countries)}")
+                print(f"  Monthly records: {len(monthly_records)}")
+                print(f"  Marketing year records: {len(my_records)}")
+
+                if monthly_records:
+                    years = sorted(set(r['year'] for r in monthly_records if r['year']))
+                    print(f"  Year range: {min(years)} - {max(years)}")
+
+                # Show sample records
+                print(f"\n  Sample records:")
+                for r in records[:5]:
+                    if r['period_type'] == 'monthly':
+                        print(f"    {r['country']}: {r['month']}/{r['year']} = {r['value']:,.0f}")
+                    else:
+                        print(f"    {r['country']}: {r['marketing_year']} = {r['value']:,.0f}")
+            else:
+                print("  No data extracted from this sheet.")
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+def migrate_to_database(directory: Path, dry_run: bool = False):
+    """Migrate all trade data to PostgreSQL."""
+    print("\n" + "=" * 70)
+    print("TRADE DATA MIGRATION TO POSTGRESQL")
+    print("=" * 70)
+
+    # Scan for files
+    files = scan_trade_files(directory)
+
+    if not files:
+        print("No trade files found. Exiting.")
+        return
+
+    # Connect to PostgreSQL
+    if not dry_run:
+        try:
+            conn = psycopg2.connect(
+                host=PG_HOST,
+                port=PG_PORT,
+                database=PG_DATABASE,
+                user=PG_USER,
+                password=PG_PASSWORD
+            )
+            cursor = conn.cursor()
+            print(f"\n✅ Connected to PostgreSQL: {PG_DATABASE}")
+
+            # Create table if not exists
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS bronze.trade_data_raw (
+                    id SERIAL PRIMARY KEY,
+                    commodity VARCHAR(100),
+                    country VARCHAR(200),
+                    flow_type VARCHAR(50),
+                    period_type VARCHAR(50),
+                    year INT,
+                    month INT,
+                    marketing_year VARCHAR(20),
+                    value NUMERIC(20, 4),
+                    unit VARCHAR(50),
+                    source_file VARCHAR(500),
+                    sheet_name VARCHAR(200),
+                    created_at TIMESTAMPTZ DEFAULT NOW(),
+                    UNIQUE(commodity, country, flow_type, period_type, year, month, marketing_year, source_file)
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_trade_commodity ON bronze.trade_data_raw(commodity);
+                CREATE INDEX IF NOT EXISTS idx_trade_country ON bronze.trade_data_raw(country);
+                CREATE INDEX IF NOT EXISTS idx_trade_year ON bronze.trade_data_raw(year);
+                CREATE INDEX IF NOT EXISTS idx_trade_my ON bronze.trade_data_raw(marketing_year);
+            """)
+            conn.commit()
+            print("✅ Table bronze.trade_data_raw ready")
+
+        except Exception as e:
+            print(f"❌ Database connection failed: {e}")
+            return
+
+    # Process each file
+    total_records = 0
+    total_inserted = 0
+
+    for file_info in files:
+        file_path = Path(file_info['path'])
+        print(f"\n📁 Processing: {file_info['file']}")
+
+        for sheet_name in file_info['trade_sheets']:
+            print(f"   📋 {sheet_name}...", end=" ")
+
+            records = extract_trade_data_from_sheet(file_path, sheet_name)
+            total_records += len(records)
+
+            if records and not dry_run:
+                # Insert records
+                try:
+                    insert_sql = """
+                        INSERT INTO bronze.trade_data_raw
+                        (commodity, country, flow_type, period_type, year, month,
+                         marketing_year, value, unit, source_file, sheet_name)
+                        VALUES %s
+                        ON CONFLICT (commodity, country, flow_type, period_type, year, month, marketing_year, source_file)
+                        DO UPDATE SET value = EXCLUDED.value, created_at = NOW()
+                    """
+
+                    values = [
+                        (r['commodity'], r['country'], r['flow_type'], r['period_type'],
+                         r['year'], r['month'], r['marketing_year'], r['value'],
+                         r['unit'], r['source_file'], r['sheet_name'])
+                        for r in records
+                    ]
+
+                    execute_values(cursor, insert_sql, values)
+                    conn.commit()
+                    total_inserted += len(records)
+                    print(f"{len(records):,} records")
+
+                except Exception as e:
+                    print(f"ERROR: {e}")
+                    conn.rollback()
+            else:
+                print(f"{len(records):,} records (dry run)")
+
+    # Summary
+    print("\n" + "=" * 70)
+    print("MIGRATION SUMMARY")
+    print("=" * 70)
+    print(f"Files processed: {len(files)}")
+    print(f"Total records extracted: {total_records:,}")
+    if not dry_run:
+        print(f"Records inserted/updated: {total_inserted:,}")
+
+        # Show table stats
+        cursor.execute("SELECT COUNT(*) FROM bronze.trade_data_raw")
+        total_in_db = cursor.fetchone()[0]
+        print(f"Total records in database: {total_in_db:,}")
+
+        cursor.execute("""
+            SELECT commodity, COUNT(*) as cnt
+            FROM bronze.trade_data_raw
+            GROUP BY commodity
+            ORDER BY cnt DESC
+        """)
+        print("\nRecords by commodity:")
+        for row in cursor.fetchall():
+            print(f"  {row[0]}: {row[1]:,}")
+
+        conn.close()
+
+    print("\n✅ Migration complete!")
+
+
+# ============================================================================
+# CLI
+# ============================================================================
+
+def main():
+    parser = argparse.ArgumentParser(description="Extract trade data from Excel sheets")
+    parser.add_argument("--scan", action="store_true", help="Scan directory and list trade files")
+    parser.add_argument("--preview", type=str, help="Preview data from a specific file")
+    parser.add_argument("--migrate", action="store_true", help="Migrate all trade data to database")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be migrated without writing")
+    parser.add_argument("--dir", type=str, help="Override source directory")
+
+    args = parser.parse_args()
+
+    directory = Path(args.dir) if args.dir else TRADE_SHEETS_DIR
+
+    if args.scan:
+        scan_trade_files(directory)
+    elif args.preview:
+        preview_file(Path(args.preview))
+    elif args.migrate:
+        migrate_to_database(directory, dry_run=args.dry_run)
+    else:
+        # Default: scan
+        scan_trade_files(directory)
+        print("\n💡 Use --migrate to load data to database")
+        print("💡 Use --preview <file> to see sample data from a file")
+
+
+if __name__ == "__main__":
+    main()
