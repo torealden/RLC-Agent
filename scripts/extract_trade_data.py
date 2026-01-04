@@ -22,8 +22,12 @@ from psycopg2.extras import execute_values
 # CONFIGURATION
 # ============================================================================
 
-# Source directory for trade sheets
-TRADE_SHEETS_DIR = Path(r"C:\Users\torem\Dropbox\RLC Documents\LLM Model and Documents\Projects\RLC-Agent\Models\Oilseeds")
+# Source directory for trade sheets (relative to project root)
+# On Windows: C:\RLC\projects\rlc-agent\Models
+# On Linux: /home/user/RLC-Agent/Models
+SCRIPT_DIR = Path(__file__).parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+TRADE_SHEETS_DIR = PROJECT_ROOT / "Models"
 
 # PostgreSQL configuration
 PG_HOST = "localhost"
