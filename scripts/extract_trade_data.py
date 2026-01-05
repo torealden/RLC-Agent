@@ -312,6 +312,12 @@ def is_trade_sheet(sheet_name: str) -> bool:
     return any(re.search(pattern, sheet_lower) for pattern in TRADE_SHEET_PATTERNS)
 
 
+def is_trade_file(filename: str) -> bool:
+    """Check if filename suggests trade data."""
+    filename_lower = filename.lower()
+    return any(re.search(pattern, filename_lower) for pattern in TRADE_SHEET_PATTERNS)
+
+
 # ============================================================================
 # MAIN FUNCTIONS
 # ============================================================================
@@ -327,7 +333,10 @@ def scan_trade_files(directory: Path) -> List[Dict]:
     print(f"\nScanning: {directory}")
     print("=" * 70)
 
-    excel_files = list(directory.glob("*.xlsx")) + list(directory.glob("*.xls"))
+    # Recursively scan all subdirectories
+    excel_files = list(directory.glob("**/*.xlsx")) + list(directory.glob("**/*.xls"))
+    # Exclude temp files (start with ~$)
+    excel_files = [f for f in excel_files if not f.name.startswith('~$')]
     print(f"Found {len(excel_files)} Excel files\n")
 
     for file_path in sorted(excel_files):
@@ -335,17 +344,27 @@ def scan_trade_files(directory: Path) -> List[Dict]:
             xl = pd.ExcelFile(file_path)
             trade_sheets = [s for s in xl.sheet_names if is_trade_sheet(s)]
 
-            if trade_sheets:
+            # Also include file if filename suggests trade data
+            file_is_trade = is_trade_file(file_path.name)
+
+            if trade_sheets or file_is_trade:
+                # If file is trade but no matching sheets, include all sheets
+                sheets_to_use = trade_sheets if trade_sheets else xl.sheet_names
+
                 results.append({
                     'file': file_path.name,
                     'path': str(file_path),
-                    'trade_sheets': trade_sheets,
-                    'total_sheets': len(xl.sheet_names)
+                    'trade_sheets': sheets_to_use,
+                    'total_sheets': len(xl.sheet_names),
+                    'matched_by': 'filename' if file_is_trade and not trade_sheets else 'sheetname'
                 })
 
-                print(f"📁 {file_path.name}")
-                for sheet in trade_sheets:
+                match_type = "[filename]" if file_is_trade else "[sheets]"
+                print(f"📁 {file_path.name} {match_type}")
+                for sheet in sheets_to_use[:5]:  # Show first 5 sheets
                     print(f"   └─ {sheet}")
+                if len(sheets_to_use) > 5:
+                    print(f"   └─ ... and {len(sheets_to_use) - 5} more sheets")
 
         except Exception as e:
             print(f"❌ {file_path.name}: {e}")
