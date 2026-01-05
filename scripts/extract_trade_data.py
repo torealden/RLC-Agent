@@ -168,13 +168,23 @@ def extract_trade_data_from_sheet(
         if df.empty:
             return records
 
+        # Try to detect unit from title row (row 0)
+        unit = 'MT'  # default
+        title_row = str(df.iloc[0, 0]) if len(df) > 0 else ''
+        if 'million' in title_row.lower():
+            unit = 'Million MT'
+        elif 'thousand' in title_row.lower():
+            unit = 'Thousand MT'
+
         # Find the header row (usually row 0-2)
+        # Look for rows with month patterns OR marketing year patterns
         header_row = 0
         for i in range(min(5, len(df))):
             row_values = df.iloc[i].astype(str).tolist()
-            # Look for month patterns in the row
+            # Look for month patterns (Sep 93) or marketing year patterns (93/94)
             month_count = sum(1 for v in row_values if parse_month_year(v))
-            if month_count >= 3:
+            my_count = sum(1 for v in row_values if parse_marketing_year(v))
+            if month_count >= 3 or my_count >= 3:
                 header_row = i
                 break
 
@@ -182,11 +192,22 @@ def extract_trade_data_from_sheet(
         df.columns = df.iloc[header_row]
         df = df.iloc[header_row + 1:].reset_index(drop=True)
 
+        # Skip any empty rows at the start
+        while len(df) > 0 and df.iloc[0].isna().all():
+            df = df.iloc[1:].reset_index(drop=True)
+
         # Classify columns
         col_types = classify_columns(df)
 
-        # First column is usually country/region
-        country_col = col_types['other'][0] if col_types['other'] else df.columns[0]
+        # First column is usually country/region (may have NaN header)
+        # Try to find first 'other' column, otherwise use first column
+        if col_types['other']:
+            country_col = col_types['other'][0]
+        else:
+            country_col = df.columns[0]
+
+        # If country_col is NaN or unnamed, still use first column position
+        country_col_idx = 0  # Fallback to first column by position
 
         # Infer commodity from filename if not provided
         if not commodity:
@@ -197,7 +218,9 @@ def extract_trade_data_from_sheet(
 
         # Process each row (country)
         for idx, row in df.iterrows():
-            country = str(row[country_col]).strip() if pd.notna(row[country_col]) else None
+            # Get country from first column (by position, more reliable)
+            country_value = row.iloc[country_col_idx] if len(row) > 0 else None
+            country = str(country_value).strip() if pd.notna(country_value) else None
 
             # Skip empty rows, totals, headers
             if not country or country.lower() in ['total', 'totals', 'nan', '', 'none']:
@@ -224,7 +247,7 @@ def extract_trade_data_from_sheet(
                                     'month': month,
                                     'marketing_year': None,
                                     'value': value_float,
-                                    'unit': 'MT',  # Assume metric tons
+                                    'unit': unit,
                                     'source_file': file_path.name,
                                     'sheet_name': sheet_name
                                 })
@@ -249,7 +272,7 @@ def extract_trade_data_from_sheet(
                                     'month': None,
                                     'marketing_year': my,
                                     'value': value_float,
-                                    'unit': 'MT',
+                                    'unit': unit,
                                     'source_file': file_path.name,
                                     'sheet_name': sheet_name
                                 })
