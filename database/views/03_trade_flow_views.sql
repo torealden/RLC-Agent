@@ -15,6 +15,7 @@ CREATE SCHEMA IF NOT EXISTS gold;
 -- ============================================================================
 -- Parses sheet_name to extract reporting country and creates proper
 -- origin/destination pairs for Flow Map visualization.
+-- Filters out bad data: non-countries, aggregates, invalid years.
 
 DROP VIEW IF EXISTS gold.trade_flows CASCADE;
 CREATE VIEW gold.trade_flows AS
@@ -46,7 +47,41 @@ WITH parsed_trade AS (
         END AS reporting_country,
         created_at
     FROM bronze.trade_data_raw
-    WHERE value IS NOT NULL AND value != 0
+    WHERE value IS NOT NULL
+      AND value != 0
+      -- Filter out invalid marketing years (keep 1980-2030)
+      AND (marketing_year IS NULL OR (
+          CAST(SPLIT_PART(marketing_year, '/', 1) AS INTEGER) >= 1980
+          AND CAST(SPLIT_PART(marketing_year, '/', 1) AS INTEGER) <= 2030
+      ))
+      -- Filter out non-country values in the country column
+      AND LOWER(country) NOT IN (
+          -- Aggregates and totals
+          'total', 'totals', 'sum total', 'grand total', 'subtotal',
+          'world', 'world total', 'other', 'others', 'unknown', 'unspecified',
+          -- Regional aggregates
+          'western hemisphere', 'eastern hemisphere', 'asia and oceania',
+          'asia', 'europe', 'africa', 'americas', 'oceania',
+          'north america', 'south america', 'central america', 'middle east',
+          'european union', 'eu-28', 'eu-27', 'eu', 'cis', 'asean',
+          'sub-saharan africa', 'north africa', 'east asia', 'southeast asia',
+          'former soviet union', 'fsu',
+          -- Commodity names (should not be countries)
+          'soybean', 'soybeans', 'soybean oil', 'soybean meal', 'soymeal', 'soyoil',
+          'corn', 'wheat', 'rice', 'barley', 'sorghum', 'oats',
+          'rapeseed', 'canola', 'sunflower', 'cottonseed', 'peanut', 'peanuts',
+          'palm oil', 'palm kernel', 'coconut', 'coconut oil',
+          'tallow', 'lard', 'grease', 'uco', 'dco', 'cwg',
+          -- Month names (data parsing errors)
+          'january', 'february', 'march', 'april', 'may', 'june',
+          'july', 'august', 'september', 'october', 'november', 'december',
+          'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
+          -- Other non-country values
+          'census', 'nan', 'none', 'n/a', 'na', '', 'data', 'source'
+      )
+      -- Filter out values that look like years or numbers
+      AND country !~ '^\d+$'
+      AND country !~ '^\d{2}/\d{2}$'
 )
 SELECT
     id,
@@ -169,6 +204,7 @@ ORDER BY commodity, marketing_year DESC, volume_mmt DESC;
 -- VIEW 6: SOYBEAN COMPLEX TRADE FLOWS
 -- ============================================================================
 -- Specific view for soybean, soybean meal, and soybean oil trade
+-- With additional filtering for clean country names
 
 DROP VIEW IF EXISTS gold.soybean_trade_flows CASCADE;
 CREATE VIEW gold.soybean_trade_flows AS
@@ -187,13 +223,24 @@ SELECT
     value_million_mt,
     sheet_name
 FROM gold.trade_flows
-WHERE LOWER(commodity) LIKE '%soy%'
-   OR LOWER(sheet_name) LIKE '%soy%'
+WHERE (LOWER(commodity) LIKE '%soy%' OR LOWER(sheet_name) LIKE '%soy%')
+  -- Additional filtering for clean origin/destination
+  AND origin_country IS NOT NULL
+  AND destination_country IS NOT NULL
+  AND LENGTH(origin_country) > 1
+  AND LENGTH(destination_country) > 1
+  -- Filter out commodity names appearing as countries
+  AND LOWER(origin_country) NOT SIMILAR TO '%(soy|meal|oil|seed|bean|cotton|rape|sun|palm|tallow|corn|wheat)%'
+  AND LOWER(destination_country) NOT SIMILAR TO '%(soy|meal|oil|seed|bean|cotton|rape|sun|palm|tallow|corn|wheat)%'
+  -- Filter out month names
+  AND LOWER(destination_country) NOT IN ('january', 'february', 'march', 'april', 'may', 'june',
+                                          'july', 'august', 'september', 'october', 'november', 'december')
 ORDER BY marketing_year DESC, value_million_mt DESC;
 
 -- ============================================================================
 -- VIEW 7: SOYBEAN TRADE MATRIX FOR FLOW MAPS
 -- ============================================================================
+-- Clean aggregated data ready for Flow Map visualization
 
 DROP VIEW IF EXISTS gold.soybean_flow_matrix CASCADE;
 CREATE VIEW gold.soybean_flow_matrix AS
@@ -207,8 +254,12 @@ FROM gold.soybean_trade_flows
 WHERE marketing_year IS NOT NULL
   AND origin_country IS NOT NULL
   AND destination_country IS NOT NULL
+  AND origin_country != destination_country
+  -- Ensure we have actual trade volume
+  AND value_million_mt > 0
+  AND value_million_mt < 1000  -- Filter out obviously wrong large values
 GROUP BY product, origin_country, destination_country, marketing_year
-HAVING SUM(value_million_mt) > 0
+HAVING SUM(value_million_mt) > 0.001  -- At least 1000 MT
 ORDER BY product, marketing_year DESC, volume_mmt DESC;
 
 -- ============================================================================
