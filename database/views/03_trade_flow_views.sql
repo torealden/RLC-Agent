@@ -115,7 +115,20 @@ SELECT
     source_file,
     sheet_name,
     created_at
-FROM parsed_trade;
+FROM parsed_trade
+WHERE
+    -- Filter out bad reporting_country values (extracted from sheet names)
+    LOWER(reporting_country) NOT IN (
+        'soyoil', 'soymeal', 'soybean', 'soybeans', 'soy',
+        'cottonseed', 'sunflower', 'rapeseed', 'canola', 'palm', 'coconut',
+        'tallow', 'lard', 'grease', 'uco', 'dco', 'cwg', 'peanut',
+        'corn', 'wheat', 'rice', 'barley', 'sorghum',
+        'oil', 'meal', 'seed', 'kernel', 'veg',
+        'crude', 'refined', 'edible', 'inedible',
+        'world', 'total', 'major', 'other'
+    )
+    AND LOWER(reporting_country) NOT SIMILAR TO '%(soy|meal|oil|seed|bean|cotton)%'
+    AND LENGTH(reporting_country) > 1;
 
 -- ============================================================================
 -- VIEW 2: TRADE SUMMARY BY COMMODITY AND MARKETING YEAR
