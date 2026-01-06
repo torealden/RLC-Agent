@@ -11,12 +11,81 @@
 CREATE SCHEMA IF NOT EXISTS gold;
 
 -- ============================================================================
+-- HELPER FUNCTION: Check if a value is a valid country name
+-- ============================================================================
+DROP FUNCTION IF EXISTS gold.is_valid_country(TEXT);
+CREATE FUNCTION gold.is_valid_country(val TEXT) RETURNS BOOLEAN AS $$
+BEGIN
+    IF val IS NULL OR LENGTH(TRIM(val)) < 2 THEN
+        RETURN FALSE;
+    END IF;
+
+    -- Exclude aggregates and totals
+    IF LOWER(val) IN (
+        'total', 'totals', 'sum total', 'grand total', 'subtotal',
+        'world', 'world total', 'other', 'others', 'unknown', 'unspecified'
+    ) THEN RETURN FALSE; END IF;
+
+    -- Exclude regional aggregates
+    IF LOWER(val) IN (
+        'western hemisphere', 'eastern hemisphere', 'asia and oceania',
+        'asia', 'europe', 'africa', 'americas', 'oceania',
+        'north america', 'south america', 'central america', 'middle east',
+        'sub-saharan africa', 'north africa', 'east asia', 'southeast asia',
+        'former soviet union', 'fsu', 'cis', 'asean'
+    ) THEN RETURN FALSE; END IF;
+
+    -- Exclude commodity names
+    IF LOWER(val) IN (
+        'soybean', 'soybeans', 'soybean oil', 'soybean meal', 'soymeal', 'soyoil', 'soy',
+        'corn', 'wheat', 'rice', 'barley', 'sorghum', 'oats',
+        'rapeseed', 'canola', 'sunflower', 'cottonseed', 'peanut', 'peanuts',
+        'palm oil', 'palm kernel', 'coconut', 'coconut oil', 'palm',
+        'tallow', 'lard', 'grease', 'uco', 'dco', 'cwg',
+        'oil', 'meal', 'seed', 'kernel', 'veg', 'crude', 'refined',
+        'edible', 'inedible', 'major'
+    ) THEN RETURN FALSE; END IF;
+
+    -- Exclude month names
+    IF LOWER(val) IN (
+        'january', 'february', 'march', 'april', 'may', 'june',
+        'july', 'august', 'september', 'october', 'november', 'december',
+        'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
+    ) THEN RETURN FALSE; END IF;
+
+    -- Exclude other non-country values
+    IF LOWER(val) IN (
+        'census', 'nan', 'none', 'n/a', 'na', 'data', 'source', ''
+    ) THEN RETURN FALSE; END IF;
+
+    -- Exclude if contains commodity keywords
+    IF LOWER(val) LIKE '%soy%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%meal%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%seed%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%bean%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%cotton%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%oil%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%rape%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%sun%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%palm%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%tallow%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%corn%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%wheat%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%kernel%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%grease%' THEN RETURN FALSE; END IF;
+    IF LOWER(val) LIKE '%lard%' THEN RETURN FALSE; END IF;
+
+    -- Exclude if looks like a year or number
+    IF val ~ '^\d+$' THEN RETURN FALSE; END IF;
+    IF val ~ '^\d{2}/\d{2}$' THEN RETURN FALSE; END IF;
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- ============================================================================
 -- VIEW 1: TRADE FLOWS WITH PROPER ORIGIN/DESTINATION
 -- ============================================================================
--- Parses sheet_name to extract reporting country and creates proper
--- origin/destination pairs for Flow Map visualization.
--- Filters out bad data: non-countries, aggregates, invalid years.
-
 DROP VIEW IF EXISTS gold.trade_flows CASCADE;
 CREATE VIEW gold.trade_flows AS
 WITH parsed_trade AS (
@@ -34,13 +103,10 @@ WITH parsed_trade AS (
         source_file,
         sheet_name,
         -- Extract reporting country from sheet name
-        -- Pattern: "Country Commodity Imports/Exports"
         CASE
-            -- Handle specific patterns
             WHEN sheet_name LIKE 'World SM %' THEN 'World'
             WHEN sheet_name LIKE 'EU-%' THEN 'European Union'
             WHEN sheet_name LIKE 'EU %' THEN 'European Union'
-            -- General extraction: first word(s) before commodity keywords
             WHEN sheet_name ~ '^([A-Za-z ]+) (Soybean|Soy|Corn|Wheat|Rapeseed|Canola|Sunflower|Palm|Tallow|UCO|Cottonseed|Peanut|Flax|Coconut)'
                 THEN TRIM(REGEXP_REPLACE(sheet_name, ' (Soybean|Soy|Corn|Wheat|Rapeseed|Canola|Sunflower|Palm|Tallow|UCO|Cottonseed|Peanut|Flax|Coconut|Oil|Meal|Seed|Kernel|Imports|Exports|Trade|CWG|DCO|YG).*$', '', 'gi'))
             ELSE SPLIT_PART(sheet_name, ' ', 1)
@@ -49,45 +115,14 @@ WITH parsed_trade AS (
     FROM bronze.trade_data_raw
     WHERE value IS NOT NULL
       AND value != 0
-      -- Filter out invalid marketing years (keep 1980-2030)
       AND (marketing_year IS NULL OR (
           CAST(SPLIT_PART(marketing_year, '/', 1) AS INTEGER) >= 1980
           AND CAST(SPLIT_PART(marketing_year, '/', 1) AS INTEGER) <= 2030
       ))
-      -- Filter out non-country values in the country column
-      AND LOWER(country) NOT IN (
-          -- Aggregates and totals
-          'total', 'totals', 'sum total', 'grand total', 'subtotal',
-          'world', 'world total', 'other', 'others', 'unknown', 'unspecified',
-          -- Regional aggregates
-          'western hemisphere', 'eastern hemisphere', 'asia and oceania',
-          'asia', 'europe', 'africa', 'americas', 'oceania',
-          'north america', 'south america', 'central america', 'middle east',
-          'european union', 'eu-28', 'eu-27', 'eu', 'cis', 'asean',
-          'sub-saharan africa', 'north africa', 'east asia', 'southeast asia',
-          'former soviet union', 'fsu',
-          -- Commodity names (should not be countries)
-          'soybean', 'soybeans', 'soybean oil', 'soybean meal', 'soymeal', 'soyoil',
-          'corn', 'wheat', 'rice', 'barley', 'sorghum', 'oats',
-          'rapeseed', 'canola', 'sunflower', 'cottonseed', 'peanut', 'peanuts',
-          'palm oil', 'palm kernel', 'coconut', 'coconut oil',
-          'tallow', 'lard', 'grease', 'uco', 'dco', 'cwg',
-          -- Month names (data parsing errors)
-          'january', 'february', 'march', 'april', 'may', 'june',
-          'july', 'august', 'september', 'october', 'november', 'december',
-          'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
-          -- Other non-country values
-          'census', 'nan', 'none', 'n/a', 'na', '', 'data', 'source'
-      )
-      -- Filter out values that look like years or numbers
-      AND country !~ '^\d+$'
-      AND country !~ '^\d{2}/\d{2}$'
 )
 SELECT
     id,
     commodity,
-    -- For imports: reporting country imports FROM partner country
-    -- For exports: reporting country exports TO partner country
     CASE
         WHEN flow_type = 'import' THEN partner_country
         ELSE reporting_country
@@ -105,7 +140,6 @@ SELECT
     marketing_year,
     value,
     unit,
-    -- Convert to common unit (Million MT)
     CASE
         WHEN unit = 'Million MT' THEN value
         WHEN unit = 'Thousand MT' THEN value / 1000.0
@@ -116,25 +150,12 @@ SELECT
     sheet_name,
     created_at
 FROM parsed_trade
-WHERE
-    -- Filter out bad reporting_country values (extracted from sheet names)
-    LOWER(reporting_country) NOT IN (
-        'soyoil', 'soymeal', 'soybean', 'soybeans', 'soy',
-        'cottonseed', 'sunflower', 'rapeseed', 'canola', 'palm', 'coconut',
-        'tallow', 'lard', 'grease', 'uco', 'dco', 'cwg', 'peanut',
-        'corn', 'wheat', 'rice', 'barley', 'sorghum',
-        'oil', 'meal', 'seed', 'kernel', 'veg',
-        'crude', 'refined', 'edible', 'inedible',
-        'world', 'total', 'major', 'other'
-    )
-    AND LOWER(reporting_country) NOT SIMILAR TO '%(soy|meal|oil|seed|bean|cotton)%'
-    AND LENGTH(reporting_country) > 1;
+WHERE gold.is_valid_country(partner_country)
+  AND gold.is_valid_country(reporting_country);
 
 -- ============================================================================
 -- VIEW 2: TRADE SUMMARY BY COMMODITY AND MARKETING YEAR
 -- ============================================================================
--- Aggregated view for high-level dashboards
-
 DROP VIEW IF EXISTS gold.trade_summary_by_year CASCADE;
 CREATE VIEW gold.trade_summary_by_year AS
 SELECT
@@ -154,7 +175,6 @@ ORDER BY commodity, marketing_year DESC, flow_type;
 -- ============================================================================
 -- VIEW 3: TOP EXPORTERS BY COMMODITY
 -- ============================================================================
-
 DROP VIEW IF EXISTS gold.top_exporters CASCADE;
 CREATE VIEW gold.top_exporters AS
 SELECT
@@ -173,7 +193,6 @@ ORDER BY commodity, marketing_year DESC, total_exports_mmt DESC;
 -- ============================================================================
 -- VIEW 4: TOP IMPORTERS BY COMMODITY
 -- ============================================================================
-
 DROP VIEW IF EXISTS gold.top_importers CASCADE;
 CREATE VIEW gold.top_importers AS
 SELECT
@@ -192,8 +211,6 @@ ORDER BY commodity, marketing_year DESC, total_imports_mmt DESC;
 -- ============================================================================
 -- VIEW 5: TRADE FLOW MATRIX (FOR FLOW MAPS)
 -- ============================================================================
--- Origin-destination pairs with volumes for Flow Map visualization
-
 DROP VIEW IF EXISTS gold.trade_flow_matrix CASCADE;
 CREATE VIEW gold.trade_flow_matrix AS
 SELECT
@@ -216,9 +233,6 @@ ORDER BY commodity, marketing_year DESC, volume_mmt DESC;
 -- ============================================================================
 -- VIEW 6: SOYBEAN COMPLEX TRADE FLOWS
 -- ============================================================================
--- Specific view for soybean, soybean meal, and soybean oil trade
--- With additional filtering for clean country names
-
 DROP VIEW IF EXISTS gold.soybean_trade_flows CASCADE;
 CREATE VIEW gold.soybean_trade_flows AS
 SELECT
@@ -237,24 +251,13 @@ SELECT
     sheet_name
 FROM gold.trade_flows
 WHERE (LOWER(commodity) LIKE '%soy%' OR LOWER(sheet_name) LIKE '%soy%')
-  -- Additional filtering for clean origin/destination
-  AND origin_country IS NOT NULL
-  AND destination_country IS NOT NULL
-  AND LENGTH(origin_country) > 1
-  AND LENGTH(destination_country) > 1
-  -- Filter out commodity names appearing as countries
-  AND LOWER(origin_country) NOT SIMILAR TO '%(soy|meal|oil|seed|bean|cotton|rape|sun|palm|tallow|corn|wheat)%'
-  AND LOWER(destination_country) NOT SIMILAR TO '%(soy|meal|oil|seed|bean|cotton|rape|sun|palm|tallow|corn|wheat)%'
-  -- Filter out month names
-  AND LOWER(destination_country) NOT IN ('january', 'february', 'march', 'april', 'may', 'june',
-                                          'july', 'august', 'september', 'october', 'november', 'december')
+  AND gold.is_valid_country(origin_country)
+  AND gold.is_valid_country(destination_country)
 ORDER BY marketing_year DESC, value_million_mt DESC;
 
 -- ============================================================================
 -- VIEW 7: SOYBEAN TRADE MATRIX FOR FLOW MAPS
 -- ============================================================================
--- Clean aggregated data ready for Flow Map visualization
-
 DROP VIEW IF EXISTS gold.soybean_flow_matrix CASCADE;
 CREATE VIEW gold.soybean_flow_matrix AS
 SELECT
@@ -268,17 +271,15 @@ WHERE marketing_year IS NOT NULL
   AND origin_country IS NOT NULL
   AND destination_country IS NOT NULL
   AND origin_country != destination_country
-  -- Ensure we have actual trade volume
   AND value_million_mt > 0
-  AND value_million_mt < 1000  -- Filter out obviously wrong large values
+  AND value_million_mt < 1000
 GROUP BY product, origin_country, destination_country, marketing_year
-HAVING SUM(value_million_mt) > 0.001  -- At least 1000 MT
+HAVING SUM(value_million_mt) > 0.001
 ORDER BY product, marketing_year DESC, volume_mmt DESC;
 
 -- ============================================================================
 -- VIEW 8: RAPESEED/CANOLA TRADE FLOWS
 -- ============================================================================
-
 DROP VIEW IF EXISTS gold.rapeseed_trade_flows CASCADE;
 CREATE VIEW gold.rapeseed_trade_flows AS
 SELECT
@@ -294,16 +295,15 @@ SELECT
     value_million_mt,
     sheet_name
 FROM gold.trade_flows
-WHERE LOWER(commodity) LIKE '%rapeseed%'
-   OR LOWER(commodity) LIKE '%canola%'
-   OR LOWER(sheet_name) LIKE '%rapeseed%'
-   OR LOWER(sheet_name) LIKE '%canola%'
+WHERE (LOWER(commodity) LIKE '%rapeseed%' OR LOWER(commodity) LIKE '%canola%'
+       OR LOWER(sheet_name) LIKE '%rapeseed%' OR LOWER(sheet_name) LIKE '%canola%')
+  AND gold.is_valid_country(origin_country)
+  AND gold.is_valid_country(destination_country)
 ORDER BY marketing_year DESC, value_million_mt DESC;
 
 -- ============================================================================
 -- VIEW 9: PALM OIL TRADE FLOWS
 -- ============================================================================
-
 DROP VIEW IF EXISTS gold.palm_oil_trade_flows CASCADE;
 CREATE VIEW gold.palm_oil_trade_flows AS
 SELECT
@@ -318,73 +318,14 @@ SELECT
     value_million_mt,
     sheet_name
 FROM gold.trade_flows
-WHERE LOWER(commodity) LIKE '%palm%'
-   OR LOWER(sheet_name) LIKE '%palm%'
+WHERE (LOWER(commodity) LIKE '%palm%' OR LOWER(sheet_name) LIKE '%palm%')
+  AND gold.is_valid_country(origin_country)
+  AND gold.is_valid_country(destination_country)
 ORDER BY marketing_year DESC, value_million_mt DESC;
 
 -- ============================================================================
--- VIEW 10: YEAR-OVER-YEAR TRADE CHANGES
+-- VIEW 10: TRADE DASHBOARD STATS
 -- ============================================================================
-
-DROP VIEW IF EXISTS gold.trade_yoy_changes CASCADE;
-CREATE VIEW gold.trade_yoy_changes AS
-WITH yearly_totals AS (
-    SELECT
-        commodity,
-        flow_type,
-        marketing_year,
-        SUM(value_million_mt) AS total_volume
-    FROM gold.trade_flows
-    WHERE period_type = 'marketing_year'
-      AND marketing_year IS NOT NULL
-    GROUP BY commodity, flow_type, marketing_year
-),
-with_lag AS (
-    SELECT
-        commodity,
-        flow_type,
-        marketing_year,
-        total_volume,
-        LAG(total_volume) OVER (PARTITION BY commodity, flow_type ORDER BY marketing_year) AS prev_year_volume
-    FROM yearly_totals
-)
-SELECT
-    commodity,
-    flow_type,
-    marketing_year,
-    total_volume AS current_volume_mmt,
-    prev_year_volume AS prior_year_volume_mmt,
-    total_volume - COALESCE(prev_year_volume, 0) AS volume_change_mmt,
-    CASE
-        WHEN prev_year_volume > 0
-        THEN ROUND(((total_volume - prev_year_volume) / prev_year_volume * 100)::numeric, 1)
-        ELSE NULL
-    END AS pct_change
-FROM with_lag
-WHERE prev_year_volume IS NOT NULL
-ORDER BY commodity, marketing_year DESC;
-
--- ============================================================================
--- VIEW 11: RECENT TRADE (LAST 5 YEARS)
--- ============================================================================
-
-DROP VIEW IF EXISTS gold.recent_trade_flows CASCADE;
-CREATE VIEW gold.recent_trade_flows AS
-SELECT *
-FROM gold.trade_flows
-WHERE marketing_year IN (
-    SELECT DISTINCT marketing_year
-    FROM gold.trade_flows
-    WHERE marketing_year IS NOT NULL
-    ORDER BY marketing_year DESC
-    LIMIT 5
-);
-
--- ============================================================================
--- VIEW 12: TRADE STATISTICS DASHBOARD
--- ============================================================================
--- Summary statistics for KPI cards
-
 DROP VIEW IF EXISTS gold.trade_dashboard_stats CASCADE;
 CREATE VIEW gold.trade_dashboard_stats AS
 SELECT
@@ -404,21 +345,21 @@ ORDER BY total_exports_mmt DESC;
 -- ============================================================================
 -- GRANT PERMISSIONS
 -- ============================================================================
-
--- Grant read access to all gold views
+GRANT EXECUTE ON FUNCTION gold.is_valid_country(TEXT) TO PUBLIC;
 GRANT SELECT ON ALL TABLES IN SCHEMA gold TO PUBLIC;
 
 -- ============================================================================
--- SUMMARY
+-- VERIFICATION
 -- ============================================================================
-
 SELECT 'Trade flow views created successfully!' AS status;
 
+-- Test the function
+SELECT 'Testing is_valid_country function:' AS test;
 SELECT
-    schemaname,
-    viewname,
-    'SELECT COUNT(*) FROM ' || schemaname || '.' || viewname AS test_query
-FROM pg_views
-WHERE schemaname = 'gold'
-  AND viewname LIKE '%trade%'
-ORDER BY viewname;
+    val,
+    gold.is_valid_country(val) AS is_valid
+FROM (VALUES
+    ('China'), ('Brazil'), ('United States'), ('Japan'),
+    ('Cottonseed'), ('Soyoil'), ('Soymeal'), ('Sum Total'),
+    ('Western Hemisphere'), ('January'), ('February')
+) AS t(val);
