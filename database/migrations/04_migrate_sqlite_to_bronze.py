@@ -25,6 +25,44 @@ SQLITE_PATH = Path(__file__).parent.parent.parent / "data" / "rlc_commodities.db
 # Batch size for inserts
 BATCH_SIZE = 5000
 
+# ============================================================================
+# TRAINING DATA CUTOFF
+# ============================================================================
+# Only extract data through this marketing year for LLM training
+# Set to None to extract all data
+MAX_MARKETING_YEAR = "2019/20"  # Last year of training data (2021-2025 reserved for testing)
+
+
+def marketing_year_to_int(my: str) -> int:
+    """Convert marketing year string like '2019/20' to integer 2019 for comparison."""
+    if not my:
+        return 0
+    try:
+        # Handle various formats
+        my_str = str(my).strip()
+        if '/' in my_str:
+            return int(my_str.split('/')[0])
+        return int(my_str[:4]) if len(my_str) >= 4 else 0
+    except (ValueError, IndexError):
+        return 0
+
+
+def is_within_training_period(marketing_year) -> bool:
+    """Check if marketing year is within the training data cutoff."""
+    if MAX_MARKETING_YEAR is None:
+        return True  # No cutoff, include all data
+    if not marketing_year:
+        return True  # Include records without marketing year
+
+    cutoff = marketing_year_to_int(MAX_MARKETING_YEAR)
+    current = marketing_year_to_int(marketing_year)
+
+    # Skip if we can't parse the year (probably invalid data)
+    if current == 0:
+        return True
+
+    return current <= cutoff
+
 
 def migrate_sqlite_to_bronze():
     """Migrate SQLite data to PostgreSQL Bronze layer."""
@@ -32,6 +70,10 @@ def migrate_sqlite_to_bronze():
     print("=" * 60)
     print("Migrating SQLite Data to PostgreSQL Bronze Layer")
     print("=" * 60)
+
+    if MAX_MARKETING_YEAR:
+        print(f"\n*** TRAINING DATA MODE ***")
+        print(f"*** Only extracting data through {MAX_MARKETING_YEAR} marketing year ***\n")
 
     # Find SQLite database
     sqlite_path = SQLITE_PATH
@@ -181,12 +223,30 @@ def migrate_sqlite_to_bronze():
             VALUES ({placeholders}, 'sqlite', '{table}', NOW())
         """
 
+        # Find marketing_year column index for filtering (if exists)
+        my_col_idx = None
+        for idx, col in enumerate(columns):
+            if col.lower() == 'marketing_year':
+                my_col_idx = idx
+                break
+
+        if MAX_MARKETING_YEAR and my_col_idx is not None:
+            print(f"  Filtering: only data through {MAX_MARKETING_YEAR}")
+
         sqlite_cursor.execute(f'SELECT * FROM "{table}"')
 
         batch = []
         inserted = 0
+        skipped = 0
 
         for row in sqlite_cursor:
+            # Filter by marketing year if applicable
+            if MAX_MARKETING_YEAR and my_col_idx is not None:
+                marketing_year = row[my_col_idx]
+                if not is_within_training_period(marketing_year):
+                    skipped += 1
+                    continue
+
             batch.append(tuple(row))
 
             if len(batch) >= BATCH_SIZE:
@@ -210,7 +270,10 @@ def migrate_sqlite_to_bronze():
                 print(f"  Error inserting final batch: {e}")
                 pg_conn.rollback()
 
-        print(f"  Migrated {inserted:,} rows to {bronze_table}")
+        if skipped > 0:
+            print(f"  Migrated {inserted:,} rows to {bronze_table} (skipped {skipped:,} rows outside training period)")
+        else:
+            print(f"  Migrated {inserted:,} rows to {bronze_table}")
         migrated.append((table, inserted))
 
     # Close connections

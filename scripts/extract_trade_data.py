@@ -36,6 +36,13 @@ PG_DATABASE = "rlc_commodities"
 PG_USER = "postgres"
 PG_PASSWORD = "SoupBoss1"
 
+# ============================================================================
+# TRAINING DATA CUTOFF
+# ============================================================================
+# Only extract data through this marketing year for LLM training
+# Set to None to extract all data
+MAX_MARKETING_YEAR = "2019/20"  # Last year of training data (2021-2025 reserved for testing)
+
 # Patterns to identify trade-related sheets
 TRADE_SHEET_PATTERNS = [
     r'trade',
@@ -60,6 +67,10 @@ def parse_marketing_year(col_name: str) -> Optional[str]:
     """
     Parse marketing year from column header like "'19/20" or "19/20".
     Returns normalized format like "2019/20".
+
+    Year interpretation:
+    - 60-99 -> 1960-1999 (historical data)
+    - 00-59 -> 2000-2059 (recent/forecast data)
     """
     if not col_name:
         return None
@@ -75,7 +86,8 @@ def parse_marketing_year(col_name: str) -> Optional[str]:
         # Convert 2-digit year to 4-digit
         if len(year1) == 2:
             year1_int = int(year1)
-            if year1_int > 50:
+            # 60-99 -> 1960-1999, 00-59 -> 2000-2059
+            if year1_int >= 60:
                 year1 = f"19{year1}"
             else:
                 year1 = f"20{year1}"
@@ -85,10 +97,37 @@ def parse_marketing_year(col_name: str) -> Optional[str]:
     return None
 
 
+def marketing_year_to_int(my: str) -> int:
+    """Convert marketing year string like '2019/20' to integer 2019 for comparison."""
+    if not my:
+        return 0
+    try:
+        return int(my.split('/')[0])
+    except (ValueError, IndexError):
+        return 0
+
+
+def is_within_training_period(marketing_year: str) -> bool:
+    """Check if marketing year is within the training data cutoff."""
+    if MAX_MARKETING_YEAR is None:
+        return True  # No cutoff, include all data
+    if not marketing_year:
+        return True  # Include records without marketing year
+
+    cutoff = marketing_year_to_int(MAX_MARKETING_YEAR)
+    current = marketing_year_to_int(marketing_year)
+
+    return current <= cutoff
+
+
 def parse_month_year(col_name: str) -> Optional[Tuple[int, int]]:
     """
     Parse month and year from column header like "Sep 93" or "Oct-23".
     Returns (month_num, full_year) tuple.
+
+    Year interpretation:
+    - 60-99 -> 1960-1999 (historical data)
+    - 00-59 -> 2000-2059 (recent/forecast data)
     """
     if not col_name:
         return None
@@ -108,7 +147,8 @@ def parse_month_year(col_name: str) -> Optional[Tuple[int, int]]:
         # Convert 2-digit year to 4-digit
         year_int = int(year_str)
         if len(year_str) == 2:
-            if year_int > 50:
+            # 60-99 -> 1960-1999, 00-59 -> 2000-2059
+            if year_int >= 60:
                 year_int = 1900 + year_int
             else:
                 year_int = 2000 + year_int
@@ -116,6 +156,26 @@ def parse_month_year(col_name: str) -> Optional[Tuple[int, int]]:
         return (month_num, year_int)
 
     return None
+
+
+def is_month_within_training_period(month: int, year: int) -> bool:
+    """Check if a month/year is within the training data cutoff (Aug 2020 for 2019/20 MY)."""
+    if MAX_MARKETING_YEAR is None:
+        return True  # No cutoff, include all data
+
+    # Training cutoff is end of 2019/20 marketing year
+    # Soybeans: Sep-Aug, so end is Aug 2020
+    # Meal/Oil: Oct-Sep, so end is Sep 2020
+    # Using Sep 2020 as the inclusive cutoff to cover both
+    cutoff_year = 2020
+    cutoff_month = 9  # September
+
+    if year < cutoff_year:
+        return True
+    elif year == cutoff_year:
+        return month <= cutoff_month
+    else:
+        return False
 
 
 def classify_columns(df: pd.DataFrame) -> Dict[str, List[str]]:
@@ -238,6 +298,9 @@ def extract_trade_data_from_sheet(
                             month_year = parse_month_year(str(col))
                             if month_year:
                                 month, year = month_year
+                                # Filter by training period cutoff
+                                if not is_month_within_training_period(month, year):
+                                    continue
                                 records.append({
                                     'commodity': commodity,
                                     'country': country,
@@ -263,6 +326,9 @@ def extract_trade_data_from_sheet(
                         if value_float != 0:
                             my = parse_marketing_year(str(col))
                             if my:
+                                # Filter by training period cutoff
+                                if not is_within_training_period(my):
+                                    continue
                                 records.append({
                                     'commodity': commodity,
                                     'country': country,
@@ -452,6 +518,11 @@ def migrate_to_database(directory: Path, dry_run: bool = False):
     print("\n" + "=" * 70)
     print("TRADE DATA MIGRATION TO POSTGRESQL")
     print("=" * 70)
+
+    if MAX_MARKETING_YEAR:
+        print(f"\n*** TRAINING DATA MODE ***")
+        print(f"*** Only extracting data through {MAX_MARKETING_YEAR} marketing year ***")
+        print(f"*** (Monthly data through Sep 2020) ***\n")
 
     # Scan for files
     files = scan_trade_files(directory)
