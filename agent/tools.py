@@ -1,0 +1,584 @@
+"""
+RLC Agent Tools
+Tools that the LLM agent can use to interact with the world.
+"""
+
+import os
+import json
+import logging
+import subprocess
+from pathlib import Path
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+
+import pandas as pd
+
+from config import DATABASE, PROJECT_ROOT, SEARCH_BACKEND
+
+logger = logging.getLogger(__name__)
+
+# ============================================================================
+# WEB SEARCH TOOLS
+# ============================================================================
+
+def web_search(query: str, max_results: int = 5) -> List[Dict[str, str]]:
+    """
+    Search the web using DuckDuckGo (no API key required).
+
+    Args:
+        query: Search query string
+        max_results: Maximum number of results to return
+
+    Returns:
+        List of {"title": ..., "url": ..., "snippet": ...}
+    """
+    try:
+        from duckduckgo_search import DDGS
+
+        results = []
+        with DDGS() as ddgs:
+            for r in ddgs.text(query, max_results=max_results):
+                results.append({
+                    "title": r.get("title", ""),
+                    "url": r.get("href", ""),
+                    "snippet": r.get("body", "")
+                })
+
+        logger.info(f"Web search for '{query}' returned {len(results)} results")
+        return results
+
+    except ImportError:
+        logger.error("duckduckgo-search not installed. Run: pip install duckduckgo-search")
+        return [{"error": "Search not available - duckduckgo-search not installed"}]
+    except Exception as e:
+        logger.error(f"Web search error: {e}")
+        return [{"error": str(e)}]
+
+
+def web_search_news(query: str, max_results: int = 5) -> List[Dict[str, str]]:
+    """Search for recent news articles."""
+    try:
+        from duckduckgo_search import DDGS
+
+        results = []
+        with DDGS() as ddgs:
+            for r in ddgs.news(query, max_results=max_results):
+                results.append({
+                    "title": r.get("title", ""),
+                    "url": r.get("url", ""),
+                    "snippet": r.get("body", ""),
+                    "date": r.get("date", ""),
+                    "source": r.get("source", "")
+                })
+
+        logger.info(f"News search for '{query}' returned {len(results)} results")
+        return results
+
+    except Exception as e:
+        logger.error(f"News search error: {e}")
+        return [{"error": str(e)}]
+
+
+def fetch_webpage(url: str) -> str:
+    """
+    Fetch and extract text content from a webpage.
+
+    Args:
+        url: URL to fetch
+
+    Returns:
+        Extracted text content
+    """
+    try:
+        import requests
+        from html import unescape
+        import re
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        }
+
+        response = requests.get(url, headers=headers, timeout=30)
+        response.raise_for_status()
+
+        # Simple HTML to text conversion
+        text = response.text
+        # Remove scripts and styles
+        text = re.sub(r'<script[^>]*>.*?</script>', '', text, flags=re.DOTALL)
+        text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL)
+        # Remove HTML tags
+        text = re.sub(r'<[^>]+>', ' ', text)
+        # Clean up whitespace
+        text = re.sub(r'\s+', ' ', text)
+        text = unescape(text).strip()
+
+        # Limit length
+        if len(text) > 10000:
+            text = text[:10000] + "... [truncated]"
+
+        logger.info(f"Fetched {len(text)} chars from {url}")
+        return text
+
+    except Exception as e:
+        logger.error(f"Webpage fetch error: {e}")
+        return f"Error fetching {url}: {e}"
+
+
+# ============================================================================
+# FILE SYSTEM TOOLS
+# ============================================================================
+
+def read_file(file_path: str) -> str:
+    """
+    Read contents of a file.
+
+    Args:
+        file_path: Path to file (relative to project root or absolute)
+
+    Returns:
+        File contents as string
+    """
+    try:
+        path = Path(file_path)
+        if not path.is_absolute():
+            path = PROJECT_ROOT / path
+
+        if not path.exists():
+            return f"Error: File not found: {path}"
+
+        with open(path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        logger.info(f"Read {len(content)} chars from {path}")
+        return content
+
+    except Exception as e:
+        logger.error(f"File read error: {e}")
+        return f"Error reading file: {e}"
+
+
+def write_file(file_path: str, content: str, require_approval: bool = True) -> str:
+    """
+    Write content to a file.
+
+    Args:
+        file_path: Path to file
+        content: Content to write
+        require_approval: If True, return approval request instead of writing
+
+    Returns:
+        Success message or approval request
+    """
+    try:
+        path = Path(file_path)
+        if not path.is_absolute():
+            path = PROJECT_ROOT / path
+
+        if require_approval:
+            return f"APPROVAL_REQUIRED: Write {len(content)} chars to {path}"
+
+        # Create parent directories if needed
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+        logger.info(f"Wrote {len(content)} chars to {path}")
+        return f"Successfully wrote to {path}"
+
+    except Exception as e:
+        logger.error(f"File write error: {e}")
+        return f"Error writing file: {e}"
+
+
+def list_directory(dir_path: str = ".", pattern: str = "*") -> List[str]:
+    """
+    List files in a directory.
+
+    Args:
+        dir_path: Directory path
+        pattern: Glob pattern to match
+
+    Returns:
+        List of file paths
+    """
+    try:
+        path = Path(dir_path)
+        if not path.is_absolute():
+            path = PROJECT_ROOT / path
+
+        files = sorted([str(f.relative_to(PROJECT_ROOT)) for f in path.glob(pattern)])
+        logger.info(f"Listed {len(files)} files in {path}")
+        return files
+
+    except Exception as e:
+        logger.error(f"Directory list error: {e}")
+        return [f"Error: {e}"]
+
+
+def find_files(pattern: str, directory: str = ".") -> List[str]:
+    """
+    Find files matching a pattern recursively.
+
+    Args:
+        pattern: Glob pattern (e.g., "**/*.py")
+        directory: Starting directory
+
+    Returns:
+        List of matching file paths
+    """
+    try:
+        path = Path(directory)
+        if not path.is_absolute():
+            path = PROJECT_ROOT / path
+
+        files = sorted([str(f.relative_to(PROJECT_ROOT)) for f in path.glob(pattern)])
+        logger.info(f"Found {len(files)} files matching {pattern}")
+        return files
+
+    except Exception as e:
+        logger.error(f"Find files error: {e}")
+        return [f"Error: {e}"]
+
+
+# ============================================================================
+# DATABASE TOOLS
+# ============================================================================
+
+def query_database(sql: str, params: tuple = None) -> str:
+    """
+    Execute a SELECT query on the database.
+
+    Args:
+        sql: SQL SELECT query
+        params: Query parameters
+
+    Returns:
+        Query results as formatted string
+    """
+    try:
+        import psycopg2
+
+        # Only allow SELECT queries for safety
+        if not sql.strip().upper().startswith("SELECT"):
+            return "Error: Only SELECT queries allowed. Use execute_database for modifications."
+
+        conn = psycopg2.connect(**DATABASE)
+        df = pd.read_sql(sql, conn, params=params)
+        conn.close()
+
+        result = f"Query returned {len(df)} rows:\n\n{df.to_string()}"
+        logger.info(f"Database query returned {len(df)} rows")
+        return result
+
+    except ImportError:
+        return "Error: psycopg2 not installed"
+    except Exception as e:
+        logger.error(f"Database query error: {e}")
+        return f"Database error: {e}"
+
+
+def execute_database(sql: str, params: tuple = None, require_approval: bool = True) -> str:
+    """
+    Execute a modifying query (INSERT, UPDATE, DELETE) on the database.
+
+    Args:
+        sql: SQL query
+        params: Query parameters
+        require_approval: If True, return approval request
+
+    Returns:
+        Success message or approval request
+    """
+    try:
+        import psycopg2
+
+        if require_approval:
+            return f"APPROVAL_REQUIRED: Execute SQL: {sql[:200]}..."
+
+        conn = psycopg2.connect(**DATABASE)
+        cur = conn.cursor()
+        cur.execute(sql, params)
+        affected = cur.rowcount
+        conn.commit()
+        conn.close()
+
+        logger.info(f"Database execute affected {affected} rows")
+        return f"Query executed successfully. {affected} rows affected."
+
+    except Exception as e:
+        logger.error(f"Database execute error: {e}")
+        return f"Database error: {e}"
+
+
+def get_database_schema() -> str:
+    """Get the database schema (tables, columns, types)."""
+    try:
+        import psycopg2
+
+        conn = psycopg2.connect(**DATABASE)
+        cur = conn.cursor()
+
+        schema_info = []
+
+        for schema in ['bronze', 'silver', 'gold']:
+            schema_info.append(f"\n## {schema.upper()} Schema\n")
+
+            # Get tables
+            cur.execute("""
+                SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema = %s AND table_type = 'BASE TABLE'
+                ORDER BY table_name
+            """, (schema,))
+
+            for (table,) in cur.fetchall():
+                cur.execute("""
+                    SELECT column_name, data_type
+                    FROM information_schema.columns
+                    WHERE table_schema = %s AND table_name = %s
+                    ORDER BY ordinal_position
+                """, (schema, table))
+
+                columns = [f"{col} ({dtype})" for col, dtype in cur.fetchall()]
+                schema_info.append(f"\n**{table}**")
+                schema_info.append("  " + ", ".join(columns))
+
+        conn.close()
+        return "\n".join(schema_info)
+
+    except Exception as e:
+        logger.error(f"Schema retrieval error: {e}")
+        return f"Error getting schema: {e}"
+
+
+# ============================================================================
+# SCRIPT EXECUTION TOOLS
+# ============================================================================
+
+def run_python_script(script_path: str, args: List[str] = None, require_approval: bool = True) -> str:
+    """
+    Run a Python script from the project.
+
+    Args:
+        script_path: Path to script relative to project root
+        args: Command line arguments
+        require_approval: If True, return approval request
+
+    Returns:
+        Script output or approval request
+    """
+    try:
+        path = Path(script_path)
+        if not path.is_absolute():
+            path = PROJECT_ROOT / path
+
+        if not path.exists():
+            return f"Error: Script not found: {path}"
+
+        if require_approval:
+            return f"APPROVAL_REQUIRED: Run script {path} with args {args}"
+
+        cmd = ["python", str(path)]
+        if args:
+            cmd.extend(args)
+
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT),
+            timeout=300
+        )
+
+        output = result.stdout
+        if result.stderr:
+            output += f"\n\nSTDERR:\n{result.stderr}"
+
+        logger.info(f"Script {path} completed with return code {result.returncode}")
+        return f"Return code: {result.returncode}\n\n{output}"
+
+    except subprocess.TimeoutExpired:
+        return "Error: Script timed out after 5 minutes"
+    except Exception as e:
+        logger.error(f"Script execution error: {e}")
+        return f"Error running script: {e}"
+
+
+def list_available_scripts() -> List[Dict[str, str]]:
+    """List Python scripts in the project with their docstrings."""
+    scripts = []
+
+    for script_path in PROJECT_ROOT.glob("scripts/*.py"):
+        try:
+            with open(script_path, 'r') as f:
+                content = f.read()
+
+            # Extract docstring
+            docstring = ""
+            if content.startswith('"""'):
+                end = content.find('"""', 3)
+                if end > 0:
+                    docstring = content[3:end].strip()
+            elif content.startswith("'''"):
+                end = content.find("'''", 3)
+                if end > 0:
+                    docstring = content[3:end].strip()
+
+            scripts.append({
+                "name": script_path.name,
+                "path": f"scripts/{script_path.name}",
+                "description": docstring[:200] if docstring else "No description"
+            })
+        except:
+            pass
+
+    return scripts
+
+
+# ============================================================================
+# UTILITY TOOLS
+# ============================================================================
+
+def get_current_time() -> str:
+    """Get current date and time."""
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def calculate(expression: str) -> str:
+    """
+    Safely evaluate a mathematical expression.
+
+    Args:
+        expression: Math expression like "2 + 2" or "100 * 1.15"
+
+    Returns:
+        Result as string
+    """
+    try:
+        # Only allow safe characters
+        allowed = set("0123456789+-*/.() ")
+        if not all(c in allowed for c in expression):
+            return "Error: Invalid characters in expression"
+
+        result = eval(expression)
+        return str(result)
+
+    except Exception as e:
+        return f"Error: {e}"
+
+
+# ============================================================================
+# TOOL REGISTRY
+# ============================================================================
+
+TOOLS = {
+    # Web tools
+    "web_search": {
+        "function": web_search,
+        "description": "Search the web for information",
+        "parameters": {"query": "Search query", "max_results": "Number of results (default 5)"}
+    },
+    "web_search_news": {
+        "function": web_search_news,
+        "description": "Search for recent news articles",
+        "parameters": {"query": "Search query", "max_results": "Number of results (default 5)"}
+    },
+    "fetch_webpage": {
+        "function": fetch_webpage,
+        "description": "Fetch and extract text from a webpage",
+        "parameters": {"url": "URL to fetch"}
+    },
+
+    # File tools
+    "read_file": {
+        "function": read_file,
+        "description": "Read contents of a file",
+        "parameters": {"file_path": "Path to file"}
+    },
+    "write_file": {
+        "function": write_file,
+        "description": "Write content to a file (requires approval)",
+        "parameters": {"file_path": "Path to file", "content": "Content to write"}
+    },
+    "list_directory": {
+        "function": list_directory,
+        "description": "List files in a directory",
+        "parameters": {"dir_path": "Directory path", "pattern": "Glob pattern"}
+    },
+    "find_files": {
+        "function": find_files,
+        "description": "Find files matching a pattern",
+        "parameters": {"pattern": "Glob pattern", "directory": "Starting directory"}
+    },
+
+    # Database tools
+    "query_database": {
+        "function": query_database,
+        "description": "Execute a SELECT query on the database",
+        "parameters": {"sql": "SQL SELECT query"}
+    },
+    "execute_database": {
+        "function": execute_database,
+        "description": "Execute INSERT/UPDATE/DELETE (requires approval)",
+        "parameters": {"sql": "SQL query"}
+    },
+    "get_database_schema": {
+        "function": get_database_schema,
+        "description": "Get database schema information",
+        "parameters": {}
+    },
+
+    # Script tools
+    "run_python_script": {
+        "function": run_python_script,
+        "description": "Run a Python script (requires approval)",
+        "parameters": {"script_path": "Path to script", "args": "Command line arguments"}
+    },
+    "list_available_scripts": {
+        "function": list_available_scripts,
+        "description": "List available Python scripts",
+        "parameters": {}
+    },
+
+    # Utility tools
+    "get_current_time": {
+        "function": get_current_time,
+        "description": "Get current date and time",
+        "parameters": {}
+    },
+    "calculate": {
+        "function": calculate,
+        "description": "Evaluate a math expression",
+        "parameters": {"expression": "Math expression"}
+    }
+}
+
+
+def get_tools_description() -> str:
+    """Get a formatted description of all available tools."""
+    lines = ["# Available Tools\n"]
+
+    for name, tool in TOOLS.items():
+        lines.append(f"\n## {name}")
+        lines.append(f"{tool['description']}")
+        if tool['parameters']:
+            lines.append("Parameters:")
+            for param, desc in tool['parameters'].items():
+                lines.append(f"  - {param}: {desc}")
+
+    return "\n".join(lines)
+
+
+def execute_tool(tool_name: str, **kwargs) -> str:
+    """Execute a tool by name with given arguments."""
+    if tool_name not in TOOLS:
+        return f"Error: Unknown tool '{tool_name}'"
+
+    try:
+        func = TOOLS[tool_name]["function"]
+        result = func(**kwargs)
+        return result if isinstance(result, str) else json.dumps(result, indent=2)
+    except Exception as e:
+        logger.error(f"Tool execution error: {e}")
+        return f"Error executing {tool_name}: {e}"
