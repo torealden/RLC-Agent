@@ -461,10 +461,17 @@ class RLCAgent:
 
                 messages.append({"role": "user", "content": user_input})
 
-                print("\nAgent: ", end="", flush=True)
+                # Show thinking indicator
+                print("\nAgent: [Thinking...] ", end="", flush=True)
 
                 full_response = ""
+                first_chunk = True
                 for chunk in stream_chat(messages, self.model):
+                    if first_chunk:
+                        # Clear the "Thinking..." indicator
+                        print("\r" + " "*30 + "\r", end="", flush=True)
+                        print("Agent: ", end="", flush=True)
+                        first_chunk = False
                     print(chunk, end="", flush=True)
                     full_response += chunk
 
@@ -488,9 +495,14 @@ class RLCAgent:
                         messages.append({"role": "user", "content": f"Tool result for {tool_name}:\n{result}"})
 
                         # Get follow-up response
-                        print("\nAgent: ", end="", flush=True)
+                        print("\nAgent: [Thinking...] ", end="", flush=True)
                         full_response = ""
+                        first_chunk = True
                         for chunk in stream_chat(messages, self.model):
+                            if first_chunk:
+                                print("\r" + " "*30 + "\r", end="", flush=True)
+                                print("Agent: ", end="", flush=True)
+                                first_chunk = False
                             print(chunk, end="", flush=True)
                             full_response += chunk
                         print()
