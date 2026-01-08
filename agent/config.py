@@ -49,7 +49,7 @@ DATABASE = {
 # ============================================================================
 
 # DuckDuckGo search (free, no API key needed)
-SEARCH_BACKEND = "duckduckgo"
+SEARCH_BACKEND = duckduckgo
 
 # Alternative: Tavily (better for agents, requires free API key)
 # SEARCH_BACKEND = "tavily"
@@ -60,12 +60,21 @@ SEARCH_BACKEND = "duckduckgo"
 # ============================================================================
 
 # Get your integration token from: https://www.notion.so/my-integrations
-NOTION_API_KEY = ""  # Paste your secret_... token here
+NOTION_API_KEY = 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  # Paste your secret_... token here
 
 # Main pages/databases the agent should know about (optional - can also search)
 NOTION_PAGES = {
-    # "project_tracker": "page-id-here",
-    # "data_sources": "database-id-here",
+    agent_registry: https://www.notion.so/2dbead023dee802ba5dad3cc4c9b904d?v=2dbead023dee809b8be2000ce0d374f3&source=copy_link,
+    data_sources_registry: https://www.notion.so/2dbead023dee80889f44c4727b9b8f81?v=2dbead023dee808bac53000c2dd27cd4&source=copy_link,
+    runbooks: https://www.notion.so/2dbead023dee80379944cdec7a696cb2?v=2dbead023dee80459126000cba3e8611&source=copy_link,
+    architecture_decisions: https://www.notion.so/2dbead023dee809cb603f74314330e75?v=2dbead023dee80648a18000c6d03a273&source=copy_link,
+    reconciliation_log: https://www.notion.so/2dbead023dee80928368da028b8a5e80?v=2dbead023dee805a959d000c9dcb68fa&source=copy_link,
+    content_calendar: https://www.notion.so/2dbead023dee80aaa266f81b3c325777?v=2dbead023dee80019fd0000cb30741eb&source=copy_link,
+    content_tasks: https://www.notion.so/2dcead023dee809795a7e6853385273a?v=2dcead023dee8076a9de000c82912f88&source=copy_link,
+    content_templates: https://www.notion.so/2dcead023dee809fb7d1c6a9eeb16d2e?v=2dcead023dee804bbf34000cec89709a&source=copy_link,
+    distribution_channels: https://www.notion.so/2dcead023dee80d9b1eaecfd77c20895?v=2dcead023dee80f2a27e000c3d1c7937&source=copy_link,
+    engagement_log: https://www.notion.so/2dcead023dee80bc9b2add7b6d77ec87?v=2dcead023dee80a8b49d000c327d452d&source=copy_link,
+    master_timeline: https://www.notion.so/2dcead023dee801dbedec4a67752801b?v=2dcead023dee8086903c000ce495be3e&source=copy_link,
 }
 
 # ============================================================================
