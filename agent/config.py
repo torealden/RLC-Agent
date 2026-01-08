@@ -56,6 +56,19 @@ SEARCH_BACKEND = "duckduckgo"
 # TAVILY_API_KEY = "your-api-key-here"  # Get free key at tavily.com
 
 # ============================================================================
+# NOTION CONFIGURATION
+# ============================================================================
+
+# Get your integration token from: https://www.notion.so/my-integrations
+NOTION_API_KEY = ""  # Paste your secret_... token here
+
+# Main pages/databases the agent should know about (optional - can also search)
+NOTION_PAGES = {
+    # "project_tracker": "page-id-here",
+    # "data_sources": "database-id-here",
+}
+
+# ============================================================================
 # AGENT BEHAVIOR
 # ============================================================================
 
@@ -99,6 +112,7 @@ SYSTEM_PROMPT = """You are the RLC Agent, an AI business partner specializing in
 - Query and update the PostgreSQL database
 - Execute Python scripts
 - Analyze data using pandas
+- Access Notion pages and databases (read and update)
 
 **Your Constraints:**
 - Always explain your reasoning before taking action

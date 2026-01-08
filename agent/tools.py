@@ -13,7 +13,7 @@ from typing import Optional, List, Dict, Any
 
 import pandas as pd
 
-from config import DATABASE, PROJECT_ROOT, SEARCH_BACKEND
+from config import DATABASE, PROJECT_ROOT, SEARCH_BACKEND, NOTION_API_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -469,6 +469,280 @@ def calculate(expression: str) -> str:
 
 
 # ============================================================================
+# NOTION TOOLS
+# ============================================================================
+
+NOTION_BASE_URL = "https://api.notion.com/v1"
+NOTION_VERSION = "2022-06-28"
+
+
+def _notion_headers() -> Dict[str, str]:
+    """Get headers for Notion API requests."""
+    return {
+        "Authorization": f"Bearer {NOTION_API_KEY}",
+        "Content-Type": "application/json",
+        "Notion-Version": NOTION_VERSION
+    }
+
+
+def notion_search(query: str, filter_type: str = None) -> str:
+    """
+    Search Notion for pages and databases.
+
+    Args:
+        query: Search query
+        filter_type: Optional filter - "page" or "database"
+
+    Returns:
+        Search results
+    """
+    if not NOTION_API_KEY:
+        return "Error: NOTION_API_KEY not configured. Add your key to agent/config.py"
+
+    try:
+        import requests
+
+        payload = {"query": query}
+        if filter_type:
+            payload["filter"] = {"property": "object", "value": filter_type}
+
+        response = requests.post(
+            f"{NOTION_BASE_URL}/search",
+            headers=_notion_headers(),
+            json=payload,
+            timeout=30
+        )
+
+        if response.status_code != 200:
+            return f"Error: {response.status_code} - {response.text}"
+
+        data = response.json()
+        results = []
+
+        for item in data.get("results", []):
+            obj_type = item.get("object")
+            title = ""
+
+            # Extract title based on object type
+            if obj_type == "page":
+                props = item.get("properties", {})
+                for prop in props.values():
+                    if prop.get("type") == "title":
+                        title_content = prop.get("title", [])
+                        if title_content:
+                            title = title_content[0].get("plain_text", "Untitled")
+                        break
+            elif obj_type == "database":
+                title_list = item.get("title", [])
+                if title_list:
+                    title = title_list[0].get("plain_text", "Untitled")
+
+            results.append({
+                "type": obj_type,
+                "id": item.get("id"),
+                "title": title or "Untitled",
+                "url": item.get("url", "")
+            })
+
+        logger.info(f"Notion search for '{query}' returned {len(results)} results")
+        return json.dumps(results, indent=2)
+
+    except Exception as e:
+        logger.error(f"Notion search error: {e}")
+        return f"Error: {e}"
+
+
+def notion_get_page(page_id: str) -> str:
+    """
+    Get content from a Notion page.
+
+    Args:
+        page_id: The page ID (from URL or search results)
+
+    Returns:
+        Page content as text
+    """
+    if not NOTION_API_KEY:
+        return "Error: NOTION_API_KEY not configured. Add your key to agent/config.py"
+
+    try:
+        import requests
+
+        # Get page metadata
+        response = requests.get(
+            f"{NOTION_BASE_URL}/pages/{page_id}",
+            headers=_notion_headers(),
+            timeout=30
+        )
+
+        if response.status_code != 200:
+            return f"Error: {response.status_code} - {response.text}"
+
+        page_data = response.json()
+
+        # Get page blocks (content)
+        blocks_response = requests.get(
+            f"{NOTION_BASE_URL}/blocks/{page_id}/children",
+            headers=_notion_headers(),
+            timeout=30
+        )
+
+        content_parts = []
+
+        if blocks_response.status_code == 200:
+            blocks = blocks_response.json().get("results", [])
+
+            for block in blocks:
+                block_type = block.get("type")
+                block_content = block.get(block_type, {})
+
+                # Extract text from rich_text blocks
+                if "rich_text" in block_content:
+                    text = "".join([t.get("plain_text", "") for t in block_content["rich_text"]])
+                    if block_type.startswith("heading"):
+                        content_parts.append(f"\n## {text}\n")
+                    elif block_type == "bulleted_list_item":
+                        content_parts.append(f"• {text}")
+                    elif block_type == "numbered_list_item":
+                        content_parts.append(f"- {text}")
+                    else:
+                        content_parts.append(text)
+
+        logger.info(f"Retrieved Notion page {page_id}")
+        return "\n".join(content_parts) if content_parts else "Page has no text content"
+
+    except Exception as e:
+        logger.error(f"Notion get page error: {e}")
+        return f"Error: {e}"
+
+
+def notion_query_database(database_id: str, filter_json: str = None) -> str:
+    """
+    Query a Notion database.
+
+    Args:
+        database_id: The database ID
+        filter_json: Optional JSON filter string
+
+    Returns:
+        Database entries
+    """
+    if not NOTION_API_KEY:
+        return "Error: NOTION_API_KEY not configured. Add your key to agent/config.py"
+
+    try:
+        import requests
+
+        payload = {}
+        if filter_json:
+            payload["filter"] = json.loads(filter_json)
+
+        response = requests.post(
+            f"{NOTION_BASE_URL}/databases/{database_id}/query",
+            headers=_notion_headers(),
+            json=payload,
+            timeout=30
+        )
+
+        if response.status_code != 200:
+            return f"Error: {response.status_code} - {response.text}"
+
+        data = response.json()
+        results = []
+
+        for item in data.get("results", []):
+            entry = {"id": item.get("id")}
+
+            for prop_name, prop_data in item.get("properties", {}).items():
+                prop_type = prop_data.get("type")
+
+                # Extract value based on property type
+                if prop_type == "title":
+                    title_content = prop_data.get("title", [])
+                    entry[prop_name] = title_content[0].get("plain_text", "") if title_content else ""
+                elif prop_type == "rich_text":
+                    text_content = prop_data.get("rich_text", [])
+                    entry[prop_name] = text_content[0].get("plain_text", "") if text_content else ""
+                elif prop_type == "number":
+                    entry[prop_name] = prop_data.get("number")
+                elif prop_type == "select":
+                    select = prop_data.get("select")
+                    entry[prop_name] = select.get("name") if select else ""
+                elif prop_type == "multi_select":
+                    entry[prop_name] = [s.get("name") for s in prop_data.get("multi_select", [])]
+                elif prop_type == "date":
+                    date = prop_data.get("date")
+                    entry[prop_name] = date.get("start") if date else ""
+                elif prop_type == "checkbox":
+                    entry[prop_name] = prop_data.get("checkbox", False)
+                elif prop_type == "url":
+                    entry[prop_name] = prop_data.get("url", "")
+
+            results.append(entry)
+
+        logger.info(f"Queried Notion database {database_id}, {len(results)} results")
+        return json.dumps(results, indent=2)
+
+    except Exception as e:
+        logger.error(f"Notion query error: {e}")
+        return f"Error: {e}"
+
+
+def notion_add_page(database_id: str, title: str, properties_json: str = None) -> str:
+    """
+    Add a new page to a Notion database.
+
+    Args:
+        database_id: The database ID to add to
+        title: Title for the new page
+        properties_json: Optional JSON string with additional properties
+
+    Returns:
+        Result message
+    """
+    if not NOTION_API_KEY:
+        return "Error: NOTION_API_KEY not configured. Add your key to agent/config.py"
+
+    try:
+        import requests
+
+        # Build properties - start with title
+        properties = {
+            "Name": {
+                "title": [{"text": {"content": title}}]
+            }
+        }
+
+        # Add any additional properties
+        if properties_json:
+            extra_props = json.loads(properties_json)
+            properties.update(extra_props)
+
+        payload = {
+            "parent": {"database_id": database_id},
+            "properties": properties
+        }
+
+        response = requests.post(
+            f"{NOTION_BASE_URL}/pages",
+            headers=_notion_headers(),
+            json=payload,
+            timeout=30
+        )
+
+        if response.status_code != 200:
+            return f"Error: {response.status_code} - {response.text}"
+
+        data = response.json()
+        logger.info(f"Created Notion page in database {database_id}")
+        return f"Page created successfully. ID: {data.get('id')}, URL: {data.get('url')}"
+
+    except Exception as e:
+        logger.error(f"Notion add page error: {e}")
+        return f"Error: {e}"
+
+
+# ============================================================================
 # TOOL REGISTRY
 # ============================================================================
 
@@ -551,6 +825,28 @@ TOOLS = {
         "function": calculate,
         "description": "Evaluate a math expression",
         "parameters": {"expression": "Math expression"}
+    },
+
+    # Notion tools
+    "notion_search": {
+        "function": notion_search,
+        "description": "Search Notion for pages and databases",
+        "parameters": {"query": "Search query", "filter_type": "Optional: 'page' or 'database'"}
+    },
+    "notion_get_page": {
+        "function": notion_get_page,
+        "description": "Get content from a Notion page",
+        "parameters": {"page_id": "Page ID from search results or URL"}
+    },
+    "notion_query_database": {
+        "function": notion_query_database,
+        "description": "Query a Notion database for entries",
+        "parameters": {"database_id": "Database ID", "filter_json": "Optional JSON filter"}
+    },
+    "notion_add_page": {
+        "function": notion_add_page,
+        "description": "Add a new page to a Notion database",
+        "parameters": {"database_id": "Database ID", "title": "Page title", "properties_json": "Optional properties"}
     }
 }
 
