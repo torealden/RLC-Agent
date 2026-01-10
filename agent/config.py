@@ -4,7 +4,6 @@ Central configuration for the persistent LLM agent.
 """
 
 from pathlib import Path
-from tavily import TavilyClient
 # ============================================================================
 # PATHS
 # ============================================================================
