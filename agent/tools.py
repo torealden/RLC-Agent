@@ -15,6 +15,12 @@ import pandas as pd
 
 from config import DATABASE, PROJECT_ROOT, SEARCH_BACKEND, NOTION_API_KEY
 
+# Try to import TAVILY_API_KEY if it exists
+try:
+    from config import TAVILY_API_KEY
+except ImportError:
+    TAVILY_API_KEY = None
+
 logger = logging.getLogger(__name__)
 
 # ============================================================================
@@ -23,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 def web_search(query: str, max_results: int = 5) -> List[Dict[str, str]]:
     """
-    Search the web using DuckDuckGo (no API key required).
+    Search the web using Tavily (primary) or DuckDuckGo (fallback).
 
     Args:
         query: Search query string
@@ -32,6 +38,31 @@ def web_search(query: str, max_results: int = 5) -> List[Dict[str, str]]:
     Returns:
         List of {"title": ..., "url": ..., "snippet": ...}
     """
+    # Try Tavily first if configured
+    if SEARCH_BACKEND == "tavily" and TAVILY_API_KEY:
+        try:
+            from tavily import TavilyClient
+
+            client = TavilyClient(api_key=TAVILY_API_KEY)
+            response = client.search(query=query, max_results=max_results)
+
+            results = []
+            for r in response.get("results", []):
+                results.append({
+                    "title": r.get("title", ""),
+                    "url": r.get("url", ""),
+                    "snippet": r.get("content", "")
+                })
+
+            logger.info(f"Tavily search for '{query}' returned {len(results)} results")
+            return results
+
+        except ImportError:
+            logger.warning("tavily-python not installed, falling back to DuckDuckGo")
+        except Exception as e:
+            logger.warning(f"Tavily search error: {e}, falling back to DuckDuckGo")
+
+    # Fallback to DuckDuckGo
     try:
         from duckduckgo_search import DDGS
 
@@ -44,7 +75,7 @@ def web_search(query: str, max_results: int = 5) -> List[Dict[str, str]]:
                     "snippet": r.get("body", "")
                 })
 
-        logger.info(f"Web search for '{query}' returned {len(results)} results")
+        logger.info(f"DuckDuckGo search for '{query}' returned {len(results)} results")
         return results
 
     except ImportError:
