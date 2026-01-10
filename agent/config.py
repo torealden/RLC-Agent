@@ -4,7 +4,7 @@ Central configuration for the persistent LLM agent.
 """
 
 from pathlib import Path
-
+from tavily import TavilyClient
 # ============================================================================
 # PATHS
 # ============================================================================
@@ -49,9 +49,14 @@ DATABASE = {
 # ============================================================================
 
 # DuckDuckGo search (free, no API key needed)
-SEARCH_BACKEND = "duckduckgo"
+# SEARCH_BACKEND = "duckduckgo"
 
 # Alternative: Tavily (better for agents, requires free API key)
+client = TavilyClient("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")
+response = client.search(
+    query="",
+    search_depth="advanced"
+)
 # SEARCH_BACKEND = "tavily"
 # TAVILY_API_KEY = "xZtlJFvQs5bwXrEwk8JzD4xJNqJ0z0bR"  # Get free key at tavily.com
 
