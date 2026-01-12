@@ -3,7 +3,16 @@ RLC Agent Configuration
 Central configuration for the persistent LLM agent.
 """
 
+import os
 from pathlib import Path
+
+# Load environment variables from .env file if it exists
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent.parent / ".env")
+except ImportError:
+    pass  # python-dotenv not installed, rely on system env vars
+
 # ============================================================================
 # PATHS
 # ============================================================================
@@ -25,46 +34,40 @@ TASKS_DIR.mkdir(exist_ok=True)
 # OLLAMA CONFIGURATION
 # ============================================================================
 
-OLLAMA_HOST = "http://localhost:11434"
-DEFAULT_MODEL = "llama3.1"
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "llama3.1")
 
 # For more complex tasks, use a larger model if available
-REASONING_MODEL = "llama3.1"  # Could be "llama3.1:70b" if you have RAM
+REASONING_MODEL = os.getenv("REASONING_MODEL", "llama3.1")  # Could be "llama3.1:70b" if you have RAM
 
 # ============================================================================
 # DATABASE CONFIGURATION
 # ============================================================================
 
 DATABASE = {
-    "host": "localhost",
-    "port": "5432",
-    "database": "rlc_commodities",
-    "user": "postgres",
-    "password": "SoupBoss1"
+    "host": os.getenv("DATABASE_HOST", "localhost"),
+    "port": os.getenv("DATABASE_PORT", "5432"),
+    "database": os.getenv("DATABASE_NAME", "rlc_commodities"),
+    "user": os.getenv("DATABASE_USER", "postgres"),
+    "password": os.getenv("DATABASE_PASSWORD", "")  # REQUIRED - set in .env file
 }
 
 # ============================================================================
 # WEB SEARCH CONFIGURATION
 # ============================================================================
 
-# DuckDuckGo search (free, no API key needed)
-# SEARCH_BACKEND = "duckduckgo"
+# Search backend: "tavily" (recommended) or "duckduckgo" (free fallback)
+SEARCH_BACKEND = os.getenv("SEARCH_BACKEND", "tavily")
 
-# Alternative: Tavily (better for agents, requires free API key)
-# client = TavilyClient("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")
-# response = client.search(
-#     query="",
-#     search_depth="advanced"
-# )
-SEARCH_BACKEND = "tavily"
-TAVILY_API_KEY = "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"  # Get free key at tavily.com
+# Tavily API key - get free key at https://tavily.com
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")  # REQUIRED for tavily backend - set in .env file
 
 # ============================================================================
 # NOTION CONFIGURATION
 # ============================================================================
 
 # Get your integration token from: https://www.notion.so/my-integrations
-NOTION_API_KEY = "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"  # Paste your secret_... token here
+NOTION_API_KEY = os.getenv("NOTION_API_KEY", "")  # REQUIRED - set in .env file
 
 # Main pages/databases the agent should know about (optional - can also search)
 NOTION_PAGES = {
