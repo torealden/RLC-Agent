@@ -32,7 +32,8 @@ openpyxl>=3.1.0  # Excel files
 pypdf>=4.0.0     # PDF parsing for RAG
 
 # Web search (for agent tools)
-duckduckgo-search>=6.0.0
+tavily-python>=0.3.0  # Primary search backend
+ddgs>=6.0.0           # Fallback (renamed from duckduckgo-search)
 
 # Google API (for email and calendar)
 google-api-python-client>=2.100.0

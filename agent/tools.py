@@ -62,9 +62,9 @@ def web_search(query: str, max_results: int = 5) -> List[Dict[str, str]]:
         except Exception as e:
             logger.warning(f"Tavily search error: {e}, falling back to DuckDuckGo")
 
-    # Fallback to DuckDuckGo
+    # Fallback to DuckDuckGo (now renamed to ddgs package)
     try:
-        from duckduckgo_search import DDGS
+        from ddgs import DDGS
 
         results = []
         with DDGS() as ddgs:
@@ -79,17 +79,57 @@ def web_search(query: str, max_results: int = 5) -> List[Dict[str, str]]:
         return results
 
     except ImportError:
-        logger.error("duckduckgo-search not installed. Run: pip install duckduckgo-search")
-        return [{"error": "Search not available - duckduckgo-search not installed"}]
+        logger.error("ddgs not installed. Run: pip install ddgs")
+        return [{"error": "Search not available - ddgs not installed"}]
     except Exception as e:
         logger.error(f"Web search error: {e}")
         return [{"error": str(e)}]
 
 
 def web_search_news(query: str, max_results: int = 5) -> List[Dict[str, str]]:
-    """Search for recent news articles."""
+    """
+    Search for recent news articles using Tavily (primary) or DuckDuckGo (fallback).
+
+    Args:
+        query: Search query string
+        max_results: Maximum number of results to return
+
+    Returns:
+        List of {"title": ..., "url": ..., "snippet": ..., "date": ..., "source": ...}
+    """
+    # Try Tavily first if configured
+    if SEARCH_BACKEND == "tavily" and TAVILY_API_KEY:
+        try:
+            from tavily import TavilyClient
+
+            client = TavilyClient(api_key=TAVILY_API_KEY)
+            response = client.search(
+                query=query,
+                max_results=max_results,
+                topic="news"  # Tavily news topic filter
+            )
+
+            results = []
+            for r in response.get("results", []):
+                results.append({
+                    "title": r.get("title", ""),
+                    "url": r.get("url", ""),
+                    "snippet": r.get("content", ""),
+                    "date": r.get("published_date", ""),
+                    "source": r.get("source", "")
+                })
+
+            logger.info(f"Tavily news search for '{query}' returned {len(results)} results")
+            return results
+
+        except ImportError:
+            logger.warning("tavily-python not installed, falling back to DuckDuckGo")
+        except Exception as e:
+            logger.warning(f"Tavily news search error: {e}, falling back to DuckDuckGo")
+
+    # Fallback to DuckDuckGo (now renamed to ddgs package)
     try:
-        from duckduckgo_search import DDGS
+        from ddgs import DDGS
 
         results = []
         with DDGS() as ddgs:
@@ -102,9 +142,12 @@ def web_search_news(query: str, max_results: int = 5) -> List[Dict[str, str]]:
                     "source": r.get("source", "")
                 })
 
-        logger.info(f"News search for '{query}' returned {len(results)} results")
+        logger.info(f"DuckDuckGo news search for '{query}' returned {len(results)} results")
         return results
 
+    except ImportError:
+        logger.error("ddgs not installed. Run: pip install ddgs")
+        return [{"error": "News search not available - ddgs not installed"}]
     except Exception as e:
         logger.error(f"News search error: {e}")
         return [{"error": str(e)}]
