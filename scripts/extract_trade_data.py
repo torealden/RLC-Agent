@@ -273,8 +273,8 @@ def extract_trade_data_from_sheet(
         if not commodity:
             commodity = infer_commodity_from_filename(file_path.stem)
 
-        # Infer flow type from sheet name
-        flow_type = infer_flow_type(sheet_name)
+        # Infer flow type from title row (preferred) or sheet name (fallback)
+        flow_type = infer_flow_type(title_row, sheet_name)
 
         # Process each row (country)
         for idx, row in df.iterrows():
@@ -379,20 +379,44 @@ def infer_commodity_from_filename(filename: str) -> str:
     return filename  # Use filename as commodity if no match
 
 
-def infer_flow_type(sheet_name: str) -> str:
-    """Infer flow type from sheet name."""
-    sheet_lower = sheet_name.lower()
+def infer_flow_type_from_text(text: str) -> Optional[str]:
+    """
+    Infer flow type from text (title row or sheet name).
+    Returns None if flow type cannot be determined.
+    """
+    text_lower = text.lower()
 
-    if 'export' in sheet_lower or 'shipment' in sheet_lower:
+    if 'export' in text_lower or 'shipment' in text_lower:
         return 'export'
-    elif 'import' in sheet_lower:
+    elif 'import' in text_lower:
         return 'import'
-    elif 'inspection' in sheet_lower:
+    elif 'inspection' in text_lower:
         return 'inspection'
-    elif 'sales' in sheet_lower:
+    elif 'sales' in text_lower:
         return 'sales'
-    else:
-        return 'trade'
+    return None
+
+
+def infer_flow_type(title_row: str, sheet_name: str) -> str:
+    """
+    Infer flow type, preferring title row over sheet name.
+
+    IMPORTANT: The title row is more reliable than sheet name because
+    some spreadsheets have mismatched sheet names vs. actual data.
+    For example, a sheet named "Indonesia Palm Kernel Exports" might
+    have title "Indonesia Palm Kernel IMPORTS".
+    """
+    # First try title row - it's more reliable
+    flow = infer_flow_type_from_text(title_row)
+    if flow:
+        return flow
+
+    # Fall back to sheet name
+    flow = infer_flow_type_from_text(sheet_name)
+    if flow:
+        return flow
+
+    return 'trade'
 
 
 def is_trade_sheet(sheet_name: str) -> bool:
