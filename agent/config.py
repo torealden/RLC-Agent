@@ -68,6 +68,7 @@ NOTION_API_KEY = "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"  # Paste y
 
 # Main pages/databases the agent should know about (optional - can also search)
 NOTION_PAGES = {
+    "lessons_learned" : "2e6ead023dee8045aa72d76c998b5b10",
     "agent_registry" : "2dbead023dee802ba5dad3cc4c9b904d",
     "data_sources_registry" : "2dbead023dee80889f44c4727b9b8f81",
     "runbooks": "2dbead023dee80379944cdec7a696cb2",
