@@ -3,7 +3,16 @@ RLC Agent Configuration
 Central configuration for the persistent LLM agent.
 """
 
+import os
 from pathlib import Path
+
+# Load environment variables from .env file if it exists
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent.parent / ".env")
+except ImportError:
+    pass  # python-dotenv not installed, rely on system env vars
+
 # ============================================================================
 # PATHS
 # ============================================================================
@@ -25,46 +34,40 @@ TASKS_DIR.mkdir(exist_ok=True)
 # OLLAMA CONFIGURATION
 # ============================================================================
 
-OLLAMA_HOST = "http://localhost:11434"
-DEFAULT_MODEL = "llama3.1"
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "llama3.1")
 
 # For more complex tasks, use a larger model if available
-REASONING_MODEL = "llama3.1"  # Could be "llama3.1:70b" if you have RAM
+REASONING_MODEL = os.getenv("REASONING_MODEL", "llama3.1")  # Could be "llama3.1:70b" if you have RAM
 
 # ============================================================================
 # DATABASE CONFIGURATION
 # ============================================================================
 
 DATABASE = {
-    "host": "localhost",
-    "port": "5432",
-    "database": "rlc_commodities",
-    "user": "postgres",
-    "password": "SoupBoss1"
+    "host": os.getenv("DATABASE_HOST", "localhost"),
+    "port": os.getenv("DATABASE_PORT", "5432"),
+    "database": os.getenv("DATABASE_NAME", "rlc_commodities"),
+    "user": os.getenv("DATABASE_USER", "postgres"),
+    "password": os.getenv("DATABASE_PASSWORD", "")  # REQUIRED - set in .env file
 }
 
 # ============================================================================
 # WEB SEARCH CONFIGURATION
 # ============================================================================
 
-# DuckDuckGo search (free, no API key needed)
-# SEARCH_BACKEND = "duckduckgo"
+# Search backend: "tavily" (recommended) or "duckduckgo" (free fallback)
+SEARCH_BACKEND = os.getenv("SEARCH_BACKEND", "tavily")
 
-# Alternative: Tavily (better for agents, requires free API key)
-# client = TavilyClient("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")
-# response = client.search(
-#     query="",
-#     search_depth="advanced"
-# )
-SEARCH_BACKEND = "tavily"
-TAVILY_API_KEY = "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"  # Get free key at tavily.com
+# Tavily API key - get free key at https://tavily.com
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")  # REQUIRED for tavily backend - set in .env file
 
 # ============================================================================
 # NOTION CONFIGURATION
 # ============================================================================
 
 # Get your integration token from: https://www.notion.so/my-integrations
-NOTION_API_KEY = "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"  # Paste your secret_... token here
+NOTION_API_KEY = os.getenv("NOTION_API_KEY", "")  # REQUIRED - set in .env file
 
 # Main pages/databases the agent should know about (optional - can also search)
 NOTION_PAGES = {
@@ -121,18 +124,33 @@ SYSTEM_PROMPT = """You are the RLC Agent, an AI business partner specializing in
 4. Reporting - Generate reports and summaries
 
 **Your Capabilities:**
-- Search the internet for information and data sources
+- Search the internet for information and data sources (web_search, web_search_news)
 - Read and write files on the local system
 - Query and update the PostgreSQL database
 - Execute Python scripts
 - Analyze data using pandas
-- Access Notion pages and databases (read and update)
+- Access Notion pages and databases (read and update) - NOTE: Notion is for INTERNAL documentation only, not external data
 
 **Your Constraints:**
 - Always explain your reasoning before taking action
 - For sensitive operations (database writes, file changes), request approval
 - Log all significant actions
 - When uncertain, ask for clarification
+
+**CRITICAL DATABASE RULES:**
+- ALWAYS call get_database_schema() BEFORE attempting any database queries
+- NEVER assume table names exist - verify them from the schema first
+- The database uses bronze/silver/gold medallion architecture with specific table names
+
+**CRITICAL TOOL USAGE RULES:**
+- web_search and web_search_news: Use for external internet information
+- notion_search/notion_get_page: Use ONLY for internal Notion documentation - NOT for external news or data
+- If a web search fails, try simpler queries or use web_search instead of web_search_news (or vice versa)
+- Do NOT suggest Notion as an alternative to failed web searches
+
+**LESSONS LEARNED:**
+- Before starting complex tasks, query the "lessons_learned" Notion database for relevant prevention rules
+- When you make a mistake or encounter an error pattern, suggest adding it to lessons_learned
 
 **Current Project Context:**
 - Database: PostgreSQL with bronze/silver/gold medallion architecture
