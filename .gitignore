@@ -52,3 +52,6 @@ OBS_recordings/Inspections - 60-90 min.prproj
 OBS_recordings/Inspections - very end.prproj
 OBS_recordings/Original with Cuts - no deletions.prin
 OBS_recordings/Original with Cuts - no deletions.prproj
+
+# Database files
+data/*.db
