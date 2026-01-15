@@ -1,0 +1,953 @@
+Commodity_Desc,Attribute_Desc,Geography_Desc,Unit_Desc,Marketing_Year,Amount
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1960/61",202.2
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1960/61",1.15
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1960/61",233.451
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1960/61",29.977
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1960/61",230.88
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1960/61",43.857
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1960/61",82.849
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1961/62",203.458
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1961/62",1.08
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1961/62",220.049
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1961/62",33.275
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1961/62",233.141
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1961/62",46.949
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1961/62",69.85
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1962/63",206.878
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1962/63",1.19
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1962/63",246.78
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1962/63",29.958
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1962/63",240.784
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1962/63",46.227
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1962/63",75.846
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1963/64",206.307
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1963/64",1.12
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1963/64",230.387
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1963/64",23.646
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1963/64",235.906
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1963/64",58.265
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1963/64",70.327
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1964/65",215.94
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1964/65",1.23
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1964/65",264.911
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1964/65",33.606
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1964/65",256.759
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1964/65",54.869
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1964/65",78.479
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1965/66",215.248
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1965/66",1.2
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1965/66",259.312
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1965/66",48.349
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1965/66",277.057
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1965/66",61.066
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1965/66",60.734
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1966/67",213.84
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1966/67",1.41
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1966/67",300.651
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1966/67",43.448
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1966/67",273.763
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1966/67",58.404
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1966/67",87.622
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1967/68",219.201
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1967/68",1.33
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1967/68",291.948
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1967/68",49.04
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1967/68",281.906
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1967/68",53.551
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1967/68",97.664
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1968/69",223.894
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1968/69",1.45
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1968/69",323.774
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1968/69",61.276
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1968/69",300.127
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1968/69",50.268
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1968/69",121.311
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1969/70",217.824
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1969/70",1.4
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1969/70",304.021
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1969/70",70.009
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1969/70",321.789
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1969/70",55.817
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1969/70",103.543
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1970/71",206.979
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1970/71",1.48
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1970/71",306.531
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1970/71",78.68
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1970/71",329.545
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1970/71",56.479
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1970/71",80.529
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1971/72",212.736
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1971/72",1.62
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1971/72",344.119
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1971/72",81.205
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1971/72",335.404
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1971/72",56.06
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1971/72",89.244
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1972/73",210.9
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1972/73",1.6
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1972/73",337.486
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1972/73",84.125
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1972/73",351.802
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1972/73",64.801
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1972/73",74.928
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1973/74",217.03
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1973/74",1.69
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1973/74",366.069
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1973/74",70.037
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1973/74",358.33
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1973/74",65.867
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1973/74",82.667
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1974/75",220.026
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1974/75",1.61
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1974/75",355.226
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1974/75",72.816
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1974/75",356.54
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1974/75",61.634
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1974/75",81.353
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1975/76",225.338
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1975/76",1.56
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1975/76",352.647
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1975/76",63.534
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1975/76",347.281
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1975/76",66.891
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1975/76",86.719
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1976/77",233.072
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1976/77",1.78
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1976/77",414.348
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1976/77",69.23
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1976/77",373.716
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1976/77",63.833
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1976/77",127.352
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1977/78",227.156
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1977/78",1.66
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1977/78",377.844
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1977/78",86.271
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1977/78",395.989
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1977/78",66.909
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1977/78",109.207
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1978/79",228.902
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1978/79",1.92
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1978/79",438.942
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1978/79",90.757
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1978/79",413.301
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1978/79",76.763
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1978/79",134.848
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1979/80",227.83
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1979/80",1.83
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1979/80",417.542
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1979/80",94.948
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1979/80",431.937
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1979/80",85.603
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1979/80",120.453
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1980/81",236.901
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1980/81",1.84
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1980/81",435.867
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1980/81",91.71
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1980/81",444.078
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1980/81",90.126
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1980/81",112.642
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1981/82",238.911
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1981/82",1.86
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1981/82",444.995
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1981/82",91.662
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1981/82",445.005
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1981/82",100.376
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1981/82",112.632
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1982/83",238.353
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1982/83",1.98
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1982/83",472.739
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1982/83",93.948
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1982/83",455.456
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1982/83",100.949
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1982/83",130.131
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1983/84",229.918
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1983/84",2.11
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1983/84",484.451
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1983/84",96.998
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1983/84",468.799
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1983/84",101.794
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1983/84",145.78
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1984/85",231.643
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1984/85",2.2
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1984/85",508.908
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1984/85",101.533
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1984/85",486.283
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1984/85",103.646
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1984/85",168.405
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1985/86",229.788
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1985/86",2.15
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1985/86",494.802
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1985/86",98.755
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1985/86",484.772
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1985/86",82.452
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1985/86",178.435
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1986/87",227.848
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1986/87",2.3
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1986/87",524.043
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1986/87",114.907
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1986/87",511.596
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1986/87",89.274
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1986/87",190.882
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1987/88",220.038
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1987/88",2.27
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1987/88",498.674
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1987/88",115.241
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1987/88",530.767
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1987/88",111.565
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1987/88",158.789
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1988/89",217.842
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1988/89",2.27
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1988/89",495.264
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1988/89",105.271
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1988/89",519.303
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1988/89",105.151
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1988/89",134.75
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1989/90",226.298
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1989/90",2.36
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1989/90",533.11
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1989/90",105.248
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1989/90",531.276
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1989/90",103.419
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1989/90",136.584
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1990/91",230.99
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1990/91",2.55
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1990/91",588.798
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1990/91",132.534
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1990/91",554.498
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1990/91",103.843
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1990/91",170.884
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1991/92",222.783
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1991/92",2.44
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1991/92",543.437
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1991/92",117.215
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1991/92",553.037
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1991/92",109.948
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1991/92",161.284
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1992/93",222.19
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1992/93",2.53
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1992/93",562.668
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1992/93",112.784
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1992/93",546.921
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1992/93",110.039
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1992/93",176.731
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1993/94",221.03
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1993/94",2.53
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1993/94",558.555
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1993/94",110.966
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1993/94",552.623
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1993/94",103.717
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1993/94",182.663
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1994/95",213.327
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1994/95",2.45
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1994/95",523.121
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1994/95",102.954
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1994/95",541.863
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1994/95",98.215
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1994/95",163.921
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1995/96",216.712
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1995/96",2.48
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1995/96",537.498
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1995/96",96.912
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1995/96",545.633
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1995/96",99.197
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1995/96",155.786
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1996/97",227.07
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1996/97",2.56
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1996/97",581.286
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1996/97",101.392
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1996/97",572.683
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1996/97",106.943
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1996/97",164.389
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1997/98",226.37
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1997/98",2.7
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1997/98",610.176
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1997/98",106.188
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1997/98",576.65
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1997/98",104.4
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1997/98",197.915
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1998/99",219.174
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1998/99",2.69
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1998/99",590.495
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1998/99",109.446
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1998/99",579.116
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1998/99",101.319
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1998/99",209.294
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","1999/00",212.633
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","1999/00",2.76
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","1999/00",587.392
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","1999/00",104.644
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","1999/00",587.614
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","1999/00",113.435
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","1999/00",209.072
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2000/01",215.187
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2000/01",2.71
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2000/01",582.813
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2000/01",109.846
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2000/01",585.763
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2000/01",101.195
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2000/01",206.122
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2001/02",214.18
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2001/02",2.72
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2001/02",583.791
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2001/02",111.892
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2001/02",586.336
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2001/02",105.783
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2001/02",203.577
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2002/03",212.688
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2002/03",2.67
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2002/03",570.058
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2002/03",116.141
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2002/03",603.81
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2002/03",105.341
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2002/03",169.825
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2003/04",207.218
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2003/04",2.67
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2003/04",556.088
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2003/04",101.68
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2003/04",588.903
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2003/04",108.519
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2003/04",137.01
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2004/05",215.789
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2004/05",2.91
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2004/05",627.061
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2004/05",110.715
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2004/05",606.333
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2004/05",111.081
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2004/05",157.738
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2005/06",217.445
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2005/06",2.85
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2005/06",619.105
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2005/06",117.54
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2005/06",622.175
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2005/06",117.394
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2005/06",154.668
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2006/07",212.444
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2006/07",2.81
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2006/07",596.834
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2006/07",113.084
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2006/07",616.724
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2006/07",111.559
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2006/07",134.778
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2007/08",217.02
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2007/08",2.82
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2007/08",611.71
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2007/08",105.024
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2007/08",617.272
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2007/08",116.39
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2007/08",129.216
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2008/09",223.433
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2008/09",3.05
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2008/09",684.262
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2008/09",123.963
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2008/09",643.193
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2008/09",144.121
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2008/09",170.285
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2009/10",225.754
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2009/10",3.05
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2009/10",687.531
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2009/10",122.673
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2009/10",654.031
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2009/10",136.764
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2009/10",203.785
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2010/11",216.838
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2010/11",3
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2010/11",650.3
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2010/11",116.626
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2010/11",654.468
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2010/11",133.04
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2010/11",199.617
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2011/12",220.91
+"Wheat","World Yield Metric Tons per Hectare","World","Metric Tons per Hectare","2011/12",3.16
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2011/12",698.743
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2011/12",149.438
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2011/12",698.239
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2011/12",157.644
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2011/12",200.121
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2012/13",216.1
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2012/13",660.81
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2012/13",138.829
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2012/13",680.321
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2012/13",136.148
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2012/13",180.61
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2013/14",219.781
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2013/14",718.132
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2013/14",126.937
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2013/14",698.019
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2013/14",165.935
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2013/14",200.723
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2014/15",221.403
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2014/15",732.116
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2014/15",132.965
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2014/15",707.259
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2014/15",164.253
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2014/15",225.58
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2015/16",223.412
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2015/16",739.036
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2015/16",141.865
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2015/16",716.795
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2015/16",172.972
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2015/16",247.821
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2016/17",222.541
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2016/17",757.269
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2016/17",147.763
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2016/17",737.311
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2016/17",186.778
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2016/17",267.779
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2017/18",217.945
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2017/18",760.308
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2017/18",147.417
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2017/18",740.79
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2017/18",185.449
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2017/18",287.297
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2018/19",214.697
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2018/19",729.893
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2018/19",139.117
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2018/19",733.383
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2018/19",176.237
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2018/19",283.807
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2019/20",215.241
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2019/20",759.308
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2019/20",139.416
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2019/20",745.258
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2019/20",194.592
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2019/20",297.857
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2020/21",220.216
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2020/21",772.759
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2020/21",163.111
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2020/21",785.364
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2020/21",203.541
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2020/21",285.252
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2021/22",221.651
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2021/22",780.82
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2021/22",159.396
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2021/22",790.799
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2021/22",203.727
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2021/22",275.273
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2022/23",219.662
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2022/23",790.475
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2022/23",153.053
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2022/23",791.097
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2022/23",221.952
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2022/23",274.651
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2023/24",222.578
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2023/24",792.35
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2023/24",159.244
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2023/24",796.955
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2023/24",222.239
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2023/24",270.046
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2024/25",222.378
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2024/25",800.807
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2024/25",157.081
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2024/25",810.858
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2024/25",210.492
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2024/25",259.995
+"Wheat","World Area Harvested Million Hectares","World","Million Hectares","2025/26",219.954
+"Wheat","World Production Million Metric Tons","World","Million Metric Tons","2025/26",842.167
+"Wheat","World Feed Use Million Metric Tons","World","Million Metric Tons","2025/26",165.437
+"Wheat","World Domestic Consumption Million Metric Tons","World","Million Metric Tons","2025/26",823.91
+"Wheat","World Exports Million Metric Tons","World","Million Metric Tons","2025/26",219.757
+"Wheat","World Ending Stocks Million Metric Tons","World","Million Metric Tons","2025/26",278.252
+"Wheat","World Production Million Bushels","World","Million Bushels","1960/61",8577.856
+"Wheat","World Exports Million Bushels","World","Million Bushels","1960/61",1611.469
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1960/61",3044.18
+"Wheat","World Production Million Bushels","World","Million Bushels","1961/62",8085.417
+"Wheat","World Exports Million Bushels","World","Million Bushels","1961/62",1725.08
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1961/62",2566.548
+"Wheat","World Production Million Bushels","World","Million Bushels","1962/63",9067.613
+"Wheat","World Exports Million Bushels","World","Million Bushels","1962/63",1698.551
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1962/63",2786.863
+"Wheat","World Production Million Bushels","World","Million Bushels","1963/64",8465.273
+"Wheat","World Exports Million Bushels","World","Million Bushels","1963/64",2140.872
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1963/64",2584.075
+"Wheat","World Production Million Bushels","World","Million Bushels","1964/65",9733.813
+"Wheat","World Exports Million Bushels","World","Million Bushels","1964/65",2016.091
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1964/65",2883.61
+"Wheat","World Production Million Bushels","World","Million Bushels","1965/66",9528.085
+"Wheat","World Exports Million Bushels","World","Million Bushels","1965/66",2243.791
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1965/66",2231.592
+"Wheat","World Production Million Bushels","World","Million Bushels","1966/67",11047.033
+"Wheat","World Exports Million Bushels","World","Million Bushels","1966/67",2145.98
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1966/67",3219.557
+"Wheat","World Production Million Bushels","World","Million Bushels","1967/68",10727.253
+"Wheat","World Exports Million Bushels","World","Million Bushels","1967/68",1967.662
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1967/68",3588.538
+"Wheat","World Production Million Bushels","World","Million Bushels","1968/69",11896.658
+"Wheat","World Exports Million Bushels","World","Million Bushels","1968/69",1847.033
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1968/69",4457.416
+"Wheat","World Production Million Bushels","World","Million Bushels","1969/70",11170.859
+"Wheat","World Exports Million Bushels","World","Million Bushels","1969/70",2050.924
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1969/70",3804.554
+"Wheat","World Production Million Bushels","World","Million Bushels","1970/71",11263.086
+"Wheat","World Exports Million Bushels","World","Million Bushels","1970/71",2075.248
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1970/71",2958.934
+"Wheat","World Production Million Bushels","World","Million Bushels","1971/72",12644.209
+"Wheat","World Exports Million Bushels","World","Million Bushels","1971/72",2059.852
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1971/72",3279.156
+"Wheat","World Production Million Bushels","World","Million Bushels","1972/73",12400.488
+"Wheat","World Exports Million Bushels","World","Million Bushels","1972/73",2381.029
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1972/73",2753.133
+"Wheat","World Production Million Bushels","World","Million Bushels","1973/74",13450.733
+"Wheat","World Exports Million Bushels","World","Million Bushels","1973/74",2420.198
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1973/74",3037.492
+"Wheat","World Production Million Bushels","World","Million Bushels","1974/75",13052.321
+"Wheat","World Exports Million Bushels","World","Million Bushels","1974/75",2264.662
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1974/75",2989.211
+"Wheat","World Production Million Bushels","World","Million Bushels","1975/76",12957.559
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1975/76",2126.927
+"Wheat","United States Share of Production Percent","United States","Percent","1975/76",16.41
+"Wheat","World Exports Million Bushels","World","Million Bushels","1975/76",2457.824
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1975/76",1172.881
+"Wheat","United States Share of Export Percent","United States","Percent","1975/76",47.72
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1975/76",3186.378
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1975/76",665.629
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1975/76",20.89
+"Wheat","World Production Million Bushels","World","Million Bushels","1976/77",15224.683
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1976/77",2148.78
+"Wheat","United States Share of Production Percent","United States","Percent","1976/77",14.11
+"Wheat","World Exports Million Bushels","World","Million Bushels","1976/77",2345.461
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1976/77",949.532
+"Wheat","United States Share of Export Percent","United States","Percent","1976/77",40.48
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1976/77",4679.385
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1976/77",1113.249
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1976/77",23.79
+"Wheat","World Production Million Bushels","World","Million Bushels","1977/78",13883.39
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1977/78",2045.527
+"Wheat","United States Share of Production Percent","United States","Percent","1977/78",14.73
+"Wheat","World Exports Million Bushels","World","Million Bushels","1977/78",2458.485
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1977/78",1123.867
+"Wheat","United States Share of Export Percent","United States","Percent","1977/78",45.71
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1977/78",4012.67
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1977/78",1177.808
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1977/78",29.35
+"Wheat","World Production Million Bushels","World","Million Bushels","1978/79",16128.358
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1978/79",1775.524
+"Wheat","United States Share of Production Percent","United States","Percent","1978/79",11.01
+"Wheat","World Exports Million Bushels","World","Million Bushels","1978/79",2820.557
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1978/79",1194.129
+"Wheat","United States Share of Export Percent","United States","Percent","1978/79",42.34
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1978/79",4954.816
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1978/79",924.099
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1978/79",18.65
+"Wheat","World Production Million Bushels","World","Million Bushels","1979/80",15342.042
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1979/80",2134.06
+"Wheat","United States Share of Production Percent","United States","Percent","1979/80",13.91
+"Wheat","World Exports Million Bushels","World","Million Bushels","1979/80",3145.372
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1979/80",1375.175
+"Wheat","United States Share of Export Percent","United States","Percent","1979/80",43.72
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1979/80",4425.89
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1979/80",901.999
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1979/80",20.38
+"Wheat","World Production Million Bushels","World","Million Bushels","1980/81",16015.371
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1980/81",2380.934
+"Wheat","United States Share of Production Percent","United States","Percent","1980/81",14.87
+"Wheat","World Exports Million Bushels","World","Million Bushels","1980/81",3311.564
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1980/81",1513.834
+"Wheat","United States Share of Export Percent","United States","Percent","1980/81",45.71
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1980/81",4138.885
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1980/81",989.113
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1980/81",23.9
+"Wheat","World Production Million Bushels","World","Million Bushels","1981/82",16350.767
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1981/82",2785.357
+"Wheat","United States Share of Production Percent","United States","Percent","1981/82",17.04
+"Wheat","World Exports Million Bushels","World","Million Bushels","1981/82",3688.187
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1981/82",1770.73
+"Wheat","United States Share of Export Percent","United States","Percent","1981/82",48.01
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1981/82",4138.518
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1981/82",1159.364
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1981/82",28.01
+"Wheat","World Production Million Bushels","World","Million Bushels","1982/83",17370.185
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1982/83",2764.967
+"Wheat","United States Share of Production Percent","United States","Percent","1982/83",15.92
+"Wheat","World Exports Million Bushels","World","Million Bushels","1982/83",3709.241
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1982/83",1508.632
+"Wheat","United States Share of Export Percent","United States","Percent","1982/83",40.67
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1982/83",4781.496
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1982/83",1515.063
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1982/83",31.69
+"Wheat","World Production Million Bushels","World","Million Bushels","1983/84",17800.527
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1983/84",2419.824
+"Wheat","United States Share of Production Percent","United States","Percent","1983/84",13.59
+"Wheat","World Exports Million Bushels","World","Million Bushels","1983/84",3740.289
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1983/84",1426.378
+"Wheat","United States Share of Export Percent","United States","Percent","1983/84",38.14
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1983/84",5356.498
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1983/84",1398.646
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1983/84",26.11
+"Wheat","World Production Million Bushels","World","Million Bushels","1984/85",18699.168
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1984/85",2594.777
+"Wheat","United States Share of Production Percent","United States","Percent","1984/85",13.88
+"Wheat","World Exports Million Bushels","World","Million Bushels","1984/85",3808.339
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1984/85",1421.442
+"Wheat","United States Share of Export Percent","United States","Percent","1984/85",37.32
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1984/85",6187.824
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1984/85",1425.24
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1984/85",23.03
+"Wheat","World Production Million Bushels","World","Million Bushels","1985/86",18180.861
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1985/86",2424.115
+"Wheat","United States Share of Production Percent","United States","Percent","1985/86",13.33
+"Wheat","World Exports Million Bushels","World","Million Bushels","1985/86",3029.592
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1985/86",909.131
+"Wheat","United States Share of Export Percent","United States","Percent","1985/86",30.01
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1985/86",6556.364
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1985/86",1904.981
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1985/86",29.06
+"Wheat","World Production Million Bushels","World","Million Bushels","1986/87",19255.284
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1986/87",2090.57
+"Wheat","United States Share of Production Percent","United States","Percent","1986/87",10.86
+"Wheat","World Exports Million Bushels","World","Million Bushels","1986/87",3280.258
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1986/87",998.51
+"Wheat","United States Share of Export Percent","United States","Percent","1986/87",30.44
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1986/87",7013.713
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1986/87",1820.904
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1986/87",25.96
+"Wheat","World Production Million Bushels","World","Million Bushels","1987/88",18323.133
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1987/88",2107.685
+"Wheat","United States Share of Production Percent","United States","Percent","1987/88",11.5
+"Wheat","World Exports Million Bushels","World","Million Bushels","1987/88",4099.312
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1987/88",1587.877
+"Wheat","United States Share of Export Percent","United States","Percent","1987/88",38.74
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1987/88",5834.497
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1987/88",1260.844
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1987/88",21.61
+"Wheat","World Production Million Bushels","World","Million Bushels","1988/89",18197.837
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1988/89",1812.201
+"Wheat","United States Share of Production Percent","United States","Percent","1988/89",9.96
+"Wheat","World Exports Million Bushels","World","Million Bushels","1988/89",3863.638
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1988/89",1414.854
+"Wheat","United States Share of Export Percent","United States","Percent","1988/89",36.62
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1988/89",4951.215
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1988/89",701.626
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1988/89",14.17
+"Wheat","World Production Million Bushels","World","Million Bushels","1989/90",19588.439
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1989/90",2036.618
+"Wheat","United States Share of Production Percent","United States","Percent","1989/90",10.4
+"Wheat","World Exports Million Bushels","World","Million Bushels","1989/90",3799.998
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1989/90",1231.958
+"Wheat","United States Share of Export Percent","United States","Percent","1989/90",32.42
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1989/90",5018.603
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1989/90",536.455
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1989/90",10.69
+"Wheat","World Production Million Bushels","World","Million Bushels","1990/91",21634.623
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1990/91",2729.778
+"Wheat","United States Share of Production Percent","United States","Percent","1990/91",12.62
+"Wheat","World Exports Million Bushels","World","Million Bushels","1990/91",3815.577
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1990/91",1069.452
+"Wheat","United States Share of Export Percent","United States","Percent","1990/91",28.03
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1990/91",6278.912
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1990/91",868.134
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1990/91",13.83
+"Wheat","World Production Million Bushels","World","Million Bushels","1991/92",19967.892
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1991/92",1980.139
+"Wheat","United States Share of Production Percent","United States","Percent","1991/92",9.92
+"Wheat","World Exports Million Bushels","World","Million Bushels","1991/92",4039.897
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1991/92",1282.305
+"Wheat","United States Share of Export Percent","United States","Percent","1991/92",31.74
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1991/92",5926.173
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1991/92",475.021
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1991/92",8.02
+"Wheat","World Production Million Bushels","World","Million Bushels","1992/93",20674.51
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1992/93",2466.798
+"Wheat","United States Share of Production Percent","United States","Percent","1992/93",11.93
+"Wheat","World Exports Million Bushels","World","Million Bushels","1992/93",4043.241
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1992/93",1353.58
+"Wheat","United States Share of Export Percent","United States","Percent","1992/93",33.48
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1992/93",6493.753
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1992/93",530.652
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1992/93",8.17
+"Wheat","World Production Million Bushels","World","Million Bushels","1993/94",20523.383
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1993/94",2396.44
+"Wheat","United States Share of Production Percent","United States","Percent","1993/94",11.68
+"Wheat","World Exports Million Bushels","World","Million Bushels","1993/94",3810.947
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1993/94",1227.761
+"Wheat","United States Share of Export Percent","United States","Percent","1993/94",32.22
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1993/94",6711.716
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1993/94",568.484
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1993/94",8.47
+"Wheat","World Production Million Bushels","World","Million Bushels","1994/95",19221.406
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1994/95",2320.981
+"Wheat","United States Share of Production Percent","United States","Percent","1994/95",12.07
+"Wheat","World Exports Million Bushels","World","Million Bushels","1994/95",3608.783
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1994/95",1188.277
+"Wheat","United States Share of Export Percent","United States","Percent","1994/95",32.93
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1994/95",6023.066
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1994/95",506.585
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1994/95",8.41
+"Wheat","World Production Million Bushels","World","Million Bushels","1995/96",19749.671
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1995/96",2182.708
+"Wheat","United States Share of Production Percent","United States","Percent","1995/96",11.05
+"Wheat","World Exports Million Bushels","World","Million Bushels","1995/96",3644.866
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1995/96",1241.143
+"Wheat","United States Share of Export Percent","United States","Percent","1995/96",34.05
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1995/96",5724.156
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1995/96",376.02
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1995/96",6.57
+"Wheat","World Production Million Bushels","World","Million Bushels","1996/97",21358.604
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1996/97",2277.388
+"Wheat","United States Share of Production Percent","United States","Percent","1996/97",10.66
+"Wheat","World Exports Million Bushels","World","Million Bushels","1996/97",3929.483
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1996/97",1001.522
+"Wheat","United States Share of Export Percent","United States","Percent","1996/97",25.49
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1996/97",6040.262
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1996/97",443.607
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1996/97",7.34
+"Wheat","World Production Million Bushels","World","Million Bushels","1997/98",22420.13
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1997/98",2481.466
+"Wheat","United States Share of Production Percent","United States","Percent","1997/98",11.07
+"Wheat","World Exports Million Bushels","World","Million Bushels","1997/98",3836.043
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1997/98",1040.391
+"Wheat","United States Share of Export Percent","United States","Percent","1997/98",27.12
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1997/98",7272.131
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1997/98",722.478
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1997/98",9.93
+"Wheat","World Production Million Bushels","World","Million Bushels","1998/99",21696.977
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1998/99",2547.321
+"Wheat","United States Share of Production Percent","United States","Percent","1998/99",11.74
+"Wheat","World Exports Million Bushels","World","Million Bushels","1998/99",3722.836
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1998/99",1045.743
+"Wheat","United States Share of Export Percent","United States","Percent","1998/99",28.09
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1998/99",7690.238
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1998/99",945.918
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1998/99",12.3
+"Wheat","World Production Million Bushels","World","Million Bushels","1999/00",21582.961
+"Wheat","United States Production Million Bushels","United States","Million Bushels","1999/00",2295.56
+"Wheat","United States Share of Production Percent","United States","Percent","1999/00",10.64
+"Wheat","World Exports Million Bushels","World","Million Bushels","1999/00",4168.023
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","1999/00",1086.499
+"Wheat","United States Share of Export Percent","United States","Percent","1999/00",26.07
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","1999/00",7682.081
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","1999/00",949.748
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","1999/00",12.36
+"Wheat","World Production Million Bushels","World","Million Bushels","2000/01",21414.712
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2000/01",2228.16
+"Wheat","United States Share of Production Percent","United States","Percent","2000/01",10.4
+"Wheat","World Exports Million Bushels","World","Million Bushels","2000/01",3718.28
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2000/01",1062.041
+"Wheat","United States Share of Export Percent","United States","Percent","2000/01",28.56
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2000/01",7573.687
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2000/01",876.182
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2000/01",11.57
+"Wheat","World Production Million Bushels","World","Million Bushels","2001/02",21450.647
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2001/02",1947.453
+"Wheat","United States Share of Production Percent","United States","Percent","2001/02",9.08
+"Wheat","World Exports Million Bushels","World","Million Bushels","2001/02",3886.86
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2001/02",962.311
+"Wheat","United States Share of Export Percent","United States","Percent","2001/02",24.76
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2001/02",7480.174
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2001/02",777.112
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2001/02",10.39
+"Wheat","World Production Million Bushels","World","Million Bushels","2002/03",20946.046
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2002/03",1605.878
+"Wheat","United States Share of Production Percent","United States","Percent","2002/03",7.67
+"Wheat","World Exports Million Bushels","World","Million Bushels","2002/03",3870.619
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2002/03",850.211
+"Wheat","United States Share of Export Percent","United States","Percent","2002/03",21.97
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2002/03",6240.001
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2002/03",491.416
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2002/03",7.88
+"Wheat","World Production Million Bushels","World","Million Bushels","2003/04",20432.736
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2003/04",2344.415
+"Wheat","United States Share of Production Percent","United States","Percent","2003/04",11.47
+"Wheat","World Exports Million Bushels","World","Million Bushels","2003/04",3987.391
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2003/04",1158.324
+"Wheat","United States Share of Export Percent","United States","Percent","2003/04",29.05
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2003/04",5034.256
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2003/04",546.439
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2003/04",10.85
+"Wheat","World Production Million Bushels","World","Million Bushels","2004/05",23040.548
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2004/05",2156.79
+"Wheat","United States Share of Production Percent","United States","Percent","2004/05",9.36
+"Wheat","World Exports Million Bushels","World","Million Bushels","2004/05",4081.528
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2004/05",1065.911
+"Wheat","United States Share of Export Percent","United States","Percent","2004/05",26.12
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2004/05",5795.879
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2004/05",540.1
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2004/05",9.32
+"Wheat","World Production Million Bushels","World","Million Bushels","2005/06",22748.215
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2005/06",2103.325
+"Wheat","United States Share of Production Percent","United States","Percent","2005/06",9.25
+"Wheat","World Exports Million Bushels","World","Million Bushels","2005/06",4313.491
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2005/06",1002.781
+"Wheat","United States Share of Export Percent","United States","Percent","2005/06",23.25
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2005/06",5683.076
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2005/06",571.19
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2005/06",10.05
+"Wheat","World Production Million Bushels","World","Million Bushels","2006/07",21929.895
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2006/07",1808.416
+"Wheat","United States Share of Production Percent","United States","Percent","2006/07",8.25
+"Wheat","World Exports Million Bushels","World","Million Bushels","2006/07",4099.092
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2006/07",915.721
+"Wheat","United States Share of Export Percent","United States","Percent","2006/07",22.34
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2006/07",4952.244
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2006/07",456.153
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2006/07",9.21
+"Wheat","World Production Million Bushels","World","Million Bushels","2007/08",22476.495
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2007/08",2051.088
+"Wheat","United States Share of Production Percent","United States","Percent","2007/08",9.13
+"Wheat","World Exports Million Bushels","World","Million Bushels","2007/08",4276.6
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2007/08",1262.612
+"Wheat","United States Share of Export Percent","United States","Percent","2007/08",29.52
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2007/08",4747.875
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2007/08",305.818
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2007/08",6.44
+"Wheat","World Production Million Bushels","World","Million Bushels","2008/09",25142.324
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2008/09",2511.896
+"Wheat","United States Share of Production Percent","United States","Percent","2008/09",9.99
+"Wheat","World Exports Million Bushels","World","Million Bushels","2008/09",5295.54
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2008/09",1015.415
+"Wheat","United States Share of Export Percent","United States","Percent","2008/09",19.17
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2008/09",6256.903
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2008/09",656.505
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2008/09",10.49
+"Wheat","World Production Million Bushels","World","Million Bushels","2009/10",25262.44
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2009/10",2208.918
+"Wheat","United States Share of Production Percent","United States","Percent","2009/10",8.74
+"Wheat","World Exports Million Bushels","World","Million Bushels","2009/10",5025.217
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2009/10",879.297
+"Wheat","United States Share of Export Percent","United States","Percent","2009/10",17.5
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2009/10",7487.817
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2009/10",975.637
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2009/10",13.03
+"Wheat","World Production Million Bushels","World","Million Bushels","2010/11",23894.435
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2010/11",2163.023
+"Wheat","United States Share of Production Percent","United States","Percent","2010/11",9.05
+"Wheat","World Exports Million Bushels","World","Million Bushels","2010/11",4888.383
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2010/11",1291.446
+"Wheat","United States Share of Export Percent","United States","Percent","2010/11",26.42
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2010/11",7334.669
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2010/11",862.998
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2010/11",11.77
+"Wheat","World Production Million Bushels","World","Million Bushels","2011/12",25674.41
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2011/12",1993.111
+"Wheat","United States Share of Production Percent","United States","Percent","2011/12",7.76
+"Wheat","World Exports Million Bushels","World","Million Bushels","2011/12",5792.425
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2011/12",1051.091
+"Wheat","United States Share of Export Percent","United States","Percent","2011/12",18.15
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2011/12",7353.188
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2011/12",742.62
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2011/12",10.1
+"Wheat","World Production Million Bushels","World","Million Bushels","2012/13",24280.611
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2012/13",2252.307
+"Wheat","United States Share of Production Percent","United States","Percent","2012/13",9.28
+"Wheat","World Exports Million Bushels","World","Million Bushels","2012/13",5002.583
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2012/13",1012.066
+"Wheat","United States Share of Export Percent","United States","Percent","2012/13",20.23
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2012/13",6636.281
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2012/13",717.889
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2012/13",10.82
+"Wheat","World Production Million Bushels","World","Million Bushels","2013/14",26386.834
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2013/14",2134.979
+"Wheat","United States Share of Production Percent","United States","Percent","2013/14",8.09
+"Wheat","World Exports Million Bushels","World","Million Bushels","2013/14",6097.068
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2013/14",1176.223
+"Wheat","United States Share of Export Percent","United States","Percent","2013/14",19.29
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2013/14",7375.308
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2013/14",590.283
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2013/14",8
+"Wheat","World Production Million Bushels","World","Million Bushels","2014/15",26900.658
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2014/15",2026.31
+"Wheat","United States Share of Production Percent","United States","Percent","2014/15",7.53
+"Wheat","World Exports Million Bushels","World","Million Bushels","2014/15",6035.265
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2014/15",864.336
+"Wheat","United States Share of Export Percent","United States","Percent","2014/15",14.32
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2014/15",8288.646
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2014/15",752.394
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2014/15",9.08
+"Wheat","World Production Million Bushels","World","Million Bushels","2015/16",27154.924
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2015/16",2061.939
+"Wheat","United States Share of Production Percent","United States","Percent","2015/16",7.59
+"Wheat","World Exports Million Bushels","World","Million Bushels","2015/16",6355.633
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2015/16",777.793
+"Wheat","United States Share of Export Percent","United States","Percent","2015/16",12.24
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2015/16",9105.863
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2015/16",975.603
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2015/16",10.71
+"Wheat","World Production Million Bushels","World","Million Bushels","2016/17",27824.873
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2016/17",2308.663
+"Wheat","United States Share of Production Percent","United States","Percent","2016/17",8.3
+"Wheat","World Exports Million Bushels","World","Million Bushels","2016/17",6862.917
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2016/17",1050.879
+"Wheat","United States Share of Export Percent","United States","Percent","2016/17",15.31
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2016/17",9839.194
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2016/17",1180.602
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2016/17",12
+"Wheat","World Production Million Bushels","World","Million Bushels","2017/18",27936.537
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2017/18",1740.91
+"Wheat","United States Share of Production Percent","United States","Percent","2017/18",6.23
+"Wheat","World Exports Million Bushels","World","Million Bushels","2017/18",6814.084
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2017/18",906.022
+"Wheat","United States Share of Export Percent","United States","Percent","2017/18",13.3
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2017/18",10556.358
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2017/18",1098.889
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2017/18",10.41
+"Wheat","World Production Million Bushels","World","Million Bushels","2018/19",26818.977
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2018/19",1885.361
+"Wheat","United States Share of Production Percent","United States","Percent","2018/19",7.03
+"Wheat","World Exports Million Bushels","World","Million Bushels","2018/19",6475.601
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2018/19",937.06
+"Wheat","United States Share of Export Percent","United States","Percent","2018/19",14.47
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2018/19",10428.122
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2018/19",1079.761
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2018/19",10.35
+"Wheat","World Production Million Bushels","World","Million Bushels","2019/20",27899.793
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2019/20",1932.017
+"Wheat","United States Share of Production Percent","United States","Percent","2019/20",6.92
+"Wheat","World Exports Million Bushels","World","Million Bushels","2019/20",7150.032
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2019/20",969.038
+"Wheat","United States Share of Export Percent","United States","Percent","2019/20",13.55
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2019/20",10944.371
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2019/20",1028.284
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2019/20",9.4
+"Wheat","World Production Million Bushels","World","Million Bushels","2020/21",28394.033
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2020/21",1819.673
+"Wheat","United States Share of Production Percent","United States","Percent","2020/21",6.41
+"Wheat","World Exports Million Bushels","World","Million Bushels","2020/21",7478.851
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2020/21",993.857
+"Wheat","United States Share of Export Percent","United States","Percent","2020/21",13.29
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2020/21",10481.217
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2020/21",845.151
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2020/21",8.06
+"Wheat","World Production Million Bushels","World","Million Bushels","2021/22",28690.224
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2021/22",1646.254
+"Wheat","United States Share of Production Percent","United States","Percent","2021/22",5.74
+"Wheat","World Exports Million Bushels","World","Million Bushels","2021/22",7485.686
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2021/22",795.729
+"Wheat","United States Share of Export Percent","United States","Percent","2021/22",10.63
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2021/22",10114.551
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2021/22",674.431
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2021/22",6.67
+"Wheat","World Production Million Bushels","World","Million Bushels","2022/23",29044.984
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2022/23",1649.713
+"Wheat","United States Share of Production Percent","United States","Percent","2022/23",5.68
+"Wheat","World Exports Million Bushels","World","Million Bushels","2022/23",8155.34
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2022/23",760.612
+"Wheat","United States Share of Export Percent","United States","Percent","2022/23",9.33
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2022/23",10091.697
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2022/23",569.568
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2022/23",5.64
+"Wheat","World Production Million Bushels","World","Million Bushels","2023/24",29113.879
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2023/24",1803.942
+"Wheat","United States Share of Production Percent","United States","Percent","2023/24",6.2
+"Wheat","World Exports Million Bushels","World","Million Bushels","2023/24",8165.885
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2023/24",705.908
+"Wheat","United States Share of Export Percent","United States","Percent","2023/24",8.64
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2023/24",9922.492
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2023/24",696.434
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2023/24",7.02
+"Wheat","World Production Million Bushels","World","Million Bushels","2024/25",29424.62
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2024/25",1978.697
+"Wheat","United States Share of Production Percent","United States","Percent","2024/25",6.72
+"Wheat","World Exports Million Bushels","World","Million Bushels","2024/25",7734.257
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2024/25",825.895
+"Wheat","United States Share of Export Percent","United States","Percent","2024/25",10.68
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2024/25",9553.181
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2024/25",854.734
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2024/25",8.95
+"Wheat","World Production Million Bushels","World","Million Bushels","2025/26",30944.34
+"Wheat","United States Production Million Bushels","United States","Million Bushels","2025/26",1984.537
+"Wheat","United States Share of Production Percent","United States","Percent","2025/26",6.41
+"Wheat","World Exports Million Bushels","World","Million Bushels","2025/26",8074.687
+"Wheat","United States Exports Million Bushels","United States","Million Bushels","2025/26",900
+"Wheat","United States Share of Export Percent","United States","Percent","2025/26",11.15
+"Wheat","World Ending Stocks Million Bushels","World","Million Bushels","2025/26",10224.011
+"Wheat","United States Ending Stocks Million Bushels","United States","Million Bushels","2025/26",926.271
+"Wheat","United States Share of Ending Stocks Percent","United States","Percent","2025/26",9.06
