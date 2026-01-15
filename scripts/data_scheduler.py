@@ -43,6 +43,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
 from collectors.ers_feed_grains_collector import ERSFeedGrainsCollector, get_release_schedule
+from collectors.ers_monthly_outlook_collector import ERSMonthlyOutlookCollector, OUTLOOK_SOURCES
 
 # Setup logging
 logging.basicConfig(
@@ -77,6 +78,8 @@ class DataScheduler:
         # Available collectors
         self.collectors = {
             'ers_feed_grains': ERSFeedGrainsCollector,
+            'oil_crops_outlook': lambda force=False: ERSMonthlyOutlookCollector('oil_crops', force),
+            'feed_grains_outlook': lambda force=False: ERSMonthlyOutlookCollector('feed_grains', force),
             # Add more collectors as they're implemented:
             # 'wasde': WASDECollector,
             # 'nass_crop': NASSCropCollector,
@@ -92,6 +95,16 @@ class DataScheduler:
                 "ers_feed_grains": {
                     "enabled": True,
                     "check_days": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],  # Days of month to check
+                    "priority": 1
+                },
+                "oil_crops_outlook": {
+                    "enabled": True,
+                    "check_days": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],  # Monthly outlook
+                    "priority": 1
+                },
+                "feed_grains_outlook": {
+                    "enabled": True,
+                    "check_days": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],  # Monthly outlook
                     "priority": 1
                 },
                 "wasde": {
