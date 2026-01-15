@@ -140,12 +140,16 @@ SELECT
     marketing_year,
     value,
     unit,
-    CASE
-        WHEN unit = 'Million MT' THEN value
-        WHEN unit = 'Thousand MT' THEN value / 1000.0
-        WHEN unit = 'MT' THEN value / 1000000.0
-        ELSE value
-    END AS value_million_mt,
+    -- Convert all values to Million MT using NUMERIC division for consistent types
+    CAST(
+        CASE
+            WHEN unit = 'Million MT' THEN value
+            WHEN unit = 'Thousand MT' THEN value / CAST(1000 AS NUMERIC)
+            WHEN unit = 'MT' THEN value / CAST(1000000 AS NUMERIC)
+            WHEN unit IS NULL THEN value / CAST(1000000 AS NUMERIC)  -- Default assumption: MT
+            ELSE value / CAST(1000000 AS NUMERIC)  -- Unknown unit: assume MT
+        END
+    AS NUMERIC(20, 6)) AS value_million_mt,
     source_file,
     sheet_name,
     created_at
@@ -163,12 +167,13 @@ SELECT
     marketing_year,
     flow_type,
     COUNT(DISTINCT partner_country) AS num_countries,
-    SUM(value_million_mt) AS total_volume_mmt,
-    AVG(value_million_mt) AS avg_volume_mmt,
-    MAX(value_million_mt) AS max_volume_mmt
+    CAST(SUM(value_million_mt) AS NUMERIC(20, 6)) AS total_volume_mmt,
+    CAST(AVG(value_million_mt) AS NUMERIC(20, 6)) AS avg_volume_mmt,
+    CAST(MAX(value_million_mt) AS NUMERIC(20, 6)) AS max_volume_mmt
 FROM gold.trade_flows
 WHERE period_type = 'marketing_year'
   AND marketing_year IS NOT NULL
+  AND value_million_mt IS NOT NULL
 GROUP BY commodity, marketing_year, flow_type
 ORDER BY commodity, marketing_year DESC, flow_type;
 
@@ -181,12 +186,13 @@ SELECT
     commodity,
     origin_country AS exporter,
     marketing_year,
-    SUM(value_million_mt) AS total_exports_mmt,
+    CAST(SUM(value_million_mt) AS NUMERIC(20, 6)) AS total_exports_mmt,
     RANK() OVER (PARTITION BY commodity, marketing_year ORDER BY SUM(value_million_mt) DESC) AS rank
 FROM gold.trade_flows
 WHERE flow_type = 'export'
   AND period_type = 'marketing_year'
   AND marketing_year IS NOT NULL
+  AND value_million_mt IS NOT NULL
 GROUP BY commodity, origin_country, marketing_year
 ORDER BY commodity, marketing_year DESC, total_exports_mmt DESC;
 
@@ -199,12 +205,13 @@ SELECT
     commodity,
     destination_country AS importer,
     marketing_year,
-    SUM(value_million_mt) AS total_imports_mmt,
+    CAST(SUM(value_million_mt) AS NUMERIC(20, 6)) AS total_imports_mmt,
     RANK() OVER (PARTITION BY commodity, marketing_year ORDER BY SUM(value_million_mt) DESC) AS rank
 FROM gold.trade_flows
 WHERE flow_type = 'import'
   AND period_type = 'marketing_year'
   AND marketing_year IS NOT NULL
+  AND value_million_mt IS NOT NULL
 GROUP BY commodity, destination_country, marketing_year
 ORDER BY commodity, marketing_year DESC, total_imports_mmt DESC;
 
@@ -218,7 +225,7 @@ SELECT
     origin_country,
     destination_country,
     marketing_year,
-    SUM(value_million_mt) AS volume_mmt,
+    CAST(SUM(value_million_mt) AS NUMERIC(20, 6)) AS volume_mmt,
     COUNT(*) AS num_records
 FROM gold.trade_flows
 WHERE period_type = 'marketing_year'
@@ -226,6 +233,7 @@ WHERE period_type = 'marketing_year'
   AND origin_country IS NOT NULL
   AND destination_country IS NOT NULL
   AND origin_country != destination_country
+  AND value_million_mt IS NOT NULL
 GROUP BY commodity, origin_country, destination_country, marketing_year
 HAVING SUM(value_million_mt) > 0
 ORDER BY commodity, marketing_year DESC, volume_mmt DESC;
@@ -265,12 +273,13 @@ SELECT
     origin_country,
     destination_country,
     marketing_year,
-    SUM(value_million_mt) AS volume_mmt
+    CAST(SUM(value_million_mt) AS NUMERIC(20, 6)) AS volume_mmt
 FROM gold.soybean_trade_flows
 WHERE marketing_year IS NOT NULL
   AND origin_country IS NOT NULL
   AND destination_country IS NOT NULL
   AND origin_country != destination_country
+  AND value_million_mt IS NOT NULL
   AND value_million_mt > 0
   AND value_million_mt < 1000
 GROUP BY product, origin_country, destination_country, marketing_year
@@ -334,11 +343,12 @@ SELECT
     COUNT(DISTINCT marketing_year) AS years_of_data,
     MIN(marketing_year) AS earliest_year,
     MAX(marketing_year) AS latest_year,
-    SUM(CASE WHEN flow_type = 'export' THEN value_million_mt ELSE 0 END) AS total_exports_mmt,
-    SUM(CASE WHEN flow_type = 'import' THEN value_million_mt ELSE 0 END) AS total_imports_mmt,
+    CAST(SUM(CASE WHEN flow_type = 'export' THEN value_million_mt ELSE 0 END) AS NUMERIC(20, 6)) AS total_exports_mmt,
+    CAST(SUM(CASE WHEN flow_type = 'import' THEN value_million_mt ELSE 0 END) AS NUMERIC(20, 6)) AS total_imports_mmt,
     COUNT(*) AS total_records
 FROM gold.trade_flows
 WHERE period_type = 'marketing_year'
+  AND value_million_mt IS NOT NULL
 GROUP BY commodity
 ORDER BY total_exports_mmt DESC;
 
