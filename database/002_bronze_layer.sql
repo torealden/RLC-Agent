@@ -176,12 +176,11 @@ CREATE TABLE bronze.fgis_inspection_raw (
     source_row_number INT,
 
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-
-    -- Natural key for idempotent upserts
-    UNIQUE (cert_date, commodity, destination_country, COALESCE(port_region, 'UNKNOWN'))
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Natural key for idempotent upserts (using index because COALESCE requires expression index)
+CREATE UNIQUE INDEX idx_fgis_natural_key ON bronze.fgis_inspection_raw(cert_date, commodity, destination_country, COALESCE(port_region, 'UNKNOWN'));
 CREATE INDEX idx_fgis_cert_date ON bronze.fgis_inspection_raw(cert_date);
 CREATE INDEX idx_fgis_week ON bronze.fgis_inspection_raw(week_ending_date);
 CREATE INDEX idx_fgis_commodity ON bronze.fgis_inspection_raw(commodity);
