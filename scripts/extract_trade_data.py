@@ -39,9 +39,95 @@ PG_PASSWORD = "SoupBoss1"
 # ============================================================================
 # TRAINING DATA CUTOFF
 # ============================================================================
-# Only extract data through this marketing year for LLM training
-# Set to None to extract all data
-MAX_MARKETING_YEAR = "2019/20"  # Last year of training data (2021-2025 reserved for testing)
+# This will be set at runtime based on user input or default calculation
+MAX_MARKETING_YEAR = None  # Will be set by get_cutoff_year()
+
+
+def get_current_marketing_year() -> str:
+    """
+    Calculate the current marketing year based on today's date.
+    Marketing year runs Sep-Aug, so:
+    - Sep 2025 - Aug 2026 = 2025/26 marketing year
+    - Jan 2026 is still in 2025/26 marketing year
+    """
+    today = datetime.now()
+    year = today.year
+    month = today.month
+
+    # If we're in Sep-Dec, we're in the current year's marketing year
+    # If we're in Jan-Aug, we're still in the previous year's marketing year
+    if month >= 9:  # Sep-Dec
+        start_year = year
+    else:  # Jan-Aug
+        start_year = year - 1
+
+    end_year_short = (start_year + 1) % 100
+    return f"{start_year}/{end_year_short:02d}"
+
+
+def get_default_cutoff_year() -> str:
+    """
+    Calculate the default cutoff year (5 years before current marketing year).
+    Example: Current = 2025/26, Default cutoff = 2020/21
+    """
+    current_my = get_current_marketing_year()
+    current_start = int(current_my.split('/')[0])
+    cutoff_start = current_start - 5
+    cutoff_end_short = (cutoff_start + 1) % 100
+    return f"{cutoff_start}/{cutoff_end_short:02d}"
+
+
+def prompt_for_cutoff_year() -> str:
+    """
+    Prompt user for cutoff year with smart default.
+    Returns the selected cutoff marketing year.
+    """
+    current_my = get_current_marketing_year()
+    default_cutoff = get_default_cutoff_year()
+
+    print("\n" + "=" * 70)
+    print("DATA CUTOFF YEAR SELECTION")
+    print("=" * 70)
+    print(f"Current marketing year: {current_my}")
+    print(f"Default cutoff (5 years back): {default_cutoff}")
+    print()
+    print("Enter the last marketing year to INCLUDE in the extraction.")
+    print("Data after this year will be excluded.")
+    print("Examples: 2020/21, 2019/20, 2023/24")
+    print("Press Enter to use the default, or type 'all' to include all data.")
+    print()
+
+    while True:
+        user_input = input(f"Cutoff year [{default_cutoff}]: ").strip()
+
+        if user_input == "":
+            return default_cutoff
+        elif user_input.lower() == "all":
+            return None  # No cutoff
+        elif re.match(r"^\d{4}/\d{2}$", user_input):
+            return user_input
+        elif re.match(r"^\d{2}/\d{2}$", user_input):
+            # Convert short format like "20/21" to "2020/21"
+            first = int(user_input.split('/')[0])
+            if first >= 60:
+                full_year = 1900 + first
+            else:
+                full_year = 2000 + first
+            return f"{full_year}/{user_input.split('/')[1]}"
+        else:
+            print("Invalid format. Please use format like '2020/21' or '20/21'")
+
+
+def set_cutoff_year(cutoff: str):
+    """Set the global cutoff year and update related constants."""
+    global MAX_MARKETING_YEAR
+    MAX_MARKETING_YEAR = cutoff
+
+    if cutoff:
+        print(f"\n✅ Cutoff year set to: {cutoff}")
+        print(f"   Data through {cutoff} will be included.")
+    else:
+        print(f"\n✅ No cutoff year - ALL data will be included.")
 
 # Patterns to identify trade-related sheets
 TRADE_SHEET_PATTERNS = [
@@ -159,16 +245,16 @@ def parse_month_year(col_name: str) -> Optional[Tuple[int, int]]:
 
 
 def is_month_within_training_period(month: int, year: int) -> bool:
-    """Check if a month/year is within the training data cutoff (Aug 2020 for 2019/20 MY)."""
+    """Check if a month/year is within the training data cutoff."""
     if MAX_MARKETING_YEAR is None:
         return True  # No cutoff, include all data
 
-    # Training cutoff is end of 2019/20 marketing year
-    # Soybeans: Sep-Aug, so end is Aug 2020
-    # Meal/Oil: Oct-Sep, so end is Sep 2020
-    # Using Sep 2020 as the inclusive cutoff to cover both
-    cutoff_year = 2020
-    cutoff_month = 9  # September
+    # Calculate cutoff based on MAX_MARKETING_YEAR
+    # Marketing year runs Sep-Aug, so 2020/21 ends in Aug 2021
+    # Using Sep of the end year as the inclusive cutoff to cover both soybeans (Sep-Aug) and meal/oil (Oct-Sep)
+    cutoff_start = marketing_year_to_int(MAX_MARKETING_YEAR)
+    cutoff_year = cutoff_start + 1  # End year of the marketing year
+    cutoff_month = 9  # September (covers both Sep-Aug and Oct-Sep marketing years)
 
     if year < cutoff_year:
         return True
@@ -562,9 +648,13 @@ def migrate_to_database(directory: Path, dry_run: bool = False):
     print("=" * 70)
 
     if MAX_MARKETING_YEAR:
-        print(f"\n*** TRAINING DATA MODE ***")
+        cutoff_start = marketing_year_to_int(MAX_MARKETING_YEAR)
+        cutoff_end_year = cutoff_start + 1
+        print(f"\n*** DATA CUTOFF ACTIVE ***")
         print(f"*** Only extracting data through {MAX_MARKETING_YEAR} marketing year ***")
-        print(f"*** (Monthly data through Sep 2020) ***\n")
+        print(f"*** (Monthly data through Sep {cutoff_end_year}) ***\n")
+    else:
+        print(f"\n*** NO CUTOFF - Including ALL data ***\n")
 
     # Scan for files
     files = scan_trade_files(directory)
@@ -701,6 +791,8 @@ def main():
     parser.add_argument("--migrate", action="store_true", help="Migrate all trade data to database")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be migrated without writing")
     parser.add_argument("--dir", type=str, help="Override source directory")
+    parser.add_argument("--cutoff", type=str, help="Cutoff marketing year (e.g., '2020/21'). Use 'all' for no cutoff.")
+    parser.add_argument("--no-prompt", action="store_true", help="Skip interactive prompts, use defaults")
 
     args = parser.parse_args()
 
@@ -711,12 +803,28 @@ def main():
     elif args.preview:
         preview_file(Path(args.preview))
     elif args.migrate:
+        # Determine cutoff year
+        if args.cutoff:
+            # Use command-line argument
+            if args.cutoff.lower() == 'all':
+                set_cutoff_year(None)
+            else:
+                set_cutoff_year(args.cutoff)
+        elif args.no_prompt:
+            # Use default without prompting
+            set_cutoff_year(get_default_cutoff_year())
+        else:
+            # Interactive prompt
+            cutoff = prompt_for_cutoff_year()
+            set_cutoff_year(cutoff)
+
         migrate_to_database(directory, dry_run=args.dry_run)
     else:
         # Default: scan
         scan_trade_files(directory)
         print("\n💡 Use --migrate to load data to database")
         print("💡 Use --preview <file> to see sample data from a file")
+        print("💡 Use --cutoff <year> to set data cutoff (e.g., --cutoff 2020/21)")
 
 
 if __name__ == "__main__":
