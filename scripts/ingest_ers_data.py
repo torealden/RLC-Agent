@@ -186,6 +186,16 @@ def insert_oilcrops_records(conn, records: List[Dict]) -> int:
     if not records:
         return 0
 
+    # Deduplicate by key - keep last occurrence (most recent value)
+    seen = {}
+    for r in records:
+        key = (r['marketing_year'], r['commodity'], r['attribute_desc'],
+               r['geography_desc'], r['timeperiod_desc'], r['table_number'])
+        seen[key] = r
+
+    unique_records = list(seen.values())
+    print(f"    (Deduplicated: {len(records)} -> {len(unique_records)} unique records)")
+
     sql = """
         INSERT INTO bronze.ers_oilcrops_raw
         (timeperiod_desc, marketing_year, my_definition, commodity_group,
@@ -204,20 +214,31 @@ def insert_oilcrops_records(conn, records: List[Dict]) -> int:
          r['commodity'], r['commodity_desc2'], r['attribute_desc'], r['attribute_desc2'],
          r['geography_desc'], r['geography_desc2'], r['amount'], r['unit_desc'],
          r['table_number'], r['table_name'], r['source_file'])
-        for r in records
+        for r in unique_records
     ]
 
     with conn.cursor() as cur:
         execute_values(cur, sql, values)
     conn.commit()
 
-    return len(records)
+    return len(unique_records)
 
 
 def insert_wheat_records(conn, records: List[Dict]) -> int:
     """Insert wheat records with upsert."""
     if not records:
         return 0
+
+    # Deduplicate by key - keep last occurrence (most recent value)
+    seen = {}
+    for r in records:
+        key = (r['marketing_year'], r['commodity_desc'], r['commodity_desc2'],
+               r['attribute_desc'], r['geography_desc'], r['timeperiod_desc'])
+        seen[key] = r
+
+    unique_records = list(seen.values())
+    if len(records) != len(unique_records):
+        print(f"    (Deduplicated: {len(records)} -> {len(unique_records)} unique records)")
 
     sql = """
         INSERT INTO bronze.ers_wheat_raw
@@ -233,14 +254,14 @@ def insert_wheat_records(conn, records: List[Dict]) -> int:
     values = [
         (r['commodity_desc'], r['commodity_desc2'], r['attribute_desc'], r['geography_desc'],
          r['unit_desc'], r['marketing_year'], r['timeperiod_desc'], r['amount'], r['source_file'])
-        for r in records
+        for r in unique_records
     ]
 
     with conn.cursor() as cur:
         execute_values(cur, sql, values)
     conn.commit()
 
-    return len(records)
+    return len(unique_records)
 
 
 # ============================================================================
