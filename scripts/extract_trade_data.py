@@ -288,6 +288,24 @@ def extract_trade_data_from_sheet(
             if any(skip in country.lower() for skip in ['region', 'subtotal', '---']):
                 continue
 
+            # Skip month names (these indicate wrong header/data orientation)
+            if country.lower() in [
+                'january', 'february', 'march', 'april', 'may', 'june',
+                'july', 'august', 'september', 'october', 'november', 'december',
+                'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
+            ]:
+                continue
+
+            # Skip commodity names appearing as countries
+            if country.lower() in [
+                'soybean', 'soybeans', 'soybean oil', 'soybean meal', 'soymeal', 'soyoil',
+                'corn', 'wheat', 'rice', 'barley', 'sorghum', 'oats',
+                'rapeseed', 'canola', 'sunflower', 'cottonseed', 'peanut', 'peanuts',
+                'palm oil', 'palm kernel', 'coconut', 'tallow', 'lard', 'grease',
+                'oil', 'meal', 'seed', 'kernel', 'edible', 'inedible', 'major'
+            ]:
+                continue
+
             # Extract monthly data
             for col in col_types['monthly']:
                 value = row[col]
