@@ -57,6 +57,8 @@ class WheatVisualization:
             CREATE VIEW gold_wheat_balance_sheet AS
             SELECT
                 marketing_year,
+                -- Sort column: extract start year as integer for proper chronological sorting
+                CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) AS marketing_year_sort,
                 beginning_stocks,
                 production,
                 imports,
@@ -79,7 +81,7 @@ class WheatVisualization:
                 ROUND(exports_yoy_pct, 1) AS exports_yoy_pct
             FROM silver_wheat_balance_sheet
             WHERE commodity_code = 'WHEAT' AND location_code = 'US'
-            ORDER BY marketing_year DESC
+            ORDER BY CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) DESC
         """)
         self.conn.commit()
 
@@ -90,6 +92,8 @@ class WheatVisualization:
             CREATE VIEW gold_wheat_prices AS
             SELECT
                 marketing_year,
+                -- Sort column: extract start year as integer for proper chronological sorting
+                CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) AS marketing_year_sort,
                 MAX(CASE WHEN commodity_code = 'WHEAT' THEN farm_price_usd_bu END) AS all_wheat_price,
                 MAX(CASE WHEN commodity_code = 'WHEAT_HRW' THEN farm_price_usd_bu END) AS hrw_price,
                 MAX(CASE WHEN commodity_code = 'WHEAT_HRS' THEN farm_price_usd_bu END) AS hrs_price,
@@ -100,7 +104,7 @@ class WheatVisualization:
             WHERE location_code = 'US'
             GROUP BY marketing_year
             HAVING all_wheat_price IS NOT NULL OR hrw_price IS NOT NULL
-            ORDER BY marketing_year DESC
+            ORDER BY CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) DESC
         """)
         self.conn.commit()
 
@@ -111,6 +115,8 @@ class WheatVisualization:
             CREATE VIEW gold_world_wheat_production AS
             SELECT
                 marketing_year,
+                -- Sort column: extract start year as integer for proper chronological sorting
+                CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) AS marketing_year_sort,
                 location_code,
                 ROUND(production_mmt, 2) AS production_mmt,
                 ROUND(exports_mmt, 2) AS exports_mmt,
@@ -120,7 +126,7 @@ class WheatVisualization:
             WHERE commodity_code = 'WHEAT'
               AND location_code IN ('US', 'WORLD', 'EU', 'RU', 'CA', 'AU', 'UA', 'AR', 'CN', 'IN')
               AND production IS NOT NULL
-            ORDER BY marketing_year DESC, production DESC
+            ORDER BY CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) DESC, production DESC
         """)
         self.conn.commit()
 
@@ -131,6 +137,8 @@ class WheatVisualization:
             CREATE VIEW gold_wheat_exports_by_destination AS
             SELECT
                 marketing_year,
+                -- Sort column: extract start year as integer for proper chronological sorting
+                CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) AS marketing_year_sort,
                 partner_code,
                 partner_name,
                 ROUND(quantity_mbu, 1) AS quantity_mbu,
@@ -141,7 +149,7 @@ class WheatVisualization:
             WHERE commodity_code IN ('WHEAT', 'WHEAT_HRW', 'WHEAT_HRS', 'WHEAT_SRW')
               AND flow_direction = 'EXPORT'
               AND quantity_mbu > 0
-            ORDER BY marketing_year DESC, quantity_mbu DESC
+            ORDER BY CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) DESC, quantity_mbu DESC
         """)
         self.conn.commit()
 
@@ -152,6 +160,8 @@ class WheatVisualization:
             CREATE VIEW gold_wheat_by_class AS
             SELECT
                 marketing_year,
+                -- Sort column: extract start year as integer for proper chronological sorting
+                CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) AS marketing_year_sort,
                 commodity_code,
                 ROUND(area_planted, 1) AS area_planted,
                 ROUND(area_harvested, 1) AS area_harvested,
@@ -165,7 +175,7 @@ class WheatVisualization:
             FROM silver_wheat_production
             WHERE location_code = 'US'
               AND commodity_code IN ('WHEAT', 'WHEAT_HRW', 'WHEAT_HRS', 'WHEAT_SRW', 'WHEAT_WHITE', 'WHEAT_DURUM')
-            ORDER BY marketing_year DESC, production_mbu DESC
+            ORDER BY CAST(SUBSTR(marketing_year, 1, 4) AS INTEGER) DESC, production_mbu DESC
         """)
         self.conn.commit()
 
