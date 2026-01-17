@@ -12,6 +12,9 @@ env/
 credentials.env
 config/credentials.env
 
+# MCP configuration (may contain API keys)
+.mcp.json
+
 # IDE
 .idea/
 .vscode/
