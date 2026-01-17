@@ -112,6 +112,8 @@ DROP VIEW IF EXISTS gold.us_wheat_balance_sheet CASCADE;
 CREATE VIEW gold.us_wheat_balance_sheet AS
 SELECT
     marketing_year,
+    -- Sort column: extract start year as integer for proper chronological sorting
+    CAST(SUBSTRING(marketing_year FROM 1 FOR 4) AS INTEGER) AS marketing_year_sort,
     MAX(CASE WHEN attribute_desc = 'Beginning stocks' THEN amount END) AS beginning_stocks_mil_bu,
     MAX(CASE WHEN attribute_desc = 'Production' THEN amount END) AS production_mil_bu,
     MAX(CASE WHEN attribute_desc = 'Imports' THEN amount END) AS imports_mil_bu,
@@ -137,7 +139,7 @@ WHERE commodity_desc = 'Wheat'
   AND marketing_year ~ '^\d{4}/\d{2}$'
   AND unit_desc = 'Million bushels'
 GROUP BY marketing_year
-ORDER BY marketing_year DESC;
+ORDER BY CAST(SUBSTRING(marketing_year FROM 1 FOR 4) AS INTEGER) DESC;
 
 COMMENT ON VIEW gold.us_wheat_balance_sheet IS
 'US All Wheat supply and demand. Units: Million bushels.';
@@ -265,6 +267,8 @@ DROP VIEW IF EXISTS gold.us_wheat_by_class CASCADE;
 CREATE VIEW gold.us_wheat_by_class AS
 SELECT
     marketing_year,
+    -- Sort column: extract start year as integer for proper chronological sorting
+    CAST(SUBSTRING(marketing_year FROM 1 FOR 4) AS INTEGER) AS marketing_year_sort,
     commodity_desc2 AS wheat_class,
     MAX(CASE WHEN attribute_desc = 'Production' THEN amount END) AS production_mil_bu,
     MAX(CASE WHEN attribute_desc = 'Exports' THEN amount END) AS exports_mil_bu
@@ -276,7 +280,7 @@ WHERE commodity_desc = 'Wheat'
   AND marketing_year ~ '^\d{4}/\d{2}$'
   AND unit_desc = 'Million bushels'
 GROUP BY marketing_year, commodity_desc2
-ORDER BY marketing_year DESC, commodity_desc2;
+ORDER BY CAST(SUBSTRING(marketing_year FROM 1 FOR 4) AS INTEGER) DESC, commodity_desc2;
 
 COMMENT ON VIEW gold.us_wheat_by_class IS
 'US Wheat production and exports by class.';
