@@ -1,0 +1,20 @@
+{
+    "meteorologist_senders": [
+        "worldweather@bizkc.rr.com",
+        "akarst_worldweather@bizkc.rr.com",
+        "scarlett_worldweather@bizkc.rr.com",
+        "brad_worldweather@bizkc.rr.com"
+    ],
+    "forward_recipients": [
+        "felipe.baptista@roundlakescommodities.com"
+    ],
+    "summary_recipients": [
+        "tore.alden@roundlakescommodities.com",
+        "felipe.baptista@roundlakescommodities.com"
+    ],
+    "token_file": "token_work.json",
+    "check_hours_back": 24,
+    "processed_ids_file": "weather_emails_processed.json",
+    "cities_file": "weather_cities.json",
+    "log_file": "weather_email_agent.log"
+}

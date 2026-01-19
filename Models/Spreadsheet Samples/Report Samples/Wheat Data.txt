@@ -1,0 +1,56 @@
+Wheat Data
+Comma-separated values (.csv) data file notes.
+
+
+Suggested citation: U.S. Department of Agriculture, Economic Research Service. Wheat Data.
+
+
+*************************************************************************
+Questions concerning the development, use, or interpretation of these
+data should be addressed to:
+
+ Andrew Sowell
+ USDA/Economic Research Service/Market and Trade Economics Division/Crops Branch
+
+*************************************************************************
+
+Wheat data tables contains a variety of data series summary statistics on the five classes of wheat:
+Hard Red Winter, Hard Red Spring, Soft Red Winter, White, and Durum and rye. 
+This product includes data related to the monthly Wheat Outlook and monthly updates to the Wheat Outlook tables. 
+Data are monthly, quarterly, and/or annually, depending upon the data series.
+Most data are shown as marketing years, others as calendar year or fiscal year. 
+
+- Variable names are contained in the first row, but not all are in each file:
+	Marketing_Year..................(June-May marketing year of observation)
+	Calendar_Year...................(January-December calendar year of observation)
+	Fiscal_Year.....................(October-September fiscal year of observation)
+	Timeperiod_Desc.................(Time period of observation)
+	Commodity_Desc..................(Commodity: Wheat, Rye, etc.)
+	Commodity_Desc2.................(Wheat class of observation)
+	Attribute_Desc..................(Data type: Production, Exports, Supply...)
+	Attribute_Desc2.................(Longer data type description)
+	Geography_Desc..................(Geographical Description: United States, World, etc.)
+	Amount..........................(Data value)
+	Unit_Desc.......................(Measurement unit)
+
+- General annotations:
+	MY..............................(Marketing year)
+	Q...............................(Quarter)
+	f.o.b...........................(Free-on-board)
+	c.i.f...........................(Cost, insurance, and freight)
+
+- The .csv data is split into 15 files with one data point per row. 
+
+
+- These data can be found in the Wheat Data-All Years and Wheat Data-Recent .xslx files, 
+	which also include more detailed explanations of methodology in the footnotes.
+
+- For historical by-class quarterly data, see separate csv and Excel files on the overview page.
+
+- Source: Please refer to the Documentation on the ERS website found at Data-Products/Wheat-Data/Documentation/
+	or the related .xlsx files for sources and methods for each corresponding tables.
+
+
+			
+			
+		

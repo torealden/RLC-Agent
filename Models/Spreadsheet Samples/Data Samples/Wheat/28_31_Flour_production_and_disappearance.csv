@@ -1,0 +1,719 @@
+Commodity_Desc,Commodity_Desc2,Attribute_Desc,Attribute_Desc2,Geography_Desc,Unit_Desc,Calendar_Year,Timeperiod_Desc,Amount
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1988","CY Jan-Dec",344154
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1988","CY Jan-Dec",6144.97
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1988","CY Jan-Dec",769689
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1988","CY Jan-Dec",74.5223070616834
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1989","CY Jan-Dec",75.0662596695755
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1989","CY Jan-Dec",761021
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1989","CY Jan-Dec",5827.58
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1989","CY Jan-Dec",342762
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1990","CY Jan-Dec",354348
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1990","CY Jan-Dec",6108.572
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1990","CY Jan-Dec",788186
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1990","CY Jan-Dec",74.9290142174563
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1991","CY Jan-Dec",74.6448758868317
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1991","CY Jan-Dec",808966
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1991","CY Jan-Dec",6436.192
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1991","CY Jan-Dec",362311
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1992","CY Jan-Dec",370829
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1992","CY Jan-Dec",6706.962
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1992","CY Jan-Dec",833339
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1992","CY Jan-Dec",74.1652956759894
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1993","CY Jan-Dec",74.0982792599257
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1993","CY Jan-Dec",871408
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1993","CY Jan-Dec",6963.4
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1993","CY Jan-Dec",387419
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1994","CY Jan-Dec",7185.908
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1994","CY Jan-Dec",884707
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1994","CY Jan-Dec",73.9451969220695
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1994","CY Jan-Dec",392519
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1995","CY Jan-Dec",388689
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1995","CY Jan-Dec",869296
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1995","CY Jan-Dec",7144.328
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1995","CY Jan-Dec",74.5217969483352
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1996","CY Jan-Dec",7041.882
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1996","CY Jan-Dec",397776
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1996","CY Jan-Dec",878070
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1996","CY Jan-Dec",75.5019531472434
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1997","CY Jan-Dec",885843
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1997","CY Jan-Dec",76.037364032528
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1997","CY Jan-Dec",404143
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1997","CY Jan-Dec",6886.228
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1998","CY Jan-Dec",6954.947
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1998","CY Jan-Dec",895369
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1998","CY Jan-Dec",74.2550464296471
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1998","CY Jan-Dec",398914
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","1999","CY Jan-Dec",411968
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","1999","CY Jan-Dec",917797
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","1999","CY Jan-Dec",7040.124
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","1999","CY Jan-Dec",74.8110239337602
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2000","CY Jan-Dec",74.3084395562837
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2000","CY Jan-Dec",7374.115
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2000","CY Jan-Dec",944868
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2000","CY Jan-Dec",421270
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2001","CY Jan-Dec",404521
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2001","CY Jan-Dec",914036
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2001","CY Jan-Dec",7274.979
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2001","CY Jan-Dec",73.7609532520236
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2002","CY Jan-Dec",6892.994
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2002","CY Jan-Dec",394700
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2002","CY Jan-Dec",889414
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2002","CY Jan-Dec",73.9625566196769
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2003","CY Jan-Dec",74.2653222190733
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2003","CY Jan-Dec",889188
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2003","CY Jan-Dec",396215
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2003","CY Jan-Dec",7029.371
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2004","CY Jan-Dec",6763.793
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2004","CY Jan-Dec",393925
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2004","CY Jan-Dec",876047
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2004","CY Jan-Dec",74.9436578935453
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2005","CY Jan-Dec",74.4584988969963
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2005","CY Jan-Dec",884101
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2005","CY Jan-Dec",394973
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2005","CY Jan-Dec",6826.308
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2006","CY Jan-Dec",6916.164
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2006","CY Jan-Dec",894527
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2006","CY Jan-Dec",403391
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2006","CY Jan-Dec",75.1590878009645
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2007","CY Jan-Dec",75.5675741213048
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2007","CY Jan-Dec",418836
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2007","CY Jan-Dec",923756
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2007","CY Jan-Dec",7102.877
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2008","CY Jan-Dec",6752.816
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2008","CY Jan-Dec",907979
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2008","CY Jan-Dec",416283
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2008","CY Jan-Dec",76.4120095288547
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2009","CY Jan-Dec",414658
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2009","CY Jan-Dec",896060
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2009","CY Jan-Dec",6460.338
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2009","CY Jan-Dec",77.1261597065673
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2010","CY Jan-Dec",6480.196
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2010","CY Jan-Dec",417396
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2010","CY Jan-Dec",901843
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2010","CY Jan-Dec",77.1375949028822
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2011","CY Jan-Dec",76.6532068144458
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2011","CY Jan-Dec",411745
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2011","CY Jan-Dec",895255
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2011","CY Jan-Dec",6402.193
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2012","CY Jan-Dec",6637.342
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2012","CY Jan-Dec",76.0000057854488
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2012","CY Jan-Dec",420365
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2012","CY Jan-Dec",921853
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2013","CY Jan-Dec",424550
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2013","CY Jan-Dec",919830
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2013","CY Jan-Dec",6367.386
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2013","CY Jan-Dec",76.9254463687131
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2014","CY Jan-Dec",76.8778909556146
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2014","CY Jan-Dec",424949
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2014","CY Jan-Dec",921264
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2014","CY Jan-Dec",6422.538
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2015","CY Jan-Dec",76.6730075141027
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2015","CY Jan-Dec",424910
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2015","CY Jan-Dec",923641
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2015","CY Jan-Dec",6640.947
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2016","CY Jan-Dec",423846
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2016","CY Jan-Dec",914635
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2016","CY Jan-Dec",6559.135
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2016","CY Jan-Dec",77.2340879148513
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2017","CY Jan-Dec",426399
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2017","CY Jan-Dec",917816
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2017","CY Jan-Dec",6447.274
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2017","CY Jan-Dec",77.4300077575462
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2018","CY Jan-Dec",426871
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2018","CY Jan-Dec",918373
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2018","CY Jan-Dec",6458.017
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2018","CY Jan-Dec",77.4687046185664
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2019","CY Jan-Dec",77.1190071542139
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2019","CY Jan-Dec",422277
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2019","CY Jan-Dec",912609
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2019","CY Jan-Dec",6485.291
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2020","CY Jan-Dec",77.3070451216333
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2020","CY Jan-Dec",425797
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2020","CY Jan-Dec",917978
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2020","CY Jan-Dec",6547.304
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2021","CY Jan-Dec",6639.121
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2021","CY Jan-Dec",76.8530075105651
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2021","CY Jan-Dec",421176
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2021","CY Jan-Dec",913380
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2022","CY Jan-Dec",77.2268378176101
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2022","CY Jan-Dec",430284
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2022","CY Jan-Dec",928615
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2022","CY Jan-Dec",6731.971
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2023","CY Jan-Dec",77.3937921775142
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2023","CY Jan-Dec",419998
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2023","CY Jan-Dec",904461
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2023","CY Jan-Dec",6511.412
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2024","CY Jan-Dec",77.3845144700901
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2024","CY Jan-Dec",425179
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2024","CY Jan-Dec",915728
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2024","CY Jan-Dec",6489.889
+"All Wheat","Wheat flour","Production","Wheat flour production","United States","1,000 cwt","2025","CY Jan-Dec",314519
+"All Wheat","Wheat ground for flour","Production","Wheat ground for flour","United States","1,000 bushels","2025","CY Jan-Dec",680968
+"All Wheat","Wheat flour","Extraction rate","Wheat flour extraction rate","United States","percent","2025","CY Jan-Dec",76.978409166559
+"All Wheat","Wheat millfeed","Production","Wheat millfeed","United States","1,000 tons","2025","CY Jan-Dec",4861.436
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1989","CY Jan-Dec",26332.2185327518
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1989","CY Jan-Dec",201.08759566668
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1989","CY Jan-Dec",3201.98074673553
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1989","CY Jan-Dec",345963.980746736
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1989","CY Jan-Dec",319430.674618317
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1989","CY Jan-Dec",247387
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1989","CY Jan-Dec",129.121851438563
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1990","CY Jan-Dec",135.567134877894
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1990","CY Jan-Dec",250181
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1990","CY Jan-Dec",339163.213708864
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1990","CY Jan-Dec",357808.939068358
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1990","CY Jan-Dec",3460.93906835788
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1990","CY Jan-Dec",304.993200456534
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1990","CY Jan-Dec",18340.7321590373
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1991","CY Jan-Dec",21630.4394687342
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1991","CY Jan-Dec",556.588303057146
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1991","CY Jan-Dec",3890.86895908187
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1991","CY Jan-Dec",366201.868959082
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1991","CY Jan-Dec",344014.84118729
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1991","CY Jan-Dec",253530
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1991","CY Jan-Dec",135.689993762983
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1992","CY Jan-Dec",138.049329485187
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1992","CY Jan-Dec",256922
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1992","CY Jan-Dec",354679.098299931
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1992","CY Jan-Dec",375660.691741817
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1992","CY Jan-Dec",4831.69174181678
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1992","CY Jan-Dec",787.289976815298
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1992","CY Jan-Dec",20194.3034650706
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1993","CY Jan-Dec",22725.7076168216
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1993","CY Jan-Dec",686.835135503868
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1993","CY Jan-Dec",5974.98289739897
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1993","CY Jan-Dec",393393.982897399
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1993","CY Jan-Dec",369981.440145074
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1993","CY Jan-Dec",260282
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1993","CY Jan-Dec",142.146379751605
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1994","CY Jan-Dec",142.944169514956
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1994","CY Jan-Dec",263455
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1994","CY Jan-Dec",376593.561795626
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1994","CY Jan-Dec",401205.61512307
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1994","CY Jan-Dec",8686.61512306979
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1994","CY Jan-Dec",810.747447880236
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1994","CY Jan-Dec",23801.3058795632
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1995","CY Jan-Dec",23615.2497094305
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1995","CY Jan-Dec",857.457712847928
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1995","CY Jan-Dec",8918.12666494005
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1995","CY Jan-Dec",397607.12666494
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1995","CY Jan-Dec",373134.419242662
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1995","CY Jan-Dec",266588
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1995","CY Jan-Dec",139.966697391729
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1996","CY Jan-Dec",146.383927630094
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1996","CY Jan-Dec",269714
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1996","CY Jan-Dec",394817.946568231
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1996","CY Jan-Dec",406350.500165104
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1996","CY Jan-Dec",8574.50016510431
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1996","CY Jan-Dec",881.453244104622
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1996","CY Jan-Dec",10651.1003527685
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1997","CY Jan-Dec",11038.0486787744
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1997","CY Jan-Dec",1167.11073590918
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1997","CY Jan-Dec",8681.42374390999
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1997","CY Jan-Dec",412824.42374391
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1997","CY Jan-Dec",400619.264329226
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1997","CY Jan-Dec",272958
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1997","CY Jan-Dec",146.769563203579
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1998","CY Jan-Dec",142.997261662008
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1998","CY Jan-Dec",276154
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1998","CY Jan-Dec",394892.6579701
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1998","CY Jan-Dec",408659.298771653
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1998","CY Jan-Dec",9745.29877165255
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1998","CY Jan-Dec",1353.16467937307
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1998","CY Jan-Dec",12413.4761221793
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","1999","CY Jan-Dec",17498.5540460894
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","1999","CY Jan-Dec",1632.67881393292
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","1999","CY Jan-Dec",9295.35800660533
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","1999","CY Jan-Dec",421263.358006605
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","1999","CY Jan-Dec",402132.125146583
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","1999","CY Jan-Dec",279328
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","1999","CY Jan-Dec",143.964130035866
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2000","CY Jan-Dec",146.331958214877
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2000","CY Jan-Dec",282398
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2000","CY Jan-Dec",413238.52335965
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2000","CY Jan-Dec",430935.948054965
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2000","CY Jan-Dec",9665.94805496546
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2000","CY Jan-Dec",1692.89417806991
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2000","CY Jan-Dec",16004.5305172458
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2001","CY Jan-Dec",10507.2649100484
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2001","CY Jan-Dec",1694.97044754214
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2001","CY Jan-Dec",10130.4913803123
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2001","CY Jan-Dec",414651.491380312
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2001","CY Jan-Dec",402449.256022722
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2001","CY Jan-Dec",285225
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2001","CY Jan-Dec",141.098871425268
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2002","CY Jan-Dec",136.855327981972
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2002","CY Jan-Dec",287955
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2002","CY Jan-Dec",394081.759690489
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2002","CY Jan-Dec",405991.354722836
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2002","CY Jan-Dec",11291.3547228362
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2002","CY Jan-Dec",2683.25198666366
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2002","CY Jan-Dec",9226.34304568401
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2003","CY Jan-Dec",5767.93636116807
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2003","CY Jan-Dec",3953.4990022602
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2003","CY Jan-Dec",11145.4275562395
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2003","CY Jan-Dec",407360.427556239
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2003","CY Jan-Dec",397638.992192811
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2003","CY Jan-Dec",290626
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2003","CY Jan-Dec",136.821548035211
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2004","CY Jan-Dec",134.636187142667
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2004","CY Jan-Dec",293262
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2004","CY Jan-Dec",394836.775138328
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2004","CY Jan-Dec",404650.949274199
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2004","CY Jan-Dec",10725.9492741989
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2004","CY Jan-Dec",4661.76445834831
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2004","CY Jan-Dec",5152.40967752252
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2005","CY Jan-Dec",3746.66230200837
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2005","CY Jan-Dec",4740.585051485
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2005","CY Jan-Dec",11261.9199246546
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2005","CY Jan-Dec",406234.919924655
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2005","CY Jan-Dec",397747.672571161
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2005","CY Jan-Dec",295993
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2005","CY Jan-Dec",134.377391550192
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2006","CY Jan-Dec",135.819223100973
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2006","CY Jan-Dec",298818
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2006","CY Jan-Dec",405852.286085866
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2006","CY Jan-Dec",415130.917929452
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2006","CY Jan-Dec",11739.9179294518
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2006","CY Jan-Dec",5866.94214813697
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2006","CY Jan-Dec",3411.68969544932
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2007","CY Jan-Dec",6706.50150012944
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2007","CY Jan-Dec",6485.95795569418
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2007","CY Jan-Dec",11511.2546717959
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2007","CY Jan-Dec",430347.254671796
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2007","CY Jan-Dec",417154.795215972
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2007","CY Jan-Dec",301696
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2007","CY Jan-Dec",138.269912499991
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2008","CY Jan-Dec",136.598284038788
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2008","CY Jan-Dec",304543
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2008","CY Jan-Dec",416000.512160246
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2008","CY Jan-Dec",427104.694534574
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2008","CY Jan-Dec",10821.6945345735
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2008","CY Jan-Dec",6178.99869484919
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2008","CY Jan-Dec",4925.18367947818
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2009","CY Jan-Dec",5910.51192821096
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2009","CY Jan-Dec",5337.78420039355
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2009","CY Jan-Dec",10312.7333769772
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2009","CY Jan-Dec",424970.733376977
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2009","CY Jan-Dec",413722.437248373
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2009","CY Jan-Dec",307240
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2009","CY Jan-Dec",134.657738982025
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2010","CY Jan-Dec",134.814904247834
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2010","CY Jan-Dec",309808
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2010","CY Jan-Dec",417667.358552129
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2010","CY Jan-Dec",428602.198749826
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2010","CY Jan-Dec",11206.1987498264
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2010","CY Jan-Dec",3930.49050258775
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2010","CY Jan-Dec",7004.34969510919
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2011","CY Jan-Dec",6309.04069581015
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2011","CY Jan-Dec",3615.41278515694
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2011","CY Jan-Dec",11698.0211272379
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2011","CY Jan-Dec",423443.021127238
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2011","CY Jan-Dec",413518.567646271
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2011","CY Jan-Dec",311918
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2011","CY Jan-Dec",132.572845313919
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2012","CY Jan-Dec",134.491276631989
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2012","CY Jan-Dec",314121
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2012","CY Jan-Dec",422465.343069171
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2012","CY Jan-Dec",432356.235778714
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2012","CY Jan-Dec",11991.2357787143
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2012","CY Jan-Dec",3893.97379522813
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2012","CY Jan-Dec",5996.91891431519
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2013","CY Jan-Dec",5273.51122836125
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2013","CY Jan-Dec",3755.08495242054
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2013","CY Jan-Dec",12281.4820822296
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2013","CY Jan-Dec",436831.48208223
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2013","CY Jan-Dec",427802.885901448
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2013","CY Jan-Dec",316266
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2013","CY Jan-Dec",135.266796273216
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2014","CY Jan-Dec",134.943230316489
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2014","CY Jan-Dec",318535
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2014","CY Jan-Dec",429841.418688628
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2014","CY Jan-Dec",438808.281159642
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2014","CY Jan-Dec",13859.281159642
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2014","CY Jan-Dec",3663.84876255724
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2014","CY Jan-Dec",5303.01370845671
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2015","CY Jan-Dec",6376.49063924018
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2015","CY Jan-Dec",3566.6286096632
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2015","CY Jan-Dec",14753.1740529058
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2015","CY Jan-Dec",439663.174052906
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2015","CY Jan-Dec",429720.054804002
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2015","CY Jan-Dec",320823
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2015","CY Jan-Dec",133.943032389823
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2016","CY Jan-Dec",132.636488077406
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2016","CY Jan-Dec",323096
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2016","CY Jan-Dec",428543.187518575
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2016","CY Jan-Dec",438884.16519753
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2016","CY Jan-Dec",15038.1651975296
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2016","CY Jan-Dec",2973.33849913294
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2016","CY Jan-Dec",7367.63917982187
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2017","CY Jan-Dec",6211.91106472007
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2017","CY Jan-Dec",2776.81239990302
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2017","CY Jan-Dec",14842.6068614824
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2017","CY Jan-Dec",441241.606861482
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2017","CY Jan-Dec",432252.883396859
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2017","CY Jan-Dec",325143
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2017","CY Jan-Dec",132.942392546313
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2018","CY Jan-Dec",132.77194675629
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2018","CY Jan-Dec",326882
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2018","CY Jan-Dec",434007.594995897
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2018","CY Jan-Dec",442423.315132831
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2018","CY Jan-Dec",15552.315132831
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2018","CY Jan-Dec",2722.8124400773
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2018","CY Jan-Dec",5692.90769685715
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2019","CY Jan-Dec",5866.69500994351
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2019","CY Jan-Dec",2600.1742893326
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2019","CY Jan-Dec",15692.065762613
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2019","CY Jan-Dec",437969.065762613
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2019","CY Jan-Dec",429502.196463337
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2019","CY Jan-Dec",328461
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2019","CY Jan-Dec",130.762007198217
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2020","CY Jan-Dec",131.566079987781
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2020","CY Jan-Dec",331309
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2020","CY Jan-Dec",435890.263946719
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2020","CY Jan-Dec",444864.876636206
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2020","CY Jan-Dec",19067.8766362057
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2020","CY Jan-Dec",3183.37099825951
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2020","CY Jan-Dec",5791.24169122738
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2021","CY Jan-Dec",5096.64469684324
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2021","CY Jan-Dec",3072.59457690562
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2021","CY Jan-Dec",16208.3029023148
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2021","CY Jan-Dec",437384.302902315
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2021","CY Jan-Dec",429215.063628566
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2021","CY Jan-Dec",332453
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2021","CY Jan-Dec",129.105486678889
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2022","CY Jan-Dec",132.263862776414
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2022","CY Jan-Dec",334273
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2022","CY Jan-Dec",442122.382018602
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2022","CY Jan-Dec",449570.945552676
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2022","CY Jan-Dec",19286.9455526763
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2022","CY Jan-Dec",2962.79310580414
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2022","CY Jan-Dec",4485.77042827048
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2023","CY Jan-Dec",3774.83113975441
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2023","CY Jan-Dec",2982.83738015975
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2023","CY Jan-Dec",18732.0773402641
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2023","CY Jan-Dec",438730.077340264
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2023","CY Jan-Dec",431972.40882035
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2023","CY Jan-Dec",337014
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2023","CY Jan-Dec",128.176398850003
+"All Wheat","Wheat flour","Per capita disappearance","Wheat flour per capita disappearance","United States","pounds","2024","CY Jan-Dec",128.884516575374
+"All Wheat","Wheat","U.S. population","U.S. population","United States","1,000 persons","2024","CY Jan-Dec",340102
+"All Wheat","Wheat flour","Domestic disappearance","Wheat flour domestic disappearance","United States","1,000 cwt","2024","CY Jan-Dec",438338.81856318
+"All Wheat","Wheat flour","Total supply","Wheat flour total supply","United States","1,000 cwt","2024","CY Jan-Dec",446175.802493863
+"All Wheat","Flour, semolina, pasta, bulgur, and couscous imports","Qty, Imports","Flour, semolina, pasta, bulgar, and couscous imports","World","1,000 cwt","2024","CY Jan-Dec",20996.8024938627
+"All Wheat","Semolina, pasta, bulgur, and couscous exports","Qty, Exports","Semolina, pasta, bulgur, and couscous exports","World","1,000 cwt","2024","CY Jan-Dec",3066.61808754551
+"All Wheat","Flour exports","Qty, Exports","Flour exports","World","1,000 cwt","2024","CY Jan-Dec",4770.36584313748
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1990","CY Jan-Dec",439.18
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1990","CY Jan-Dec",26236
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1990","CY Jan-Dec",74.9180458942992
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1990","CY Jan-Dec",58366
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1991","CY Jan-Dec",58969
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1991","CY Jan-Dec",72.3911433691148
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1991","CY Jan-Dec",25613
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1991","CY Jan-Dec",488.42
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1992","CY Jan-Dec",444.72
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1992","CY Jan-Dec",31905
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1992","CY Jan-Dec",78.1996794070501
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1992","CY Jan-Dec",67999
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1993","CY Jan-Dec",70575
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1993","CY Jan-Dec",76.7221631833747
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1993","CY Jan-Dec",32488
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1993","CY Jan-Dec",492.85
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1994","CY Jan-Dec",532.68
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1994","CY Jan-Dec",32631
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1994","CY Jan-Dec",75.3870891725926
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1994","CY Jan-Dec",72141
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1995","CY Jan-Dec",67627
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1995","CY Jan-Dec",76.3107437364761
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1995","CY Jan-Dec",30964
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1995","CY Jan-Dec",480.61
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1996","CY Jan-Dec",470.92
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1996","CY Jan-Dec",32623
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1996","CY Jan-Dec",77.5973207362267
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1996","CY Jan-Dec",70069
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1997","CY Jan-Dec",64663
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1997","CY Jan-Dec",75.9733799339138
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1997","CY Jan-Dec",29476
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1997","CY Jan-Dec",466.09
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1998","CY Jan-Dec",399.05
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1998","CY Jan-Dec",27056
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1998","CY Jan-Dec",77.2212232782487
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1998","CY Jan-Dec",58395
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","1999","CY Jan-Dec",56314
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","1999","CY Jan-Dec",77.2040108439583
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","1999","CY Jan-Dec",26086
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","1999","CY Jan-Dec",385.12
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2000","CY Jan-Dec",503.16
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2000","CY Jan-Dec",31749
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2000","CY Jan-Dec",75.9323833713605
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2000","CY Jan-Dec",69687
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2001","CY Jan-Dec",73435
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2001","CY Jan-Dec",74.7372960214249
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2001","CY Jan-Dec",32930
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2001","CY Jan-Dec",556.55
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2002","CY Jan-Dec",528.11
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2002","CY Jan-Dec",32411
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2002","CY Jan-Dec",75.4214254465574
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2002","CY Jan-Dec",71622
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2003","CY Jan-Dec",64294
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2003","CY Jan-Dec",76.9667465082278
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2003","CY Jan-Dec",29691
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2003","CY Jan-Dec",444.27
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2004","CY Jan-Dec",463.15
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2004","CY Jan-Dec",26959
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2004","CY Jan-Dec",74.4271437248081
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2004","CY Jan-Dec",60370
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2005","CY Jan-Dec",67807
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2005","CY Jan-Dec",75.5305499432212
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2005","CY Jan-Dec",30729
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2005","CY Jan-Dec",497.76
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2006","CY Jan-Dec",610.75
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2006","CY Jan-Dec",31948
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2006","CY Jan-Dec",72.3411000158504
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2006","CY Jan-Dec",73605
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2007","CY Jan-Dec",75115
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2007","CY Jan-Dec",72.7861723135636
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2007","CY Jan-Dec",32804
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2007","CY Jan-Dec",613.25
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2008","CY Jan-Dec",502.52
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2008","CY Jan-Dec",30911
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2008","CY Jan-Dec",75.4637292670661
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2008","CY Jan-Dec",68269
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2009","CY Jan-Dec",70617
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2009","CY Jan-Dec",74.5051946887199
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2009","CY Jan-Dec",31568
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2009","CY Jan-Dec",540.11
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2010","CY Jan-Dec",527.9
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2010","CY Jan-Dec",32747
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2010","CY Jan-Dec",75.6194434822769
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2010","CY Jan-Dec",72175
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2015","CY Jan-Dec",65036
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2015","CY Jan-Dec",77.8901941488816
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2015","CY Jan-Dec",30394
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2015","CY Jan-Dec",431.38
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2016","CY Jan-Dec",435.45
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2016","CY Jan-Dec",31338
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2016","CY Jan-Dec",78.2530526631208
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2016","CY Jan-Dec",66745
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2017","CY Jan-Dec",66374
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2017","CY Jan-Dec",79.8480328642742
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2017","CY Jan-Dec",31799
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2017","CY Jan-Dec",401.27
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2018","CY Jan-Dec",415.03
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2018","CY Jan-Dec",31951
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2018","CY Jan-Dec",79.3782110524799
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2018","CY Jan-Dec",67086
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2019","CY Jan-Dec",66450
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2019","CY Jan-Dec",79.0870328567845
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2019","CY Jan-Dec",31532
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2019","CY Jan-Dec",416.9
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2020","CY Jan-Dec",456.73
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2020","CY Jan-Dec",33802
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2020","CY Jan-Dec",78.7253764853295
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2020","CY Jan-Dec",71561
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2021","CY Jan-Dec",64120
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2021","CY Jan-Dec",78.4466625077979
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2021","CY Jan-Dec",30180
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2021","CY Jan-Dec",414.6
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2022","CY Jan-Dec",377.3
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2022","CY Jan-Dec",30629
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2022","CY Jan-Dec",80.2331368696791
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2022","CY Jan-Dec",63625
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2023","CY Jan-Dec",64820
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2023","CY Jan-Dec",79.4636429085673
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2023","CY Jan-Dec",30905
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2023","CY Jan-Dec",399.35
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2024","CY Jan-Dec",384.09
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2024","CY Jan-Dec",31506
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2024","CY Jan-Dec",80.3974706413731
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2024","CY Jan-Dec",65313
+"Durum","Durum wheat ground for semolina and durum flour","Production","Durum wheat ground for semolina and durum flour","United States","1,000 bushels","2025","CY Jan-Dec",49926
+"Durum","Semolina and durum flour","Extraction rate","Semolina and durum flour extraction rate","United States","percent","2025","CY Jan-Dec",79.3541107505775
+"Durum","Semolina and durum flour","Production","Semolina and durum flour production","United States","1,000 cwt","2025","CY Jan-Dec",23771
+"Durum","Durum millfeed","Production","Durum millfeed production","United States","1,000 tons","2025","CY Jan-Dec",309.23
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1990","CY Jan-Dec",39.075149840694
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1990","CY Jan-Dec",179.375524314162
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1990","CY Jan-Dec",2443.71753214182
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1990","CY Jan-Dec",28679.7175321418
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1990","CY Jan-Dec",28461.266857987
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1990","CY Jan-Dec",11.3762703234806
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1991","CY Jan-Dec",10.9976461297725
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1991","CY Jan-Dec",27882.3322328122
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1991","CY Jan-Dec",28305.5506350475
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1991","CY Jan-Dec",2692.55063504745
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1991","CY Jan-Dec",294.66081776334
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1991","CY Jan-Dec",128.557584471924
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1992","CY Jan-Dec",187.857523166724
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1992","CY Jan-Dec",450.962541483642
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1992","CY Jan-Dec",2986.04056892944
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1992","CY Jan-Dec",34891.0405689294
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1992","CY Jan-Dec",34252.2205042791
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1992","CY Jan-Dec",13.3317584731082
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1993","CY Jan-Dec",13.5692934189974
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1993","CY Jan-Dec",35318.4282968348
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1993","CY Jan-Dec",35877.6110218139
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1993","CY Jan-Dec",3389.61102181389
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1993","CY Jan-Dec",403.784874478524
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1993","CY Jan-Dec",155.397850500528
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1994","CY Jan-Dec",105.354328438992
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1994","CY Jan-Dec",551.90599330191
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1994","CY Jan-Dec",4330.29020425112
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1994","CY Jan-Dec",36961.2902042511
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1994","CY Jan-Dec",36304.0298825102
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1994","CY Jan-Dec",13.7799737649732
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1995","CY Jan-Dec",13.0565154564539
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1995","CY Jan-Dec",34807.1034250512
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1995","CY Jan-Dec",35525.6212801246
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1995","CY Jan-Dec",4561.62128012459
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1995","CY Jan-Dec",562.88953332624
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1995","CY Jan-Dec",155.628321747132
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1996","CY Jan-Dec",174.3900569052
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1996","CY Jan-Dec",568.774266293742
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1996","CY Jan-Dec",4556.60138973835
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1996","CY Jan-Dec",37179.6013897384
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1996","CY Jan-Dec",36436.4370665394
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1996","CY Jan-Dec",13.5092865281518
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1997","CY Jan-Dec",12.3072203531729
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1997","CY Jan-Dec",33593.5425316136
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1997","CY Jan-Dec",34638.6399509154
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1997","CY Jan-Dec",5162.63995091538
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1997","CY Jan-Dec",893.140940587392
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1997","CY Jan-Dec",151.95647871438
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1998","CY Jan-Dec",137.668804660752
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1998","CY Jan-Dec",1037.22748982165
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1998","CY Jan-Dec",5539.42888655427
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1998","CY Jan-Dec",32595.4288865543
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1998","CY Jan-Dec",31420.5325920719
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1998","CY Jan-Dec",11.3779023994119
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","1999","CY Jan-Dec",10.6868644682927
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","1999","CY Jan-Dec",29851.4047819926
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","1999","CY Jan-Dec",31234.6066285804
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","1999","CY Jan-Dec",5148.60662858035
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","1999","CY Jan-Dec",1195.72479718929
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","1999","CY Jan-Dec",187.477049398416
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2000","CY Jan-Dec",268.457952220848
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2000","CY Jan-Dec",1110.37823455566
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2000","CY Jan-Dec",5285.6671514103
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2000","CY Jan-Dec",37034.6671514103
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2000","CY Jan-Dec",35655.8309646338
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2000","CY Jan-Dec",12.6260918861443
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2001","CY Jan-Dec",13.0034354146639
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2001","CY Jan-Dec",37089.0486614751
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2001","CY Jan-Dec",38550.0344656068
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2001","CY Jan-Dec",5620.03446560678
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2001","CY Jan-Dec",1228.1252977849
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2001","CY Jan-Dec",232.86050634675
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2002","CY Jan-Dec",173.6129274387
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2002","CY Jan-Dec",1186.29672864039
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2002","CY Jan-Dec",5922.08840589281
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2002","CY Jan-Dec",38333.0884058928
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2002","CY Jan-Dec",36973.1787498137
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2002","CY Jan-Dec",12.8399155249305
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2003","CY Jan-Dec",11.8026360894764
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2003","CY Jan-Dec",34301.5291614017
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2003","CY Jan-Dec",35594.9677926238
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2003","CY Jan-Dec",5903.9677926238
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2003","CY Jan-Dec",1144.97178348262
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2003","CY Jan-Dec",148.466847739518
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2004","CY Jan-Dec",207.338119615974
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2004","CY Jan-Dec",1364.80160339736
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2004","CY Jan-Dec",5585.34641332745
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2004","CY Jan-Dec",32544.3464133275
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2004","CY Jan-Dec",30972.2066903141
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2004","CY Jan-Dec",10.5612751363334
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2005","CY Jan-Dec",11.7809122603951
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2005","CY Jan-Dec",34870.6756269113
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2005","CY Jan-Dec",36690.7011088621
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2005","CY Jan-Dec",5961.70110886206
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2005","CY Jan-Dec",1555.09095756924
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2005","CY Jan-Dec",264.934524381528
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2006","CY Jan-Dec",347.228191777356
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2006","CY Jan-Dec",1334.09848583394
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2006","CY Jan-Dec",6250.40205571045
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2006","CY Jan-Dec",38198.4020557104
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2006","CY Jan-Dec",36517.0753780991
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2006","CY Jan-Dec",12.2205072579628
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2007","CY Jan-Dec",12.3360539158331
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2007","CY Jan-Dec",37217.3812219119
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2007","CY Jan-Dec",39354.8120618346
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2007","CY Jan-Dec",6550.8120618346
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2007","CY Jan-Dec",1478.34548750102
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2007","CY Jan-Dec",659.085352421634
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2008","CY Jan-Dec",877.182581481258
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2008","CY Jan-Dec",1648.75326846517
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2008","CY Jan-Dec",6257.19209049317
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2008","CY Jan-Dec",37168.1920904932
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2008","CY Jan-Dec",34642.2562405467
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2008","CY Jan-Dec",11.3751608937151
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2009","CY Jan-Dec",11.5266418559353
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2009","CY Jan-Dec",35414.4544381755
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2009","CY Jan-Dec",37587.0434970116
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2009","CY Jan-Dec",6019.04349701164
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2009","CY Jan-Dec",1788.2343390418
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2009","CY Jan-Dec",384.354719794362
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2010","CY Jan-Dec",289.314078848916
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2010","CY Jan-Dec",1886.57774715053
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2010","CY Jan-Dec",6451.42321287045
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2010","CY Jan-Dec",39198.4232128705
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2010","CY Jan-Dec",37022.531386871
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2010","CY Jan-Dec",11.9501534456409
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2015","CY Jan-Dec",10.9950984600113
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2015","CY Jan-Dec",35274.8047323621
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2015","CY Jan-Dec",38228.0533214516
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2015","CY Jan-Dec",7834.05332145157
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2015","CY Jan-Dec",2521.77288313707
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2015","CY Jan-Dec",431.475705952434
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2016","CY Jan-Dec",483.15219197379
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2016","CY Jan-Dec",2024.72949643804
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2016","CY Jan-Dec",8030.43040142146
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2016","CY Jan-Dec",39368.4304014215
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2016","CY Jan-Dec",36860.5487130096
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2016","CY Jan-Dec",11.4085438114398
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2017","CY Jan-Dec",11.3581617837358
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2017","CY Jan-Dec",36930.2679684921
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2017","CY Jan-Dec",39081.7316721883
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2017","CY Jan-Dec",7282.73167218827
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2017","CY Jan-Dec",1790.24925386707
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2017","CY Jan-Dec",361.214449829112
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2018","CY Jan-Dec",406.558730633844
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2018","CY Jan-Dec",1899.26764302103
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2018","CY Jan-Dec",7566.86443818418
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2018","CY Jan-Dec",39517.8644381842
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2018","CY Jan-Dec",37212.0380645293
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2018","CY Jan-Dec",11.383936119006
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2019","CY Jan-Dec",11.38883236593
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2019","CY Jan-Dec",37407.8726774575
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2019","CY Jan-Dec",39603.7922431431
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2019","CY Jan-Dec",8071.79224314307
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2019","CY Jan-Dec",1913.42775761102
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2019","CY Jan-Dec",282.491808074538
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2020","CY Jan-Dec",324.201944892978
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2020","CY Jan-Dec",2357.25076108192
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2020","CY Jan-Dec",10655.0578663886
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2020","CY Jan-Dec",44457.0578663886
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2020","CY Jan-Dec",41775.6051604137
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2020","CY Jan-Dec",12.6092575693427
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2021","CY Jan-Dec",10.8901477537562
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2021","CY Jan-Dec",36204.6229117953
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2021","CY Jan-Dec",8631.96866207586
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2021","CY Jan-Dec",38811.9686620759
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2021","CY Jan-Dec",2319.7667314641
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2021","CY Jan-Dec",287.57901881649
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2022","CY Jan-Dec",351.519666038064
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2022","CY Jan-Dec",2138.65226698174
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2022","CY Jan-Dec",41308.8868023082
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2022","CY Jan-Dec",10679.8868023082
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2022","CY Jan-Dec",38818.7148692884
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2022","CY Jan-Dec",11.6128777583856
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2023","CY Jan-Dec",11.3637517423107
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2023","CY Jan-Dec",38297.4342968309
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2023","CY Jan-Dec",9971.54720917134
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2023","CY Jan-Dec",40876.5472091713
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2023","CY Jan-Dec",2069.85591643744
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2023","CY Jan-Dec",509.256995903034
+"Durum","Semolina and durum flour exports","Qty, Exports","Semolina and durum flour exports","World","1,000 cwt","2024","CY Jan-Dec",520.433109711474
+"Durum","Durum pasta and couscous","Qty, Exports","Durum pasta and couscous exports","World","1,000 cwt","2024","CY Jan-Dec",2152.2749386743
+"Durum","Semolina and durum flour","Total supply","Semolina and durum flour total supply","United States","1,000 cwt","2024","CY Jan-Dec",42506.0520347189
+"Durum","Semolina, durum flour, pasta, and couscous imports","Qty, Imports","Semolina, durum flour, pasta, and couscous imports","World","1,000 cwt","2024","CY Jan-Dec",11000.0520347189
+"Durum","Semolina and durum flour","Domestic disappearance","Semolina and durum flour domestic disappearance","United States","1,000 cwt","2024","CY Jan-Dec",39833.3439863331
+"Durum","Semolina and durum flour","Per capita disappearance","Semolina and durum flour per capita disappearance","United States","pounds","2024","CY Jan-Dec",11.7121757550185
