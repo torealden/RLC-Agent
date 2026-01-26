@@ -1,0 +1,69 @@
+============================================================
+WEATHER SUMMARY REPORT
+Generated: 2026-01-20 13:42
+Emails processed: 8
+============================================================
+
+--- Email 1: U.S. Wheat Needs Snow Ahead Of Bitter Cold ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Tue, 20 Jan 2026 12:23:17 -0600
+
+Preview: Drew Lerner World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this report...
+
+--- Email 2: Mid-day U.S. and South America Weather Update -- Comments and Summary ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 20 Jan 2026 11:34:15 -0600
+
+Weather conditions: rain, wet
+Locations: Sao Paulo, Mato Grosso, Rio Grande do Sul, Goias, Delta
+Preview: MID-DAY WEATHER UPDATE FROM WORLD WEATHER, INC. January 20, 2026 Notice: Please be aware that these mid-day weather highlights come purely from the various model data. The information does not...
+
+--- Email 3: Mid-day U.S. and South America Weather Update -- Week 1 ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 20 Jan 2026 10:53:08 -0600
+
+Weather conditions: wet
+Locations: Sao Paulo, Mato Grosso, Goias, Delta
+Preview: US (Week 1-Discussion of significant model changes) · The GFS model reduced precipitation in West Texas cotton country Friday into Saturday and from the Delta into the southeastern states Some of this...
+
+--- Email 4: World Weather Outlook for January 20, 2026 ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 20 Jan 2026 08:57:15 -0600
+
+Temperatures mentioned: 108, 111, 120, 100, 30°F
+Precipitation amounts: 0.83, 1.73, 3.62, 2.28, 0.59
+Weather conditions: drought, dry, rain, wet, flood, heat, cold, storm, snow
+Locations: Sao Paulo, Mato Grosso, Rio Grande do Sul, Buenos Aires, Cordoba, Santa Fe, Midwest, Delta, Corn Belt, IN, LA
+Preview: WORLD WEATHER, INC. OUTLOOK Tuesday, January 20, 2026 WORLD COARSE GRAIN AND OILSEED AREAS BRAZIL Past Weather · Rain fell on much of Brazil and Paraguay during the weekend, but there were pockets of...
+
+--- Email 5: Updated 96-Hour North and South America Rainfall and Temperature Maps ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 20 Jan 2026 08:44:32 -0600
+
+Preview: Andy Karst World Weather, Inc. (913) 383-1161 akarst_worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this...
+
+--- Email 6: South America Weather Outlook For January 20, 2026 ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 20 Jan 2026 07:57:21 -0600
+
+Precipitation amounts: 0.83, 1.73, 3.62, 2.28, 0.59
+Weather conditions: dry, rain, wet, storm
+Locations: Sao Paulo, Mato Grosso, Rio Grande do Sul, Buenos Aires, Cordoba, Santa Fe, IN, LA
+Preview: South America Weather Outlook Tuesday, January 20, 2026 BRAZIL Past Weather · Rain fell on much of Brazil and Paraguay during the weekend, but there were pockets of dry weather or minimal rain in the...
+
+--- Email 7: Selected Four-Day Rainfall and Temperature Maps ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 20 Jan 2026 06:39:19 -0600
+
+Preview: Andy Karst World Weather, Inc. (913) 383-1161 akarst_worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this...
+
+--- Email 8: South America, South Africa, and Europe Weather Outlook Maps For January 20, 2026 ---
+From: <scarlett_worldweather@bizkc.rr.com>
+Date: Tue, 20 Jan 2026 11:27:25 -0600
+
+Preview: Scarlett Waters World Weather, Inc. (913) 383-1161 Scarlett_worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in...
+
+============================================================
+LOCATIONS MENTIONED (for weather tracking):
+Rio Grande do Sul, Sao Paulo, Cordoba, Santa Fe, IN, Buenos Aires, Corn Belt, Delta, Goias, Mato Grosso, LA, Midwest
+============================================================

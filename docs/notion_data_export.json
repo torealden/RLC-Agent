@@ -1,0 +1,1520 @@
+{
+  "export_metadata": {
+    "generated": "2026-01-18",
+    "source_repo": "RLC-Agent",
+    "version": "1.0",
+    "total_records": {
+      "agents": 65,
+      "data_sources": 36,
+      "architecture_decisions": 12,
+      "runbooks": 10,
+      "lessons_learned": 8,
+      "projects": 12
+    }
+  },
+
+  "agent_registry": [
+    {
+      "agent_name": "USDA NASS Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects crop progress, acreage, production, and stocks data from USDA NASS Quick Stats API",
+      "inputs": "API key, commodity codes, date ranges",
+      "outputs": "Standardized CSV/JSON crop data, database records",
+      "dependencies": ["requests", "pandas", "NASS API Key"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/usda_nass_collector.py"
+    },
+    {
+      "agent_name": "USDA AMS Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects market news and price data from USDA AMS including ethanol, DDGS, corn oil, tallow prices",
+      "inputs": "Report codes, date parameters",
+      "outputs": "Price data CSV files, parsed market reports",
+      "dependencies": ["aiohttp", "beautifulsoup4", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/usda_ams_collector.py"
+    },
+    {
+      "agent_name": "USDA AMS Async Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Async version of AMS collector for parallel data fetching",
+      "inputs": "Report codes, date parameters",
+      "outputs": "Price data CSV files with concurrent fetching",
+      "dependencies": ["aiohttp", "asyncio", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/usda_ams_collector_asynch.py"
+    },
+    {
+      "agent_name": "USDA ERS Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects economic research data including feed grains yearbook and monthly data",
+      "inputs": "Dataset identifiers, date ranges",
+      "outputs": "Historical S&D data, Excel/CSV files",
+      "dependencies": ["requests", "openpyxl", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/usda_ers_collector.py"
+    },
+    {
+      "agent_name": "USDA FAS Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects export sales reports and PSD (Production Supply Distribution) data from FAS OpenDataWeb",
+      "inputs": "Commodity codes, marketing years",
+      "outputs": "Export commitments, global S&D balances",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/usda_fas_collector.py"
+    },
+    {
+      "agent_name": "Census Trade Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects US import/export trade data by HS code from Census Bureau API",
+      "inputs": "HS codes, trade flow direction, time periods",
+      "outputs": "Trade volume and value data by country/port",
+      "dependencies": ["requests", "pandas", "Census API Key (optional)"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/census_trade_collector.py"
+    },
+    {
+      "agent_name": "CFTC COT Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Commitments of Traders positioning data for futures markets",
+      "inputs": "Contract codes, report types",
+      "outputs": "Managed money, commercial, swap dealer positions",
+      "dependencies": ["cot_reports", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/cftc_cot_collector.py"
+    },
+    {
+      "agent_name": "Drought Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects US Drought Monitor weekly condition data",
+      "inputs": "State/county codes, date ranges",
+      "outputs": "Drought intensity maps, GeoJSON data",
+      "dependencies": ["requests", "geopandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/drought_collector.py"
+    },
+    {
+      "agent_name": "EIA Ethanol Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects weekly ethanol production, stocks, and blending data from EIA",
+      "inputs": "EIA API key, series IDs",
+      "outputs": "Ethanol supply/demand data",
+      "dependencies": ["requests", "pandas", "EIA API Key"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/eia_ethanol_collector.py"
+    },
+    {
+      "agent_name": "EIA Petroleum Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects petroleum and energy price data from EIA",
+      "inputs": "EIA API key, series IDs",
+      "outputs": "Energy prices, diesel, gasoline data",
+      "dependencies": ["requests", "pandas", "EIA API Key"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/eia_petroleum_collector.py"
+    },
+    {
+      "agent_name": "EPA RFS Collector",
+      "status": "Building",
+      "category": ["Data Collector"],
+      "purpose": "Collects Renewable Fuel Standard and EMTS data from EPA",
+      "inputs": "Report types, date ranges",
+      "outputs": "RIN generation, biofuel obligations data",
+      "dependencies": ["requests", "openpyxl", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/epa_rfs_collector.py"
+    },
+    {
+      "agent_name": "Canada CGC Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects visible supply, deliveries, and exports from Canadian Grain Commission",
+      "inputs": "Grain types, date ranges",
+      "outputs": "Canadian grain supply position data",
+      "dependencies": ["requests", "beautifulsoup4", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/canada/canada_cgc_collector.py"
+    },
+    {
+      "agent_name": "Canada StatsCan Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects official Canadian agricultural statistics from Statistics Canada CANSIM",
+      "inputs": "Table IDs, date ranges",
+      "outputs": "Production, trade, stocks data",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/canada/canada_statscan_collector.py"
+    },
+    {
+      "agent_name": "Argentina Agent",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Argentina commodity production and trade data",
+      "inputs": "Commodity codes, date ranges",
+      "outputs": "Production estimates, export data",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/argentina_agent.py"
+    },
+    {
+      "agent_name": "Brazil Agent",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Brazil agricultural production data from multiple sources",
+      "inputs": "Commodity codes, states, date ranges",
+      "outputs": "Production, planted area, yield data",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/brazil_agent.py"
+    },
+    {
+      "agent_name": "Brazil Lineup Agent",
+      "status": "Live",
+      "category": ["Data Collector", "Analysis"],
+      "purpose": "Analyzes Brazil port lineup and export pace data",
+      "inputs": "Port codes, commodity types",
+      "outputs": "Vessel lineup, export projections",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/brazil_lineup_agent.py"
+    },
+    {
+      "agent_name": "CONAB Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects official Brazil crop estimates from CONAB (Companhia Nacional de Abastecimento)",
+      "inputs": "Crop types, seasons",
+      "outputs": "Official production forecasts, area planted",
+      "dependencies": ["requests", "beautifulsoup4", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/conab_collector.py"
+    },
+    {
+      "agent_name": "ABIOVE Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Brazil soybean crush and vegetable oil data from ABIOVE",
+      "inputs": "Date ranges",
+      "outputs": "Monthly crush, soymeal/oil production",
+      "dependencies": ["requests", "openpyxl", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/abiove_collector.py"
+    },
+    {
+      "agent_name": "IBGE SIDRA Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Brazil census and agricultural statistics from IBGE SIDRA system",
+      "inputs": "Table codes, geographic levels",
+      "outputs": "Production, area, yield by municipality",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/ibge_sidra_collector.py"
+    },
+    {
+      "agent_name": "IMEA Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Mato Grosso regional agricultural data from IMEA",
+      "inputs": "Commodity types, date ranges",
+      "outputs": "Regional production, costs, margins",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/imea_collector.py"
+    },
+    {
+      "agent_name": "MAGyP Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Argentina Ministry of Agriculture official data",
+      "inputs": "Crop types, provinces",
+      "outputs": "Official production estimates",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/magyp_collector.py"
+    },
+    {
+      "agent_name": "Paraguay Agent",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Paraguay agricultural production and trade data",
+      "inputs": "Commodity codes, date ranges",
+      "outputs": "Production, export data",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/paraguay_agent.py"
+    },
+    {
+      "agent_name": "Colombia Agent",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Colombia agricultural and trade data",
+      "inputs": "Commodity codes, date ranges",
+      "outputs": "Production, import/export data",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/colombia_agent.py"
+    },
+    {
+      "agent_name": "Uruguay Agent",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects Uruguay agricultural production and trade data",
+      "inputs": "Commodity codes, date ranges",
+      "outputs": "Production, export data",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/south_america/uruguay_agent.py"
+    },
+    {
+      "agent_name": "CME Settlements Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects daily futures settlement prices from CME Group",
+      "inputs": "Contract codes, date ranges",
+      "outputs": "Settlement prices, open interest",
+      "dependencies": ["requests", "beautifulsoup4", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/market/cme_settlements_collector.py"
+    },
+    {
+      "agent_name": "Futures Data Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Unified futures data collector with multiple source fallback",
+      "inputs": "Contract symbols, date ranges",
+      "outputs": "OHLCV price data",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/market/futures_data_collector.py"
+    },
+    {
+      "agent_name": "IBKR Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects historical futures data from Interactive Brokers API",
+      "inputs": "Contract specs, IBKR account credentials",
+      "outputs": "Historical OHLCV, tick data",
+      "dependencies": ["ib_insync", "pandas", "IBKR Account"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L1",
+      "location": "src/agents/collectors/market/ibkr_collector.py"
+    },
+    {
+      "agent_name": "TradeStation Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects futures data from TradeStation API",
+      "inputs": "Contract symbols, OAuth credentials",
+      "outputs": "Historical price data",
+      "dependencies": ["requests", "pandas", "TradeStation OAuth"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L1",
+      "location": "src/agents/collectors/market/tradestation_collector.py"
+    },
+    {
+      "agent_name": "FAOSTAT Collector",
+      "status": "Live",
+      "category": ["Data Collector"],
+      "purpose": "Collects global agricultural statistics from FAO",
+      "inputs": "Item codes, country codes, years",
+      "outputs": "Global production, trade, food balance data",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/global/faostat_collector.py"
+    },
+    {
+      "agent_name": "MPOB Collector",
+      "status": "Building",
+      "category": ["Data Collector"],
+      "purpose": "Collects Malaysian palm oil production and stock data from MPOB",
+      "inputs": "Date ranges",
+      "outputs": "Monthly palm oil S&D data",
+      "dependencies": ["requests", "beautifulsoup4", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/asia/mpob_collector.py"
+    },
+    {
+      "agent_name": "Wheat Tender Collector",
+      "status": "Live",
+      "category": ["Data Collector", "Alert"],
+      "purpose": "Monitors global wheat tenders and purchasing announcements",
+      "inputs": "Source URLs, tender keywords",
+      "outputs": "Tender alerts, database records",
+      "dependencies": ["requests", "beautifulsoup4", "pandas"],
+      "system_of_record": ["Postgres", "Notion"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/tenders/wheat_tender_collector.py"
+    },
+    {
+      "agent_name": "Wheat Alert System",
+      "status": "Live",
+      "category": ["Alert", "Notification"],
+      "purpose": "Sends notifications when new wheat tenders are detected",
+      "inputs": "Tender data from collector",
+      "outputs": "Email alerts, Notion updates",
+      "dependencies": ["smtplib", "notion-client"],
+      "system_of_record": ["Notion"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/tenders/alert_system.py"
+    },
+    {
+      "agent_name": "Fundamental Analyzer",
+      "status": "Live",
+      "category": ["Analysis"],
+      "purpose": "Analyzes supply/demand fundamentals for commodities",
+      "inputs": "S&D data from database",
+      "outputs": "Fundamental analysis reports, balance sheet projections",
+      "dependencies": ["pandas", "numpy"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/analysis/fundamental_analyzer.py"
+    },
+    {
+      "agent_name": "Price Forecaster",
+      "status": "Live",
+      "category": ["Analysis"],
+      "purpose": "Generates price forecasts based on fundamental and technical factors",
+      "inputs": "Historical prices, fundamental data",
+      "outputs": "Price forecasts, confidence intervals",
+      "dependencies": ["pandas", "numpy", "scikit-learn"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/analysis/price_forecaster.py"
+    },
+    {
+      "agent_name": "Spread and Basis Analyzer",
+      "status": "Live",
+      "category": ["Analysis"],
+      "purpose": "Analyzes crack spreads, crush spreads, and basis relationships",
+      "inputs": "Price data for related commodities",
+      "outputs": "Spread charts, basis analysis reports",
+      "dependencies": ["pandas", "numpy"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/analysis/spread_and_basis_analyzer.py"
+    },
+    {
+      "agent_name": "Master Agent",
+      "status": "Live",
+      "category": ["Orchestrator"],
+      "purpose": "Central orchestrator coordinating all agent operations",
+      "inputs": "User requests, scheduled tasks",
+      "outputs": "Delegated tasks, status reports",
+      "dependencies": ["All sub-agents"],
+      "system_of_record": ["Postgres", "Notion"],
+      "autonomy_level": "L2",
+      "location": "src/agents/core/master_agent.py"
+    },
+    {
+      "agent_name": "Data Agent",
+      "status": "Live",
+      "category": ["Orchestrator"],
+      "purpose": "Coordinates data collection operations across all collectors",
+      "inputs": "Collection schedules, data requests",
+      "outputs": "Collected data, status updates",
+      "dependencies": ["All collector agents"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/core/data_agent.py"
+    },
+    {
+      "agent_name": "Database Agent",
+      "status": "Live",
+      "category": ["Transform", "Storage"],
+      "purpose": "Handles all database operations including inserts, updates, and queries",
+      "inputs": "Data records, query requests",
+      "outputs": "Database operations, query results",
+      "dependencies": ["sqlalchemy", "psycopg2"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/core/database_agent.py"
+    },
+    {
+      "agent_name": "Verification Agent",
+      "status": "Live",
+      "category": ["Verification"],
+      "purpose": "Validates data quality and integrity before and after database operations",
+      "inputs": "Data records to validate",
+      "outputs": "Validation results, quality metrics",
+      "dependencies": ["pandas", "numpy"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/core/verification_agent.py"
+    },
+    {
+      "agent_name": "Approval Manager",
+      "status": "Live",
+      "category": ["Orchestrator"],
+      "purpose": "Manages human approval workflows for sensitive operations",
+      "inputs": "Approval requests",
+      "outputs": "Approval decisions, audit logs",
+      "dependencies": ["Email integration"],
+      "system_of_record": ["Postgres", "Notion"],
+      "autonomy_level": "L1",
+      "location": "src/agents/core/approval_manager.py"
+    },
+    {
+      "agent_name": "Memory Manager",
+      "status": "Live",
+      "category": ["Integration"],
+      "purpose": "Manages persistent memory storage in Notion for agent context",
+      "inputs": "Memory items, context queries",
+      "outputs": "Stored memories, retrieved context",
+      "dependencies": ["notion-client"],
+      "system_of_record": ["Notion"],
+      "autonomy_level": "L2",
+      "location": "src/agents/core/memory_manager.py"
+    },
+    {
+      "agent_name": "Notion Manager",
+      "status": "Live",
+      "category": ["Integration"],
+      "purpose": "Manages Notion database sync and documentation updates",
+      "inputs": "Data to sync, page updates",
+      "outputs": "Updated Notion pages and databases",
+      "dependencies": ["notion-client", "NOTION_API_KEY"],
+      "system_of_record": ["Notion"],
+      "autonomy_level": "L2",
+      "location": "src/agents/integration/notion_manager.py"
+    },
+    {
+      "agent_name": "Calendar Agent",
+      "status": "Live",
+      "category": ["Integration"],
+      "purpose": "Integrates with Google Calendar for scheduling and reminders",
+      "inputs": "Event data, calendar queries",
+      "outputs": "Calendar events, reminders",
+      "dependencies": ["google-api-python-client", "Google OAuth"],
+      "system_of_record": ["Google Calendar"],
+      "autonomy_level": "L1",
+      "location": "src/agents/integration/calendar_agent.py"
+    },
+    {
+      "agent_name": "Email Agent",
+      "status": "Live",
+      "category": ["Integration", "Notification"],
+      "purpose": "Sends emails and manages inbox for notifications and alerts",
+      "inputs": "Email content, recipients",
+      "outputs": "Sent emails, inbox summaries",
+      "dependencies": ["google-api-python-client", "Gmail OAuth"],
+      "system_of_record": ["Gmail"],
+      "autonomy_level": "L1",
+      "location": "src/agents/integration/email_agent.py"
+    },
+    {
+      "agent_name": "Report Writer Agent",
+      "status": "Live",
+      "category": ["Report Writer"],
+      "purpose": "Generates market research reports and analysis documents",
+      "inputs": "Analysis data, report templates",
+      "outputs": "Word documents, PDF reports",
+      "dependencies": ["python-docx", "pypdf"],
+      "system_of_record": ["Dropbox"],
+      "autonomy_level": "L1",
+      "location": "src/agents/reporting/report_writer_agent.py"
+    },
+    {
+      "agent_name": "Market Research Agent",
+      "status": "Live",
+      "category": ["Analysis", "Report Writer"],
+      "purpose": "Conducts market research and generates research summaries",
+      "inputs": "Research queries, market topics",
+      "outputs": "Research reports, market summaries",
+      "dependencies": ["tavily-python", "pandas"],
+      "system_of_record": ["Postgres", "Dropbox"],
+      "autonomy_level": "L2",
+      "location": "src/agents/reporting/market_research_agent.py"
+    },
+    {
+      "agent_name": "Price Data Agent",
+      "status": "Live",
+      "category": ["Analysis", "Report Writer"],
+      "purpose": "Generates price analysis reports and charts",
+      "inputs": "Price data from database",
+      "outputs": "Price analysis, charts, tables",
+      "dependencies": ["pandas", "matplotlib"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/reporting/price_data_agent.py"
+    },
+    {
+      "agent_name": "Internal Data Agent",
+      "status": "Live",
+      "category": ["Report Writer"],
+      "purpose": "Generates internal reports from proprietary data",
+      "inputs": "Internal database queries",
+      "outputs": "Internal analysis reports",
+      "dependencies": ["pandas", "openpyxl"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/reporting/internal_data_agent.py"
+    },
+    {
+      "agent_name": "Pipeline Orchestrator",
+      "status": "Live",
+      "category": ["Orchestrator"],
+      "purpose": "Coordinates ETL workflows from collection through transformation to storage",
+      "inputs": "Pipeline configurations, schedules",
+      "outputs": "Pipeline execution logs, status",
+      "dependencies": ["All collector and transform agents"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/orchestrators/pipeline_orchestrator.py"
+    },
+    {
+      "agent_name": "HB Report Orchestrator",
+      "status": "Live",
+      "category": ["Orchestrator", "Report Writer"],
+      "purpose": "Orchestrates weekly HigbyBarrett report generation",
+      "inputs": "Report schedule, data queries",
+      "outputs": "Weekly market report documents",
+      "dependencies": ["Report Writer Agent", "Analysis Agents"],
+      "system_of_record": ["Dropbox"],
+      "autonomy_level": "L1",
+      "location": "src/orchestrators/hb_report_orchestrator.py"
+    },
+    {
+      "agent_name": "Trade Data Orchestrator",
+      "status": "Live",
+      "category": ["Orchestrator"],
+      "purpose": "Orchestrates international trade data collection workflows",
+      "inputs": "Country list, commodity codes",
+      "outputs": "Aggregated trade flow data",
+      "dependencies": ["South America collectors", "Census collector"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/orchestrators/trade_data_orchestrator.py"
+    },
+    {
+      "agent_name": "Master Scheduler",
+      "status": "Live",
+      "category": ["Orchestrator"],
+      "purpose": "Manages scheduled execution of data collection and report generation",
+      "inputs": "Schedule configurations",
+      "outputs": "Triggered agent executions",
+      "dependencies": ["apscheduler"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/schedulers/master_scheduler.py"
+    },
+    {
+      "agent_name": "Report Scheduler",
+      "status": "Live",
+      "category": ["Orchestrator"],
+      "purpose": "Schedules report generation based on data availability",
+      "inputs": "Report calendar, data triggers",
+      "outputs": "Scheduled report jobs",
+      "dependencies": ["apscheduler"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/schedulers/report_scheduler.py"
+    },
+    {
+      "agent_name": "Trade Scheduler",
+      "status": "Live",
+      "category": ["Orchestrator"],
+      "purpose": "Schedules trade data collection aligned with source publication times",
+      "inputs": "Source calendars",
+      "outputs": "Scheduled collection jobs",
+      "dependencies": ["apscheduler"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/schedulers/trade_scheduler.py"
+    },
+    {
+      "agent_name": "BioTrack AI",
+      "status": "Building",
+      "category": ["Data Collector", "Analysis"],
+      "purpose": "Computer vision system for monitoring biofuel feedstock movements via rail car tracking",
+      "inputs": "Video feeds, satellite imagery",
+      "outputs": "Volume estimates, movement patterns",
+      "dependencies": ["ultralytics (YOLOv8)", "opencv-python", "streamlit"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "biotrack/biotrack_ai.py"
+    },
+    {
+      "agent_name": "Document RAG System",
+      "status": "Live",
+      "category": ["Analysis"],
+      "purpose": "Retrieval-Augmented Generation system for querying document knowledge base",
+      "inputs": "Query text, document corpus",
+      "outputs": "Relevant document excerpts, answers",
+      "dependencies": ["sentence-transformers", "chromadb"],
+      "system_of_record": ["ChromaDB"],
+      "autonomy_level": "L2",
+      "location": "deployment/document_rag.py"
+    },
+    {
+      "agent_name": "Balance Sheet Extractor",
+      "status": "Live",
+      "category": ["Transform"],
+      "purpose": "Extracts and standardizes balance sheet data from various sources",
+      "inputs": "Excel files, API data",
+      "outputs": "Standardized balance sheet records",
+      "dependencies": ["openpyxl", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "deployment/balance_sheet_extractor.py"
+    },
+    {
+      "agent_name": "Forecast Tracker",
+      "status": "Building",
+      "category": ["Analysis", "Verification"],
+      "purpose": "Tracks forecast accuracy and generates improvement suggestions",
+      "inputs": "Historical forecasts, actual outcomes",
+      "outputs": "Accuracy metrics, bias analysis",
+      "dependencies": ["pandas", "numpy"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "deployment/forecast_tracker.py"
+    },
+    {
+      "agent_name": "PowerBI Export",
+      "status": "Live",
+      "category": ["Transform", "Integration"],
+      "purpose": "Formats and exports data for PowerBI dashboard consumption",
+      "inputs": "Database queries",
+      "outputs": "PowerBI-compatible CSV/Excel files",
+      "dependencies": ["pandas", "openpyxl"],
+      "system_of_record": ["File System"],
+      "autonomy_level": "L2",
+      "location": "deployment/powerbi_export.py"
+    },
+    {
+      "agent_name": "RLC Orchestrator System",
+      "status": "Building",
+      "category": ["Orchestrator"],
+      "purpose": "Persistent task orchestration system with queue and executor",
+      "inputs": "Task submissions",
+      "outputs": "Task execution results",
+      "dependencies": ["sqlalchemy", "apscheduler"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "rlc-orchestrator/main.py"
+    },
+    {
+      "agent_name": "USDA WASDE Collector",
+      "status": "To Build",
+      "category": ["Data Collector"],
+      "purpose": "Collect monthly World Agricultural Supply and Demand Estimates",
+      "inputs": "WASDE release dates",
+      "outputs": "Monthly S&D balance sheets",
+      "dependencies": ["requests", "pandas"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/"
+    },
+    {
+      "agent_name": "NOPA Crush Collector",
+      "status": "To Build",
+      "category": ["Data Collector"],
+      "purpose": "Collect monthly US soybean crush data from NOPA",
+      "inputs": "Monthly release dates",
+      "outputs": "Crush volumes, oil stocks",
+      "dependencies": ["requests", "beautifulsoup4"],
+      "system_of_record": ["Postgres"],
+      "autonomy_level": "L2",
+      "location": "src/agents/collectors/us/"
+    }
+  ],
+
+  "data_sources_registry": [
+    {
+      "source_name": "USDA NASS Quick Stats",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "Critical",
+      "access_method": "API",
+      "credential_type": "API Key",
+      "refresh_rate": "Weekly (crop progress), Annual (production)",
+      "bronze_silver_tables": "bronze.nass_raw, silver.crop_progress",
+      "known_failure_modes": "Rate limiting at 50K queries/day"
+    },
+    {
+      "source_name": "USDA FAS OpenDataWeb",
+      "domain": "Trade",
+      "status": "Active",
+      "priority": "Critical",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Weekly (export sales), Monthly (PSD)",
+      "bronze_silver_tables": "bronze.fas_exports, silver.export_commitments",
+      "known_failure_modes": "Occasional throttling"
+    },
+    {
+      "source_name": "USDA AMS Market News",
+      "domain": "Prices",
+      "status": "Active",
+      "priority": "Critical",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Daily",
+      "bronze_silver_tables": "bronze.ams_prices, silver.daily_prices",
+      "known_failure_modes": "Format changes in reports"
+    },
+    {
+      "source_name": "USDA ERS Data Products",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "File",
+      "credential_type": "None",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "bronze.ers_feed_grains, silver.feed_grains_sd",
+      "known_failure_modes": "Excel format changes"
+    },
+    {
+      "source_name": "USDA FGIS Export Inspections",
+      "domain": "Trade",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "File",
+      "credential_type": "None",
+      "refresh_rate": "Weekly (Monday 11 AM ET)",
+      "bronze_silver_tables": "bronze.fgis_inspections, silver.export_inspections",
+      "known_failure_modes": "Fixed-width parsing issues"
+    },
+    {
+      "source_name": "EIA Petroleum & Ethanol",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "Critical",
+      "access_method": "API",
+      "credential_type": "API Key",
+      "refresh_rate": "Weekly (Wednesday 10:30 AM ET)",
+      "bronze_silver_tables": "bronze.eia_ethanol, silver.ethanol_sd",
+      "known_failure_modes": "API key expiration"
+    },
+    {
+      "source_name": "CFTC Commitments of Traders",
+      "domain": "Positioning",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Weekly (Friday 3:30 PM ET)",
+      "bronze_silver_tables": "bronze.cot_reports, silver.managed_money_positions",
+      "known_failure_modes": "Socrata API rate limits"
+    },
+    {
+      "source_name": "US Drought Monitor",
+      "domain": "Weather",
+      "status": "Active",
+      "priority": "Medium",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Weekly (Thursday)",
+      "bronze_silver_tables": "bronze.drought_conditions, silver.drought_index",
+      "known_failure_modes": "GeoJSON format changes"
+    },
+    {
+      "source_name": "US Census Bureau Trade",
+      "domain": "Trade",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "API",
+      "credential_type": "API Key",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "bronze.census_trade, silver.us_trade_flows",
+      "known_failure_modes": "Rate limiting without API key"
+    },
+    {
+      "source_name": "EPA RFS/EMTS",
+      "domain": "Biofuels",
+      "status": "Active",
+      "priority": "Medium",
+      "access_method": "File",
+      "credential_type": "None",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "bronze.rfs_data, silver.rin_generation",
+      "known_failure_modes": "Excel parsing fragile"
+    },
+    {
+      "source_name": "Canadian Grain Commission",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "Scrape",
+      "credential_type": "None",
+      "refresh_rate": "Weekly",
+      "bronze_silver_tables": "bronze.cgc_visible, silver.canada_supply",
+      "known_failure_modes": "HTML structure changes"
+    },
+    {
+      "source_name": "Statistics Canada",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "bronze.statscan, silver.canada_production",
+      "known_failure_modes": "CANSIM table ID changes"
+    },
+    {
+      "source_name": "Brazil CONAB",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "Critical",
+      "access_method": "Scrape",
+      "credential_type": "None",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "bronze.conab_safras, silver.brazil_production",
+      "known_failure_modes": "Portuguese PDF parsing"
+    },
+    {
+      "source_name": "Brazil ABIOVE",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "File",
+      "credential_type": "None",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "bronze.abiove_crush, silver.brazil_crush",
+      "known_failure_modes": "Excel download location changes"
+    },
+    {
+      "source_name": "Brazil IBGE SIDRA",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "Medium",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Monthly/Annual",
+      "bronze_silver_tables": "bronze.ibge_production, silver.brazil_municipal",
+      "known_failure_modes": "API response format changes"
+    },
+    {
+      "source_name": "Brazil IMEA",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "Medium",
+      "access_method": "Scrape",
+      "credential_type": "None",
+      "refresh_rate": "Weekly",
+      "bronze_silver_tables": "bronze.imea_data, silver.mato_grosso",
+      "known_failure_modes": "Website structure changes"
+    },
+    {
+      "source_name": "Argentina MAGyP",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "bronze.magyp_production, silver.argentina_production",
+      "known_failure_modes": "API availability issues"
+    },
+    {
+      "source_name": "Argentina INDEC",
+      "domain": "Trade",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "File",
+      "credential_type": "None",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "bronze.indec_trade, silver.argentina_trade",
+      "known_failure_modes": "File format changes"
+    },
+    {
+      "source_name": "Brazil Comex Stat",
+      "domain": "Trade",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "bronze.comex_trade, silver.brazil_trade",
+      "known_failure_modes": "Large response timeouts"
+    },
+    {
+      "source_name": "FAOSTAT",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "Medium",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Annual",
+      "bronze_silver_tables": "bronze.faostat, silver.global_production",
+      "known_failure_modes": "Slow API response"
+    },
+    {
+      "source_name": "MPOB Malaysia",
+      "domain": "Supply-Demand",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "Scrape",
+      "credential_type": "None",
+      "refresh_rate": "Monthly (~10th)",
+      "bronze_silver_tables": "bronze.mpob_data, silver.malaysia_palm",
+      "known_failure_modes": "HTML table parsing fragile"
+    },
+    {
+      "source_name": "CME Group Settlements",
+      "domain": "Prices",
+      "status": "Active",
+      "priority": "Critical",
+      "access_method": "Scrape",
+      "credential_type": "None",
+      "refresh_rate": "Daily",
+      "bronze_silver_tables": "bronze.cme_settlements, silver.futures_prices",
+      "known_failure_modes": "Website layout changes"
+    },
+    {
+      "source_name": "Interactive Brokers",
+      "domain": "Prices",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "API",
+      "credential_type": "OAuth",
+      "refresh_rate": "On-demand",
+      "bronze_silver_tables": "bronze.ibkr_ohlcv, silver.historical_prices",
+      "known_failure_modes": "Gateway connection issues"
+    },
+    {
+      "source_name": "TradeStation",
+      "domain": "Prices",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "API",
+      "credential_type": "OAuth",
+      "refresh_rate": "On-demand",
+      "bronze_silver_tables": "bronze.tradestation_ohlcv, silver.historical_prices",
+      "known_failure_modes": "OAuth token expiration"
+    },
+    {
+      "source_name": "USDA WASDE",
+      "domain": "Supply-Demand",
+      "status": "Paused",
+      "priority": "Critical",
+      "access_method": "API",
+      "credential_type": "None",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "TBD",
+      "known_failure_modes": "Collector not yet built"
+    },
+    {
+      "source_name": "NOPA US Crush",
+      "domain": "Supply-Demand",
+      "status": "Paused",
+      "priority": "Critical",
+      "access_method": "Scrape",
+      "credential_type": "None",
+      "refresh_rate": "Monthly (~15th)",
+      "bronze_silver_tables": "TBD",
+      "known_failure_modes": "Collector not yet built"
+    },
+    {
+      "source_name": "UN Comtrade",
+      "domain": "Trade",
+      "status": "Paused",
+      "priority": "High",
+      "access_method": "API",
+      "credential_type": "API Key",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "TBD",
+      "known_failure_modes": "Collector not yet built"
+    },
+    {
+      "source_name": "Eurostat",
+      "domain": "Supply-Demand",
+      "status": "Paused",
+      "priority": "Medium",
+      "access_method": "API",
+      "credential_type": "API Key",
+      "refresh_rate": "Monthly",
+      "bronze_silver_tables": "TBD",
+      "known_failure_modes": "Collector not yet built"
+    },
+    {
+      "source_name": "Australia ABARES",
+      "domain": "Supply-Demand",
+      "status": "Paused",
+      "priority": "Medium",
+      "access_method": "File",
+      "credential_type": "None",
+      "refresh_rate": "Quarterly",
+      "bronze_silver_tables": "TBD",
+      "known_failure_modes": "Collector not yet built"
+    },
+    {
+      "source_name": "Ukraine Ministry of Agriculture",
+      "domain": "Supply-Demand",
+      "status": "Paused",
+      "priority": "Medium",
+      "access_method": "Scrape",
+      "credential_type": "None",
+      "refresh_rate": "Weekly",
+      "bronze_silver_tables": "TBD",
+      "known_failure_modes": "Collector not yet built"
+    },
+    {
+      "source_name": "Notion API",
+      "domain": "Integration",
+      "status": "Active",
+      "priority": "High",
+      "access_method": "API",
+      "credential_type": "API Key",
+      "refresh_rate": "On-demand",
+      "bronze_silver_tables": "N/A - External system",
+      "known_failure_modes": "API rate limits"
+    },
+    {
+      "source_name": "Google Calendar API",
+      "domain": "Integration",
+      "status": "Active",
+      "priority": "Medium",
+      "access_method": "API",
+      "credential_type": "OAuth",
+      "refresh_rate": "On-demand",
+      "bronze_silver_tables": "N/A - External system",
+      "known_failure_modes": "OAuth token refresh"
+    },
+    {
+      "source_name": "Gmail API",
+      "domain": "Integration",
+      "status": "Active",
+      "priority": "Medium",
+      "access_method": "API",
+      "credential_type": "OAuth",
+      "refresh_rate": "On-demand",
+      "bronze_silver_tables": "N/A - External system",
+      "known_failure_modes": "OAuth token refresh"
+    },
+    {
+      "source_name": "Dropbox API",
+      "domain": "Integration",
+      "status": "Active",
+      "priority": "Medium",
+      "access_method": "API",
+      "credential_type": "OAuth",
+      "refresh_rate": "On-demand",
+      "bronze_silver_tables": "N/A - External system",
+      "known_failure_modes": "Token expiration"
+    },
+    {
+      "source_name": "Tavily Search API",
+      "domain": "Integration",
+      "status": "Active",
+      "priority": "Medium",
+      "access_method": "API",
+      "credential_type": "API Key",
+      "refresh_rate": "On-demand",
+      "bronze_silver_tables": "N/A - Search results",
+      "known_failure_modes": "Rate limits"
+    }
+  ],
+
+  "architecture_decisions": [
+    {
+      "adr_title": "ADR-001: PostgreSQL as Primary Database",
+      "status": "Accepted",
+      "date": "2025-11-01",
+      "context": "Need a robust database to store time-series commodity data with revision tracking",
+      "decision": "Use PostgreSQL as the primary data warehouse with SQLAlchemy ORM",
+      "alternatives_considered": "SQLite (too limited), MySQL (less feature-rich), MongoDB (schema flexibility not needed)",
+      "consequences": "Requires database server setup, but provides robust ACID compliance and excellent time-series support"
+    },
+    {
+      "adr_title": "ADR-002: Medallion Architecture (Bronze/Silver/Gold)",
+      "status": "Accepted",
+      "date": "2025-11-01",
+      "context": "Need to maintain raw data integrity while providing clean analysis-ready data",
+      "decision": "Implement three-layer data architecture: Bronze (raw), Silver (standardized), Gold (curated)",
+      "alternatives_considered": "Single-layer storage, Two-layer (raw/processed)",
+      "consequences": "Enables data reprocessing, maintains audit trail, requires more storage but provides flexibility"
+    },
+    {
+      "adr_title": "ADR-003: Multi-Agent Architecture",
+      "status": "Accepted",
+      "date": "2025-11-15",
+      "context": "Need to automate complex data workflows with specialized processing",
+      "decision": "Build hierarchical multi-agent system with specialized collectors, analyzers, and orchestrators",
+      "alternatives_considered": "Monolithic application, Simple script collection",
+      "consequences": "More complex architecture but enables parallel development, testing, and reuse"
+    },
+    {
+      "adr_title": "ADR-004: Python with Async Support",
+      "status": "Accepted",
+      "date": "2025-10-15",
+      "context": "Need efficient data collection from multiple sources with varying latencies",
+      "decision": "Use Python 3.10+ with asyncio and aiohttp for concurrent data collection",
+      "alternatives_considered": "Node.js, Go, Synchronous Python",
+      "consequences": "Leverages existing Python ecosystem for data science while enabling efficient I/O"
+    },
+    {
+      "adr_title": "ADR-005: Notion for Long-term Memory and Documentation",
+      "status": "Accepted",
+      "date": "2025-12-01",
+      "context": "Need persistent memory system for AI agents and human-readable documentation",
+      "decision": "Use Notion databases for agent memory, project tracking, and documentation",
+      "alternatives_considered": "Postgres-only, Obsidian, Custom wiki",
+      "consequences": "Provides both programmatic API access and human-friendly interface"
+    },
+    {
+      "adr_title": "ADR-006: APScheduler for Task Scheduling",
+      "status": "Accepted",
+      "date": "2025-11-20",
+      "context": "Need reliable scheduling aligned with data source publication times",
+      "decision": "Use APScheduler with persistent job store for scheduling data collection",
+      "alternatives_considered": "Celery (overkill), cron (not portable), Windows Task Scheduler (not cross-platform)",
+      "consequences": "Embedded scheduler simplifies deployment, but requires process to be running"
+    },
+    {
+      "adr_title": "ADR-007: Hybrid Local/Cloud LLM Strategy",
+      "status": "Accepted",
+      "date": "2025-12-10",
+      "context": "Need LLM capabilities for analysis while managing costs and privacy",
+      "decision": "Use Ollama for local inference with Claude/GPT-4 fallback for complex reasoning",
+      "alternatives_considered": "Cloud-only, Local-only",
+      "consequences": "Reduces costs for routine tasks while maintaining access to frontier capabilities"
+    },
+    {
+      "adr_title": "ADR-008: Email-based Approval Workflow",
+      "status": "Accepted",
+      "date": "2025-12-15",
+      "context": "Need human oversight for sensitive operations without blocking automation",
+      "decision": "Implement L1/L2/L3 autonomy levels with email approval for L1 actions",
+      "alternatives_considered": "Slack approvals, Web dashboard, No approvals",
+      "consequences": "Provides audit trail and human control while enabling routine automation"
+    },
+    {
+      "adr_title": "ADR-009: Dropbox for Report Storage",
+      "status": "Accepted",
+      "date": "2025-11-25",
+      "context": "Need shared storage for generated reports accessible to non-technical users",
+      "decision": "Use Dropbox API for storing and sharing generated reports",
+      "alternatives_considered": "S3, Google Drive, SharePoint",
+      "consequences": "Familiar interface for business users, good API, but adds dependency"
+    },
+    {
+      "adr_title": "ADR-010: PowerBI for Dashboards",
+      "status": "Accepted",
+      "date": "2025-11-20",
+      "context": "Need interactive dashboards for business users to explore data",
+      "decision": "Export data to PowerBI via ODBC connection and formatted Excel files",
+      "alternatives_considered": "Streamlit, Grafana, Tableau",
+      "consequences": "Leverages existing Microsoft ecosystem and user familiarity"
+    },
+    {
+      "adr_title": "ADR-011: YOLOv8 for Computer Vision (BioTrack)",
+      "status": "Accepted",
+      "date": "2025-12-20",
+      "context": "Need object detection for rail car monitoring in BioTrack system",
+      "decision": "Use YOLOv8 via Ultralytics library for tank car detection",
+      "alternatives_considered": "Custom CNN, Detectron2, TensorFlow Object Detection",
+      "consequences": "State-of-the-art detection with easy fine-tuning, but requires GPU for training"
+    },
+    {
+      "adr_title": "ADR-012: Git-based Version Control with Feature Branches",
+      "status": "Accepted",
+      "date": "2025-10-01",
+      "context": "Need version control for code and configuration",
+      "decision": "Use Git with GitHub, feature branches for development",
+      "alternatives_considered": "GitLab, Bitbucket",
+      "consequences": "Standard workflow, good integration with CI/CD and collaboration tools"
+    }
+  ],
+
+  "runbooks": [
+    {
+      "runbook_title": "Database Setup and Migration",
+      "category": "Deployment",
+      "steps": "1. Install PostgreSQL 12+\n2. Create database: CREATE DATABASE rlc_commodities\n3. Run install.sh in /database/\n4. Execute migrations in order: 001-008.sql\n5. Verify with diagnostic queries\n6. Configure .env with DATABASE_URL",
+      "prereqs": ["PostgreSQL", "Python 3.10+", "psycopg2"],
+      "approval_checkpoints": "None - automated",
+      "proof_checks": "Run: python -c \"from src.services.database.db_config import engine; print(engine.execute('SELECT 1'))\"",
+      "rollback_recovery": "Drop database and recreate from backups or re-run migrations"
+    },
+    {
+      "runbook_title": "Daily Data Collection",
+      "category": "Run Agent",
+      "steps": "1. Verify .env credentials are set\n2. Run: python -m src.main collect --all\n3. Or run specific: python -m src.main collect --source usda-nass\n4. Check logs for errors\n5. Verify database has new records",
+      "prereqs": ["Python", "Database configured", "API keys in .env"],
+      "approval_checkpoints": "None for routine collection",
+      "proof_checks": "Query database for today's records, check collection logs",
+      "rollback_recovery": "Collections are idempotent - safe to re-run"
+    },
+    {
+      "runbook_title": "Weekly HB Report Generation",
+      "category": "Run Agent",
+      "steps": "1. Ensure data is collected through Thursday\n2. Run: python -m src.orchestrators.hb_report_orchestrator\n3. Review generated report in exports/\n4. Export to PowerBI: python deployment/powerbi_export.py\n5. Upload to Dropbox\n6. Send distribution email",
+      "prereqs": ["Python", "Database populated", "Dropbox configured"],
+      "approval_checkpoints": "Human review of report before distribution",
+      "proof_checks": "Report file exists in exports/, PowerBI refreshes successfully",
+      "rollback_recovery": "Re-generate report with corrected data"
+    },
+    {
+      "runbook_title": "Add New Data Collector",
+      "category": "Onboard Source",
+      "steps": "1. Create collector class inheriting from BaseCollector\n2. Implement collect() method\n3. Add to registry in src/agents/collectors/__init__.py\n4. Create Bronze table if needed (database/sql/)\n5. Add Silver transformation if needed\n6. Register in master scheduler\n7. Test with: python -m pytest tests/test_new_collector.py\n8. Update DATA_SOURCE_REGISTRY.md",
+      "prereqs": ["Python", "Understanding of source API/format"],
+      "approval_checkpoints": "Code review before merge",
+      "proof_checks": "pytest passes, manual collection works, data appears in database",
+      "rollback_recovery": "Remove collector, drop tables if created"
+    },
+    {
+      "runbook_title": "Troubleshoot Failed Collection",
+      "category": "Troubleshoot",
+      "steps": "1. Check logs in logs/ directory\n2. Identify which collector failed\n3. Check source availability (is API up?)\n4. Verify credentials haven't expired\n5. Check for format changes (scrape targets)\n6. Run collector in debug mode: python -m src.agents.collectors.X --debug\n7. Fix issue and re-run collection",
+      "prereqs": ["Access to logs", "Understanding of collector code"],
+      "approval_checkpoints": "None",
+      "proof_checks": "Collection succeeds on retry",
+      "rollback_recovery": "Manual data entry if source unavailable"
+    },
+    {
+      "runbook_title": "Deploy to RLC Server",
+      "category": "Deployment",
+      "steps": "1. Ensure all tests pass locally\n2. Commit and push to main branch\n3. SSH to RLC server\n4. Pull latest: git pull origin main\n5. Install dependencies: pip install -r requirements.txt\n6. Run migrations if needed\n7. Restart services: python deployment/deploy_to_rlc_server.py\n8. Verify health: python deployment/start_agent.py --status",
+      "prereqs": ["SSH access", "Python on server", "Database access"],
+      "approval_checkpoints": "Code review before deploy to production",
+      "proof_checks": "Health check passes, scheduled jobs running",
+      "rollback_recovery": "git checkout previous-commit, restart services"
+    },
+    {
+      "runbook_title": "Rotate API Keys",
+      "category": "Recovery",
+      "steps": "1. Generate new key from provider website\n2. Update .env file with new key\n3. Test connection: python -c \"from src.services.api.X import test_connection; test_connection()\"\n4. Update any backup .env files\n5. Invalidate old key at provider (if supported)\n6. Update credentials documentation",
+      "prereqs": ["Access to provider accounts", "Access to .env file"],
+      "approval_checkpoints": "None - security action",
+      "proof_checks": "API calls succeed with new key",
+      "rollback_recovery": "Restore previous key if new one doesn't work"
+    },
+    {
+      "runbook_title": "BioTrack System Startup",
+      "category": "Run Agent",
+      "steps": "1. Navigate to biotrack/\n2. Install dependencies: pip install -r requirements.txt\n3. Start dashboard: streamlit run biotrack_ai.py\n4. Access at http://localhost:8501\n5. Configure monitoring sources in UI\n6. Enable detection pipeline",
+      "prereqs": ["Python", "GPU (optional but recommended)", "Camera/video source"],
+      "approval_checkpoints": "None for simulation mode",
+      "proof_checks": "Dashboard loads, detection runs on test video",
+      "rollback_recovery": "Stop streamlit process, check logs"
+    },
+    {
+      "runbook_title": "Notion Sync Setup",
+      "category": "Onboard Source",
+      "steps": "1. Create Notion integration at notion.so/my-integrations\n2. Get API key and add to .env as NOTION_API_KEY\n3. Share target databases with integration\n4. Get database IDs from Notion URLs\n5. Update src/agents/integration/notion_manager.py with IDs\n6. Test: python -c \"from src.agents.integration.notion_manager import NotionManager; nm = NotionManager(); nm.test_connection()\"",
+      "prereqs": ["Notion account", "Admin access to workspace"],
+      "approval_checkpoints": "None",
+      "proof_checks": "Test connection succeeds, can read/write pages",
+      "rollback_recovery": "Revoke integration access, remove from .env"
+    },
+    {
+      "runbook_title": "Database Backup and Restore",
+      "category": "Recovery",
+      "steps": "BACKUP:\n1. pg_dump rlc_commodities > backup_YYYYMMDD.sql\n2. Upload to secure storage\n\nRESTORE:\n1. psql -c \"DROP DATABASE rlc_commodities\"\n2. psql -c \"CREATE DATABASE rlc_commodities\"\n3. psql rlc_commodities < backup_YYYYMMDD.sql\n4. Verify with diagnostic queries",
+      "prereqs": ["PostgreSQL tools", "Database access", "Backup storage access"],
+      "approval_checkpoints": "Confirm before restore (destructive)",
+      "proof_checks": "Query counts match, recent data present",
+      "rollback_recovery": "Restore from older backup"
+    }
+  ],
+
+  "lessons_learned": [
+    {
+      "issue": "API Keys Exposed in Repository",
+      "category": "Security",
+      "symptom": "Credentials found in api Manager folder committed to git",
+      "root_cause": ".env file or credentials not in .gitignore, or hardcoded in scripts",
+      "prevention_rule": "Always use environment variables. Add .env, credentials.*, *.key to .gitignore. Run git-secrets or similar pre-commit hook",
+      "status": "Not fixed"
+    },
+    {
+      "issue": "Code Duplication Across Directories",
+      "category": "Code",
+      "symptom": "usda_ams_collector_asynch.py exists in multiple locations with diverging versions",
+      "root_cause": "Copy-paste development without proper module organization",
+      "prevention_rule": "Single source of truth in src/. Import from there. Delete duplicates immediately",
+      "status": "Fixed"
+    },
+    {
+      "issue": "Price Parsing Bug in AMS Collector",
+      "category": "Code",
+      "symptom": "CSV output missing price columns despite data being available",
+      "root_cause": "HTML parsing logic not extracting numeric fields from table cells",
+      "prevention_rule": "Add unit tests for parsing logic. Include sample data in tests. Validate output schema",
+      "status": "Fixed"
+    },
+    {
+      "issue": "Web Scraper Fragility",
+      "category": "Agent Behavior",
+      "symptom": "MPOB and EPA collectors break when websites update",
+      "root_cause": "Hardcoded HTML selectors that change with website redesigns",
+      "prevention_rule": "Use multiple selector strategies. Add fallback parsing. Monitor for failures and alert",
+      "status": "Fixed via system prompt"
+    },
+    {
+      "issue": "Agent Context Loss Between Sessions",
+      "category": "Agent Behavior",
+      "symptom": "Claude Code loses context about previous work, decisions, and architecture",
+      "root_cause": "No persistent memory system, relying on conversation context only",
+      "prevention_rule": "Implement Notion memory integration. Document decisions in repo. Use system prompts with context",
+      "status": "Fixed via system prompt"
+    },
+    {
+      "issue": "Disconnected Pipeline Components",
+      "category": "Code",
+      "symptom": "Three separate systems (rlc_master_agent, deployment, commodity_pipeline) don't communicate",
+      "root_cause": "Organic growth without integration plan",
+      "prevention_rule": "Follow ARCHITECTURE_PLAN.md. Use shared interfaces. Consolidate before adding new systems",
+      "status": "Not fixed"
+    },
+    {
+      "issue": "Missing Tests for Collectors",
+      "category": "Code",
+      "symptom": "Only wheat tender collector has tests, 39 others untested",
+      "root_cause": "Speed of development prioritized over testing",
+      "prevention_rule": "No collector is complete without test. Use pytest fixtures. Mock external APIs",
+      "status": "Not fixed"
+    },
+    {
+      "issue": "OAuth Token Expiration Not Handled",
+      "category": "Code",
+      "symptom": "TradeStation and Google integrations fail silently when tokens expire",
+      "root_cause": "No token refresh logic, no clear error handling",
+      "prevention_rule": "Implement token refresh flows. Add clear error messages. Log token status",
+      "status": "Fixed"
+    }
+  ],
+
+  "master_timeline": [
+    {
+      "initiative": "Core Data Pipeline Infrastructure",
+      "project": "Data Pipeline",
+      "status": "Active",
+      "priority": "P0",
+      "key_milestones": "Database schema complete, 30+ collectors live, Bronze/Silver layers operational",
+      "related_agents": ["Database Agent", "Pipeline Orchestrator", "All Collectors"]
+    },
+    {
+      "initiative": "US Government Data Integration",
+      "project": "Data Pipeline",
+      "status": "Active",
+      "priority": "P0",
+      "key_milestones": "NASS, FAS, ERS, EIA, CFTC collectors complete. WASDE collector needed",
+      "related_agents": ["USDA NASS Collector", "USDA FAS Collector", "EIA Ethanol Collector"]
+    },
+    {
+      "initiative": "South America Trade Data",
+      "project": "Data Pipeline",
+      "status": "Complete",
+      "priority": "P1",
+      "key_milestones": "Brazil (CONAB, ABIOVE, IMEA), Argentina, Paraguay, Uruguay collectors operational",
+      "related_agents": ["Brazil Agent", "Argentina Agent", "CONAB Collector", "ABIOVE Collector"]
+    },
+    {
+      "initiative": "Wheat Tender Monitoring System",
+      "project": "Data Pipeline",
+      "status": "Complete",
+      "priority": "P1",
+      "key_milestones": "Collector live, alert system operational, Notion integration working",
+      "related_agents": ["Wheat Tender Collector", "Wheat Alert System"]
+    },
+    {
+      "initiative": "HB Weekly Report Automation",
+      "project": "Content Operations",
+      "status": "Active",
+      "priority": "P1",
+      "key_milestones": "Report writer agent built, orchestrator operational. Data integrations pending",
+      "related_agents": ["HB Report Orchestrator", "Report Writer Agent", "Market Research Agent"]
+    },
+    {
+      "initiative": "BioTrack Rail Monitoring",
+      "project": "BioTrack",
+      "status": "Building",
+      "priority": "P2",
+      "key_milestones": "YOLOv8 detection working in simulation. Real data testing needed",
+      "related_agents": ["BioTrack AI"]
+    },
+    {
+      "initiative": "Notion Memory Integration",
+      "project": "Data Pipeline",
+      "status": "Active",
+      "priority": "P1",
+      "key_milestones": "12 Notion tables defined, API integration working, initial sync complete",
+      "related_agents": ["Notion Manager", "Memory Manager"]
+    },
+    {
+      "initiative": "Analysis Agent Development",
+      "project": "Data Pipeline",
+      "status": "Active",
+      "priority": "P1",
+      "key_milestones": "Fundamental, Price, Spread analyzers built. Trade flow analyzer needed",
+      "related_agents": ["Fundamental Analyzer", "Price Forecaster", "Spread and Basis Analyzer"]
+    },
+    {
+      "initiative": "Forecast Tracking System",
+      "project": "EEPT Model",
+      "status": "Building",
+      "priority": "P2",
+      "key_milestones": "Basic tracker built. Bias analysis and PowerBI integration pending",
+      "related_agents": ["Forecast Tracker"]
+    },
+    {
+      "initiative": "RLC Orchestrator System",
+      "project": "Data Pipeline",
+      "status": "Building",
+      "priority": "P1",
+      "key_milestones": "Phase 1 foundation complete (queue, executor, security). Integration pending",
+      "related_agents": ["RLC Orchestrator System"]
+    },
+    {
+      "initiative": "Missing Critical Collectors",
+      "project": "Data Pipeline",
+      "status": "Planning",
+      "priority": "P0",
+      "key_milestones": "Need: WASDE, NOPA Crush, CME real-time, UN Comtrade",
+      "related_agents": ["USDA WASDE Collector", "NOPA Crush Collector"]
+    },
+    {
+      "initiative": "Codebase Consolidation",
+      "project": "Data Pipeline",
+      "status": "Paused",
+      "priority": "P2",
+      "key_milestones": "Duplicate removal started, full consolidation plan documented",
+      "related_agents": []
+    }
+  ]
+}

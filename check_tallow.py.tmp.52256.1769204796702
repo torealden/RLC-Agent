@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""Check Tallow & Protein reports in detail"""
+
+import os
+import json
+import requests
+from dotenv import load_dotenv
+from pathlib import Path
+
+load_dotenv(Path(__file__).parent / ".env")
+
+USDA_API_KEY = os.getenv('USDA_AMS_API_KEY', '')
+USDA_BASE_URL = 'https://marsapi.ams.usda.gov/services/v1.2'
+
+session = requests.Session()
+session.auth = (USDA_API_KEY, '')
+session.headers.update({'Accept': 'application/json'})
+
+# Check tallow report with details section
+slug_id = '2837'
+url = f'{USDA_BASE_URL}/reports/{slug_id}'
+params = {'reportSection': 'Report Details'}
+resp = session.get(url, params=params, timeout=30)
+data = resp.json()
+
+results = data.get('results', [])
+print(f"Total records: {len(results)}")
+
+# Get all unique keys across all records
+all_keys = set()
+for r in results:
+    all_keys.update(r.keys())
+print(f"All unique keys: {sorted(all_keys)}")
+
+# Check first 5 records
+print("\nFirst 5 records:")
+for i, r in enumerate(results[:5]):
+    print(f"\n--- Record {i+1} ---")
+    for k, v in r.items():
+        if v and v != 'N/A':
+            print(f"  {k}: {v}")

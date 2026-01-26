@@ -345,6 +345,20 @@ OTHER_SCHEDULES = {
         "timezone": "America/Chicago",
         "agent": "cme_settlements_agent",
         "description": "Daily futures settlement prices"
+    },
+    "weather_email": {
+        "name": "Weather Email Agent",
+        "schedule": "weather_custom",  # Custom schedule for weather emails
+        # Weekdays: 7:30 AM, 1:00 PM, 8:00 PM ET
+        # Saturday: 12:00 PM ET
+        # Sunday: 9:00 AM, 7:00 PM ET
+        "weekday_times": ["07:30", "13:00", "20:00"],
+        "saturday_times": ["12:00"],
+        "sunday_times": ["09:00", "19:00"],
+        "timezone": "America/New_York",
+        "agent": "weather_email_agent",
+        "agent_path": "rlc_scheduler/agents/weather_email_agent.py",
+        "description": "Forward meteorologist emails and generate weather summaries"
     }
 }
 
@@ -360,7 +374,7 @@ class AgentRunner:
         self.agents_dir = agents_dir
         self.results_log = LOG_DIR / "agent_results.json"
 
-    def run_agent(self, agent_name: str, **kwargs) -> dict:
+    def run_agent(self, agent_name: str, agent_path: str = None, **kwargs) -> dict:
         """Execute an agent and return results."""
         logger.info(f"Triggering agent: {agent_name}")
         start_time = datetime.now()
@@ -375,19 +389,32 @@ class AgentRunner:
         }
 
         try:
-            # Look for agent in various locations
-            agent_paths = [
-                self.agents_dir / agent_name / "main.py",
-                self.agents_dir / f"{agent_name}.py",
-                self.agents_dir / agent_name / "run.py",
-                Path.home() / "RLC-Agent" / agent_name / "main.py"
-            ]
+            # If agent_path provided (relative to RLC-Agent), use it
+            if agent_path:
+                # Resolve relative to RLC-Agent home folder
+                rlc_agent_home = Path(__file__).parent.parent  # rlc_scheduler -> RLC-Agent
+                resolved_path = rlc_agent_home / agent_path
+                if resolved_path.exists():
+                    found_path = resolved_path
+                else:
+                    found_path = None
+            else:
+                # Look for agent in various locations
+                search_paths = [
+                    self.agents_dir / agent_name / "main.py",
+                    self.agents_dir / f"{agent_name}.py",
+                    self.agents_dir / agent_name / "run.py",
+                    Path.home() / "RLC-Agent" / agent_name / "main.py",
+                    Path(__file__).parent / "agents" / f"{agent_name}.py",  # rlc_scheduler/agents/
+                ]
 
-            agent_path = None
-            for path in agent_paths:
-                if path.exists():
-                    agent_path = path
-                    break
+                found_path = None
+                for path in search_paths:
+                    if path.exists():
+                        found_path = path
+                        break
+
+            agent_path = found_path
 
             if agent_path is None:
                 # Agent not yet implemented - log for tracking
@@ -641,6 +668,37 @@ class RLCScheduler:
                 if now.month == month and now.day == day:
                     return self.runner.run_agent(agent)
             schedule.every().day.at(time_str).do(annual_check).tag(schedule_id)
+
+        elif sched_type == "weather_custom":
+            # Custom schedule for weather emails:
+            # Weekdays (Mon-Fri): multiple times per day
+            # Saturday: specific times
+            # Sunday: specific times
+            agent_path = config.get("agent_path")
+
+            def run_weather_agent(path=agent_path, agent=agent_name):
+                logger.info(f"Running weather email agent")
+                return self.runner.run_agent(agent, agent_path=path)
+
+            # Weekday times (Mon-Fri)
+            for t in config.get("weekday_times", []):
+                schedule.every().monday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
+                schedule.every().tuesday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
+                schedule.every().wednesday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
+                schedule.every().thursday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
+                schedule.every().friday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
+
+            # Saturday times
+            for t in config.get("saturday_times", []):
+                schedule.every().saturday.at(t).do(run_weather_agent).tag(schedule_id, "saturday")
+
+            # Sunday times
+            for t in config.get("sunday_times", []):
+                schedule.every().sunday.at(t).do(run_weather_agent).tag(schedule_id, "sunday")
+
+            times_str = f"Weekdays: {config.get('weekday_times')}, Sat: {config.get('saturday_times')}, Sun: {config.get('sunday_times')}"
+            logger.info(f"Scheduled: {config.get('name', schedule_id)} ({times_str})")
+            return  # Skip the default log message below
 
         logger.info(f"Scheduled: {config.get('name', schedule_id)} ({sched_type} at {time_str})")
 

@@ -28,7 +28,7 @@ SCOPES = [
 ]
 
 # Paths
-CREDENTIALS_DIR = Path(r"C:\Users\torem\Dropbox\RLC Documents\LLM Model and Documents\Projects\Desktop Assistant")
+CREDENTIALS_DIR = Path(r"C:\Users\torem\RLC Dropbox\RLC Team Folder\RLC Documents\LLM Model and Documents\Projects\Desktop Assistant")
 CREDENTIALS_FILE = CREDENTIALS_DIR / "credentials.json"  # or credentials_desktop.json
 TOKEN_FILE = CREDENTIALS_DIR / "token_work.json"
 

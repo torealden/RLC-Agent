@@ -14,21 +14,50 @@ import sys
 import json
 import re
 import base64
+import requests
 from datetime import datetime, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 
+from dotenv import load_dotenv
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+# Database connectivity (optional)
+try:
+    import psycopg2
+    from psycopg2.extras import Json
+    DB_AVAILABLE = True
+except ImportError:
+    DB_AVAILABLE = False
+
+# Location service (optional)
+try:
+    from src.services.location_service import LocationService, get_location_service
+    LOCATION_SERVICE_AVAILABLE = True
+except ImportError:
+    LOCATION_SERVICE_AVAILABLE = False
+
+# City enrollment service (optional)
+try:
+    from src.services.city_enrollment_service import CityEnrollmentService, get_enrollment_service
+    ENROLLMENT_SERVICE_AVAILABLE = True
+except ImportError:
+    ENROLLMENT_SERVICE_AVAILABLE = False
+
 # Configuration paths
 BASE_DIR = Path(__file__).parent.parent
 CONFIG_DIR = BASE_DIR / "config"
-CREDENTIALS_DIR = Path(r"C:\Users\torem\Dropbox\RLC Documents\LLM Model and Documents\Projects\Desktop Assistant")
+CREDENTIALS_DIR = Path(r"C:\Users\torem\RLC Dropbox\RLC Team Folder\RLC Documents\LLM Model and Documents\Projects\Desktop Assistant")
+
+# Load environment variables for API keys
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+load_dotenv(PROJECT_ROOT / ".env")
+load_dotenv(PROJECT_ROOT / "config" / "credentials.env")
 
 # Default configuration
 DEFAULT_CONFIG = {
@@ -46,7 +75,14 @@ DEFAULT_CONFIG = {
     "check_hours_back": 24,  # How far back to look for emails
     "processed_ids_file": "weather_emails_processed.json",
     "cities_file": "weather_cities.json",
-    "log_file": "weather_email_agent.log"
+    "log_file": "weather_email_agent.log",
+    # LLM Configuration
+    "llm_enabled": True,
+    "llm_provider": "ollama",  # "ollama", "openai", or "anthropic"
+    "ollama_url": "http://localhost:11434",
+    "ollama_model": "llama3",
+    "openai_model": "gpt-4o-mini",
+    "anthropic_model": "claude-3-haiku-20240307",
 }
 
 
@@ -60,6 +96,31 @@ class WeatherEmailAgent:
         self.service = None
         self.processed_ids = self._load_processed_ids()
         self.extracted_cities = self._load_cities()
+
+        # Database config
+        self.db_config = {
+            'host': os.getenv('DB_HOST', 'localhost'),
+            'port': int(os.getenv('DB_PORT', 5432)),
+            'database': os.getenv('DB_NAME', 'rlc_commodities'),
+            'user': os.getenv('DB_USER', 'postgres'),
+            'password': os.getenv('DB_PASSWORD', '')
+        }
+
+        # Location service for matching cities to weather locations
+        self.location_service = None
+        if LOCATION_SERVICE_AVAILABLE:
+            try:
+                self.location_service = get_location_service()
+            except Exception as e:
+                self._log(f"Location service not available: {e}")
+
+        # Enrollment service for auto-enrolling new cities
+        self.enrollment_service = None
+        if ENROLLMENT_SERVICE_AVAILABLE:
+            try:
+                self.enrollment_service = get_enrollment_service()
+            except Exception as e:
+                self._log(f"Enrollment service not available: {e}")
 
     def _load_config(self, config_path: Optional[str]) -> dict:
         """Load configuration from file or use defaults."""
@@ -106,6 +167,170 @@ class WeatherEmailAgent:
         path = CONFIG_DIR / self.config["cities_file"]
         with open(path, 'w') as f:
             json.dump(self.extracted_cities, f, indent=2)
+
+    def _get_db_connection(self):
+        """Get database connection if available."""
+        if not DB_AVAILABLE:
+            return None
+        try:
+            return psycopg2.connect(**self.db_config)
+        except Exception as e:
+            self._log(f"Database connection failed: {e}")
+            return None
+
+    def match_cities_to_locations(self, cities: List[str]) -> Tuple[List[str], List[str]]:
+        """
+        Match extracted city names to known weather location IDs.
+
+        Args:
+            cities: List of city/region names from text extraction
+
+        Returns:
+            Tuple of (matched_location_ids, unmatched_city_names)
+        """
+        if not self.location_service:
+            return [], cities
+
+        matched_ids = []
+        unmatched_cities = []
+
+        for city in cities:
+            # Skip generic region names (not specific locations)
+            generic_terms = ['midwest', 'corn belt', 'wheat belt', 'delta',
+                           'great plains', 'gulf coast', 'south america']
+            if city.lower() in generic_terms:
+                continue
+
+            # Try exact alias match first
+            location_id = self.location_service.resolve_alias(city)
+            if location_id and location_id not in matched_ids:
+                matched_ids.append(location_id)
+                continue
+
+            # Try fuzzy match
+            matches = self.location_service.fuzzy_match(city, threshold=0.75)
+            if matches:
+                best_match = matches[0][0]  # (location_id, score)
+                if best_match not in matched_ids:
+                    matched_ids.append(best_match)
+            else:
+                # City not found - mark for potential enrollment
+                if city not in unmatched_cities:
+                    unmatched_cities.append(city)
+
+        return matched_ids, unmatched_cities
+
+    def auto_enroll_cities(self, city_names: List[str]) -> List[str]:
+        """
+        Automatically enroll unmatched cities in the weather system.
+
+        This triggers:
+        1. Geocoding to get coordinates
+        2. Region classification
+        3. Addition to location registry (JSON + database)
+        4. Historical data collection (1 year backfill)
+
+        Args:
+            city_names: List of city names to enroll
+
+        Returns:
+            List of newly enrolled location IDs
+        """
+        if not self.enrollment_service:
+            self._log("Enrollment service not available - cannot auto-enroll cities")
+            return []
+
+        enrolled_ids = []
+        for city in city_names:
+            try:
+                self._log(f"Auto-enrolling new city: {city}")
+                location_id = self.enrollment_service.enroll_city(
+                    city_name=city,
+                    pull_historical=True  # Triggers 1-year backfill
+                )
+                if location_id:
+                    enrolled_ids.append(location_id)
+                    self._log(f"Successfully enrolled: {city} -> {location_id}")
+                else:
+                    self._log(f"Failed to enroll city: {city}")
+            except Exception as e:
+                self._log(f"Error enrolling {city}: {e}")
+
+        return enrolled_ids
+
+    def save_email_extract_to_db(
+        self,
+        email_id: str,
+        email_subject: str,
+        email_from: str,
+        email_date: datetime,
+        extracted_locations: List[str],
+        matched_location_ids: List[str],
+        weather_summary: str,
+        llm_model: str = None
+    ) -> bool:
+        """
+        Save extracted weather email data to bronze.weather_email_extract.
+
+        Args:
+            email_id: Gmail message ID
+            email_subject: Email subject
+            email_from: Sender email
+            email_date: Email timestamp
+            extracted_locations: Raw city names from text
+            matched_location_ids: Resolved location IDs
+            weather_summary: LLM-generated summary
+            llm_model: Model used for extraction
+
+        Returns:
+            True if saved successfully
+        """
+        conn = self._get_db_connection()
+        if not conn:
+            return False
+
+        try:
+            cursor = conn.cursor()
+
+            sql = """
+                INSERT INTO bronze.weather_email_extract (
+                    email_id, email_subject, email_from, email_date,
+                    extracted_locations, matched_location_ids,
+                    weather_summary, llm_model, collected_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (email_id)
+                DO UPDATE SET
+                    extracted_locations = EXCLUDED.extracted_locations,
+                    matched_location_ids = EXCLUDED.matched_location_ids,
+                    weather_summary = EXCLUDED.weather_summary,
+                    llm_model = EXCLUDED.llm_model,
+                    collected_at = EXCLUDED.collected_at
+            """
+
+            cursor.execute(sql, (
+                email_id,
+                email_subject[:500] if email_subject else None,
+                email_from[:200] if email_from else None,
+                email_date,
+                extracted_locations,
+                matched_location_ids,
+                weather_summary,
+                llm_model,
+                datetime.now()
+            ))
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+            self._log(f"Saved email extract to database: {email_id[:20]}...")
+            return True
+
+        except Exception as e:
+            self._log(f"Error saving email extract: {e}")
+            if conn:
+                conn.rollback()
+                conn.close()
+            return False
 
     def _log(self, message: str):
         """Log message to file and stdout."""
@@ -332,11 +557,307 @@ Subject: {email['subject']}
 
         return found_cities
 
+    def _call_llm(self, prompt: str, system_prompt: str = None) -> Optional[str]:
+        """Call configured LLM provider and return response."""
+        provider = self.config.get("llm_provider", "ollama")
+
+        try:
+            if provider == "ollama":
+                return self._call_ollama(prompt, system_prompt)
+            elif provider == "openai":
+                return self._call_openai(prompt, system_prompt)
+            elif provider == "anthropic":
+                return self._call_anthropic(prompt, system_prompt)
+            else:
+                self._log(f"Unknown LLM provider: {provider}")
+                return None
+        except Exception as e:
+            self._log(f"LLM call failed: {e}")
+            return None
+
+    def _call_ollama(self, prompt: str, system_prompt: str = None) -> Optional[str]:
+        """Call Ollama local LLM."""
+        url = self.config.get("ollama_url", "http://localhost:11434")
+        model = self.config.get("ollama_model", "llama3")
+
+        full_prompt = prompt
+        if system_prompt:
+            full_prompt = f"{system_prompt}\n\n{prompt}"
+
+        try:
+            response = requests.post(
+                f"{url}/api/generate",
+                json={
+                    "model": model,
+                    "prompt": full_prompt,
+                    "stream": False,
+                },
+                timeout=300  # 5 minutes for long weather emails
+            )
+            response.raise_for_status()
+            return response.json().get("response", "").strip()
+        except requests.exceptions.ConnectionError:
+            self._log(f"Ollama not available at {url}")
+            return None
+        except Exception as e:
+            self._log(f"Ollama error: {e}")
+            return None
+
+    def _call_openai(self, prompt: str, system_prompt: str = None) -> Optional[str]:
+        """Call OpenAI API."""
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            self._log("OPENAI_API_KEY not found in environment")
+            return None
+
+        model = self.config.get("openai_model", "gpt-4o-mini")
+
+        try:
+            import openai
+            client = openai.OpenAI(api_key=api_key)
+
+            messages = []
+            if system_prompt:
+                messages.append({"role": "system", "content": system_prompt})
+            messages.append({"role": "user", "content": prompt})
+
+            response = client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=0.3,
+                max_tokens=1500
+            )
+            return response.choices[0].message.content.strip()
+        except ImportError:
+            self._log("openai package not installed")
+            return None
+        except Exception as e:
+            self._log(f"OpenAI error: {e}")
+            return None
+
+    def _call_anthropic(self, prompt: str, system_prompt: str = None) -> Optional[str]:
+        """Call Anthropic API."""
+        api_key = os.getenv("ANTHROPIC_API_KEY")
+        if not api_key:
+            self._log("ANTHROPIC_API_KEY not found in environment")
+            return None
+
+        model = self.config.get("anthropic_model", "claude-3-haiku-20240307")
+
+        try:
+            import anthropic
+            client = anthropic.Anthropic(api_key=api_key)
+
+            response = client.messages.create(
+                model=model,
+                max_tokens=1500,
+                system=system_prompt or "",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            return response.content[0].text.strip()
+        except ImportError:
+            self._log("anthropic package not installed")
+            return None
+        except Exception as e:
+            self._log(f"Anthropic error: {e}")
+            return None
+
+    def _chunk_text(self, text: str, chunk_size: int = 2000, overlap: int = 200) -> List[str]:
+        """Split text into overlapping chunks for LLM processing."""
+        if len(text) <= chunk_size:
+            return [text]
+
+        chunks = []
+        start = 0
+        while start < len(text):
+            end = start + chunk_size
+            # Try to break at a sentence boundary
+            if end < len(text):
+                # Look for sentence endings near the chunk boundary
+                for boundary in ['. ', '.\n', '\n\n', '\n']:
+                    last_boundary = text.rfind(boundary, start + chunk_size - 300, end)
+                    if last_boundary > start:
+                        end = last_boundary + len(boundary)
+                        break
+
+            chunks.append(text[start:end].strip())
+            start = end - overlap  # Overlap to maintain context
+
+        return chunks
+
+    def _extract_weather_data_from_chunk(self, chunk: str, email_subject: str) -> Optional[str]:
+        """Extract key weather data from a single chunk using LLM."""
+        system_prompt = "Extract weather data concisely. List only: locations, temperatures, precipitation amounts, and conditions."
+
+        prompt = f"""From this weather report section, extract key data:
+
+Subject: {email_subject}
+---
+{chunk}
+---
+
+List in this format:
+LOCATIONS: [cities/regions mentioned]
+TEMPS: [any temperature values]
+PRECIP: [rainfall/snow amounts]
+CONDITIONS: [drought/wet/storm/frost etc]
+
+Be brief - just the facts."""
+
+        return self._call_llm(prompt, system_prompt)
+
+    def _summarize_email_extractions(self, extractions: List[str], email_subject: str) -> Optional[str]:
+        """Combine multiple chunk extractions into one email summary."""
+        if not extractions:
+            return None
+
+        if len(extractions) == 1:
+            return extractions[0]
+
+        combined = "\n---\n".join(extractions)
+
+        system_prompt = "Combine these weather data extracts into one concise summary. Remove duplicates."
+
+        prompt = f"""Combine these extracts from "{email_subject}" into one summary:
+
+{combined}
+
+Provide a single consolidated summary with:
+- Key locations and their conditions
+- Temperature ranges
+- Precipitation outlook
+- Notable weather events"""
+
+        return self._call_llm(prompt, system_prompt)
+
+    def generate_llm_summary(self, emails: List[Dict[str, Any]]) -> Optional[str]:
+        """Generate an intelligent weather summary using LLM with chunking for long emails."""
+        if not emails:
+            return None
+
+        self._log(f"Generating LLM summary for {len(emails)} emails...")
+
+        # Process each email separately with chunking
+        email_summaries = []
+        all_cities = []
+
+        for i, email in enumerate(emails, 1):
+            self._log(f"Processing email {i}/{len(emails)}: {email['subject'][:50]}...")
+
+            body = email['body']
+            body_length = len(body)
+
+            # Chunk long emails
+            if body_length > 2500:
+                self._log(f"  Email is {body_length} chars, chunking...")
+                chunks = self._chunk_text(body, chunk_size=2000, overlap=200)
+                self._log(f"  Split into {len(chunks)} chunks")
+
+                # Extract data from each chunk
+                chunk_extractions = []
+                for j, chunk in enumerate(chunks):
+                    self._log(f"  Processing chunk {j+1}/{len(chunks)}...")
+                    extraction = self._extract_weather_data_from_chunk(chunk, email['subject'])
+                    if extraction:
+                        chunk_extractions.append(extraction)
+                        # Extract cities from the extraction
+                        cities = self.extract_cities(extraction)
+                        all_cities.extend(cities)
+
+                # Combine chunk extractions
+                if chunk_extractions:
+                    email_summary = self._summarize_email_extractions(chunk_extractions, email['subject'])
+                    if email_summary:
+                        email_summaries.append(f"[{email['subject']}]\n{email_summary}")
+            else:
+                # Short email - process directly
+                extraction = self._extract_weather_data_from_chunk(body, email['subject'])
+                if extraction:
+                    email_summaries.append(f"[{email['subject']}]\n{extraction}")
+                    cities = self.extract_cities(extraction)
+                    all_cities.extend(cities)
+
+        if not email_summaries:
+            self._log("No extractions obtained from emails")
+            return None
+
+        # Final synthesis of all email summaries
+        self._log("Generating final synthesis...")
+        combined_summaries = "\n\n".join(email_summaries)
+
+        system_prompt = """You are an agricultural commodity weather analyst. Create actionable weather summaries for grain traders. Be concise and specific."""
+
+        prompt = f"""Create a trading-focused weather brief from these summaries:
+
+{combined_summaries}
+
+Format your response as:
+
+KEY POINTS:
+- (3-4 bullet points for trading decisions)
+
+US CONDITIONS:
+- Corn Belt: (temps, precip, crop impact)
+- Wheat Belt: (temps, precip, crop impact)
+- Delta/South: (conditions)
+
+SOUTH AMERICA:
+- Brazil: (Mato Grosso, Parana, RS conditions)
+- Argentina: (Buenos Aires, Cordoba conditions)
+
+WATCH LIST:
+- (2-3 key items to monitor)
+
+Be specific about temperatures (°F) and precipitation (inches) where available."""
+
+        final_summary = self._call_llm(prompt, system_prompt)
+
+        if final_summary:
+            # Add header and metadata
+            provider = self.config.get('llm_provider', 'ollama')
+            model_key = f"{provider}_model"
+            model_name = self.config.get(model_key, provider)
+
+            # Add unique cities found
+            unique_cities = list(set(all_cities))
+            cities_line = f"Locations tracked: {', '.join(unique_cities)}" if unique_cities else ""
+
+            summary = [
+                "=" * 60,
+                "WEATHER INTELLIGENCE BRIEF",
+                f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+                f"Emails analyzed: {len(emails)}",
+                f"Source: World Weather Inc.",
+                "=" * 60,
+                "",
+                final_summary,
+                "",
+                "=" * 60,
+                cities_line,
+                f"Analysis by: {provider.upper()} ({model_name})",
+                "=" * 60,
+            ]
+            return "\n".join(summary)
+
+        return None
+
     def generate_summary(self, emails: List[Dict[str, Any]]) -> str:
-        """Generate a weather summary from collected emails."""
+        """Generate a weather summary from collected emails.
+
+        Tries LLM-powered summary first if enabled, falls back to regex extraction.
+        """
         if not emails:
             return "No new weather emails to summarize."
 
+        # Try LLM summary if enabled
+        if self.config.get("llm_enabled", False):
+            llm_summary = self.generate_llm_summary(emails)
+            if llm_summary:
+                self._log("Using LLM-generated summary")
+                return llm_summary
+            self._log("LLM summary failed, falling back to regex extraction")
+
+        # Fallback: regex-based extraction
         summary_parts = [
             "=" * 60,
             "WEATHER SUMMARY REPORT",
@@ -427,14 +948,26 @@ Subject: {email['subject']}
             self._log(f"Error sending summary: {e}")
             return False
 
-    def process_emails(self, forward: bool = True, summarize: bool = True) -> Dict[str, Any]:
-        """Main processing loop - search, forward, and summarize."""
+    def process_emails(self, forward: bool = True, summarize: bool = True, auto_enroll: bool = True) -> Dict[str, Any]:
+        """Main processing loop - search, forward, and summarize.
+
+        Args:
+            forward: Whether to forward emails to recipients
+            summarize: Whether to generate and send summary
+            auto_enroll: Whether to auto-enroll unmatched cities (default: True)
+
+        Returns:
+            Dict with processing results
+        """
         result = {
             'success': False,
             'emails_found': 0,
             'emails_forwarded': 0,
             'summary_sent': False,
-            'cities_extracted': []
+            'cities_extracted': [],
+            'locations_matched': [],
+            'cities_enrolled': [],
+            'emails_saved_to_db': 0
         }
 
         if not self.connect():
@@ -477,17 +1010,78 @@ Subject: {email['subject']}
             if self.config["summary_recipients"] or self.config["forward_recipients"]:
                 result['summary_sent'] = self.send_summary(summary)
 
-        # Extract and save cities
+        # Extract and save cities, match to locations, and save to database
+        all_matched_locations = set()
+        all_unmatched_cities = set()
+
         for email in emails:
             cities = self.extract_cities(email['body'])
+
+            # Track new cities
             for city in cities:
                 if city not in self.extracted_cities:
                     self.extracted_cities.append(city)
                     result['cities_extracted'].append(city)
 
+            # Match to weather location IDs (returns matched, unmatched)
+            matched_ids, unmatched = self.match_cities_to_locations(cities)
+            all_matched_locations.update(matched_ids)
+            all_unmatched_cities.update(unmatched)
+
+        # Auto-enroll unmatched cities if enabled
+        if auto_enroll and all_unmatched_cities:
+            self._log(f"Found {len(all_unmatched_cities)} unmatched cities: {', '.join(all_unmatched_cities)}")
+            enrolled_ids = self.auto_enroll_cities(list(all_unmatched_cities))
+            result['cities_enrolled'] = enrolled_ids
+            all_matched_locations.update(enrolled_ids)
+
+        # Now process each email with final matched locations
+        for email in emails:
+            cities = self.extract_cities(email['body'])
+            matched_ids, _ = self.match_cities_to_locations(cities)
+
+            # Save email extract to database (with LLM summary if available)
+            email_summary = None
+            if summarize and self.config.get("llm_enabled", False):
+                # Get a concise summary for this specific email
+                email_summary = self._extract_weather_data_from_chunk(
+                    email['body'][:3000],
+                    email['subject']
+                )
+
+            # Parse email date
+            email_date = None
+            try:
+                from email.utils import parsedate_to_datetime
+                email_date = parsedate_to_datetime(email['date'])
+            except Exception:
+                email_date = datetime.now()
+
+            # Save to database
+            saved = self.save_email_extract_to_db(
+                email_id=email['id'],
+                email_subject=email['subject'],
+                email_from=email['from'],
+                email_date=email_date,
+                extracted_locations=cities,
+                matched_location_ids=matched_ids,
+                weather_summary=email_summary,
+                llm_model=self.config.get(f"{self.config.get('llm_provider', 'ollama')}_model")
+            )
+            if saved:
+                result['emails_saved_to_db'] += 1
+
+        result['locations_matched'] = list(all_matched_locations)
+
         if result['cities_extracted']:
             self._save_cities()
             self._log(f"New cities added: {', '.join(result['cities_extracted'])}")
+
+        if result['locations_matched']:
+            self._log(f"Matched to locations: {', '.join(result['locations_matched'])}")
+
+        if result.get('cities_enrolled'):
+            self._log(f"Auto-enrolled new cities: {', '.join(result['cities_enrolled'])}")
 
         # Save processed IDs
         self._save_processed_ids()
@@ -543,7 +1137,10 @@ def main():
         print(f"Emails found: {result['emails_found']}")
         print(f"Emails forwarded: {result['emails_forwarded']}")
         print(f"Summary sent: {result['summary_sent']}")
+        print(f"Saved to DB: {result.get('emails_saved_to_db', 0)}")
         print(f"New cities: {', '.join(result['cities_extracted']) if result['cities_extracted'] else 'None'}")
+        print(f"Matched locations: {', '.join(result.get('locations_matched', [])) if result.get('locations_matched') else 'None'}")
+        print(f"Cities enrolled: {', '.join(result.get('cities_enrolled', [])) if result.get('cities_enrolled') else 'None'}")
 
 
 if __name__ == "__main__":

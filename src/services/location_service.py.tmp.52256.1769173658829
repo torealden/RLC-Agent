@@ -1,0 +1,587 @@
+"""
+Location Service for Weather Data Pipeline
+Provides utilities for location lookup, alias resolution, and fuzzy matching.
+
+Round Lakes Commodities
+"""
+
+import json
+import logging
+import os
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+from dataclasses import dataclass, field
+from difflib import SequenceMatcher
+
+logger = logging.getLogger(__name__)
+
+# Default config path
+DEFAULT_CONFIG_PATH = Path(r"C:\RLC-Agent\config\weather_locations.json")
+
+
+@dataclass
+class WeatherLocation:
+    """Represents an agricultural weather monitoring location."""
+    id: str
+    name: str
+    display_name: str
+    region: str
+    country: str
+    lat: float
+    lon: float
+    commodities: List[str] = field(default_factory=list)
+    timezone: str = "UTC"
+    active: bool = True
+    notes: Optional[str] = None
+
+    @property
+    def coordinates(self) -> Tuple[float, float]:
+        """Return (latitude, longitude) tuple."""
+        return (self.lat, self.lon)
+
+    def to_dict(self) -> Dict:
+        """Convert to dictionary."""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "display_name": self.display_name,
+            "region": self.region,
+            "country": self.country,
+            "lat": self.lat,
+            "lon": self.lon,
+            "commodities": self.commodities,
+            "timezone": self.timezone,
+            "active": self.active,
+            "notes": self.notes
+        }
+
+
+class LocationService:
+    """
+    Service for looking up and resolving weather locations.
+
+    Features:
+    - Load locations from JSON config
+    - Resolve aliases to location IDs
+    - Fuzzy matching for approximate location names
+    - Filter by region, country, or commodity
+    """
+
+    def __init__(self, config_path: Optional[Path] = None):
+        """
+        Initialize the location service.
+
+        Args:
+            config_path: Path to weather_locations.json (uses default if None)
+        """
+        self.config_path = config_path or DEFAULT_CONFIG_PATH
+        self._locations: Dict[str, WeatherLocation] = {}
+        self._aliases: Dict[str, str] = {}
+        self._regions: Dict[str, List[str]] = {}
+        self._loaded = False
+
+    def _ensure_loaded(self):
+        """Lazy load the config if not already loaded."""
+        if not self._loaded:
+            self.load_config()
+
+    def load_config(self) -> bool:
+        """
+        Load locations from the JSON config file.
+
+        Returns:
+            True if loaded successfully, False otherwise
+        """
+        try:
+            if not self.config_path.exists():
+                logger.error(f"Config file not found: {self.config_path}")
+                return False
+
+            with open(self.config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+
+            # Load locations
+            for loc_data in config.get('locations', []):
+                location = WeatherLocation(
+                    id=loc_data['id'],
+                    name=loc_data['name'],
+                    display_name=loc_data['display_name'],
+                    region=loc_data['region'],
+                    country=loc_data['country'],
+                    lat=loc_data['lat'],
+                    lon=loc_data['lon'],
+                    commodities=loc_data.get('commodities', []),
+                    timezone=loc_data.get('timezone', 'UTC'),
+                    active=loc_data.get('active', True),
+                    notes=loc_data.get('notes')
+                )
+                self._locations[location.id] = location
+
+            # Load aliases
+            self._aliases = {k.lower(): v for k, v in config.get('aliases', {}).items()}
+
+            # Load regions
+            self._regions = config.get('regions', {})
+
+            self._loaded = True
+            logger.info(f"Loaded {len(self._locations)} locations, {len(self._aliases)} aliases")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to load location config: {e}")
+            return False
+
+    def get_location(self, location_id: str) -> Optional[WeatherLocation]:
+        """
+        Get a location by its ID.
+
+        Args:
+            location_id: The location ID (e.g., 'des_moines_ia')
+
+        Returns:
+            WeatherLocation or None if not found
+        """
+        self._ensure_loaded()
+        return self._locations.get(location_id)
+
+    def resolve_alias(self, name: str) -> Optional[str]:
+        """
+        Resolve a location name or alias to a location ID.
+
+        Args:
+            name: Location name, alias, or ID
+
+        Returns:
+            Location ID if found, None otherwise
+        """
+        self._ensure_loaded()
+        name_lower = name.lower().strip()
+
+        # Direct ID match
+        if name_lower in self._locations:
+            return name_lower
+
+        # Alias match
+        if name_lower in self._aliases:
+            return self._aliases[name_lower]
+
+        # Check location names directly
+        for loc_id, loc in self._locations.items():
+            if loc.name.lower() == name_lower:
+                return loc_id
+            if loc.display_name.lower() == name_lower:
+                return loc_id
+
+        return None
+
+    def resolve_location(self, name: str) -> Optional[WeatherLocation]:
+        """
+        Resolve a name/alias to a full WeatherLocation object.
+
+        Args:
+            name: Location name, alias, or ID
+
+        Returns:
+            WeatherLocation or None if not found
+        """
+        location_id = self.resolve_alias(name)
+        if location_id:
+            return self.get_location(location_id)
+        return None
+
+    def fuzzy_match(self, query: str, threshold: float = 0.6) -> List[Tuple[str, float]]:
+        """
+        Find locations matching a query string using fuzzy matching.
+
+        Args:
+            query: Search query
+            threshold: Minimum similarity score (0-1)
+
+        Returns:
+            List of (location_id, score) tuples, sorted by score descending
+        """
+        self._ensure_loaded()
+        query_lower = query.lower().strip()
+        matches = []
+
+        # Check all location names and aliases
+        candidates = []
+
+        # Add location names
+        for loc_id, loc in self._locations.items():
+            candidates.append((loc_id, loc.name.lower()))
+            candidates.append((loc_id, loc.display_name.lower()))
+
+        # Add aliases
+        for alias, loc_id in self._aliases.items():
+            candidates.append((loc_id, alias))
+
+        # Score each candidate
+        seen = set()
+        for loc_id, candidate in candidates:
+            if loc_id in seen:
+                continue
+
+            score = SequenceMatcher(None, query_lower, candidate).ratio()
+
+            # Boost if query is a substring
+            if query_lower in candidate or candidate in query_lower:
+                score = min(1.0, score + 0.2)
+
+            if score >= threshold:
+                matches.append((loc_id, score))
+                seen.add(loc_id)
+
+        # Sort by score descending
+        matches.sort(key=lambda x: x[1], reverse=True)
+        return matches
+
+    def extract_locations_from_text(self, text: str, threshold: float = 0.7) -> List[str]:
+        """
+        Extract location IDs mentioned in text using fuzzy matching.
+
+        Args:
+            text: Text to search for location mentions
+            threshold: Minimum similarity score
+
+        Returns:
+            List of unique location IDs found
+        """
+        self._ensure_loaded()
+        text_lower = text.lower()
+        found_locations = set()
+
+        # Check each alias and location name
+        for alias, loc_id in self._aliases.items():
+            if alias in text_lower:
+                found_locations.add(loc_id)
+
+        for loc_id, loc in self._locations.items():
+            if loc.name.lower() in text_lower:
+                found_locations.add(loc_id)
+            if loc.display_name.lower() in text_lower:
+                found_locations.add(loc_id)
+
+        return list(found_locations)
+
+    def get_active_locations(self) -> List[WeatherLocation]:
+        """
+        Get all active locations.
+
+        Returns:
+            List of active WeatherLocation objects
+        """
+        self._ensure_loaded()
+        return [loc for loc in self._locations.values() if loc.active]
+
+    def get_locations_by_region(self, region: str) -> List[WeatherLocation]:
+        """
+        Get all locations in a region.
+
+        Args:
+            region: Region code (e.g., 'US_CORN_BELT')
+
+        Returns:
+            List of WeatherLocation objects in the region
+        """
+        self._ensure_loaded()
+        return [loc for loc in self._locations.values() if loc.region == region]
+
+    def get_locations_by_country(self, country: str) -> List[WeatherLocation]:
+        """
+        Get all locations in a country.
+
+        Args:
+            country: Country code (e.g., 'US', 'BR', 'AR')
+
+        Returns:
+            List of WeatherLocation objects in the country
+        """
+        self._ensure_loaded()
+        return [loc for loc in self._locations.values() if loc.country == country]
+
+    def get_locations_by_commodity(self, commodity: str) -> List[WeatherLocation]:
+        """
+        Get all locations that produce a commodity.
+
+        Args:
+            commodity: Commodity code (e.g., 'corn', 'soybeans')
+
+        Returns:
+            List of WeatherLocation objects producing the commodity
+        """
+        self._ensure_loaded()
+        commodity_lower = commodity.lower()
+        return [
+            loc for loc in self._locations.values()
+            if any(c.lower() == commodity_lower for c in loc.commodities)
+        ]
+
+    def list_regions(self) -> Dict[str, Dict]:
+        """
+        Get all region definitions.
+
+        Returns:
+            Dictionary of region codes to region info
+        """
+        self._ensure_loaded()
+        return self._regions
+
+    def list_all_locations(self) -> List[WeatherLocation]:
+        """
+        Get all locations (active and inactive).
+
+        Returns:
+            List of all WeatherLocation objects
+        """
+        self._ensure_loaded()
+        return list(self._locations.values())
+
+    def add_location(self, location: WeatherLocation, aliases: List[str] = None) -> bool:
+        """
+        Add a new location to the registry.
+
+        Args:
+            location: WeatherLocation object to add
+            aliases: Optional list of aliases for this location
+
+        Returns:
+            True if added successfully
+        """
+        self._ensure_loaded()
+
+        # Check if location ID already exists
+        if location.id in self._locations:
+            logger.warning(f"Location {location.id} already exists")
+            return False
+
+        # Add to in-memory registry
+        self._locations[location.id] = location
+
+        # Add aliases
+        if aliases:
+            for alias in aliases:
+                self._aliases[alias.lower()] = location.id
+
+        logger.info(f"Added location: {location.id} ({location.display_name})")
+        return True
+
+    def save_config(self) -> bool:
+        """
+        Save current locations to JSON config file.
+
+        Returns:
+            True if saved successfully
+        """
+        try:
+            # Build config dict
+            config = {
+                "version": "1.0",
+                "locations": [loc.to_dict() for loc in self._locations.values()],
+                "aliases": self._aliases,
+                "regions": self._regions
+            }
+
+            # Write to file
+            with open(self.config_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=2, ensure_ascii=False)
+
+            logger.info(f"Saved {len(self._locations)} locations to {self.config_path}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to save config: {e}")
+            return False
+
+    def add_location_to_database(self, location: WeatherLocation, aliases: List[str] = None) -> bool:
+        """
+        Add location to database weather_location table.
+
+        Args:
+            location: WeatherLocation to add
+            aliases: List of aliases to add
+
+        Returns:
+            True if added successfully
+        """
+        try:
+            import psycopg2
+            from psycopg2.extras import Json
+
+            db_config = {
+                'host': os.environ.get('DB_HOST', 'localhost'),
+                'port': int(os.environ.get('DB_PORT', 5432)),
+                'database': os.environ.get('DB_NAME', 'rlc_commodities'),
+                'user': os.environ.get('DB_USER', 'postgres'),
+                'password': os.environ.get('DB_PASSWORD', '')
+            }
+
+            conn = psycopg2.connect(**db_config)
+            cursor = conn.cursor()
+
+            # Insert location
+            sql = """
+                INSERT INTO public.weather_location (
+                    id, name, display_name, region, country,
+                    latitude, longitude, commodities, timezone, is_active, notes
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (id) DO UPDATE SET
+                    name = EXCLUDED.name,
+                    display_name = EXCLUDED.display_name,
+                    region = EXCLUDED.region,
+                    latitude = EXCLUDED.latitude,
+                    longitude = EXCLUDED.longitude,
+                    commodities = EXCLUDED.commodities,
+                    is_active = EXCLUDED.is_active,
+                    notes = EXCLUDED.notes,
+                    updated_at = NOW()
+            """
+            cursor.execute(sql, (
+                location.id,
+                location.name,
+                location.display_name,
+                location.region,
+                location.country,
+                location.lat,
+                location.lon,
+                location.commodities,
+                location.timezone,
+                location.active,
+                location.notes
+            ))
+
+            # Insert aliases
+            if aliases:
+                alias_sql = """
+                    INSERT INTO public.weather_location_alias (alias, location_id)
+                    VALUES (%s, %s)
+                    ON CONFLICT (alias) DO NOTHING
+                """
+                for alias in aliases:
+                    cursor.execute(alias_sql, (alias.lower(), location.id))
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            logger.info(f"Added location to database: {location.id}")
+            return True
+
+        except ImportError:
+            logger.warning("psycopg2 not available, cannot add to database")
+            return False
+        except Exception as e:
+            logger.error(f"Failed to add location to database: {e}")
+            return False
+
+    def location_exists(self, location_id: str) -> bool:
+        """Check if a location ID exists in the registry."""
+        self._ensure_loaded()
+        return location_id in self._locations
+
+    def get_coordinates(self, name: str) -> Optional[Tuple[float, float]]:
+        """
+        Get coordinates for a location by name or alias.
+
+        Args:
+            name: Location name, alias, or ID
+
+        Returns:
+            (latitude, longitude) tuple or None if not found
+        """
+        location = self.resolve_location(name)
+        if location:
+            return location.coordinates
+        return None
+
+
+# Singleton instance for convenience
+_default_service: Optional[LocationService] = None
+
+
+def get_location_service() -> LocationService:
+    """
+    Get the default LocationService instance.
+
+    Returns:
+        LocationService singleton
+    """
+    global _default_service
+    if _default_service is None:
+        _default_service = LocationService()
+    return _default_service
+
+
+def resolve_location(name: str) -> Optional[WeatherLocation]:
+    """
+    Convenience function to resolve a location name.
+
+    Args:
+        name: Location name, alias, or ID
+
+    Returns:
+        WeatherLocation or None
+    """
+    return get_location_service().resolve_location(name)
+
+
+def get_coordinates(name: str) -> Optional[Tuple[float, float]]:
+    """
+    Convenience function to get coordinates.
+
+    Args:
+        name: Location name, alias, or ID
+
+    Returns:
+        (latitude, longitude) or None
+    """
+    return get_location_service().get_coordinates(name)
+
+
+def extract_locations(text: str) -> List[str]:
+    """
+    Convenience function to extract location IDs from text.
+
+    Args:
+        text: Text to search
+
+    Returns:
+        List of location IDs
+    """
+    return get_location_service().extract_locations_from_text(text)
+
+
+if __name__ == "__main__":
+    # Test the service
+    logging.basicConfig(level=logging.INFO)
+
+    service = LocationService()
+    if service.load_config():
+        print("\n=== Location Service Test ===\n")
+
+        # Test alias resolution
+        test_names = ["des moines", "iowa", "Corn Belt", "Buenos Aires", "mato grosso"]
+        print("Alias Resolution:")
+        for name in test_names:
+            loc = service.resolve_location(name)
+            if loc:
+                print(f"  '{name}' -> {loc.id} ({loc.display_name})")
+            else:
+                print(f"  '{name}' -> NOT FOUND")
+
+        print("\nActive Locations by Country:")
+        for country in ['US', 'BR', 'AR']:
+            locs = service.get_locations_by_country(country)
+            active = [l for l in locs if l.active]
+            print(f"  {country}: {len(active)} locations")
+
+        print("\nLocations producing corn:")
+        corn_locs = service.get_locations_by_commodity('corn')
+        for loc in corn_locs[:5]:
+            print(f"  - {loc.display_name} ({loc.region})")
+
+        print("\nFuzzy match test for 'minneapolis':")
+        matches = service.fuzzy_match("minneapolis")
+        for loc_id, score in matches[:3]:
+            loc = service.get_location(loc_id)
+            print(f"  {loc.display_name}: {score:.2f}")

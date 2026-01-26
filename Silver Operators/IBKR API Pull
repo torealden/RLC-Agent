@@ -1,0 +1,37 @@
+from ib_insync import IB, util, Future
+import pandas as pd
+import datetime as dt
+
+ib = IB()
+ib.connect('127.0.0.1', 7497, clientId=1)  # adjust host/port if needed
+
+# Define the COMEX Silver futures continuous contract (front month)
+contract = Future(symbol='SI', lastTradeDateOrContractMonth='', exchange='COMEX', currency='USD')
+
+all_data = []
+end_time = dt.datetime.now()
+
+for _ in range(5):  # loop 5 times to get ~5 years
+    # Request 1 year of minute bars ending at end_time
+    bars = ib.reqHistoricalData(
+        contract,
+        endDateTime=end_time,
+        durationStr='1 Y',
+        barSizeSetting='1 min',
+        whatToShow='TRADES',
+        useRTH=False,
+        formatDate=1
+    )
+    df = util.df(bars)
+    all_data.append(df)
+
+    # Move end_time back by one year minus one minute
+    end_time = df['date'].min() - dt.timedelta(minutes=1)
+
+ib.disconnect()
+
+# Combine and sort data
+full_df = pd.concat(all_data).drop_duplicates().sort_values('date')
+full_df.rename(columns={'date':'DateTime','open':'Open','high':'High','low':'Low','close':'Close','volume':'Volume'}, inplace=True)
+full_df.to_csv('silver_minute_data.csv', index=False)
+print("Saved", len(full_df), "rows to silver_minute_data.csv")

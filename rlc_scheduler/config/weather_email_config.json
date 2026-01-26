@@ -16,5 +16,12 @@
     "check_hours_back": 24,
     "processed_ids_file": "weather_emails_processed.json",
     "cities_file": "weather_cities.json",
-    "log_file": "weather_email_agent.log"
+    "log_file": "weather_email_agent.log",
+
+    "llm_enabled": true,
+    "llm_provider": "ollama",
+    "ollama_url": "http://localhost:11434",
+    "ollama_model": "phi3:mini",
+    "openai_model": "gpt-4o-mini",
+    "anthropic_model": "claude-3-haiku-20240307"
 }
