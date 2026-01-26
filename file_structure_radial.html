@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Folder Structure Visualization</title>
+  <style>
+    body {{
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: #0b0f14;
+      color: #e6edf3;
+    }}
+    header {{
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      gap: 14px;
+      align-items: baseline;
+      justify-content: space-between;
+    }}
+    .title {{
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: 0.2px;
+    }}
+    .subtitle {{
+      font-size: 12px;
+      opacity: 0.75;
+      margin-top: 2px;
+    }}
+    .controls {{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 12px;
+      opacity: 0.9;
+      user-select: none;
+    }}
+    .controls input {{
+      transform: translateY(1px);
+    }}
+    #viz {{
+      width: 100vw;
+      height: calc(100vh - 60px);
+    }}
+    .tooltip {{
+      position: absolute;
+      pointer-events: none;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      max-width: 360px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      line-height: 1.35;
+    }}
+    .tooltip .k {{
+      opacity: 0.65;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }}
+    .tooltip .n {{
+      font-weight: 650;
+      margin-bottom: 2px;
+    }}
+    .tooltip .note {{
+      opacity: 0.9;
+    }}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="title">RLC-Agent Folder Map (Radial)</div>
+      <div class="subtitle">Hover nodes for notes. Drag to pan. Scroll to zoom.</div>
+    </div>
+    <div class="controls">
+      <label><input id="toggleLabels" type="checkbox" checked> Show labels</label>
+    </div>
+  </header>
+
+  <svg id="viz"></svg>
+  <div id="tooltip" class="tooltip" style="display:none;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script>
+    const data = {"name": "RLC-Agent", "kind": "folder", "children": [{"name": "├── README.md", "kind": "file", "note": "Project overview & quick start"}, {"name": "├── LLM_SETUP_PLAN.md", "kind": "file", "note": "Setup guide (keep at root)"}, {"name": "├── requirements.txt", "kind": "file"}, {"name": "├── .env", "kind": "file", "note": "Single source of credentials"}, {"name": "├── .env.example", "kind": "file"}, {"name": "├── .gitignore", "kind": "file"}, {"name": "├── src", "kind": "folder", "note": "ALL application code"}, {"name": "│   ├── main.py", "kind": "file", "note": "CLI entry point"}, {"name": "│   ├── agents", "kind": "folder", "note": "AI agent implementations"}, {"name": "│   │   ├── core", "kind": "folder", "note": "Master, memory, verification agents"}, {"name": "│   │   ├── collectors", "kind": "folder", "note": "Data collection agents (consolidate)"}, {"name": "│   │   ├── analysis", "kind": "folder", "note": "Fundamental, price, spread analyzers"}, {"name": "│   │   ├── reporting", "kind": "folder", "note": "Report generation agents"}, {"name": "│   │   └── integration", "kind": "folder", "note": "Email, calendar, Notion agents"}, {"name": "│   ├── orchestrators", "kind": "folder", "note": "Workflow coordinators"}, {"name": "│   ├── services", "kind": "folder", "note": "Shared services"}, {"name": "│   │   ├── api", "kind": "folder", "note": "External API clients"}, {"name": "│   │   ├── database", "kind": "folder", "note": "DB config, loaders, schema"}, {"name": "│   │   └── document", "kind": "folder", "note": "Document builders, RAG"}, {"name": "│   ├── scheduler", "kind": "folder", "note": "Consolidated scheduler (merge rlc_scheduler)"}, {"name": "│   │   ├── agents", "kind": "folder", "note": "Scheduled task agents"}, {"name": "│   │   ├── tasks", "kind": "folder", "note": "Task definitions"}, {"name": "│   │   └── runner.py", "kind": "file", "note": "Main scheduler"}, {"name": "│   ├── tools", "kind": "folder", "note": "LLM tools & utilities"}, {"name": "│   └── utils", "kind": "folder", "note": "Config, helpers"}, {"name": "├── database", "kind": "folder", "note": "Database artifacts"}, {"name": "│   ├── schemas", "kind": "folder", "note": "SQL schema files (001-009)"}, {"name": "│   ├── migrations", "kind": "folder", "note": "Schema migrations"}, {"name": "│   ├── views", "kind": "folder", "note": "SQL views"}, {"name": "│   └── queries", "kind": "folder", "note": "Reusable queries"}, {"name": "├── config", "kind": "folder", "note": "Configuration (single location)"}, {"name": "│   ├── data_sources.csv", "kind": "file", "note": "Master data source list"}, {"name": "│   ├── weather_locations.json", "kind": "file"}, {"name": "│   └── schedules.json", "kind": "file", "note": "Task schedules"}, {"name": "├── data", "kind": "folder", "note": "Runtime data (gitignored mostly)"}, {"name": "│   ├── raw", "kind": "folder", "note": "Raw downloaded data"}, {"name": "│   ├── processed", "kind": "folder", "note": "Transformed data"}, {"name": "│   ├── cache", "kind": "folder", "note": "API response cache"}, {"name": "│   └── exports", "kind": "folder", "note": "PowerBI exports, CSVs"}, {"name": "├── output", "kind": "folder", "note": "Generated outputs"}, {"name": "│   ├── reports", "kind": "folder", "note": "Generated Word reports"}, {"name": "│   ├── visualizations", "kind": "folder", "note": "Chart images"}, {"name": "│   └── logs", "kind": "folder", "note": "Application logs"}, {"name": "├── tests", "kind": "folder", "note": "Test suite"}, {"name": "│   ├── unit", "kind": "folder"}, {"name": "│   ├── integration", "kind": "folder"}, {"name": "│   └── fixtures", "kind": "folder"}, {"name": "├── docs", "kind": "folder", "note": "Documentation"}, {"name": "│   ├── architecture", "kind": "folder", "note": "System design docs"}, {"name": "│   ├── setup", "kind": "folder", "note": "Installation guides"}, {"name": "│   ├── api", "kind": "folder", "note": "API documentation"}, {"name": "│   └── runbooks", "kind": "folder", "note": "Operational guides"}, {"name": "├── domain_knowledge", "kind": "folder", "note": "Agricultural economist knowledge base"}, {"name": "│   ├── balance_sheets", "kind": "folder", "note": "Excel models (current Models/)"}, {"name": "│   │   ├── biofuels", "kind": "folder"}, {"name": "│   │   ├── feed_grains", "kind": "folder"}, {"name": "│   │   ├── food_grains", "kind": "folder"}, {"name": "│   │   ├── oilseeds", "kind": "folder"}, {"name": "│   │   └── fats_greases", "kind": "folder"}, {"name": "│   ├── sample_reports", "kind": "folder", "note": "Reference reports (current report_samples/)"}, {"name": "│   ├── operator_guides", "kind": "folder", "note": "Silver Operators docs"}, {"name": "│   └── llm_context", "kind": "folder", "note": "LLM training context"}, {"name": "├── scripts", "kind": "folder", "note": "Standalone utility scripts"}, {"name": "│   ├── data_ingestion", "kind": "folder", "note": "One-time data loads"}, {"name": "│   ├── maintenance", "kind": "folder", "note": "DB maintenance, cleanup"}, {"name": "│   └── deployment", "kind": "folder", "note": "Deploy scripts (merge deployment/)"}, {"name": "├── dashboards", "kind": "folder", "note": "Visualization assets"}, {"name": "│   ├── powerbi", "kind": "folder", "note": "PowerBI files"}, {"name": "│   └── templates", "kind": "folder", "note": "Dashboard templates"}, {"name": "└── archive", "kind": "folder", "note": "Historical/inactive items"}, {"name": "├── presentations", "kind": "folder", "note": "Old conference presentations"}, {"name": "└── deprecated_code", "kind": "folder", "note": "Old implementations for reference"}]};
+
+    const svg = d3.select("#viz");
+    const width = svg.node().clientWidth;
+    const height = svg.node().clientHeight;
+
+    const gRoot = svg
+      .attr("viewBox", [-width/2, -height/2, width, height])
+      .append("g");
+
+    const zoom = d3.zoom()
+      .scaleExtent([0.3, 5])
+      .on("zoom", (event) => gRoot.attr("transform", event.transform));
+
+    svg.call(zoom);
+
+    const radius = Math.min(width, height) * 0.43;
+
+    const root = d3.hierarchy(data);
+    const cluster = d3.cluster()
+      .size([2 * Math.PI, radius]);
+
+    cluster(root);
+
+    const link = gRoot.append("g")
+      .attr("fill", "none")
+      .attr("stroke", "rgba(230,237,243,0.18)")
+      .attr("stroke-width", 1)
+      .selectAll("path")
+      .data(root.links())
+      .join("path")
+      .attr("d", d3.linkRadial()
+        .angle(d => d.x)
+        .radius(d => d.y)
+      );
+
+    const node = gRoot.append("g")
+      .selectAll("g")
+      .data(root.descendants())
+      .join("g")
+      .attr("transform", d => `
+        rotate(${(d.x * 180 / Math.PI) - 90})
+        translate(${d.y},0)
+      `);
+
+    const folderStroke = "rgba(125, 211, 252, 0.95)";
+    const fileStroke   = "rgba(167, 139, 250, 0.95)";
+
+    node.append("circle")
+      .attr("r", d => d.depth === 0 ? 6.5 : 4.0)
+      .attr("fill", "rgba(11,15,20,1)")
+      .attr("stroke", d => (d.data.kind === "folder" ? folderStroke : fileStroke))
+      .attr("stroke-width", d => d.depth === 0 ? 2.2 : 1.6);
+
+    const label = node.append("text")
+      .attr("dy", "0.31em")
+      .attr("x", d => d.x < Math.PI === !d.children ? 8 : -8)
+      .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+      .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+      .style("font-size", d => d.depth === 0 ? "12px" : "11px")
+      .style("opacity", 0.9)
+      .text(d => d.data.name);
+
+    // Tooltip
+    const tip = d3.select("#tooltip");
+
+    node.on("mousemove", (event, d) => {
+      const note = d.data.note || "";
+      tip.style("display", "block")
+        .style("left", (event.pageX + 14) + "px")
+        .style("top", (event.pageY + 14) + "px")
+        .html(`
+          <div class="k">${d.data.kind.toUpperCase()}</div>
+          <div class="n">${d.data.name}</div>
+          ${note ? `<div class="note">${note}</div>` : `<div class="note" style="opacity:0.6">No note</div>`}
+        `);
+    }).on("mouseleave", () => tip.style("display", "none"));
+
+    // Label toggle
+    const toggle = document.getElementById("toggleLabels");
+    toggle.addEventListener("change", () => {
+      label.style("display", toggle.checked ? null : "none");
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Folder Structure Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { margin: 0; }
+        svg { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="viz"></div>
+    <script>
+        const data = {"name": "archive", "type": "folder", "comment": "Historical/inactive items", "children": [{"name": "presentations", "type": "folder", "comment": "Old conference presentations", "children": [{"name": "deprecated_code", "type": "folder", "comment": "Old implementations for reference", "children": []}]}]};
+        const width = 1200;
+        const radius = width / 2;
+
+        const tree = d3.cluster()
+            .size([2 * Math.PI, radius - 100]);
+
+        const hierarchy = d3.hierarchy(data)
+            .sort((a, b) => d3.ascending(a.data.name, b.data.name));
+
+        const root = tree(hierarchy);
+
+        const svg = d3.select("#viz").append("svg")
+            .attr("width", width)
+            .attr("height", width)
+            .attr("viewBox", [-radius, -radius, width, width])
+            .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
+
+        const g = svg.append("g");
+
+        g.append("g")
+            .attr("fill", "none")
+            .attr("stroke", "#555")
+            .attr("stroke-opacity", 0.4)
+            .attr("stroke-width", 1.5)
+          .selectAll("path")
+          .data(root.links())
+          .join("path")
+            .attr("d", d3.linkRadial()
+                .angle(d => d.x)
+                .radius(d => d.y));
+
+        const node = g.append("g")
+            .selectAll("g")
+          .data(root.descendants())
+          .join("g")
+            .attr("transform", d => `
+              rotate(${d.x * 180 / Math.PI - 90})
+              translate(${d.y},0)
+            `);
+
+        node.append("circle")
+            .attr("fill", d => d.children ? "#1f77b4" : "#2ca02c")  // Blue for folders, green for files
+            .attr("r", 3.5);
+
+        node.append("text")
+            .attr("dy", "0.31em")
+            .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+            .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+            .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+            .text(d => d.data.name)
+          .clone(true).lower()
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-width", 3)
+            .attr("stroke", "white");
+
+        node.append("title")
+            .text(d => d.data.comment ? d.data.comment : d.data.name);
+
+        // Add zoom and pan
+        svg.call(d3.zoom()
+            .extent([[0, 0], [width, width]])
+            .scaleExtent([0.5, 8])
+            .on("zoom", zoomed));
+
+        function zoomed(event) {
+            g.attr("transform", event.transform);
+        }
+    </script>
+</body>
+</html>
+    
