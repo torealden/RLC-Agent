@@ -1,0 +1,32 @@
+============================================================
+WEATHER INTELLIGENCE BRIEF
+Generated: 2026-01-27 13:52
+Emails analyzed: 7
+Source: World Weather Inc.
+============================================================
+
+KEY POINTS FOR TRADING DECISIONS AND WEATHER IMPACT ON CROPS
+US CONDITIONS:
+- Corn Belt: Expect teens to mid-20s Fahrenheit temperatures, very low precipitation (less than half an inch), minimal impact on crops.
+- Wheat Belt: Anticipate below 50°F with similar precipitation levels as corn belt; potential for frost damage due to cooler conditions affecting crop development positively. 
+- Delta/South (Louisiana): Frost and freeze risks in the mid-teens, significant citrus harm expected.
+
+SOUTH AMERICA:
+- Brazil Mato Grosso: Above average temperatures ranging from 75°F to around the lower high 80s today through Saturday; up to 1.18 inches of rain received in some areas, good for easing crop stress.
+- Parana and Rio Grande do Sul: Temperatures similar to Mato Grosso but with slight variations towards warmer or cooler ends of the spectrum;
+- Cordoba (Entre Rios): Rainfall between 0.75"-1", minimal impact on crops; subsoil moisture levels expected to be good.
+
+WATCH LIST: 
+- Frost damage in Louisiana citrus groves and potential for extended freezes into early February that could affect crop viability (Louisiana)
+- Light rains increasing throughout southern Brazil, particularly Mato Grosso with a focus on improving drought conditions without significant temperature changes.
+
+--- 
+Please note: The above summaries reflect an overview of expected weather impacts and should be used as guidance for trading decisions. Real-time data access is recommended to monitor local variations, especially since specific details regarding precipitation and temperatures are not provided in the original text snippet. For precise figures or regional effects on agriculture due to rapidly changing conditions, consultation with detailed forecasts from reliable weather services like World Weather Company (6WC) would be beneficial for traders' strategies. Actual impacts may vary depending on localized events and microclimates within each region.
+
+Sincerely,
+Weather Analysis Team
+
+============================================================
+Locations tracked: Chicago, Parana, Mato Grosso, Memphis, IN, Goias, Great Plains, Rio Grande do Sul, Cordoba, Buenos Aires, Santa Fe, Sao Paulo, MT, Gulf Coast, Delta, Midwest
+Analysis by: OLLAMA (phi3:mini)
+============================================================
