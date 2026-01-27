@@ -345,9 +345,41 @@ def fetch_comprehensive_data(days_back: int = 7) -> dict:
     logger.info(f"   Found {len(data['market_narratives'])} market narratives")
 
     # =========================================================================
-    # 11. FUTURES PRICES (From Yahoo Finance)
+    # 11. CONAB BRAZIL DATA (When available)
     # =========================================================================
-    logger.info("11. Fetching futures prices...")
+    logger.info("11. Checking for CONAB Brazil data...")
+    try:
+        cur.execute("""
+            SELECT commodity, crop_year, state,
+                   planted_area_1000ha, production_1000t, yield_kg_ha,
+                   collected_at
+            FROM bronze.conab_production
+            WHERE collected_at >= NOW() - INTERVAL '30 days'
+            ORDER BY crop_year DESC, commodity
+            LIMIT 20
+        """)
+        rows = cur.fetchall()
+        data['conab_brazil'] = [
+            {
+                'commodity': r[0],
+                'crop_year': r[1],
+                'state': r[2],
+                'planted_area_1000ha': float(r[3]) if r[3] else None,
+                'production_1000t': float(r[4]) if r[4] else None,
+                'yield_kg_ha': float(r[5]) if r[5] else None
+            }
+            for r in rows
+        ]
+        logger.info(f"   Found {len(data['conab_brazil'])} CONAB records")
+    except Exception as e:
+        logger.info(f"   CONAB data not yet available: {e}")
+        conn.rollback()
+        data['conab_brazil'] = []
+
+    # =========================================================================
+    # 12. FUTURES PRICES (From Yahoo Finance)
+    # =========================================================================
+    logger.info("12. Fetching futures prices...")
     try:
         cur.execute(f"""
             SELECT symbol, trade_date, contract_month,
@@ -429,6 +461,30 @@ def format_balance_sheet(name: str, data: list) -> str:
         ending = record.get('ending_stocks', 'N/A')
         lines.append(f"    MY {my}: Prod={prod}, Exports={exports}, End Stocks={ending}")
     return '\n'.join(lines)
+
+
+def format_conab_data(data: list) -> str:
+    """Format CONAB Brazil crop data for the prompt."""
+    if not data:
+        return "  Note: Brazilian crop estimates from CONAB typically released mid-month.\n  Consider SA harvest progress as key factor for US export competitiveness."
+
+    # Group by commodity
+    by_commodity = {}
+    for record in data:
+        comm = record['commodity']
+        if comm not in by_commodity:
+            by_commodity[comm] = []
+        by_commodity[comm].append(record)
+
+    lines = []
+    for commodity, records in by_commodity.items():
+        latest = records[0]  # Most recent
+        prod = latest.get('production_1000t', 'N/A')
+        area = latest.get('planted_area_1000ha', 'N/A')
+        crop_year = latest.get('crop_year', 'N/A')
+        lines.append(f"  - {commodity.title()} ({crop_year}): {prod} MMT production, {area} M ha planted")
+
+    return '\n'.join(lines) if lines else "  CONAB data pending next release."
 
 
 def build_enhanced_prompt(data: dict, metrics: dict) -> str:
@@ -612,6 +668,9 @@ MARKET DATA
 
 **DERIVED ANALYTICAL METRICS:**
 {metrics_section if metrics_section else "  Insufficient data for derived metrics."}
+
+**BRAZIL (CONAB) - South America Competition:**
+{format_conab_data(data.get('conab_brazil', []))}
 
 **MARKET COMMENTARY SNIPPETS:**
 {narrative_section if narrative_section else "  No recent market narratives available."}

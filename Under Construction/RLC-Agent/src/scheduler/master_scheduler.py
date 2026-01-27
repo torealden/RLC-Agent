@@ -75,8 +75,49 @@ class CollectorSchedule:
 
 RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
     # -------------------------------------------------------------------------
-    # DAILY RELEASES
+    # DAILY RELEASES - FUTURES SESSION DATA
     # -------------------------------------------------------------------------
+    # Yahoo Finance delayed data captured at session boundaries
+
+    'futures_overnight': CollectorSchedule(
+        collector_name='futures_overnight',
+        collector_class='YahooFuturesCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(8, 45),  # 8:45 AM ET (after Globex close at 7:45 CT)
+            description="Overnight (Globex) session OHLC capture"
+        ),
+        priority=3,
+        commodities=['corn', 'wheat', 'soybeans', 'soy_oil', 'soy_meal',
+                    'crude_oil', 'natural_gas'],
+    ),
+
+    'futures_us_session': CollectorSchedule(
+        collector_name='futures_us_session',
+        collector_class='YahooFuturesCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(14, 30),  # 2:30 PM ET (after RTH close at 1:20 CT)
+            description="US Regular Trading Hours session OHLC capture"
+        ),
+        priority=3,
+        commodities=['corn', 'wheat', 'soybeans', 'soy_oil', 'soy_meal',
+                    'crude_oil', 'natural_gas'],
+    ),
+
+    'futures_settlement': CollectorSchedule(
+        collector_name='futures_settlement',
+        collector_class='YahooFuturesCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(18, 0),  # 6:00 PM ET (settlement published ~5 PM CT)
+            description="Daily settlement prices and full-day OHLC"
+        ),
+        priority=2,
+        commodities=['corn', 'wheat', 'soybeans', 'soy_oil', 'soy_meal',
+                    'crude_oil', 'natural_gas', 'gasoline', 'heating_oil'],
+    ),
+
     'cme_settlements': CollectorSchedule(
         collector_name='cme_settlements',
         collector_class='CMESettlementsCollector',
@@ -304,6 +345,42 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         ),
         priority=3,
         commodities=['wheat', 'canola', 'barley', 'oats'],
+    ),
+
+    # -------------------------------------------------------------------------
+    # SOUTH AMERICA - CONAB (Brazil)
+    # -------------------------------------------------------------------------
+    # CONAB releases grain crop estimates monthly (12 surveys per crop year)
+    # 2026 Schedule:
+    #   Jan 15, Feb 12, Mar 13, Apr 14, May 14, Jun 11,
+    #   Jul 14, Aug 13, Sep 15, Oct 15, Nov 13, Dec 15
+
+    'conab_safras': CollectorSchedule(
+        collector_name='conab_safras',
+        collector_class='CONABCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=14,  # Usually mid-month (11th-15th)
+            release_time=time(9, 0),  # 9:00 AM ET (morning in Brasilia)
+            timezone="America/Sao_Paulo",
+            description="CONAB Brazilian Grain Crop Estimates (Safras)"
+        ),
+        priority=1,  # High priority - market moving for SA crops
+        commodities=['soybeans', 'corn', 'wheat', 'cotton', 'rice'],
+    ),
+
+    'conab_supply_demand': CollectorSchedule(
+        collector_name='conab_supply_demand',
+        collector_class='CONABCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=14,  # Same as safras
+            release_time=time(9, 30),  # Shortly after safras
+            timezone="America/Sao_Paulo",
+            description="CONAB Brazilian Supply & Demand Balances"
+        ),
+        priority=2,
+        commodities=['soybeans', 'corn', 'wheat'],
     ),
 
     # -------------------------------------------------------------------------

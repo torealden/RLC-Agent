@@ -21,13 +21,34 @@ from datetime import datetime, date
 from typing import Dict, List, Optional, Any
 from io import StringIO, BytesIO
 
-from .base_collector import (
-    BaseCollector,
-    CollectorConfig,
-    CollectorResult,
-    DataFrequency,
-    AuthType
-)
+# Handle imports for both module and direct script execution
+import sys
+from pathlib import Path
+
+_PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
+try:
+    from .base_collector import (
+        BaseCollector,
+        CollectorConfig,
+        CollectorResult,
+        DataFrequency,
+        AuthType
+    )
+except ImportError:
+    # Running directly - import from base_collector file directly
+    import importlib.util
+    _bc_path = Path(__file__).parent / 'base_collector.py'
+    _spec = importlib.util.spec_from_file_location("base_collector", _bc_path)
+    _base_collector = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_base_collector)
+    BaseCollector = _base_collector.BaseCollector
+    CollectorConfig = _base_collector.CollectorConfig
+    CollectorResult = _base_collector.CollectorResult
+    DataFrequency = _base_collector.DataFrequency
+    AuthType = _base_collector.AuthType
 
 try:
     import pandas as pd
