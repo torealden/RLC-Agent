@@ -1,0 +1,248 @@
+Implement the following plan:
+
+  # Notion Database Sync Plan
+
+  ## Status: READY FOR CLAUDE DESKTOP HANDOFF
+
+  **Action Required:** Copy the section below ("Prompt for Claude Desktop") to Claude Desktop to generate the data
+  needed.
+
+  ---
+
+  ## Prompt for Claude Desktop
+
+  Copy everything in this box to Claude Desktop:
+
+  ```
+  I need you to summarize all the work we've done together so Claude Code can populate my Notion database. Please
+  provide structured data for these categories:
+
+  1. **AGENTS BUILT** - For each agent/script:
+  - Name, Purpose, Status (Live/Building/To Build)
+  - Inputs, Outputs, Dependencies (libraries/APIs)
+  - File location, Autonomy level
+
+  2. **DATA SOURCES** - For each data source:
+  - Name, Domain (Prices/Trade/Weather/etc.)
+  - Access method (API/Scrape/File), Status
+  - Credentials setup, Refresh rate
+
+  3. **ARCHITECTURE DECISIONS** - Key technical choices:
+  - Decision name, Context, What was decided
+  - Alternatives considered, Consequences
+
+  4. **RUNBOOKS NEEDED** - Documented procedures:
+  - Process name, Steps, Prerequisites
+  - Approval checkpoints, Verification steps
+
+  5. **LESSONS LEARNED** - Issues encountered:
+  - Issue, Category (Security/Code/Agent Behavior)
+  - Root cause, Prevention rule, Status
+
+  6. **PROJECTS & TIMELINE** - Work status:
+  - Project name, Status, Priority
+  - Key milestones, Related agents
+
+  Format as JSON or structured text so Claude Code can parse and add to Notion.
+  ```
+
+  ---
+
+  ---
+
+  ## Your Notion Workspace: "RLC OS" - Complete Table Summary
+
+  ### 1. **agent_registry** (ID: `2dbead02-3dee-804a-b611-000b7fe5b299`)
+  **Purpose:** Catalog of all AI agents in your system
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | Agent Name | title | Name of the agent |
+  | Status | select | To Build, Building, Live, Broken, Deprecated |
+  | Category | multi_select | Data Collector, Transform, Verification, Report Writer, etc. |
+  | Purpose | rich_text | What the agent does |
+  | Inputs | rich_text | What data/triggers it receives |
+  | Outputs | rich_text | What it produces |
+  | Dependencies | multi_select | Libraries, APIs, other agents it needs |
+  | System of Record | multi_select | Where data is stored (Postgres, Notion, etc.) |
+  | Autonomy Level | select | L1 (Approval Required), L2 (Routine Auto), L3 (High Auto) |
+  | Location | select | File path in repo |
+  | Owner | people | Who maintains it |
+  | Last Verified | date | When it was last tested working |
+
+  ### 2. **data_sources_registry** (ID: `2dbead02-3dee-8062-ae13-000ba10e3beb`)
+  **Purpose:** Registry of all external data sources
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | Source Name | title | Name of the data source |
+  | Domain | select | Prices, Trade, Weather, Supply-Demand, etc. |
+  | Status | select | Active, Paused, Deprecated |
+  | Priority | select | Critical, High, Medium, Low (with -Delegate options) |
+  | Access Method | select | API, Scrape, File, etc. |
+  | Credential Type | select | None, API Key, OAuth |
+  | Refresh Rate | rich_text | How often data updates |
+  | Bronze/Silver Tables | rich_text | Database table names |
+  | Known Failure Modes | rich_text | What can go wrong |
+
+  ### 3. **architecture_decisions** (ID: `2dbead02-3dee-802f-a0a7-000b20d183ca`)
+  **Purpose:** Architecture Decision Records (ADRs)
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | ADR Title | title | Decision name |
+  | Status | select | Proposed, Accepted, Deprecated |
+  | Date | date | When decided |
+  | Context | rich_text | Why this decision was needed |
+  | Decision | rich_text | What was decided |
+  | Alternatives Considered | rich_text | Other options evaluated |
+  | Consequences | rich_text | Trade-offs and implications |
+  | PR/Commit Links | url | Related code links |
+
+  ### 4. **Runbooks** (ID: `2dbead02-3dee-804d-b167-000b11e5f92f`)
+  **Purpose:** Operational procedures and SOPs
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | Runbook Title | title | Name of the procedure |
+  | Select | select | Run Agent, Onboard Source, Troubleshoot, Deployment, Recovery |
+  | Steps | rich_text | Step-by-step instructions |
+  | Prereqs | multi_select | Requirements (Python, GPU, internet, etc.) |
+  | Approval Checkpoints | rich_text | Where human approval is needed |
+  | Proof Checks | rich_text | How to verify success |
+  | Rollback/Recovery | rich_text | How to undo if needed |
+  | Applies to Agent | relation | Link to agent_registry |
+  | Applies to Source | relation | Link to data_sources_registry |
+
+  ### 5. **lessons_learned** (ID: `2e6ead02-3dee-80d1-a7d7-000bf28e86d6`)
+  **Purpose:** Track issues and prevention rules
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | Issue | title | What went wrong |
+  | Category | select | Security, User Guidance, Agent Behavior, Code |
+  | Symptom | rich_text | How it manifested |
+  | Root Cause | rich_text | Why it happened |
+  | Prevention Rule | rich_text | How to avoid in future |
+  | Status | select | Not fixed, Fixed, Fixed via system prompt, N/A |
+
+  ### 6. **reconciliation_log** (ID: `2dbead02-3dee-8050-ae40-000bd8ff835c`)
+  **Purpose:** Data quality issue tracking
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | Issue/Topic | title | What data issue was found |
+  | Severity | select | P0, P1, P2 |
+  | Status | select | Open, In Progress, Resolved, Will Not Fix |
+  | Symptom | rich_text | How issue appeared |
+  | Hypothesis | rich_text | Suspected cause |
+  | Root Cause | rich_text | Actual cause |
+  | Test Performed | rich_text | How validated |
+  | Fix Implemented | rich_text | Solution applied |
+  | Agent | relation | Link to agent_registry |
+  | Dataset | relation | Link to data_sources_registry |
+
+  ### 7. **master_timeline** (ID: `2dcead02-3dee-80ae-8990-000b75ea7d59`)
+  **Purpose:** Project tracking and milestones
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | Initiative | title | Project name |
+  | Project | select | Data Pipeline, BioTrack, EEPT Model, Content Operations, etc. |
+  | Status | select | Planning, Active, Paused, Blocked, Complete |
+  | Priority | select | P0, P1, P2, P3 |
+  | Start/End Date | date | Timeline |
+  | Hours Estimate/Completed | number | Time tracking |
+  | Key Milestones | rich_text | Major checkpoints |
+  | Related Agent | relation | Link to agent_registry |
+
+  ### 8. **content_calendar** (ID: `2dbead02-3dee-802b-866d-000b2e4fc52f`)
+  **Purpose:** Social media content planning
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | Post Title | title | Content name |
+  | Post Date | date | Publication date |
+  | Status | select | Idea, Research, Drafting, Review, Scheduled, Published |
+  | Primary Platform | select | LinkedIn, X, WhatsApp, Telegram |
+  | Content Category | select | SAF Watch, Chart of the Day, Brazil Crop Update, etc. |
+  | Target Audience | multi_select | Traders, Analysts, Executives, etc. |
+  | Market Focus | multi_select | US, Brazil, Global, etc. |
+
+  ### 9. **content_templates** (ID: `2dcead02-3dee-80b9-86b8-000b5d695c50`)
+  **Purpose:** Reusable content structures
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | Template | title | Template name |
+  | Content Category | select | Matches content_calendar categories |
+  | Structure | rich_text | Format outline |
+  | Opening Hook Options | rich_text | Intro patterns |
+  | Call-to-Action Options | rich_text | CTA patterns |
+  | Hashtag Set | rich_text | Relevant hashtags |
+
+  ### 10. **content_tasks** (ID: `2dcead02-3dee-80b5-af5d-000b0344d5ec`)
+  **Purpose:** Task management for content creation
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | Task | title | Task description |
+  | Task Type | select | Research, Data Gathering, Chart Creation, Writing, Editing, Scheduling |
+  | Status | select | Not Started, In Progress, Blocked, Complete |
+  | Priority | select | P0, P1, P2, P3 |
+  | Assignee | people | Who's responsible |
+  | Agent | relation | If automated, which agent |
+  | Content Item | relation | Link to content_calendar |
+  | Runbook | relation | Link to runbooks |
+
+  ### 11. **engagement_log** (ID: `2dcead02-3dee-800b-a51f-000b66593f55`)
+  **Purpose:** Social media performance metrics
+
+  ### 12. **distribution_channels** (ID: `2dcead02-3dee-80c2-9a4b-000b8714f2bd`)
+  **Purpose:** Platform configuration and API connections
+
+  ---
+
+  ## What Claude Desktop Should Provide
+
+  To populate these tables, please have Claude Desktop summarize:
+
+  ### For **agent_registry**:
+  - All agents/scripts built (name, purpose, inputs, outputs, status)
+  - Technologies/libraries used
+  - Where they're stored (file paths)
+  - What they integrate with
+
+  ### For **data_sources_registry**:
+  - All data sources connected or planned
+  - APIs, files, scrapers configured
+  - Credentials setup (location, not actual secrets)
+  - Refresh rates and failure modes observed
+
+  ### For **architecture_decisions**:
+  - Key technical decisions made (database choices, API designs, model selections)
+  - Why each choice was made
+  - Alternatives that were considered
+
+  ### For **Runbooks**:
+  - Any documented processes or SOPs
+  - How to run agents manually
+  - Troubleshooting steps discovered
+  - Deployment procedures
+
+  ### For **lessons_learned**:
+  - Bugs/issues encountered and fixed
+  - Mistakes made and prevention rules
+  - Best practices discovered
+
+  ### For **master_timeline**:
+  - Projects worked on and their status
+  - Features planned but not yet built
+  - Milestones reached
+
+  ---
+
+  ## Daily Sync Approach
+
+  Once initial data is populated, for daily updates:
+  1. I can query Notion for current state
+  2. You provide new work done that day (via prompt or file)
+  3. I update appropriate tables with new entries/status changes
+
+  **Note:** Automated daily scheduling requires external tooling (cron job, Windows Task Scheduler, or similar) to
+  trigger Claude Code at a specific time. Claude Code itself doesn't have built-in scheduling.
+
+
+  If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content
+  you generated), read the full transcript at:
+  C:\Users\torem\.claude\projects\C--Users-torem\734f3fa3-ef55-4bb8-8b4a-ef2e38646403.jsonl

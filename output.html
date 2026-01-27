@@ -13,12 +13,12 @@
 <body>
     <div id="viz"></div>
     <script>
-        const data = {"name": "archive", "type": "folder", "comment": "Historical/inactive items", "children": [{"name": "presentations", "type": "folder", "comment": "Old conference presentations", "children": [{"name": "deprecated_code", "type": "folder", "comment": "Old implementations for reference", "children": []}]}]};
-        const width = 1200;
+        const data = {"name": "archive", "type": "folder", "comment": "Historical/inactive items", "children": [{"name": "presentations", "type": "folder", "comment": "Old conference presentations", "children": []}, {"name": "deprecated_code", "type": "folder", "comment": "Old implementations for reference", "children": []}]};
+        const width = 2000;
         const radius = width / 2;
 
         const tree = d3.cluster()
-            .size([2 * Math.PI, radius - 100]);
+            .size([2 * Math.PI, radius - 150]);
 
         const hierarchy = d3.hierarchy(data)
             .sort((a, b) => d3.ascending(a.data.name, b.data.name));
@@ -29,7 +29,7 @@
             .attr("width", width)
             .attr("height", width)
             .attr("viewBox", [-radius, -radius, width, width])
-            .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
+            .attr("style", "max-width: 100%; height: auto; font: 12px sans-serif;");
 
         const g = svg.append("g");
 
@@ -56,7 +56,7 @@
 
         node.append("circle")
             .attr("fill", d => d.children ? "#1f77b4" : "#2ca02c")  // Blue for folders, green for files
-            .attr("r", 3.5);
+            .attr("r", 4.5);
 
         node.append("text")
             .attr("dy", "0.31em")

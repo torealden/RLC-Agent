@@ -1,0 +1,626 @@
+{
+  "version": "1.0",
+  "locations": [
+    {
+      "id": "des_moines_ia",
+      "name": "Des Moines",
+      "display_name": "Des Moines, IA",
+      "region": "US_CORN_BELT",
+      "country": "US",
+      "lat": 41.59,
+      "lon": -93.62,
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": "USDA cash price report location (slug 2850)"
+    },
+    {
+      "id": "champaign_il",
+      "name": "Champaign",
+      "display_name": "Champaign, IL",
+      "region": "US_CORN_BELT",
+      "country": "US",
+      "lat": 40.12,
+      "lon": -88.24,
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "lincoln_ne",
+      "name": "Lincoln",
+      "display_name": "Lincoln, NE",
+      "region": "US_CORN_BELT",
+      "country": "US",
+      "lat": 40.81,
+      "lon": -96.7,
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "indianapolis_in",
+      "name": "Indianapolis",
+      "display_name": "Indianapolis, IN",
+      "region": "US_CORN_BELT",
+      "country": "US",
+      "lat": 39.77,
+      "lon": -86.16,
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "timezone": "America/Indianapolis",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "minneapolis_mn",
+      "name": "Minneapolis",
+      "display_name": "Minneapolis, MN",
+      "region": "US_CORN_BELT",
+      "country": "US",
+      "lat": 44.98,
+      "lon": -93.27,
+      "commodities": [
+        "corn",
+        "soybeans",
+        "wheat"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "chicago_il",
+      "name": "Chicago",
+      "display_name": "Chicago, IL",
+      "region": "US_CORN_BELT",
+      "country": "US",
+      "lat": 41.8781,
+      "lon": -87.6298,
+      "commodities": [
+        "corn",
+        "soybeans",
+        "wheat"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": "Major trading hub - CME"
+    },
+    {
+      "id": "omaha_ne",
+      "name": "Omaha",
+      "display_name": "Omaha, NE",
+      "region": "US_CORN_BELT",
+      "country": "US",
+      "lat": 41.2565,
+      "lon": -95.9345,
+      "commodities": [
+        "corn",
+        "soybeans",
+        "cattle"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": "Cattle market"
+    },
+    {
+      "id": "dodge_city_ks",
+      "name": "Dodge City",
+      "display_name": "Dodge City, KS",
+      "region": "US_WHEAT_BELT",
+      "country": "US",
+      "lat": 37.75,
+      "lon": -100.02,
+      "commodities": [
+        "wheat_hrw"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "amarillo_tx",
+      "name": "Amarillo",
+      "display_name": "Amarillo, TX",
+      "region": "US_WHEAT_BELT",
+      "country": "US",
+      "lat": 35.22,
+      "lon": -101.83,
+      "commodities": [
+        "wheat_hrw",
+        "cattle"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "oklahoma_city_ok",
+      "name": "Oklahoma City",
+      "display_name": "Oklahoma City, OK",
+      "region": "US_WHEAT_BELT",
+      "country": "US",
+      "lat": 35.47,
+      "lon": -97.52,
+      "commodities": [
+        "wheat_hrw"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "bismarck_nd",
+      "name": "Bismarck",
+      "display_name": "Bismarck, ND",
+      "region": "US_WHEAT_BELT",
+      "country": "US",
+      "lat": 46.81,
+      "lon": -100.78,
+      "commodities": [
+        "wheat_hrs",
+        "soybeans"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "kansas_city_mo",
+      "name": "Kansas City",
+      "display_name": "Kansas City, MO",
+      "region": "US_WHEAT_BELT",
+      "country": "US",
+      "lat": 39.0997,
+      "lon": -94.5786,
+      "commodities": [
+        "wheat_hrw",
+        "corn",
+        "cattle"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": "Major cattle market"
+    },
+    {
+      "id": "memphis_tn",
+      "name": "Memphis",
+      "display_name": "Memphis, TN",
+      "region": "US_DELTA",
+      "country": "US",
+      "lat": 35.15,
+      "lon": -90.05,
+      "commodities": [
+        "cotton",
+        "soybeans",
+        "rice"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "new_orleans_la",
+      "name": "New Orleans",
+      "display_name": "New Orleans, LA",
+      "region": "US_DELTA",
+      "country": "US",
+      "lat": 29.9511,
+      "lon": -90.0715,
+      "commodities": [
+        "soybeans",
+        "corn",
+        "rice"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": "Gulf export hub"
+    },
+    {
+      "id": "sorriso_mt",
+      "name": "Sorriso",
+      "display_name": "Sorriso, MT",
+      "region": "BRAZIL_CENTER_WEST",
+      "country": "BR",
+      "lat": -12.55,
+      "lon": -55.71,
+      "commodities": [
+        "soybeans",
+        "corn"
+      ],
+      "timezone": "America/Cuiaba",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "rondonopolis_mt",
+      "name": "Rondonopolis",
+      "display_name": "Rondonopolis, MT",
+      "region": "BRAZIL_CENTER_WEST",
+      "country": "BR",
+      "lat": -16.47,
+      "lon": -54.64,
+      "commodities": [
+        "soybeans",
+        "corn"
+      ],
+      "timezone": "America/Cuiaba",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "cuiaba_mt",
+      "name": "Cuiaba",
+      "display_name": "Cuiaba, MT",
+      "region": "BRAZIL_CENTER_WEST",
+      "country": "BR",
+      "lat": -15.6,
+      "lon": -56.1,
+      "commodities": [
+        "soybeans",
+        "corn"
+      ],
+      "timezone": "America/Cuiaba",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "goiania_go",
+      "name": "Goiania",
+      "display_name": "Goiania, GO",
+      "region": "BRAZIL_CENTER_WEST",
+      "country": "BR",
+      "lat": -16.6869,
+      "lon": -49.2648,
+      "commodities": [
+        "soybeans",
+        "corn",
+        "cattle"
+      ],
+      "timezone": "America/Sao_Paulo",
+      "active": true,
+      "notes": "Goias state capital"
+    },
+    {
+      "id": "londrina_pr",
+      "name": "Londrina",
+      "display_name": "Londrina, PR",
+      "region": "BRAZIL_SOUTH",
+      "country": "BR",
+      "lat": -23.31,
+      "lon": -51.16,
+      "commodities": [
+        "soybeans",
+        "corn",
+        "wheat"
+      ],
+      "timezone": "America/Sao_Paulo",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "porto_alegre_rs",
+      "name": "Porto Alegre",
+      "display_name": "Porto Alegre, RS",
+      "region": "BRAZIL_SOUTH",
+      "country": "BR",
+      "lat": -30.03,
+      "lon": -51.23,
+      "commodities": [
+        "soybeans",
+        "rice",
+        "wheat"
+      ],
+      "timezone": "America/Sao_Paulo",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "cascavel_pr",
+      "name": "Cascavel",
+      "display_name": "Cascavel, PR",
+      "region": "BRAZIL_SOUTH",
+      "country": "BR",
+      "lat": -24.96,
+      "lon": -53.46,
+      "commodities": [
+        "soybeans",
+        "corn"
+      ],
+      "timezone": "America/Sao_Paulo",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "sao_paulo_sp",
+      "name": "Sao Paulo",
+      "display_name": "Sao Paulo, SP",
+      "region": "BRAZIL_SOUTH",
+      "country": "BR",
+      "lat": -23.5505,
+      "lon": -46.6333,
+      "commodities": [
+        "coffee",
+        "sugarcane",
+        "soybeans"
+      ],
+      "timezone": "America/Sao_Paulo",
+      "active": true,
+      "notes": "Major trading center"
+    },
+    {
+      "id": "barreiras_ba",
+      "name": "Barreiras",
+      "display_name": "Barreiras, BA",
+      "region": "BRAZIL_NORTHEAST",
+      "country": "BR",
+      "lat": -12.15,
+      "lon": -44.99,
+      "commodities": [
+        "soybeans",
+        "cotton"
+      ],
+      "timezone": "America/Bahia",
+      "active": true,
+      "notes": "MATOPIBA region"
+    },
+    {
+      "id": "rosario_sf",
+      "name": "Rosario",
+      "display_name": "Rosario, SF",
+      "region": "ARGENTINA_PAMPAS",
+      "country": "AR",
+      "lat": -32.95,
+      "lon": -60.65,
+      "commodities": [
+        "soybeans",
+        "corn",
+        "wheat"
+      ],
+      "timezone": "America/Argentina/Buenos_Aires",
+      "active": true,
+      "notes": "Major grain export hub"
+    },
+    {
+      "id": "cordoba_ar",
+      "name": "Cordoba",
+      "display_name": "Cordoba",
+      "region": "ARGENTINA_PAMPAS",
+      "country": "AR",
+      "lat": -31.42,
+      "lon": -64.18,
+      "commodities": [
+        "soybeans",
+        "corn"
+      ],
+      "timezone": "America/Argentina/Cordoba",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "buenos_aires_ar",
+      "name": "Buenos Aires",
+      "display_name": "Buenos Aires",
+      "region": "ARGENTINA_PAMPAS",
+      "country": "AR",
+      "lat": -34.6,
+      "lon": -58.38,
+      "commodities": [
+        "soybeans",
+        "wheat",
+        "corn"
+      ],
+      "timezone": "America/Argentina/Buenos_Aires",
+      "active": true,
+      "notes": "Major trading center"
+    },
+    {
+      "id": "tucuman_ar",
+      "name": "Tucuman",
+      "display_name": "Tucuman",
+      "region": "ARGENTINA_NORTH",
+      "country": "AR",
+      "lat": -26.82,
+      "lon": -65.22,
+      "commodities": [
+        "soybeans",
+        "corn",
+        "sugarcane"
+      ],
+      "timezone": "America/Argentina/Tucuman",
+      "active": true,
+      "notes": null
+    },
+    {
+      "id": "saint_louis_mo",
+      "name": "Saint Louis",
+      "display_name": "Saint Louis, MO",
+      "region": "US_CORN_BELT",
+      "country": "US",
+      "lat": 38.6254063,
+      "lon": -90.190009,
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": "Auto-enrolled 2026-01-23"
+    },
+    {
+      "id": "springfield_il",
+      "name": "Springfield",
+      "display_name": "Springfield, IL",
+      "region": "US_CORN_BELT",
+      "country": "US",
+      "lat": 39.7817,
+      "lon": -89.6501,
+      "commodities": [
+        "corn",
+        "soybeans"
+      ],
+      "timezone": "America/Chicago",
+      "active": true,
+      "notes": "USDA cash price report location (slug 3192)"
+    }
+  ],
+  "aliases": {
+    "des moines": "des_moines_ia",
+    "iowa": "des_moines_ia",
+    "ia": "des_moines_ia",
+    "champaign": "champaign_il",
+    "illinois": "champaign_il",
+    "il": "champaign_il",
+    "lincoln": "lincoln_ne",
+    "nebraska": "lincoln_ne",
+    "ne": "lincoln_ne",
+    "indianapolis": "indianapolis_in",
+    "indiana": "indianapolis_in",
+    "in": "indianapolis_in",
+    "minneapolis": "minneapolis_mn",
+    "minnesota": "minneapolis_mn",
+    "mn": "minneapolis_mn",
+    "chicago": "chicago_il",
+    "omaha": "omaha_ne",
+    "dodge city": "dodge_city_ks",
+    "kansas": "dodge_city_ks",
+    "ks": "dodge_city_ks",
+    "amarillo": "amarillo_tx",
+    "texas": "amarillo_tx",
+    "oklahoma city": "oklahoma_city_ok",
+    "oklahoma": "oklahoma_city_ok",
+    "ok": "oklahoma_city_ok",
+    "bismarck": "bismarck_nd",
+    "north dakota": "bismarck_nd",
+    "nd": "bismarck_nd",
+    "kansas city": "kansas_city_mo",
+    "memphis": "memphis_tn",
+    "tennessee": "memphis_tn",
+    "tn": "memphis_tn",
+    "delta": "memphis_tn",
+    "new orleans": "new_orleans_la",
+    "louisiana": "new_orleans_la",
+    "la": "new_orleans_la",
+    "gulf": "new_orleans_la",
+    "sorriso": "sorriso_mt",
+    "rondonopolis": "rondonopolis_mt",
+    "cuiaba": "cuiaba_mt",
+    "mato grosso": "sorriso_mt",
+    "mt": "sorriso_mt",
+    "goiania": "goiania_go",
+    "goias": "goiania_go",
+    "go": "goiania_go",
+    "londrina": "londrina_pr",
+    "parana": "londrina_pr",
+    "pr": "londrina_pr",
+    "porto alegre": "porto_alegre_rs",
+    "rio grande do sul": "porto_alegre_rs",
+    "rs": "porto_alegre_rs",
+    "cascavel": "cascavel_pr",
+    "sao paulo": "sao_paulo_sp",
+    "sp": "sao_paulo_sp",
+    "barreiras": "barreiras_ba",
+    "bahia": "barreiras_ba",
+    "matopiba": "barreiras_ba",
+    "rosario": "rosario_sf",
+    "santa fe": "rosario_sf",
+    "sf": "rosario_sf",
+    "cordoba": "cordoba_ar",
+    "buenos aires": "buenos_aires_ar",
+    "argentina": "buenos_aires_ar",
+    "tucuman": "tucuman_ar",
+    "corn belt": "des_moines_ia",
+    "midwest": "chicago_il",
+    "wheat belt": "dodge_city_ks",
+    "brazil": "sao_paulo_sp",
+    "pampas": "rosario_sf",
+    "st. louis, mo": "saint_louis_mo",
+    "saint louis": "saint_louis_mo",
+    "springfield": "springfield_il",
+    "springfield il": "springfield_il"
+  },
+  "regions": {
+    "US_CORN_BELT": {
+      "description": "US Corn Belt - Primary corn and soybean production",
+      "locations": [
+        "des_moines_ia",
+        "champaign_il",
+        "springfield_il",
+        "lincoln_ne",
+        "indianapolis_in",
+        "minneapolis_mn",
+        "chicago_il",
+        "omaha_ne",
+        "saint_louis_mo"
+      ]
+    },
+    "US_WHEAT_BELT": {
+      "description": "US Wheat Belt - Hard red winter/spring wheat",
+      "locations": [
+        "dodge_city_ks",
+        "amarillo_tx",
+        "oklahoma_city_ok",
+        "bismarck_nd",
+        "kansas_city_mo"
+      ]
+    },
+    "US_DELTA": {
+      "description": "US Delta Region - Cotton, rice, soybeans",
+      "locations": [
+        "memphis_tn",
+        "new_orleans_la"
+      ]
+    },
+    "BRAZIL_CENTER_WEST": {
+      "description": "Brazil Center-West - Mato Grosso, Goias",
+      "locations": [
+        "sorriso_mt",
+        "rondonopolis_mt",
+        "cuiaba_mt",
+        "goiania_go"
+      ]
+    },
+    "BRAZIL_SOUTH": {
+      "description": "Brazil South - Parana, Rio Grande do Sul, Sao Paulo",
+      "locations": [
+        "londrina_pr",
+        "porto_alegre_rs",
+        "cascavel_pr",
+        "sao_paulo_sp"
+      ]
+    },
+    "BRAZIL_NORTHEAST": {
+      "description": "Brazil Northeast - MATOPIBA frontier",
+      "locations": [
+        "barreiras_ba"
+      ]
+    },
+    "ARGENTINA_PAMPAS": {
+      "description": "Argentina Pampas - Core grain production",
+      "locations": [
+        "rosario_sf",
+        "cordoba_ar",
+        "buenos_aires_ar"
+      ]
+    },
+    "ARGENTINA_NORTH": {
+      "description": "Argentina North - Expanding ag frontier",
+      "locations": [
+        "tucuman_ar"
+      ]
+    }
+  }
+}

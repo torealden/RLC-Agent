@@ -1,0 +1,16 @@
+============================================================
+WEATHER SUMMARY REPORT
+Generated: 2026-01-20 07:31
+Emails processed: 1
+============================================================
+
+--- Email 1: Southern U.S. Late Week Storm May Have Big Impact ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Tue, 20 Jan 2026 05:56:46 -0600
+
+Preview: Drew Lerner World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this report...
+
+============================================================
+LOCATIONS MENTIONED (for weather tracking):
+None identified
+============================================================

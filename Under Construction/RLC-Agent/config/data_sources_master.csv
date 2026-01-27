@@ -1,0 +1,17 @@
+report_name,report_code,category,schedule_type,release_time_et,has_schema,has_agent,sample_file_path,publication_url,download_url_pattern,has_api,api_notes,release_dates_2026,holiday_aware,seasonal,notes
+Cattle on Feed,cofd,USDA-NASS,specific_dates,15:00,TRUE,FALSE,C:\Users\torem\report_samples\cofd1225.pdf,https://esmis.nal.usda.gov/publication/cattle-feed,https://esmis.nal.usda.gov/sites/default/release-files/795694/cofd{MMYY}.pdf,FALSE,,"Jan 23|Feb 20|Mar 20|Apr 17|May 22|Jun 18|Jul 24|Aug 21|Sep 18|Oct 23|Nov 20|Dec 18",FALSE,FALSE,Schema complete
+WASDE,wasde,USDA-OCE,specific_dates,12:00,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\WASDE - 0122.pdf,,,FALSE,,"Jan 12|Feb 10|Mar 10|Apr 9|May 12|Jun 11|Jul 10|Aug 12|Sep 11|Oct 9|Nov 10|Dec 10",FALSE,FALSE,World Agricultural Supply and Demand Estimates
+Export Sales,exsa,USDA-FAS,weekly_thursday,08:30,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Export Sales - 121418-122018 - 02222019.pdf,,,FALSE,,weekly,TRUE,FALSE,Shifts to Friday if holiday earlier in week
+Export Inspections,exin,USDA-AMS,weekly_monday,10:00,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Export Inspections - 01022020 - 2020 - 01092020.xlsx,,,FALSE,,weekly,TRUE,FALSE,Shifts to Tuesday if Monday is holiday
+Grain Stocks,grst,USDA-NASS,specific_dates,12:00,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Grain Stocks - 0122.pdf,,,FALSE,,"Jan 12|Mar 31|Jun 30|Sep 30",FALSE,FALSE,Jan with WASDE; Mar with Prospective Plantings; Jun with Acreage
+Prospective Plantings,pspl,USDA-NASS,specific_dates,12:00,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Prospective Plantings - 2022 - 03312022.pdf,,,FALSE,,Mar 31,FALSE,FALSE,Last business day of March
+Acreage,acre,USDA-NASS,specific_dates,12:00,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Acreage - 0622.pdf,,,FALSE,,Jun 30,FALSE,FALSE,Last business day of June
+Crop Progress,crpr,USDA-NASS,weekly_monday,16:00,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Crop Progress - 07072020.pdf,,,FALSE,,weekly,TRUE,TRUE,April-November only; shifts to Tuesday if Monday holiday
+Feed Grains Outlook,fdgr,USDA-ERS,monthly,12:00,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Feed Grains Outlook - 1022.pdf,,,FALSE,,,FALSE,FALSE,ERS monthly outlook
+Oil Crops Outlook,olcr,USDA-ERS,monthly,12:00,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Oil Crops Outlook - April 2022.xlsx,,,FALSE,,,FALSE,FALSE,ERS monthly outlook
+EIA Petroleum Status,eiap,EIA,weekly_wednesday,10:30,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\,,,FALSE,,weekly,TRUE,FALSE,Shifts to Thursday if holiday earlier in week
+EIA Monthly Biodiesel,eiab,EIA,monthly,varies,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Biodiesel Production and Sales - EIA - Feb 2018 - 05112018.xlsx,,,FALSE,,,FALSE,FALSE,Monthly biodiesel production data
+Census Trade,cens,Census,specific_dates,08:30,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\Census US Biodiesel Imports - 07152019.xlsx,,,FALSE,,Jan 29,FALSE,FALSE,Need more 2026 dates
+CONAB Brazil,conb,CONAB,monthly,09:00,FALSE,FALSE,C:\Users\torem\Dropbox\Jacobsen\Data Files\,,,FALSE,,,FALSE,FALSE,Brazilian crop estimates ~10th of month
+CME Settlements,cmes,CME,weekdays,17:00,FALSE,FALSE,,,,FALSE,,weekdays,TRUE,FALSE,Daily settlement prices
+NOPA Crush,nopa,NOPA,monthly_15th,12:00,FALSE,FALSE,,,,FALSE,,,FALSE,FALSE,15th of month or next business day if weekend/holiday
