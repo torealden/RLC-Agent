@@ -46,10 +46,14 @@ logging.basicConfig(
 logger = logging.getLogger("HB-ReportV2")
 
 
-def decimal_default(obj):
-    """JSON serializer for Decimal types."""
+def json_serializer(obj):
+    """JSON serializer for special types."""
     if isinstance(obj, Decimal):
         return float(obj)
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    if hasattr(obj, '__dict__'):
+        return obj.__dict__
     raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
 
 
@@ -144,8 +148,10 @@ def fetch_comprehensive_data(days_back: int = 7) -> dict:
     logger.info("3. Fetching weather alerts...")
     try:
         cur.execute(f"""
-            SELECT * FROM gold.weather_alerts
-            ORDER BY id DESC
+            SELECT location_id, display_name, region, observation_date,
+                   alert_type, alert_description, temp_high_f, temp_low_f, precipitation_in
+            FROM gold.weather_alerts
+            ORDER BY observation_date DESC
             LIMIT 20
         """)
         columns = [desc[0] for desc in cur.description]
@@ -221,9 +227,18 @@ def fetch_comprehensive_data(days_back: int = 7) -> dict:
     logger.info("6. Fetching soybean balance sheet...")
     try:
         cur.execute("""
-            SELECT marketing_year, beginning_stocks, production, imports,
-                   total_supply, crush, exports, seed, residual,
-                   total_use, ending_stocks
+            SELECT marketing_year,
+                   beginning_stocks_mil_bu as beginning_stocks,
+                   production_mil_bu as production,
+                   imports_mil_bu as imports,
+                   total_supply_mil_bu as total_supply,
+                   crush_mil_bu as crush,
+                   exports_mil_bu as exports,
+                   seed_mil_bu as seed,
+                   residual_mil_bu as residual,
+                   total_use_mil_bu as total_use,
+                   ending_stocks_mil_bu as ending_stocks,
+                   stocks_to_use_pct
             FROM gold.us_soybean_balance_sheet
             ORDER BY marketing_year DESC
             LIMIT 3
@@ -243,10 +258,7 @@ def fetch_comprehensive_data(days_back: int = 7) -> dict:
     logger.info("7. Fetching soybean meal balance sheet...")
     try:
         cur.execute("""
-            SELECT marketing_year, beginning_stocks, production,
-                   imports, total_supply, domestic_use, exports,
-                   total_use, ending_stocks
-            FROM gold.us_soybean_meal_balance_sheet
+            SELECT * FROM gold.us_soybean_meal_balance_sheet
             ORDER BY marketing_year DESC
             LIMIT 3
         """)
@@ -265,10 +277,7 @@ def fetch_comprehensive_data(days_back: int = 7) -> dict:
     logger.info("8. Fetching soybean oil balance sheet...")
     try:
         cur.execute("""
-            SELECT marketing_year, beginning_stocks, production,
-                   imports, total_supply, domestic_use, exports,
-                   total_use, ending_stocks
-            FROM gold.us_soybean_oil_balance_sheet
+            SELECT * FROM gold.us_soybean_oil_balance_sheet
             ORDER BY marketing_year DESC
             LIMIT 3
         """)
@@ -287,9 +296,17 @@ def fetch_comprehensive_data(days_back: int = 7) -> dict:
     logger.info("9. Fetching wheat balance sheet...")
     try:
         cur.execute("""
-            SELECT marketing_year, beginning_stocks, production, imports,
-                   total_supply, food, seed, feed_residual,
-                   exports, total_use, ending_stocks
+            SELECT marketing_year,
+                   beginning_stocks_mil_bu as beginning_stocks,
+                   production_mil_bu as production,
+                   imports_mil_bu as imports,
+                   total_supply_mil_bu as total_supply,
+                   food_use_mil_bu as food_use,
+                   feed_residual_mil_bu as feed_residual,
+                   exports_mil_bu as exports,
+                   total_use_mil_bu as total_use,
+                   ending_stocks_mil_bu as ending_stocks,
+                   stocks_to_use_pct
             FROM gold.us_wheat_balance_sheet
             ORDER BY marketing_year DESC
             LIMIT 3
@@ -326,6 +343,41 @@ def fetch_comprehensive_data(days_back: int = 7) -> dict:
         for r in rows
     ]
     logger.info(f"   Found {len(data['market_narratives'])} market narratives")
+
+    # =========================================================================
+    # 11. FUTURES PRICES (From Yahoo Finance)
+    # =========================================================================
+    logger.info("11. Fetching futures prices...")
+    try:
+        cur.execute(f"""
+            SELECT symbol, trade_date, contract_month,
+                   open_price, high_price, low_price, settlement,
+                   volume, exchange, source
+            FROM silver.futures_price
+            WHERE trade_date >= '{start_date}'
+            ORDER BY trade_date DESC, symbol
+        """)
+        rows = cur.fetchall()
+        data['futures_prices'] = [
+            {
+                'symbol': r[0],
+                'trade_date': str(r[1]),
+                'contract_month': r[2],
+                'open': float(r[3]) if r[3] else None,
+                'high': float(r[4]) if r[4] else None,
+                'low': float(r[5]) if r[5] else None,
+                'settlement': float(r[6]) if r[6] else None,
+                'volume': int(r[7]) if r[7] else 0,
+                'exchange': r[8],
+                'source': r[9]
+            }
+            for r in rows
+        ]
+        logger.info(f"   Found {len(data['futures_prices'])} futures price records")
+    except Exception as e:
+        logger.warning(f"   Futures prices query failed: {e}")
+        conn.rollback()
+        data['futures_prices'] = []
 
     conn.close()
     return data
@@ -391,6 +443,59 @@ def build_enhanced_prompt(data: dict, metrics: dict) -> str:
             if p['price']:
                 change_str = f" ({p['daily_change']:+.2f})" if p['daily_change'] else ""
                 cash_section += f"  - {p['commodity'].upper()}: ${p['price']:.2f}/bu at {p['location']}, {p['state']}{change_str}\n"
+
+    # Format futures prices
+    futures_section = ""
+    if data.get('futures_prices'):
+        # Symbol name mapping
+        symbol_names = {
+            'ZC': 'Corn', 'ZW': 'Chicago Wheat', 'KE': 'KC Wheat',
+            'ZS': 'Soybeans', 'ZM': 'Soybean Meal', 'ZL': 'Soybean Oil',
+            'ZO': 'Oats', 'CL': 'WTI Crude', 'NG': 'Natural Gas',
+            'RB': 'RBOB Gasoline', 'HO': 'Heating Oil',
+            'LE': 'Live Cattle', 'HE': 'Lean Hogs', 'GF': 'Feeder Cattle'
+        }
+        # Get latest price for each symbol
+        latest_by_symbol = {}
+        for fp in data['futures_prices']:
+            sym = fp['symbol']
+            if sym not in latest_by_symbol:
+                latest_by_symbol[sym] = fp
+
+        # Sort by exchange/category
+        ag_futures = ['ZC', 'ZW', 'KE', 'ZS', 'ZM', 'ZL', 'ZO']
+        energy_futures = ['CL', 'NG', 'RB', 'HO']
+
+        if any(s in latest_by_symbol for s in ag_futures):
+            futures_section += "  Grains & Oilseeds:\n"
+            for sym in ag_futures:
+                if sym in latest_by_symbol:
+                    fp = latest_by_symbol[sym]
+                    name = symbol_names.get(sym, sym)
+                    settle = fp['settlement']
+                    if settle:
+                        # Calculate daily change from open if available
+                        change_str = ""
+                        if fp['open'] and fp['open'] > 0:
+                            change = settle - fp['open']
+                            change_pct = (change / fp['open']) * 100
+                            change_str = f" ({change:+.2f}, {change_pct:+.2f}%)"
+                        futures_section += f"    - {sym} ({name}): {settle:.2f}{change_str}\n"
+
+        if any(s in latest_by_symbol for s in energy_futures):
+            futures_section += "  Energy:\n"
+            for sym in energy_futures:
+                if sym in latest_by_symbol:
+                    fp = latest_by_symbol[sym]
+                    name = symbol_names.get(sym, sym)
+                    settle = fp['settlement']
+                    if settle:
+                        change_str = ""
+                        if fp['open'] and fp['open'] > 0:
+                            change = settle - fp['open']
+                            change_pct = (change / fp['open']) * 100
+                            change_str = f" ({change:+.2f}, {change_pct:+.2f}%)"
+                        futures_section += f"    - {sym} ({name}): ${settle:.2f}{change_str}\n"
 
     # Format weather by region
     weather_section = ""
@@ -483,6 +588,9 @@ REPORT STRUCTURE (Follow Exactly)
 ================================================================================
 MARKET DATA
 ================================================================================
+
+**FUTURES PRICES (Front Month Settlements):**
+{futures_section if futures_section else "  No futures price data available."}
 
 **CASH PRICES (Recent Bids):**
 {cash_section if cash_section else "  Limited cash price data available for this period."}
@@ -612,6 +720,7 @@ def save_outputs(report_text: str, data: dict, metrics: dict, prompt: str):
             'generated_at': datetime.now().isoformat(),
             'derived_metrics': metrics,
             'data_summary': {
+                'futures_prices': len(data.get('futures_prices', [])),
                 'cash_prices': len(data.get('cash_prices', [])),
                 'weather_regions': len(data.get('weather_by_region', [])),
                 'weather_alerts': len(data.get('weather_alerts', [])),
@@ -622,7 +731,7 @@ def save_outputs(report_text: str, data: dict, metrics: dict, prompt: str):
             },
             'raw_data': data
         }
-        json.dump(output_data, f, indent=2, default=decimal_default)
+        json.dump(output_data, f, indent=2, default=json_serializer)
 
     logger.info(f"Data saved to: {data_file}")
 

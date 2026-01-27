@@ -1,0 +1,193 @@
+{
+  "generated_at": "2026-01-27T05:06:06.918531",
+  "derived_metrics": {
+    "implied_annual_corn_grind_mb": 6127.0
+  },
+  "data_summary": {
+    "cash_prices": 2,
+    "weather_regions": 8,
+    "weather_alerts": 0,
+    "eia_ethanol_weeks": 12,
+    "soybean_balance_years": 0,
+    "wheat_balance_years": 0,
+    "market_narratives": 4
+  },
+  "raw_data": {
+    "cash_prices": [
+      {
+        "commodity": "corn",
+        "date": "2026-01-23",
+        "location": "Illinois Grain Bids",
+        "state": "IL",
+        "price": 4.1,
+        "basis": -0.21,
+        "basis_month": "H",
+        "daily_change": null,
+        "unit": "$/bushel"
+      },
+      {
+        "commodity": "soybeans",
+        "date": "2026-01-23",
+        "location": "Illinois Grain Bids",
+        "state": "IL",
+        "price": 10.37,
+        "basis": -0.31,
+        "basis_month": "H",
+        "daily_change": null,
+        "unit": "$/bushel"
+      }
+    ],
+    "weather_by_region": [
+      {
+        "region": "ARGENTINA_NORTH",
+        "avg_high_f": 82.0,
+        "avg_low_f": 71.5,
+        "avg_temp_f": 76.3,
+        "total_precip_in": 0.24,
+        "avg_humidity_pct": 78.0,
+        "observations": 7
+      },
+      {
+        "region": "ARGENTINA_PAMPAS",
+        "avg_high_f": 85.0,
+        "avg_low_f": 69.0,
+        "avg_temp_f": 77.0,
+        "total_precip_in": 0.0,
+        "avg_humidity_pct": 58.7,
+        "observations": 21
+      },
+      {
+        "region": "BRAZIL_CENTER_WEST",
+        "avg_high_f": 82.3,
+        "avg_low_f": 73.1,
+        "avg_temp_f": 76.7,
+        "total_precip_in": 7.33,
+        "avg_humidity_pct": 81.5,
+        "observations": 28
+      },
+      {
+        "region": "BRAZIL_NORTHEAST",
+        "avg_high_f": 79.8,
+        "avg_low_f": 71.7,
+        "avg_temp_f": 75.3,
+        "total_precip_in": 1.23,
+        "avg_humidity_pct": 64.0,
+        "observations": 7
+      },
+      {
+        "region": "BRAZIL_SOUTH",
+        "avg_high_f": 75.8,
+        "avg_low_f": 63.7,
+        "avg_temp_f": 69.5,
+        "total_precip_in": 1.04,
+        "avg_humidity_pct": 67.5,
+        "observations": 28
+      },
+      {
+        "region": "US_CORN_BELT",
+        "avg_high_f": 23.7,
+        "avg_low_f": 8.1,
+        "avg_temp_f": 15.8,
+        "total_precip_in": 0.18,
+        "avg_humidity_pct": 53.7,
+        "observations": 55
+      },
+      {
+        "region": "US_DELTA",
+        "avg_high_f": 54.4,
+        "avg_low_f": 41.2,
+        "avg_temp_f": 47.3,
+        "total_precip_in": 0.62,
+        "avg_humidity_pct": 67.0,
+        "observations": 14
+      },
+      {
+        "region": "US_WHEAT_BELT",
+        "avg_high_f": 35.0,
+        "avg_low_f": 17.8,
+        "avg_temp_f": 25.9,
+        "total_precip_in": 0.11,
+        "avg_humidity_pct": 59.2,
+        "observations": 35
+      }
+    ],
+    "weather_alerts": [],
+    "eia_ethanol": [
+      {
+        "week_ending": "2026-01-16",
+        "production_kbd": 1119.0,
+        "stocks_kb": 25739.0,
+        "blender_input_kbd": 852.0
+      },
+      {
+        "week_ending": "2026-01-09",
+        "production_kbd": 1196.0,
+        "stocks_kb": 24473.0,
+        "blender_input_kbd": 841.0
+      },
+      {
+        "week_ending": "2026-01-02",
+        "production_kbd": 1098.0,
+        "stocks_kb": 23652.0,
+        "blender_input_kbd": 771.0
+      },
+      {
+        "week_ending": "2025-12-26",
+        "production_kbd": 1120.0,
+        "stocks_kb": 22944.0,
+        "blender_input_kbd": 888.0
+      },
+      {
+        "week_ending": "2025-12-19",
+        "production_kbd": 1095.0,
+        "stocks_kb": 22528.0,
+        "blender_input_kbd": 912.0
+      },
+      {
+        "week_ending": "2025-12-12",
+        "production_kbd": 1131.0,
+        "stocks_kb": 22353.0,
+        "blender_input_kbd": 906.0
+      },
+      {
+        "week_ending": "2025-12-05",
+        "production_kbd": 1105.0,
+        "stocks_kb": 22510.0,
+        "blender_input_kbd": 851.0
+      },
+      {
+        "week_ending": "2025-11-28",
+        "production_kbd": 1126.0,
+        "stocks_kb": 22511.0,
+        "blender_input_kbd": 857.0
+      },
+      {
+        "week_ending": "2025-11-21",
+        "production_kbd": 1113.0,
+        "stocks_kb": 21968.0,
+        "blender_input_kbd": 885.0
+      },
+      {
+        "week_ending": "2025-11-14",
+        "production_kbd": 1091.0,
+        "stocks_kb": 22307.0,
+        "blender_input_kbd": 888.0
+      },
+      {
+        "week_ending": "2025-11-07",
+        "production_kbd": 1075.0,
+        "stocks_kb": 22219.0,
+        "blender_input_kbd": 895.0
+      },
+      {
+        "week_ending": "2025-10-31",
+        "production_kbd": 1123.0,
+        "stocks_kb": 22655.0,
+        "blender_input_kbd": 904.0
+      }
+    ],
+    "ethanol_production_change": -77.0,
+    "ethanol_stocks_change": 1266.0,
+    "eia_petroleum": [
+      {
+        "week_ending": 
