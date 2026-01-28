@@ -32,33 +32,96 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-# Common agricultural HS codes
+# Agricultural HS codes - 10-digit for quantity data, 4-digit for value-only
+# 10-digit codes provide both value AND quantity; 4-digit only provides value
 AG_HS_CODES = {
-    # Chapter 10 - Cereals
-    'wheat': '1001',
-    'corn': '1005',
-    'barley': '1003',
-    'oats': '1004',
-    'sorghum': '1007',
+    # ==========================================================================
+    # GRAINS (Chapter 10) - 10-digit codes with quantity in metric tons (T)
+    # ==========================================================================
+    'corn_yellow_dent_2': '1005902030',      # Yellow Dent Corn US No. 2 (main bulk)
+    'corn_yellow_dent_3': '1005902035',      # Yellow Dent Corn US No. 3
+    'corn_seed': '1005100010',               # Yellow Corn Seed
+    'wheat': '1001992055',                   # Wheat NESOI (main bulk wheat)
+    'wheat_white': '1001992015',             # White Wheat
+    'wheat_seed': '1001910000',              # Wheat Seed
+    'sorghum_seed': '1007100000',            # Grain Sorghum Seed
+    'barley': '1003900000',                  # Barley except seed
 
-    # Chapter 12 - Oilseeds
-    'soybeans': '1201',
-    'canola': '1205',
-    'sunflower': '1206',
+    # ==========================================================================
+    # OILSEEDS (Chapter 12) - 10-digit codes with quantity
+    # ==========================================================================
+    'soybeans': '1201900095',                # Soybeans bulk (NOT seed) - qty in T
+    'soybeans_oilstock': '1201900005',       # Soybeans for oil stock - qty in KG
+    'soybeans_seed': '1201100000',           # Soybean seeds for sowing - qty in KG
+    'canola': '1205100000',                  # Low erucic acid rapeseed/canola - qty in KG
+    'sunflower_oilstock': '1206000020',      # Sunflower seeds for oil - qty in KG
+    'sunflower_other': '1206000090',         # Sunflower seeds NESOI - qty in KG
+    'cotton_seed': '1207290000',             # Cotton seeds except sowing - qty in KG
 
-    # Chapter 15 - Fats and Oils
-    'soybean_oil': '1507',
-    'palm_oil': '1511',
-    'sunflower_oil': '1512',
-    'canola_oil': '1514',
-    'coconut_oil': '1513',
+    # ==========================================================================
+    # VEGETABLE OILS (Chapter 15) - 10-digit codes with quantity in KG
+    # ==========================================================================
+    'soybean_oil_refined': '1507904050',     # Soybean oil fully refined
+    'soybean_oil_crude': '1507100000',       # Soybean oil crude
+    'palm_oil_refined': '1511900000',        # Palm oil refined
+    'palm_oil_crude': '1511100000',          # Palm oil crude
+    'sunflower_oil': '1512190020',           # Sunflower oil refined
+    'canola_oil': '1514190000',              # Rapeseed/canola oil NESOI
+    'canola_oil_crude': '1514110000',        # Rapeseed/canola oil crude
+    'corn_oil_refined': '1515290040',        # Corn oil fully refined
+    'palm_kernel_oil': '1513290000',         # Palm kernel oil refined
 
-    # Chapter 23 - Residues
-    'soybean_meal': '2304',
-    'canola_meal': '2306',
+    # ==========================================================================
+    # MEALS & RESIDUES (Chapter 23) - 10-digit codes
+    # ==========================================================================
+    'soybean_meal': '2304000000',            # Soybean oilcake/meal - qty in KG
+    'sunflower_meal': '2306300000',          # Sunflower seed meal - qty in KG
+    'cotton_meal': '2306100000',             # Cotton seed meal - qty in KG
+    'canola_meal': '2306490000',             # Rapeseed/canola meal - qty in KG
+    'corn_gluten_feed': '2303100010',        # Corn gluten feed - qty in T
+    'corn_gluten_meal': '2303100020',        # Corn gluten meal - qty in T
+    'ddgs': '2303300000',                    # Distillers grains (DDGS) - qty in T
 
-    # Chapter 38 - Miscellaneous (Biodiesel)
-    'biodiesel': '382600',
+    # ==========================================================================
+    # COTTON (Chapter 52) - 10-digit codes with quantity in KG
+    # ==========================================================================
+    'cotton_raw': '5201009000',              # Cotton not carded, staple >28.575mm
+    'cotton_medium': '5201001090',           # Cotton staple 25.4-28.575mm
+    'cotton_pima': '5201002030',             # American Pima cotton
+
+    # ==========================================================================
+    # LEGACY 4-DIGIT CODES (value only, no quantity)
+    # Use these if you only need value data
+    # ==========================================================================
+    'wheat_4digit': '1001',
+    'corn_4digit': '1005',
+    'soybeans_4digit': '1201',
+    'soybean_oil_4digit': '1507',
+    'soybean_meal_4digit': '2304',
+}
+
+# Unit conversions for standardization
+HS_UNITS = {
+    # Grains in metric tons
+    '1005902030': 'T',   # corn
+    '1005902035': 'T',   # corn
+    '1001992055': 'T',   # wheat
+    '1001992015': 'T',   # wheat white
+    '1003900000': 'T',   # barley
+    # Oilseeds - soybeans bulk in T, others in KG
+    '1201900095': 'T',   # soybeans bulk
+    '1201900005': 'KG',
+    '1205100000': 'KG',  # canola
+    # Oils in KG
+    '1507904050': 'KG',
+    '1511900000': 'KG',
+    # Meals - mixed units
+    '2304000000': 'KG',  # soy meal
+    '2303100010': 'T',   # corn gluten feed
+    '2303100020': 'T',   # corn gluten meal
+    '2303300000': 'T',   # DDGS
+    # Cotton in KG
+    '5201009000': 'KG',
 }
 
 
@@ -75,9 +138,15 @@ class CensusTradeConfig(CollectorConfig):
         default_factory=lambda: os.environ.get('CENSUS_API_KEY')
     )
 
-    # Default HS codes to fetch
+    # Default HS codes to fetch (10-digit for quantity data)
     hs_codes: List[str] = field(default_factory=lambda: [
-        '1001', '1005', '1201', '1507', '2304'  # wheat, corn, soybeans, soy oil, soy meal
+        '1005902030',  # Corn Yellow Dent #2 (bulk)
+        '1001992055',  # Wheat NESOI (bulk)
+        '1201900095',  # Soybeans bulk
+        '1507904050',  # Soybean oil refined
+        '2304000000',  # Soybean meal
+        '1205100000',  # Canola/Rapeseed
+        '2303300000',  # DDGS
     ])
 
 

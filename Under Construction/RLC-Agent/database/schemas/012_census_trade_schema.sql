@@ -46,32 +46,62 @@ CREATE INDEX IF NOT EXISTS idx_census_trade_country
 -- -----------------------------------------------------------------------------
 
 -- Monthly trade totals by commodity (excluding aggregates)
+-- Includes avg_price_per_unit calculation for 10-digit HS codes with quantity
 CREATE OR REPLACE VIEW silver.census_trade_monthly AS
 SELECT
     year,
     month,
     flow,
     hs_code,
-    CASE hs_code
-        WHEN '1001' THEN 'WHEAT'
-        WHEN '1003' THEN 'BARLEY'
-        WHEN '1004' THEN 'OATS'
-        WHEN '1005' THEN 'CORN'
-        WHEN '1007' THEN 'SORGHUM'
-        WHEN '1201' THEN 'SOYBEANS'
-        WHEN '1205' THEN 'CANOLA'
-        WHEN '1206' THEN 'SUNFLOWER'
-        WHEN '1507' THEN 'SOYBEAN_OIL'
-        WHEN '1511' THEN 'PALM_OIL'
-        WHEN '1512' THEN 'SUNFLOWER_OIL'
-        WHEN '1514' THEN 'CANOLA_OIL'
-        WHEN '2304' THEN 'SOYBEAN_MEAL'
-        WHEN '2306' THEN 'CANOLA_MEAL'
-        WHEN '382600' THEN 'BIODIESEL'
+    CASE
+        -- 10-digit codes (have quantity data)
+        WHEN hs_code = '1005902030' THEN 'CORN_BULK'
+        WHEN hs_code = '1005902035' THEN 'CORN_NO3'
+        WHEN hs_code = '1005100010' THEN 'CORN_SEED'
+        WHEN hs_code = '1001992055' THEN 'WHEAT_BULK'
+        WHEN hs_code = '1001992015' THEN 'WHEAT_WHITE'
+        WHEN hs_code = '1001910000' THEN 'WHEAT_SEED'
+        WHEN hs_code = '1003900000' THEN 'BARLEY'
+        WHEN hs_code = '1201900095' THEN 'SOYBEANS_BULK'
+        WHEN hs_code = '1201900005' THEN 'SOYBEANS_OILSTOCK'
+        WHEN hs_code = '1201100000' THEN 'SOYBEANS_SEED'
+        WHEN hs_code = '1205100000' THEN 'CANOLA'
+        WHEN hs_code = '1206000020' THEN 'SUNFLOWER_OILSTOCK'
+        WHEN hs_code = '1507904050' THEN 'SOYBEAN_OIL_REFINED'
+        WHEN hs_code = '1507100000' THEN 'SOYBEAN_OIL_CRUDE'
+        WHEN hs_code = '1511900000' THEN 'PALM_OIL_REFINED'
+        WHEN hs_code = '1511100000' THEN 'PALM_OIL_CRUDE'
+        WHEN hs_code = '1512190020' THEN 'SUNFLOWER_OIL'
+        WHEN hs_code = '1514190000' THEN 'CANOLA_OIL'
+        WHEN hs_code = '1515290040' THEN 'CORN_OIL'
+        WHEN hs_code = '2304000000' THEN 'SOYBEAN_MEAL'
+        WHEN hs_code = '2306300000' THEN 'SUNFLOWER_MEAL'
+        WHEN hs_code = '2306490000' THEN 'CANOLA_MEAL'
+        WHEN hs_code = '2303100010' THEN 'CORN_GLUTEN_FEED'
+        WHEN hs_code = '2303100020' THEN 'CORN_GLUTEN_MEAL'
+        WHEN hs_code = '2303300000' THEN 'DDGS'
+        WHEN hs_code = '5201009000' THEN 'COTTON_RAW'
+        -- Legacy 4-digit codes (value only)
+        WHEN hs_code = '1001' THEN 'WHEAT'
+        WHEN hs_code = '1005' THEN 'CORN'
+        WHEN hs_code = '1201' THEN 'SOYBEANS'
+        WHEN hs_code = '1507' THEN 'SOYBEAN_OIL'
+        WHEN hs_code = '2304' THEN 'SOYBEAN_MEAL'
         ELSE hs_code
     END as commodity,
+    -- Unit based on HS code (T=metric tons, KG=kilograms)
+    CASE
+        WHEN hs_code IN ('1005902030', '1005902035', '1001992055', '1001992015',
+                         '1003900000', '1201900095', '2303100010', '2303100020', '2303300000') THEN 'T'
+        ELSE 'KG'
+    END as unit,
     SUM(value_usd) as total_value_usd,
     SUM(quantity) as total_quantity,
+    -- Average price per unit (handles NULL/0 quantity gracefully)
+    CASE
+        WHEN SUM(quantity) > 0 THEN SUM(value_usd) / SUM(quantity)
+        ELSE NULL
+    END as avg_price_per_unit,
     COUNT(DISTINCT country_code) as num_countries,
     MAX(collected_at) as last_updated
 FROM bronze.census_trade
