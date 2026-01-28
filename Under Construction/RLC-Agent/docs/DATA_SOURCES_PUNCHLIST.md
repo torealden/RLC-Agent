@@ -53,7 +53,7 @@
 
 | Source | Collector | Schema | save_to_bronze | Data in DB | Status | Notes |
 |--------|-----------|--------|----------------|------------|--------|-------|
-| CONAB Brazil | conab_collector.py | No | No | 0 | **PARTIAL** | Collector exists, needs schema + integration |
+| CONAB Brazil | conab_collector.py | Yes | No | 0 | **PARTIAL** | Schema created for all commodities (soy/corn/wheat), needs save_to_bronze |
 | ABIOVE Brazil Crush | abiove_collector.py | No | No | 0 | **NOT STARTED** | Brazilian crush/export data |
 | IMEA Mato Grosso | imea_collector.py | No | No | 0 | **NOT STARTED** | MT state production costs |
 | IBGE SIDRA | ibge_sidra_collector.py | No | No | 0 | **NOT STARTED** | Brazilian national statistics |
@@ -135,7 +135,7 @@
 3. ~~CFTC COT~~ **DONE**
 4. ~~EIA Ethanol~~ **WORKING** (needs save_to_bronze)
 5. USDA FAS Export Sales **BLOCKED** - waiting on API fix
-6. CONAB Brazil - collector exists, needs schema
+6. CONAB Brazil - ~~needs schema~~ **SCHEMA DONE** - needs save_to_bronze
 
 ### Tier 2 - Important (Complete Soon After Launch)
 7. USDA WASDE - need new collector
@@ -171,6 +171,7 @@
 
 **Next Actions:**
 1. Add save_to_bronze to EIA collectors
-2. Create CONAB database schema and integration
-3. Monitor FAS API status
-4. Build WASDE collector
+2. ~~Create CONAB database schema~~ **DONE** - Add save_to_bronze to CONAB collector
+3. Expand EIA coverage for biodiesel, renewable diesel, SAF
+4. Monitor FAS API status
+5. Build WASDE collector
