@@ -533,6 +533,231 @@ class NASSCollector(BaseCollector):
 
         return None
 
+    # =========================================================================
+    # DATABASE METHODS
+    # =========================================================================
+
+    def save_to_bronze(
+        self,
+        data_type: str,
+        commodities: List[str] = None,
+        year: int = None,
+        conn=None
+    ) -> Dict[str, int]:
+        """
+        Collect and save NASS data to bronze layer.
+
+        Args:
+            data_type: 'crop_progress', 'condition', 'acreage', 'production', 'stocks', or 'all'
+            commodities: List of commodities (default: corn, soybeans, wheat, sorghum)
+            year: Year to fetch (default: current)
+            conn: Optional database connection
+
+        Returns:
+            Dict with counts of records saved per data type
+        """
+        import psycopg2
+        from pathlib import Path
+
+        commodities = commodities or self.config.commodities
+        year = year or datetime.now().year
+
+        # Get database connection
+        close_conn = False
+        if conn is None:
+            # Load .env from project root if needed
+            from dotenv import load_dotenv
+            project_root = Path(__file__).parent.parent.parent.parent.parent
+            load_dotenv(project_root / '.env')
+
+            password = os.environ.get('RLC_PG_PASSWORD') or os.environ.get('DATABASE_PASSWORD') or os.environ.get('DB_PASSWORD')
+            conn = psycopg2.connect(
+                host=os.environ.get('DATABASE_HOST', 'localhost'),
+                port=os.environ.get('DATABASE_PORT', '5432'),
+                database=os.environ.get('DATABASE_NAME', 'rlc_commodities'),
+                user=os.environ.get('DATABASE_USER', 'postgres'),
+                password=password
+            )
+            close_conn = True
+
+        results = {}
+
+        try:
+            if data_type == 'all':
+                for dt in ['crop_progress', 'condition', 'acreage', 'production', 'stocks']:
+                    results[dt] = self._save_data_type(dt, commodities, year, conn)
+            else:
+                results[data_type] = self._save_data_type(data_type, commodities, year, conn)
+
+            conn.commit()
+            self.logger.info(f"Saved NASS data to bronze: {results}")
+
+        except Exception as e:
+            conn.rollback()
+            self.logger.error(f"Error saving NASS data: {e}")
+            raise
+        finally:
+            if close_conn:
+                conn.close()
+
+        return results
+
+    def _save_data_type(
+        self,
+        data_type: str,
+        commodities: List[str],
+        year: int,
+        conn
+    ) -> int:
+        """Save a specific data type to its bronze table."""
+        result = self.collect(data_type=data_type, commodities=commodities, year=year)
+
+        if not result.success or result.data is None:
+            self.logger.warning(f"No data for {data_type}: {result.error_message}")
+            return 0
+
+        if not PANDAS_AVAILABLE or not hasattr(result.data, 'iterrows'):
+            self.logger.warning("Pandas required for database save")
+            return 0
+
+        df = result.data
+        cur = conn.cursor()
+        count = 0
+
+        # Map data types to tables and insert logic
+        table_map = {
+            'crop_progress': 'bronze.nass_crop_progress',
+            'condition': 'bronze.nass_crop_condition',
+            'acreage': 'bronze.nass_acreage',
+            'production': 'bronze.nass_production',
+            'stocks': 'bronze.nass_stocks'
+        }
+
+        table = table_map.get(data_type)
+        if not table:
+            return 0
+
+        for _, row in df.iterrows():
+            try:
+                if data_type == 'crop_progress':
+                    cur.execute("""
+                        INSERT INTO bronze.nass_crop_progress
+                        (commodity, year, week_ending, reference_period, state, agg_level,
+                         statisticcat, short_desc, unit, value)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (commodity, year, week_ending, state, short_desc)
+                        DO UPDATE SET value = EXCLUDED.value, collected_at = NOW()
+                    """, (
+                        row.get('commodity'),
+                        row.get('year'),
+                        row.get('week_ending'),
+                        row.get('reference_period_desc'),
+                        row.get('state', 'US'),
+                        row.get('agg_level'),
+                        row.get('statisticcat'),
+                        row.get('short_desc'),
+                        row.get('unit'),
+                        row.get('value')
+                    ))
+
+                elif data_type == 'condition':
+                    # Extract condition category from short_desc
+                    short_desc = row.get('short_desc', '')
+                    condition = None
+                    for cat in CONDITION_CATEGORIES:
+                        if cat in short_desc.upper():
+                            condition = cat
+                            break
+
+                    cur.execute("""
+                        INSERT INTO bronze.nass_crop_condition
+                        (commodity, year, week_ending, reference_period, state, agg_level,
+                         condition_category, short_desc, unit, value)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (commodity, year, week_ending, state, condition_category)
+                        DO UPDATE SET value = EXCLUDED.value, collected_at = NOW()
+                    """, (
+                        row.get('commodity'),
+                        row.get('year'),
+                        row.get('week_ending'),
+                        row.get('reference_period_desc'),
+                        row.get('state', 'US'),
+                        row.get('agg_level'),
+                        condition,
+                        row.get('short_desc'),
+                        row.get('unit'),
+                        row.get('value')
+                    ))
+
+                elif data_type == 'acreage':
+                    cur.execute("""
+                        INSERT INTO bronze.nass_acreage
+                        (commodity, year, reference_period, state, agg_level,
+                         statisticcat, short_desc, unit, value)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (commodity, year, reference_period, state, statisticcat)
+                        DO UPDATE SET value = EXCLUDED.value, collected_at = NOW()
+                    """, (
+                        row.get('commodity'),
+                        row.get('year'),
+                        row.get('reference_period_desc'),
+                        row.get('state', 'US'),
+                        row.get('agg_level'),
+                        row.get('statisticcat'),
+                        row.get('short_desc'),
+                        row.get('unit'),
+                        row.get('value')
+                    ))
+
+                elif data_type == 'production':
+                    cur.execute("""
+                        INSERT INTO bronze.nass_production
+                        (commodity, year, reference_period, state, agg_level,
+                         statisticcat, short_desc, unit, value)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (commodity, year, reference_period, state, short_desc)
+                        DO UPDATE SET value = EXCLUDED.value, collected_at = NOW()
+                    """, (
+                        row.get('commodity'),
+                        row.get('year'),
+                        row.get('reference_period_desc'),
+                        row.get('state', 'US'),
+                        row.get('agg_level'),
+                        row.get('statisticcat'),
+                        row.get('short_desc'),
+                        row.get('unit'),
+                        row.get('value')
+                    ))
+
+                elif data_type == 'stocks':
+                    cur.execute("""
+                        INSERT INTO bronze.nass_stocks
+                        (commodity, year, reference_period, state, agg_level,
+                         statisticcat, short_desc, unit, value)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (commodity, year, reference_period, state, short_desc)
+                        DO UPDATE SET value = EXCLUDED.value, collected_at = NOW()
+                    """, (
+                        row.get('commodity'),
+                        row.get('year'),
+                        row.get('reference_period_desc'),
+                        row.get('state', 'US'),
+                        row.get('agg_level'),
+                        row.get('statisticcat'),
+                        row.get('short_desc'),
+                        row.get('unit'),
+                        row.get('value')
+                    ))
+
+                count += 1
+
+            except Exception as e:
+                self.logger.warning(f"Error inserting row: {e}")
+                continue
+
+        self.logger.info(f"Saved {count} {data_type} records to {table}")
+        return count
+
 
 # =============================================================================
 # CLI INTERFACE
@@ -575,6 +800,12 @@ def main():
         help='Output file (JSON or CSV)'
     )
 
+    parser.add_argument(
+        '--save-db',
+        action='store_true',
+        help='Save data to PostgreSQL bronze layer'
+    )
+
     args = parser.parse_args()
 
     if args.api_key:
@@ -582,28 +813,38 @@ def main():
 
     collector = NASSCollector()
 
-    result = collector.collect(
-        data_type=args.data_type,
-        commodities=args.commodities,
-        year=args.year
-    )
+    if args.save_db:
+        # Use save_to_bronze for database persistence
+        print(f"Collecting and saving {args.data_type} to database...")
+        results = collector.save_to_bronze(
+            data_type=args.data_type,
+            commodities=args.commodities,
+            year=args.year
+        )
+        print(f"Saved to bronze layer: {results}")
+    else:
+        result = collector.collect(
+            data_type=args.data_type,
+            commodities=args.commodities,
+            year=args.year
+        )
 
-    print(f"Success: {result.success}")
-    print(f"Records: {result.records_fetched}")
+        print(f"Success: {result.success}")
+        print(f"Records: {result.records_fetched}")
 
-    if result.warnings:
-        print(f"Warnings: {result.warnings}")
+        if result.warnings:
+            print(f"Warnings: {result.warnings}")
 
-    if result.error_message:
-        print(f"Error: {result.error_message}")
+        if result.error_message:
+            print(f"Error: {result.error_message}")
 
-    if args.output and result.data is not None:
-        if args.output.endswith('.csv') and PANDAS_AVAILABLE:
-            result.data.to_csv(args.output, index=False)
-        else:
-            if PANDAS_AVAILABLE and hasattr(result.data, 'to_json'):
-                result.data.to_json(args.output, orient='records')
-        print(f"Saved to: {args.output}")
+        if args.output and result.data is not None:
+            if args.output.endswith('.csv') and PANDAS_AVAILABLE:
+                result.data.to_csv(args.output, index=False)
+            else:
+                if PANDAS_AVAILABLE and hasattr(result.data, 'to_json'):
+                    result.data.to_json(args.output, orient='records')
+            print(f"Saved to: {args.output}")
 
 
 if __name__ == '__main__':

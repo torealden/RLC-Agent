@@ -5,13 +5,16 @@ Collects data from USDA Foreign Agricultural Service:
 - Export Sales Report (ESR) - Weekly export sales by country
 - Production, Supply, Distribution (PSD) - Supply/demand balances
 
-No API key required for basic access.
+API KEY REQUIRED: As of 2025, the FAS OpenData API requires an API key.
+Register at: https://apps.fas.usda.gov/opendatawebv2/
+Set the FAS_API_KEY environment variable.
 
 Data sources:
 - https://apps.fas.usda.gov/OpenData/api/
 """
 
 import logging
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, date, timedelta
 from typing import Dict, List, Optional, Any
@@ -83,8 +86,13 @@ class USDATFASConfig(CollectorConfig):
     """USDA FAS specific configuration"""
     source_name: str = "USDA FAS"
     source_url: str = "https://apps.fas.usda.gov/OpenData/api"
-    auth_type: AuthType = AuthType.NONE
+    auth_type: AuthType = AuthType.API_KEY
     frequency: DataFrequency = DataFrequency.WEEKLY
+
+    # API key from environment
+    api_key: Optional[str] = field(
+        default_factory=lambda: os.environ.get('FAS_API_KEY')
+    )
 
     # FAS-specific settings
     commodities: List[str] = field(default_factory=lambda: [
@@ -106,13 +114,27 @@ class USDATFASCollector(BaseCollector):
     - PSD: Production, supply, and distribution data
     - GATS: Global trade statistics
 
-    No API key required for basic access.
+    API Key required - set FAS_API_KEY environment variable.
+    Register at: https://apps.fas.usda.gov/opendatawebv2/
     """
 
     def __init__(self, config: USDATFASConfig = None):
         config = config or USDATFASConfig()
         super().__init__(config)
         self.config: USDATFASConfig = config
+
+        if not self.config.api_key:
+            self.logger.warning(
+                "No FAS API key configured. Set FAS_API_KEY environment variable. "
+                "Register at: https://apps.fas.usda.gov/opendatawebv2/"
+            )
+
+    def _get_headers(self) -> Dict[str, str]:
+        """Get request headers including API key"""
+        headers = {'Accept': 'application/json'}
+        if self.config.api_key:
+            headers['API_KEY'] = self.config.api_key
+        return headers
 
     def get_table_name(self) -> str:
         return "export_sales"
@@ -137,6 +159,14 @@ class USDATFASCollector(BaseCollector):
         Returns:
             CollectorResult with fetched data
         """
+        if not self.config.api_key:
+            return CollectorResult(
+                success=False,
+                source=self.config.source_name,
+                error_message="No API key. Set FAS_API_KEY environment variable. "
+                              "Register at: https://apps.fas.usda.gov/opendatawebv2/"
+            )
+
         commodities = commodities or self.config.commodities
         end_date = end_date or date.today()
         start_date = start_date or (end_date - timedelta(days=365))
@@ -179,7 +209,7 @@ class USDATFASCollector(BaseCollector):
             # Try the new API format with marketing year first
             for my in marketing_years:
                 url = f"{self.config.source_url}{self.config.esr_endpoint}/commodityCode/{commodity_info['code']}/allCountries/marketYear/{my}"
-                response, error = self._make_request(url)
+                response, error = self._make_request(url, headers=self._get_headers())
 
                 if not error and response.status_code == 200:
                     try:
@@ -199,7 +229,7 @@ class USDATFASCollector(BaseCollector):
             # If no marketing year endpoints worked, try fallback
             if not commodity_success:
                 url = f"{self.config.source_url}{self.config.esr_endpoint}/commodityCode/{commodity_info['code']}"
-                response, error = self._make_request(url)
+                response, error = self._make_request(url, headers=self._get_headers())
 
                 if error:
                     warnings.append(f"{commodity}: {error}")
@@ -308,7 +338,7 @@ class USDATFASCollector(BaseCollector):
             # PSD API has different structure
             url = f"{self.config.source_url}{self.config.psd_endpoint}/commodity/{commodity_info['code']}"
 
-            response, error = self._make_request(url)
+            response, error = self._make_request(url, headers=self._get_headers())
 
             if error:
                 warnings.append(f"{commodity}: {error}")

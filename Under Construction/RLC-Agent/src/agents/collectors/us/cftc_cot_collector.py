@@ -511,6 +511,141 @@ class CFTCCOTCollector(BaseCollector):
 
         return summary
 
+    # =========================================================================
+    # DATABASE METHODS
+    # =========================================================================
+
+    def save_to_bronze(
+        self,
+        contracts: List[str] = None,
+        weeks: int = 52,
+        conn=None
+    ) -> Dict[str, int]:
+        """
+        Collect and save COT data to bronze layer.
+
+        Args:
+            contracts: List of contracts to fetch
+            weeks: Number of weeks of history
+            conn: Optional database connection
+
+        Returns:
+            Dict with counts of records saved
+        """
+        import os
+        import psycopg2
+        from pathlib import Path
+        from dotenv import load_dotenv
+
+        # Load .env from project root
+        project_root = Path(__file__).parent.parent.parent.parent.parent
+        load_dotenv(project_root / '.env')
+
+        close_conn = False
+        if conn is None:
+            password = (os.environ.get('RLC_PG_PASSWORD') or
+                       os.environ.get('DATABASE_PASSWORD') or
+                       os.environ.get('DB_PASSWORD'))
+            conn = psycopg2.connect(
+                host=os.environ.get('DATABASE_HOST', 'localhost'),
+                port=os.environ.get('DATABASE_PORT', '5432'),
+                database=os.environ.get('DATABASE_NAME', 'rlc_commodities'),
+                user=os.environ.get('DATABASE_USER', 'postgres'),
+                password=password
+            )
+            close_conn = True
+
+        cursor = conn.cursor()
+        counts = {'inserted': 0, 'updated': 0, 'errors': 0}
+
+        # Fetch data
+        end_date = date.today()
+        start_date = end_date - timedelta(weeks=weeks)
+
+        result = self.collect(
+            start_date=start_date,
+            end_date=end_date,
+            contracts=contracts
+        )
+
+        if not result.success or result.data is None:
+            self.logger.error(f"Failed to fetch COT data: {result.error_message}")
+            return counts
+
+        # Convert to list of dicts if DataFrame
+        if hasattr(result.data, 'to_dict'):
+            records = result.data.to_dict('records')
+        else:
+            records = result.data
+
+        for record in records:
+            try:
+                # Convert report_date to proper format
+                report_date = record.get('report_date')
+                if hasattr(report_date, 'strftime'):
+                    report_date = report_date.strftime('%Y-%m-%d')
+
+                cursor.execute("""
+                    INSERT INTO bronze.cftc_cot
+                    (report_date, as_of_date, commodity, exchange, contract_code,
+                     mm_long, mm_short, mm_spread, mm_net, mm_net_change,
+                     prod_long, prod_short, prod_net,
+                     swap_long, swap_short, swap_spread, swap_net,
+                     other_long, other_short,
+                     nonrept_long, nonrept_short,
+                     open_interest, report_type, source, collected_at)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+                    ON CONFLICT (report_date, commodity, report_type)
+                    DO UPDATE SET
+                        mm_net = EXCLUDED.mm_net,
+                        mm_net_change = EXCLUDED.mm_net_change,
+                        prod_net = EXCLUDED.prod_net,
+                        open_interest = EXCLUDED.open_interest,
+                        collected_at = NOW()
+                """, (
+                    report_date,
+                    record.get('as_of_date'),
+                    record.get('commodity'),
+                    record.get('exchange'),
+                    record.get('contract_code'),
+                    record.get('mm_long'),
+                    record.get('mm_short'),
+                    record.get('mm_spread'),
+                    record.get('mm_net'),
+                    record.get('mm_net_change'),
+                    record.get('prod_long'),
+                    record.get('prod_short'),
+                    record.get('prod_net'),
+                    record.get('swap_long'),
+                    record.get('swap_short'),
+                    record.get('swap_spread'),
+                    record.get('swap_net'),
+                    record.get('other_long'),
+                    record.get('other_short'),
+                    record.get('nonrept_long'),
+                    record.get('nonrept_short'),
+                    record.get('open_interest'),
+                    record.get('report_type'),
+                    record.get('source', 'CFTC')
+                ))
+
+                if cursor.rowcount > 0:
+                    counts['inserted'] += 1
+
+            except Exception as e:
+                self.logger.error(f"Error saving record: {e}")
+                counts['errors'] += 1
+
+        conn.commit()
+
+        if close_conn:
+            cursor.close()
+            conn.close()
+
+        self.logger.info(f"Saved {counts['inserted']} records to bronze.cftc_cot")
+        return counts
+
 
 # =============================================================================
 # ALTERNATIVE: Using cot_reports package
@@ -596,6 +731,12 @@ def main():
         help='Output file (JSON)'
     )
 
+    parser.add_argument(
+        '--save-db',
+        action='store_true',
+        help='Save data to PostgreSQL bronze layer'
+    )
+
     args = parser.parse_args()
 
     # Create collector
@@ -613,6 +754,14 @@ def main():
         return
 
     if args.command == 'fetch':
+        if args.save_db:
+            counts = collector.save_to_bronze(
+                contracts=args.contracts,
+                weeks=args.weeks
+            )
+            print(f"Saved to database: {counts}")
+            return
+
         end_date = date.today()
         start_date = end_date - timedelta(weeks=args.weeks)
 

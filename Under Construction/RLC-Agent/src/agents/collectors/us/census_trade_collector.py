@@ -192,8 +192,8 @@ class CensusTradeCollector(BaseCollector):
         url = self._build_api_url(flow)
 
         # Census API uses different field prefixes for imports vs exports
-        # Imports: I_COMMODITY, GEN_VAL_MO (general value)
-        # Exports: E_COMMODITY, ALL_VAL_MO (all value)
+        # Imports: I_COMMODITY, GEN_VAL_MO (general value), GEN_QY1_MO (quantity)
+        # Exports: E_COMMODITY, ALL_VAL_MO (all value), QTY_1_MO (quantity)
         if flow == 'imports':
             commodity_field = 'I_COMMODITY'
             value_field = 'GEN_VAL_MO'
@@ -201,7 +201,7 @@ class CensusTradeCollector(BaseCollector):
         else:
             commodity_field = 'E_COMMODITY'
             value_field = 'ALL_VAL_MO'
-            qty_field = 'QY1_MO'
+            qty_field = 'QTY_1_MO'
 
         all_records = []
 
@@ -332,6 +332,115 @@ class CensusTradeCollector(BaseCollector):
 
         return None
 
+    # =========================================================================
+    # DATABASE METHODS
+    # =========================================================================
+
+    def save_to_bronze(
+        self,
+        flow: str = 'both',
+        hs_codes: List[str] = None,
+        start_date: date = None,
+        end_date: date = None,
+        conn=None
+    ) -> Dict[str, int]:
+        """
+        Collect and save Census trade data to bronze layer.
+
+        Args:
+            flow: 'imports', 'exports', or 'both'
+            hs_codes: List of HS codes to fetch
+            start_date: Start date for data
+            end_date: End date for data
+            conn: Optional database connection
+
+        Returns:
+            Dict with counts of records saved
+        """
+        import psycopg2
+        from pathlib import Path
+        from dotenv import load_dotenv
+
+        # Load .env from project root
+        project_root = Path(__file__).parent.parent.parent.parent.parent
+        load_dotenv(project_root / '.env')
+
+        close_conn = False
+        if conn is None:
+            password = (os.environ.get('RLC_PG_PASSWORD') or
+                       os.environ.get('DATABASE_PASSWORD') or
+                       os.environ.get('DB_PASSWORD'))
+            conn = psycopg2.connect(
+                host=os.environ.get('DATABASE_HOST', 'localhost'),
+                port=os.environ.get('DATABASE_PORT', '5432'),
+                database=os.environ.get('DATABASE_NAME', 'rlc_commodities'),
+                user=os.environ.get('DATABASE_USER', 'postgres'),
+                password=password
+            )
+            close_conn = True
+
+        cursor = conn.cursor()
+        counts = {'inserted': 0, 'updated': 0, 'errors': 0}
+
+        # Fetch data
+        result = self.collect(
+            flow=flow,
+            hs_codes=hs_codes,
+            start_date=start_date,
+            end_date=end_date
+        )
+
+        if not result.success or result.data is None:
+            self.logger.error(f"Failed to fetch trade data: {result.error_message}")
+            return counts
+
+        # Convert to list of dicts if DataFrame
+        if hasattr(result.data, 'to_dict'):
+            records = result.data.to_dict('records')
+        else:
+            records = result.data
+
+        for record in records:
+            try:
+                cursor.execute("""
+                    INSERT INTO bronze.census_trade
+                    (year, month, flow, hs_code, country_code, country_name,
+                     value_usd, quantity, source, collected_at)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+                    ON CONFLICT (year, month, flow, hs_code, country_code)
+                    DO UPDATE SET
+                        country_name = EXCLUDED.country_name,
+                        value_usd = EXCLUDED.value_usd,
+                        quantity = EXCLUDED.quantity,
+                        collected_at = NOW()
+                """, (
+                    record.get('year'),
+                    record.get('month'),
+                    record.get('flow'),
+                    record.get('hs_code'),
+                    record.get('country_code'),
+                    record.get('country_name'),
+                    record.get('value_usd'),
+                    record.get('quantity'),
+                    record.get('source', 'CENSUS_TRADE')
+                ))
+
+                if cursor.rowcount > 0:
+                    counts['inserted'] += 1
+
+            except Exception as e:
+                self.logger.error(f"Error saving record: {e}")
+                counts['errors'] += 1
+
+        conn.commit()
+
+        if close_conn:
+            cursor.close()
+            conn.close()
+
+        self.logger.info(f"Saved {counts['inserted']} records to bronze.census_trade")
+        return counts
+
 
 # =============================================================================
 # CLI INTERFACE
@@ -385,6 +494,12 @@ def main():
         help='Output file'
     )
 
+    parser.add_argument(
+        '--save-db',
+        action='store_true',
+        help='Save data to PostgreSQL bronze layer'
+    )
+
     args = parser.parse_args()
 
     if args.api_key:
@@ -409,6 +524,19 @@ def main():
         return
 
     if args.command == 'fetch':
+        if args.save_db:
+            from datetime import date
+            start = date(args.year, 1, 1) if args.year else None
+            end = date(args.year, 12, 31) if args.year else None
+            counts = collector.save_to_bronze(
+                flow=args.flow,
+                hs_codes=args.hs_codes,
+                start_date=start,
+                end_date=end
+            )
+            print(f"Saved to database: {counts}")
+            return
+
         result = collector.collect(
             flow=args.flow,
             hs_codes=args.hs_codes

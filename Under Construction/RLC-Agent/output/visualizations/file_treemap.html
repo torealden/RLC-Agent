@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLC-Agent File Structure Treemap</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+            padding: 20px 30px;
+            border-bottom: 2px solid #e94560;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .header p {
+            color: #aaa;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        .controls {
+            background: #16213e;
+            padding: 15px 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #333;
+        }
+        .controls label {
+            font-size: 13px;
+            color: #aaa;
+        }
+        .controls select, .controls input {
+            background: #0f3460;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .breadcrumb {
+            background: #0f3460;
+            padding: 12px 30px;
+            font-size: 13px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .breadcrumb span {
+            cursor: pointer;
+            color: #e94560;
+            transition: color 0.2s;
+        }
+        .breadcrumb span:hover {
+            color: #ff6b6b;
+            text-decoration: underline;
+        }
+        .breadcrumb .separator {
+            color: #555;
+            cursor: default;
+        }
+        .breadcrumb .separator:hover {
+            text-decoration: none;
+        }
+        #treemap {
+            width: 100%;
+            height: calc(100vh - 180px);
+            min-height: 500px;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(15, 52, 96, 0.95);
+            border: 1px solid #e94560;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 13px;
+            max-width: 350px;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .tooltip .name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+        .tooltip .path {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+        .tooltip .desc {
+            color: #ccc;
+            line-height: 1.4;
+        }
+        .tooltip .type {
+            display: inline-block;
+            background: #e94560;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(22, 33, 62, 0.95);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 12px;
+            z-index: 100;
+        }
+        .legend h4 {
+            margin-bottom: 10px;
+            color: #fff;
+            font-size: 13px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+        .node {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .node:hover {
+            opacity: 0.85;
+        }
+        .node-label {
+            pointer-events: none;
+            fill: #fff;
+            font-size: 11px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>RLC-Agent Project Structure</h1>
+        <p>Interactive treemap visualization - 987 files and folders</p>
+    </div>
+    <div class="controls">
+        <div>
+            <label>Color by:</label>
+            <select id="colorScheme">
+                <option value="type">File Type</option>
+                <option value="category">Category</option>
+                <option value="depth">Depth</option>
+            </select>
+        </div>
+        <div>
+            <label>Size by:</label>
+            <select id="sizeScheme">
+                <option value="count">File Count</option>
+                <option value="equal">Equal</option>
+            </select>
+        </div>
+        <div>
+            <label>Search:</label>
+            <input type="text" id="search" placeholder="Filter files...">
+        </div>
+    </div>
+    <div class="breadcrumb" id="breadcrumb">
+        <span onclick="zoomToRoot()">RLC-Agent</span>
+    </div>
+    <div id="treemap"></div>
+    <div class="tooltip" id="tooltip" style="display:none;"></div>
+    <div class="legend">
+        <h4>File Types</h4>
+        <div class="legend-item"><div class="legend-color" style="background:#e94560"></div> Folder</div>
+        <div class="legend-item"><div class="legend-color" style="background:#4ecdc4"></div> Python</div>
+        <div class="legend-item"><div class="legend-color" style="background:#45b7d1"></div> SQL</div>
+        <div class="legend-item"><div class="legend-color" style="background:#96ceb4"></div> Markdown</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ffeaa7"></div> Data (xlsx/csv)</div>
+        <div class="legend-item"><div class="legend-color" style="background:#dfe6e9"></div> Documents</div>
+        <div class="legend-item"><div class="legend-color" style="background:#fd79a8"></div> Config</div>
+        <div class="legend-item"><div class="legend-color" style="background:#a29bfe"></div> Other</div>
+    </div>
+
+    <script>
+        // File structure data from inventory
+        const data = {
+            name: "RLC-Agent",
+            description: "Root project directory for RLC commodity analytics platform",
+            children: [
+                {
+                    name: "archive",
+                    description: "Archived and deprecated code for reference",
+                    children: [
+                        { name: "deprecated_code", description: "Deprecated scripts and modules", children: [] }
+                    ]
+                },
+                {
+                    name: "biotrack",
+                    description: "BioTrack AI - Biofuel facility tracking system",
+                    children: [
+                        { name: "biotrack_ai.py", description: "Main AI agent for biofuel facility monitoring", type: "py" },
+                        { name: "README.md", description: "BioTrack module documentation", type: "md" },
+                        { name: "requirements.txt", description: "BioTrack-specific dependencies", type: "txt" },
+                        {
+                            name: "config",
+                            description: "BioTrack configuration files",
+                            children: [
+                                { name: "facilities.csv", description: "Database of biofuel facilities (locations, capacity)", type: "csv" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "config",
+                    description: "Application configuration files",
+                    children: [
+                        { name: "credentials.env", description: "API credentials and secrets (not in git)", type: "env" },
+                        { name: "credentials.example", description: "Template for credentials setup", type: "txt" },
+                        { name: "DATA_SOURCES_CHECKLIST.md", description: "Checklist of data sources to implement", type: "md" },
+                        { name: "data_sources_master.csv", description: "Master list of all data sources with URLs, frequencies", type: "csv" },
+                        { name: "weather_cities.json", description: "Cities for weather data collection", type: "json" },
+                        { name: "weather_email_config.json", description: "Weather email agent configuration", type: "json" },
+                        { name: "weather_locations.json", description: "Geographic coordinates for weather stations", type: "json" }
+                    ]
+                },
+                {
+                    name: "dashboards",
+                    description: "PowerBI dashboards and visualization templates",
+                    children: [
+                        {
+                            name: "powerbi",
+                            description: "PowerBI dashboard files",
+                            children: [
+                                { name: "First Sample Dashboard - Ethanol.pbix", description: "Ethanol market dashboard", type: "pbix" },
+                                { name: "First Sample Dashboard - RLC.pbix", description: "General RLC commodity dashboard", type: "pbix" },
+                                { name: "RLC_Professional_Template_Initial.pbit", description: "Reusable PowerBI template", type: "pbit" },
+                                { name: "US Balance Sheets.pbix", description: "US commodity supply/demand balances", type: "pbix" },
+                                { name: "us_soybean_trade_flows.pbix", description: "Soybean import/export flow visualization", type: "pbix" },
+                                { name: "USDA Prices.pbix", description: "USDA price data dashboard", type: "pbix" }
+                            ]
+                        },
+                        { name: "templates", description: "Dashboard templates", children: [] }
+                    ]
+                },
+                {
+                    name: "data",
+                    description: "Data storage - raw inputs, processed outputs, exports",
+                    children: [
+                        { name: "cache", description: "Temporary cache for API responses", children: [] },
+                        { name: "cached", description: "Persistent cached data", children: [] },
+                        {
+                            name: "exports",
+                            description: "Exported datasets and analysis",
+                            children: [
+                                { name: "duplication_analysis.csv", description: "Analysis of duplicate code/data", type: "csv" },
+                                { name: "HigbyBarrett_Dashboard.xlsx", description: "HB report data for dashboards", type: "xlsx" },
+                                { name: "inventory_agents.csv", description: "Inventory of all agent modules", type: "csv" },
+                                { name: "inventory_collectors.csv", description: "Inventory of data collectors", type: "csv" },
+                                { name: "inventory_database.csv", description: "Database tables/views inventory", type: "csv" },
+                                { name: "inventory_summary.csv", description: "Summary of all inventories", type: "csv" },
+                                { name: "proposed_structure.csv", description: "Proposed folder restructuring", type: "csv" }
+                            ]
+                        },
+                        {
+                            name: "marketing_years",
+                            description: "Marketing year analysis documents",
+                            children: [
+                                { name: "2012-13_corn_summary.md", description: "2012 drought year corn analysis", type: "md" },
+                                { name: "2020-21_corn_summary.md", description: "2020/21 corn marketing year recap", type: "md" },
+                                { name: "README.md", description: "Marketing year documentation guide", type: "md" }
+                            ]
+                        },
+                        { name: "processed", description: "Cleaned/transformed data", children: [] },
+                        {
+                            name: "raw",
+                            description: "Raw source data files - USDA, CONAB, EIA, trade statistics (200+ files)",
+                            children: [
+                                { name: "Acreage Reports", description: "USDA planted acreage reports", type: "folder", fileCount: 8 },
+                                { name: "Agricultural Prices", description: "Monthly farm price reports", type: "folder", fileCount: 12 },
+                                { name: "Attache Reports", description: "USDA FAS international biofuel reports", type: "folder", fileCount: 12 },
+                                { name: "Balance Sheets", description: "Supply/demand balance data", type: "folder", fileCount: 15 },
+                                { name: "CONAB", description: "Brazilian crop estimates", type: "folder", fileCount: 6 },
+                                { name: "Crop Production", description: "USDA monthly crop reports", type: "folder", fileCount: 15 },
+                                { name: "Crop Progress", description: "Weekly crop condition reports", type: "folder", fileCount: 10 },
+                                { name: "EIA Data", description: "Energy Information Administration data", type: "folder", fileCount: 10 },
+                                { name: "Export Inspections", description: "Weekly grain export inspections", type: "folder", fileCount: 8 },
+                                { name: "Fats and Oils", description: "NASS fats/oils crushing reports", type: "folder", fileCount: 12 },
+                                { name: "Grain Stocks", description: "Quarterly stocks reports", type: "folder", fileCount: 8 },
+                                { name: "Trade Data", description: "Census Bureau trade statistics", type: "folder", fileCount: 40 },
+                                { name: "WASDE", description: "World supply/demand estimates", type: "folder", fileCount: 20 }
+                            ]
+                        },
+                        {
+                            name: "templates",
+                            description: "Data file templates",
+                            children: [
+                                { name: "marketing_year_template.md", description: "Template for MY analysis docs", type: "md" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "database",
+                    description: "Database schemas, migrations, and queries",
+                    children: [
+                        { name: "census_trade.db", description: "SQLite database for Census trade data", type: "db" },
+                        {
+                            name: "migrations",
+                            description: "Database migration scripts for schema evolution",
+                            children: [
+                                { name: "01_inventory_postgres.py", description: "Inventory existing PostgreSQL tables", type: "py" },
+                                { name: "02_deploy_medallion_schema.py", description: "Deploy bronze/silver/gold layers", type: "py" },
+                                { name: "03_migrate_existing_to_bronze.py", description: "Move legacy data to bronze layer", type: "py" },
+                                { name: "04_migrate_sqlite_to_bronze.py", description: "Migrate SQLite data to PostgreSQL", type: "py" },
+                                { name: "README.md", description: "Migration process documentation", type: "md" },
+                                { name: "run_full_migration.py", description: "Run all migrations in sequence", type: "py" }
+                            ]
+                        },
+                        {
+                            name: "queries",
+                            description: "Reusable SQL queries",
+                            children: [
+                                { name: "balance_sheet_inventory.sql", description: "Query to inventory balance sheet data", type: "sql" }
+                            ]
+                        },
+                        {
+                            name: "schemas",
+                            description: "Medallion architecture schema definitions",
+                            children: [
+                                { name: "001_schema_foundation.sql", description: "Base schemas (bronze/silver/gold)", type: "sql" },
+                                { name: "002_bronze_layer.sql", description: "Bronze (raw) layer tables", type: "sql" },
+                                { name: "003_silver_layer.sql", description: "Silver (cleaned) layer tables", type: "sql" },
+                                { name: "004_gold_layer.sql", description: "Gold (analytics) layer views", type: "sql" },
+                                { name: "005_roles_and_security.sql", description: "Database roles and permissions", type: "sql" },
+                                { name: "006_weather_schema.sql", description: "Weather observation tables", type: "sql" },
+                                { name: "007_price_schema.sql", description: "Cash and futures price tables", type: "sql" },
+                                { name: "008_futures_sessions_schema.sql", description: "[NEW] Futures session OHLC tables", type: "sql", isNew: true },
+                                { name: "010_conab_soybean.sql", description: "CONAB Brazil soybean tables", type: "sql" },
+                                { name: "DATABASE_DESIGN.md", description: "Database architecture documentation", type: "md" }
+                            ]
+                        },
+                        {
+                            name: "sql",
+                            description: "Additional SQL scripts",
+                            children: [
+                                { name: "00_init.sql", description: "Database initialization", type: "sql" },
+                                { name: "002_hb_report_tables.sql", description: "HigbyBarrett report data tables", type: "sql" },
+                                { name: "003_comprehensive_commodity_schema.sql", description: "Full commodity data schema", type: "sql" },
+                                { name: "04_bronze_wasde.sql", description: "WASDE bronze layer", type: "sql" },
+                                { name: "05_silver_observation.sql", description: "Silver observation tables", type: "sql" },
+                                { name: "06_gold_views.sql", description: "Gold analytics views", type: "sql" }
+                            ]
+                        },
+                        {
+                            name: "views",
+                            description: "Database views",
+                            children: [
+                                { name: "01_traditional_balance_sheets.sql", description: "Balance sheet views v1", type: "sql" },
+                                { name: "02_traditional_balance_sheets_v2.sql", description: "Balance sheet views v2", type: "sql" },
+                                { name: "03_trade_flow_views.sql", description: "Import/export flow views", type: "sql" },
+                                { name: "04_ers_gold_views.sql", description: "ERS data gold layer views", type: "sql" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "docs",
+                    description: "Project documentation (80+ files)",
+                    children: [
+                        { name: "ARCHITECTURE_PLAN.md", description: "System architecture overview", type: "md" },
+                        { name: "AUTOMATED_DATA_PIPELINE.md", description: "Data pipeline documentation", type: "md" },
+                        { name: "BALANCE_SHEET_KNOWLEDGE.md", description: "Balance sheet methodology", type: "md" },
+                        { name: "CODE_REVIEW.md", description: "Code review guidelines", type: "md" },
+                        { name: "CREDENTIALS_REQUIRED.md", description: "Required API credentials list", type: "md" },
+                        { name: "DATA_SOURCE_REGISTRY.md", description: "Registry of all data sources", type: "md" },
+                        { name: "FILE_INVENTORY_ANNOTATED.md", description: "Complete annotated file listing", type: "md" },
+                        { name: "HB_REPORT_AUTOMATION_GUIDE.md", description: "HigbyBarrett report automation", type: "md" },
+                        { name: "INTEGRATION_GUIDE.md", description: "System integration guide", type: "md" },
+                        { name: "LLM_TRAINING_STRATEGY.md", description: "LLM fine-tuning strategy", type: "md" },
+                        { name: "POWER_BI_SETUP_GUIDE.md", description: "PowerBI configuration", type: "md" },
+                        { name: "Agents 101.docx", description: "Introduction to agent architecture", type: "docx" },
+                        { name: "Complete RLC Master Agent Setup Guide.docx", description: "Full setup instructions", type: "docx" },
+                        { name: "Master-Agent Architecture.docx", description: "Architecture iterations", type: "docx" },
+                        { name: "RLC Tech Stack.docx", description: "Technology stack overview", type: "docx" },
+                        {
+                            name: "architecture",
+                            description: "Architecture documents",
+                            children: [
+                                { name: "Folder Structure - The Bible.docx", description: "Definitive folder structure", type: "docx" },
+                                { name: "LIBRARY_STRUCTURE.md", description: "Code library organization", type: "md" }
+                            ]
+                        },
+                        {
+                            name: "training",
+                            description: "Training materials",
+                            children: [
+                                { name: "CC_TRAINING_GUIDE.md", description: "Claude Code training guide", type: "md" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "domain_knowledge",
+                    description: "Reference materials for LLM context and analyst training",
+                    children: [
+                        {
+                            name: "balance_sheets",
+                            description: "Balance sheet templates by commodity category",
+                            children: [
+                                { name: "biofuels", description: "Ethanol, biodiesel S&D templates", children: [] },
+                                { name: "fats_greases", description: "Animal fats, vegetable oils", children: [] },
+                                { name: "feed_grains", description: "Corn, sorghum, barley, oats", children: [] },
+                                { name: "food_grains", description: "Wheat, rice", children: [] },
+                                { name: "oilseeds", description: "Soybeans, canola, sunflower", children: [] }
+                            ]
+                        },
+                        {
+                            name: "crop_calendars",
+                            description: "Monthly crop activity calendars",
+                            children: [
+                                { name: "January.gif", description: "January planting/harvest calendar", type: "gif" },
+                                { name: "February.gif", description: "February planting/harvest calendar", type: "gif" },
+                                { name: "March.gif", description: "March planting/harvest calendar", type: "gif" }
+                            ]
+                        },
+                        {
+                            name: "crop_maps",
+                            description: "Production area maps by region",
+                            children: [
+                                { name: "argentina", description: "Argentina production maps", children: [] },
+                                {
+                                    name: "brazil",
+                                    description: "Brazil production maps",
+                                    children: [
+                                        { name: "Brazil - Soybean - 2023.png", description: "Brazil soybean production areas", type: "png" }
+                                    ]
+                                },
+                                {
+                                    name: "us",
+                                    description: "US production maps (17 PNGs)",
+                                    children: [
+                                        { name: "US - Corn - 2023.png", description: "US corn production areas", type: "png" },
+                                        { name: "US - Soybean - 2023.png", description: "US soybean production areas", type: "png" },
+                                        { name: "US - Wheat - 2023.png", description: "US wheat production areas", type: "png" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: "operator_guides",
+                            description: "Operational procedures for different agent roles",
+                            children: [
+                                { name: "App Developer Operator.docx", description: "App development procedures", type: "docx" },
+                                { name: "Checker Operator.docx", description: "Quality check procedures", type: "docx" },
+                                { name: "Data Gathering Operator.docx", description: "Data collection procedures", type: "docx" },
+                                { name: "Pattern Analysis Operator.docx", description: "Pattern analysis procedures", type: "docx" },
+                                { name: "Project Manager Operator.docx", description: "PM procedures", type: "docx" },
+                                { name: "Trading Code Operator.docx", description: "Trading algorithm procedures", type: "docx" }
+                            ]
+                        },
+                        {
+                            name: "sample_presentations",
+                            description: "Historical presentation files for reference",
+                            children: [
+                                { name: "AFOA Conference Presentation.pptx", description: "AFOA 2021", type: "pptx" },
+                                { name: "Biomass Based Diesel Outlook.pptx", description: "BBD outlook", type: "pptx" },
+                                { name: "Feed Grains Presentation.pptx", description: "Feed grains", type: "pptx" },
+                                { name: "Master Presentation.pptx", description: "Master template", type: "pptx" }
+                            ]
+                        },
+                        {
+                            name: "sample_reports",
+                            description: "Sample industry reports for training and reference",
+                            children: [
+                                { name: "HigbyBarrett Weekly Report 1.docx", description: "HB weekly report sample", type: "docx" },
+                                { name: "HigbyBarrett Weekly Report 2.docx", description: "HB weekly report sample", type: "docx" },
+                                {
+                                    name: "data",
+                                    description: "Report source data",
+                                    children: [
+                                        { name: "cross_commodity", description: "Multi-commodity reports (11 files)", children: [] },
+                                        { name: "feed_grains", description: "Feed grain data (4 files)", children: [] },
+                                        { name: "food_grains", description: "Wheat yearbook tables (15 CSVs)", children: [] },
+                                        { name: "livestock", description: "Cattle on feed data (11 files)", children: [] }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: "special_situations",
+                            description: "Analysis of historical market-moving events",
+                            children: [
+                                { name: "2012_us_drought.md", description: "2012 US drought impact analysis", type: "md" },
+                                { name: "2018_china_trade_war.md", description: "China trade war market impact", type: "md" },
+                                { name: "2020_china_demand_surge.md", description: "2020 China buying surge", type: "md" },
+                                { name: "2020_derecho.md", description: "August 2020 derecho damage", type: "md" },
+                                { name: "2022_ukraine_war.md", description: "Ukraine war grain impact", type: "md" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "output",
+                    description: "Generated outputs - logs, reports, visualizations",
+                    children: [
+                        {
+                            name: "logs",
+                            description: "System and process logs",
+                            children: [
+                                { name: "data_checker.log", description: "Data validation agent log", type: "log" },
+                                { name: "hb_report_v2.log", description: "HB report V2 generation logs", type: "log" },
+                                { name: "overnight_runner_20260127.log", description: "[NEW] Overnight daemon log", type: "log", isNew: true },
+                                { name: "weather_collector.log", description: "Weather collection log", type: "log" }
+                            ]
+                        },
+                        {
+                            name: "reports",
+                            description: "Generated market reports",
+                            children: [
+                                { name: "brazil_crop_update", description: "Brazil crop updates", children: [] },
+                                {
+                                    name: "higby_barrett",
+                                    description: "HigbyBarrett weekly reports",
+                                    children: [
+                                        { name: "HB_Weekly_DATA_V2.json", description: "Report source data JSON", type: "json" },
+                                        { name: "HB_Weekly_PROMPT_V2.txt", description: "LLM prompts used", type: "txt" },
+                                        { name: "HB_Weekly_Report_V2.md", description: "Generated report markdown", type: "md" }
+                                    ]
+                                },
+                                {
+                                    name: "weather_summaries",
+                                    description: "Weather summary reports",
+                                    children: [
+                                        { name: "weather_summary.txt", description: "Daily weather summaries", type: "txt" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: "visualizations",
+                            description: "Generated charts and graphs",
+                            children: [
+                                { name: "corn_balance_sheet.png", description: "Corn S&D chart", type: "png" },
+                                { name: "corn_prices.png", description: "Corn price chart", type: "png" },
+                                { name: "soybean_balance_sheet.png", description: "Soybean S&D chart", type: "png" },
+                                { name: "soybean_crush_margin.png", description: "Crush margin chart", type: "png" },
+                                { name: "wheat_balance_sheet.png", description: "Wheat S&D chart", type: "png" },
+                                { name: "wheat_export_destinations.png", description: "Wheat export flows", type: "png" },
+                                { name: "file_treemap.html", description: "This visualization", type: "html" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "scripts",
+                    description: "Utility scripts for data collection, transformation, and analysis",
+                    children: [
+                        { name: "collect.py", description: "General data collection runner", type: "py" },
+                        { name: "create_powerbi_export.py", description: "Export data for PowerBI", type: "py" },
+                        { name: "data_scheduler.py", description: "Data collection scheduler", type: "py" },
+                        { name: "ingest_wasde.py", description: "WASDE report ingestion", type: "py" },
+                        { name: "llm_assistant.py", description: "LLM assistant interface", type: "py" },
+                        { name: "overnight_runner.py", description: "[NEW] Overnight scheduler daemon", type: "py", isNew: true },
+                        { name: "pull_census_trade.py", description: "Census trade data pull", type: "py" },
+                        { name: "pull_weekly_inspections.py", description: "Weekly export inspections", type: "py" },
+                        { name: "test_hb_report_generation_v2.py", description: "HB report test V2 (enhanced)", type: "py" },
+                        {
+                            name: "collectors",
+                            description: "Standalone collector scripts",
+                            children: [
+                                { name: "__init__.py", description: "Package init", type: "py" },
+                                { name: "ers_feed_grains_collector.py", description: "ERS feed grains collector", type: "py" },
+                                { name: "ers_monthly_outlook_collector.py", description: "ERS outlook collector", type: "py" }
+                            ]
+                        },
+                        {
+                            name: "deployment",
+                            description: "Deployment and setup scripts",
+                            children: [
+                                { name: "agent_tools.py", description: "Agent utility functions", type: "py" },
+                                { name: "balance_sheet_extractor.py", description: "Balance sheet data extraction", type: "py" },
+                                { name: "db_config.py", description: "Database configuration", type: "py" },
+                                { name: "deploy_to_rlc_server.py", description: "Server deployment script", type: "py" },
+                                { name: "document_rag.py", description: "Document RAG system", type: "py" },
+                                { name: "forecast_tracker.py", description: "Forecast accuracy tracker", type: "py" },
+                                { name: "powerbi_export.py", description: "PowerBI data export", type: "py" },
+                                { name: "setup_rlc_server.ps1", description: "PowerShell server setup", type: "ps1" }
+                            ]
+                        },
+                        {
+                            name: "transformations",
+                            description: "Data transformation (bronze -> silver -> gold)",
+                            children: [
+                                { name: "__init__.py", description: "Package init", type: "py" },
+                                { name: "oilseed_silver_transformations.py", description: "Oilseed data transforms", type: "py" },
+                                { name: "silver_transformations.py", description: "General silver transforms", type: "py" },
+                                { name: "wheat_silver_transformations.py", description: "Wheat data transforms", type: "py" }
+                            ]
+                        },
+                        {
+                            name: "visualizations",
+                            description: "Chart generation scripts",
+                            children: [
+                                { name: "__init__.py", description: "Package init", type: "py" },
+                                { name: "gold_visualizations.py", description: "Gold layer visualizations", type: "py" },
+                                { name: "oilseed_visualizations.py", description: "Oilseed charts", type: "py" },
+                                { name: "wheat_visualizations.py", description: "Wheat charts", type: "py" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "src",
+                    description: "Main source code - agents, services, orchestrators",
+                    children: [
+                        { name: "__init__.py", description: "Package init", type: "py" },
+                        { name: "main.py", description: "Application entry point", type: "py" },
+                        {
+                            name: "agents",
+                            description: "AI agents for data collection, analysis, and reporting",
+                            children: [
+                                { name: "__init__.py", description: "Package init", type: "py" },
+                                {
+                                    name: "analysis",
+                                    description: "Market analysis agents",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        { name: "fundamental_analyzer.py", description: "Fundamental S&D analysis", type: "py" },
+                                        { name: "price_forecaster.py", description: "Price prediction agent", type: "py" },
+                                        { name: "spread_and_basis_analyzer.py", description: "Spread/basis analysis", type: "py" }
+                                    ]
+                                },
+                                {
+                                    name: "base",
+                                    description: "Base classes for all agents",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        { name: "base_collector.py", description: "Base data collector class", type: "py" },
+                                        { name: "base_lineup_agent.py", description: "Base vessel lineup agent", type: "py" },
+                                        { name: "base_trade_agent.py", description: "Base trade data agent", type: "py" }
+                                    ]
+                                },
+                                {
+                                    name: "collectors",
+                                    description: "Data collection agents by region/source",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        {
+                                            name: "asia",
+                                            description: "Asian data collectors",
+                                            children: [
+                                                { name: "__init__.py", description: "Package init", type: "py" },
+                                                { name: "mpob_collector.py", description: "Malaysia Palm Oil Board data", type: "py" }
+                                            ]
+                                        },
+                                        {
+                                            name: "canada",
+                                            description: "Canadian data collectors",
+                                            children: [
+                                                { name: "__init__.py", description: "Package init", type: "py" },
+                                                { name: "canada_cgc_collector.py", description: "Canadian Grain Commission data", type: "py" },
+                                                { name: "canada_statscan_collector.py", description: "Statistics Canada data", type: "py" }
+                                            ]
+                                        },
+                                        {
+                                            name: "global",
+                                            description: "Global data collectors",
+                                            children: [
+                                                { name: "__init__.py", description: "Package init", type: "py" },
+                                                { name: "faostat_collector.py", description: "FAO statistics collector", type: "py" }
+                                            ]
+                                        },
+                                        {
+                                            name: "market",
+                                            description: "Market data collectors (prices, futures)",
+                                            children: [
+                                                { name: "__init__.py", description: "Package init", type: "py" },
+                                                { name: "cme_settlements_collector.py", description: "CME settlement prices", type: "py" },
+                                                { name: "futures_data_collector.py", description: "General futures data", type: "py" },
+                                                { name: "ibkr_collector.py", description: "Interactive Brokers data", type: "py" },
+                                                { name: "tradestation_collector.py", description: "TradeStation data", type: "py" },
+                                                { name: "yahoo_futures_collector.py", description: "[ENHANCED] Yahoo Finance futures with session capture", type: "py", isNew: true }
+                                            ]
+                                        },
+                                        {
+                                            name: "south_america",
+                                            description: "South American data collectors (Brazil, Argentina)",
+                                            children: [
+                                                { name: "__init__.py", description: "Package init", type: "py" },
+                                                { name: "abiove_collector.py", description: "Brazil Veg Oil Association data", type: "py" },
+                                                { name: "argentina_agent.py", description: "Argentina trade data", type: "py" },
+                                                { name: "base_collector.py", description: "[NEW] Base collector for SA", type: "py", isNew: true },
+                                                { name: "brazil_agent.py", description: "Brazil Comex Stat trade data", type: "py" },
+                                                { name: "brazil_lineup_agent.py", description: "Brazil vessel lineup", type: "py" },
+                                                { name: "conab_collector.py", description: "[FIXED] CONAB Brazil crop estimates", type: "py", isNew: true },
+                                                { name: "conab_soybean_agent.py", description: "CONAB soybean specialist agent", type: "py" },
+                                                { name: "ibge_sidra_collector.py", description: "Brazil IBGE statistics", type: "py" },
+                                                { name: "imea_collector.py", description: "Mato Grosso economics institute", type: "py" },
+                                                { name: "magyp_collector.py", description: "Argentina agriculture ministry", type: "py" }
+                                            ]
+                                        },
+                                        {
+                                            name: "tenders",
+                                            description: "Tender monitoring agents",
+                                            children: [
+                                                { name: "__init__.py", description: "Package init", type: "py" },
+                                                { name: "alert_system.py", description: "Tender alert notifications", type: "py" },
+                                                { name: "wheat_tender_collector.py", description: "International wheat tenders", type: "py" }
+                                            ]
+                                        },
+                                        {
+                                            name: "us",
+                                            description: "US government data collectors",
+                                            children: [
+                                                { name: "__init__.py", description: "Package init", type: "py" },
+                                                { name: "base_collector.py", description: "Base US collector", type: "py" },
+                                                { name: "census_trade_collector.py", description: "Census Bureau trade data", type: "py" },
+                                                { name: "cftc_cot_collector.py", description: "CFTC Commitments of Traders", type: "py" },
+                                                { name: "drought_collector.py", description: "US Drought Monitor data", type: "py" },
+                                                { name: "eia_ethanol_collector.py", description: "EIA ethanol production", type: "py" },
+                                                { name: "eia_petroleum_collector.py", description: "EIA petroleum data", type: "py" },
+                                                { name: "epa_rfs_collector.py", description: "EPA Renewable Fuel Standard", type: "py" },
+                                                { name: "usda_ams_collector.py", description: "USDA AMS market news", type: "py" },
+                                                { name: "usda_ers_collector.py", description: "USDA ERS outlook data", type: "py" },
+                                                { name: "usda_fas_collector.py", description: "USDA FAS export sales", type: "py" },
+                                                { name: "usda_nass_collector.py", description: "USDA NASS crop data", type: "py" }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "core",
+                                    description: "Core agent infrastructure",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        { name: "approval_manager.py", description: "Human approval workflow", type: "py" },
+                                        { name: "data_agent.py", description: "Data handling agent", type: "py" },
+                                        { name: "database_agent.py", description: "Database operations agent", type: "py" },
+                                        { name: "master_agent.py", description: "Master orchestration agent", type: "py" },
+                                        { name: "memory_manager.py", description: "Agent memory/context manager", type: "py" },
+                                        { name: "transformation_logger.py", description: "ETL audit logger", type: "py" },
+                                        { name: "verification_agent.py", description: "Data verification agent", type: "py" }
+                                    ]
+                                },
+                                {
+                                    name: "integration",
+                                    description: "External system integrations",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        { name: "calendar_agent.py", description: "Google Calendar integration", type: "py" },
+                                        { name: "email_agent.py", description: "Email processing agent", type: "py" },
+                                        { name: "ibkr_api_connector.py", description: "IBKR API connection", type: "py" },
+                                        { name: "notion_manager.py", description: "Notion workspace integration", type: "py" }
+                                    ]
+                                },
+                                {
+                                    name: "reporting",
+                                    description: "Report generation agents",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        { name: "internal_data_agent.py", description: "Internal data reports", type: "py" },
+                                        { name: "market_research_agent.py", description: "Market research agent", type: "py" },
+                                        { name: "price_data_agent.py", description: "Price data reports", type: "py" },
+                                        { name: "report_writer_agent.py", description: "Report generation agent", type: "py" }
+                                    ]
+                                },
+                                {
+                                    name: "standalone",
+                                    description: "Standalone agent runner system",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        { name: "agent.py", description: "Standalone agent class", type: "py" },
+                                        { name: "config.py", description: "Standalone configuration", type: "py" },
+                                        { name: "run_daemon.bat", description: "Windows daemon runner", type: "bat" },
+                                        { name: "start_agent.bat", description: "Windows agent starter", type: "bat" },
+                                        { name: "submit_task.py", description: "Task submission script", type: "py" },
+                                        { name: "tools.py", description: "Standalone agent tools", type: "py" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: "orchestrators",
+                            description: "Pipeline orchestration for multi-step workflows",
+                            children: [
+                                { name: "__init__.py", description: "Package init", type: "py" },
+                                { name: "conab_soybean_orchestrator.py", description: "CONAB soybean data pipeline", type: "py" },
+                                { name: "hb_report_orchestrator.py", description: "HB report generation pipeline", type: "py" },
+                                { name: "pipeline_orchestrator.py", description: "General pipeline orchestrator", type: "py" },
+                                { name: "trade_data_orchestrator.py", description: "Trade data pipeline", type: "py" }
+                            ]
+                        },
+                        {
+                            name: "scheduler",
+                            description: "Task scheduling and automation",
+                            children: [
+                                { name: "__init__.py", description: "Package init", type: "py" },
+                                { name: "agent_scheduler.py", description: "Agent execution scheduler", type: "py" },
+                                { name: "daily_activity_log.py", description: "Daily activity logging", type: "py" },
+                                { name: "master_scheduler.py", description: "[UPDATED] Master schedule with futures + CONAB", type: "py", isNew: true },
+                                { name: "README.md", description: "Scheduler documentation", type: "md" },
+                                { name: "report_scheduler.py", description: "Report generation scheduler", type: "py" },
+                                { name: "trade_scheduler.py", description: "Trade data scheduler", type: "py" },
+                                {
+                                    name: "agents",
+                                    description: "Scheduler-specific agents",
+                                    children: [
+                                        { name: "cash_price_collector_agent.py", description: "Cash price collection", type: "py" },
+                                        { name: "data_checker_agent.py", description: "Data validation agent", type: "py" },
+                                        { name: "weather_collector_agent.py", description: "Weather data collection", type: "py" },
+                                        { name: "weather_email_agent.py", description: "Weather email processing", type: "py" }
+                                    ]
+                                },
+                                {
+                                    name: "tasks",
+                                    description: "Windows Task Scheduler scripts",
+                                    children: [
+                                        { name: "README.md", description: "Task documentation", type: "md" },
+                                        { name: "run_agent_scheduler.bat", description: "Run agent scheduler", type: "bat" },
+                                        { name: "run_data_checker.bat", description: "Run data checker", type: "bat" },
+                                        { name: "run_weather_collector.bat", description: "Run weather collector", type: "bat" },
+                                        { name: "setup_windows_tasks.ps1", description: "PowerShell task setup", type: "ps1" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: "services",
+                            description: "Shared service modules",
+                            children: [
+                                { name: "__init__.py", description: "Package init", type: "py" },
+                                { name: "city_enrollment_service.py", description: "City/location enrollment", type: "py" },
+                                { name: "location_service.py", description: "Geographic location service", type: "py" },
+                                {
+                                    name: "api",
+                                    description: "API client services",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        { name: "census_api.py", description: "Census Bureau API client", type: "py" },
+                                        { name: "usda_api.py", description: "USDA API client", type: "py" },
+                                        { name: "weather_api.py", description: "OpenWeather API client", type: "py" },
+                                        { name: "world_weather_service.py", description: "World weather service", type: "py" }
+                                    ]
+                                },
+                                {
+                                    name: "database",
+                                    description: "Database services",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        { name: "data_loader.py", description: "Data loading utilities", type: "py" },
+                                        { name: "db_config.py", description: "Database configuration", type: "py" },
+                                        { name: "schema.py", description: "Schema definitions", type: "py" }
+                                    ]
+                                },
+                                {
+                                    name: "document",
+                                    description: "Document processing services",
+                                    children: [
+                                        { name: "__init__.py", description: "Package init", type: "py" },
+                                        { name: "document_builder.py", description: "Document generation", type: "py" },
+                                        { name: "document_rag.py", description: "Document RAG system", type: "py" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: "tools",
+                            description: "Shared agent tools",
+                            children: [
+                                { name: "__init__.py", description: "Package init", type: "py" },
+                                { name: "agent_tools.py", description: "Common agent utilities", type: "py" }
+                            ]
+                        },
+                        {
+                            name: "utils",
+                            description: "Utility functions",
+                            children: [
+                                { name: "__init__.py", description: "Package init", type: "py" },
+                                { name: "config.py", description: "Configuration utilities", type: "py" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "tests",
+                    description: "Test files and fixtures",
+                    children: [
+                        { name: "test_conab_soybean_pipeline.py", description: "CONAB pipeline tests", type: "py" },
+                        { name: "test_wheat_tender_collector.py", description: "Wheat tender tests", type: "py" },
+                        {
+                            name: "collectors",
+                            description: "Collector test fixtures",
+                            children: [
+                                { name: "test_sample_food_sales.csv", description: "Test data file", type: "csv" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "training",
+                    description: "LLM training materials",
+                    children: [
+                        { name: "CC_TRAINING_GUIDE.md", description: "Claude Code training guide", type: "md" },
+                        {
+                            name: "process_docs",
+                            description: "Process documentation",
+                            children: [
+                                { name: "TEMPLATE_process.md", description: "Process document template", type: "md" }
+                            ]
+                        }
+                    ]
+                },
+                // Root files
+                { name: ".env", description: "Environment variables (DB credentials, API keys) - not in git", type: "env" },
+                { name: ".env.example", description: "Template for environment variables setup", type: "txt" },
+                { name: ".gitignore", description: "Git ignore patterns for Python, credentials, cache", type: "txt" },
+                { name: ".mcp.json", description: "Model Context Protocol configuration for Claude Code", type: "json" },
+                { name: "LLM_SETUP_PLAN.md", description: "Planning document for local LLM integration", type: "md" },
+                { name: "README.md", description: "Project overview and setup instructions", type: "md" },
+                { name: "requirements.txt", description: "Python package dependencies", type: "txt" },
+                { name: "start_overnight_test.py", description: "Script to launch overnight data collection tests", type: "py" }
+            ]
+        };
+
+        // Color scheme by file type
+        const typeColors = {
+            'py': '#4ecdc4',
+            'sql': '#45b7d1',
+            'md': '#96ceb4',
+            'xlsx': '#ffeaa7',
+            'csv': '#ffeaa7',
+            'xls': '#ffeaa7',
+            'docx': '#dfe6e9',
+            'doc': '#dfe6e9',
+            'pdf': '#dfe6e9',
+            'pptx': '#dfe6e9',
+            'json': '#fd79a8',
+            'env': '#fd79a8',
+            'txt': '#a29bfe',
+            'bat': '#74b9ff',
+            'ps1': '#74b9ff',
+            'sh': '#74b9ff',
+            'png': '#fdcb6e',
+            'gif': '#fdcb6e',
+            'jpg': '#fdcb6e',
+            'pbix': '#f39c12',
+            'pbit': '#f39c12',
+            'db': '#e17055',
+            'log': '#636e72',
+            'html': '#e84393',
+            'folder': '#e94560'
+        };
+
+        const categoryColors = {
+            'src': '#4ecdc4',
+            'scripts': '#45b7d1',
+            'database': '#96ceb4',
+            'docs': '#ffeaa7',
+            'data': '#dfe6e9',
+            'domain_knowledge': '#fd79a8',
+            'output': '#a29bfe',
+            'config': '#74b9ff',
+            'dashboards': '#fdcb6e',
+            'tests': '#e17055',
+            'training': '#00cec9',
+            'biotrack': '#6c5ce7',
+            'archive': '#636e72'
+        };
+
+        // Setup
+        const container = document.getElementById('treemap');
+        const tooltip = document.getElementById('tooltip');
+        const breadcrumb = document.getElementById('breadcrumb');
+        let currentRoot = data;
+        let currentPath = ['RLC-Agent'];
+
+        // Calculate sizes recursively
+        function calculateSize(node) {
+            if (!node.children || node.children.length === 0) {
+                return node.fileCount || 1;
+            }
+            let sum = 0;
+            for (const child of node.children) {
+                sum += calculateSize(child);
+            }
+            node.value = sum;
+            return sum;
+        }
+        calculateSize(data);
+
+        // Get color for a node
+        function getColor(node, scheme = 'type') {
+            if (scheme === 'type') {
+                if (node.children && node.children.length > 0) {
+                    return typeColors.folder;
+                }
+                const ext = node.type || (node.name.includes('.') ? node.name.split('.').pop().toLowerCase() : 'folder');
+                return typeColors[ext] || typeColors.folder;
+            } else if (scheme === 'category') {
+                // Find root category
+                let path = getNodePath(node);
+                if (path.length > 1) {
+                    return categoryColors[path[1]] || '#e94560';
+                }
+                return '#e94560';
+            } else if (scheme === 'depth') {
+                const depth = getNodeDepth(node);
+                const hue = (depth * 40) % 360;
+                return `hsl(${hue}, 70%, 50%)`;
+            }
+            return '#e94560';
+        }
+
+        function getNodePath(node, current = data, path = ['RLC-Agent']) {
+            if (current === node) return path;
+            if (current.children) {
+                for (const child of current.children) {
+                    const result = getNodePath(node, child, [...path, child.name]);
+                    if (result) return result;
+                }
+            }
+            return null;
+        }
+
+        function getNodeDepth(node, current = data, depth = 0) {
+            if (current === node) return depth;
+            if (current.children) {
+                for (const child of current.children) {
+                    const result = getNodeDepth(node, child, depth + 1);
+                    if (result !== -1) return result;
+                }
+            }
+            return -1;
+        }
+
+        // Render treemap
+        function render(root = data, path = ['RLC-Agent']) {
+            currentRoot = root;
+            currentPath = path;
+
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            container.innerHTML = '';
+
+            const svg = d3.select('#treemap')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            // Create hierarchy
+            const hierarchy = d3.hierarchy(root)
+                .sum(d => d.children && d.children.length > 0 ? 0 : (d.fileCount || 1))
+                .sort((a, b) => b.value - a.value);
+
+            // Create treemap layout
+            const treemap = d3.treemap()
+                .size([width, height])
+                .paddingOuter(3)
+                .paddingTop(19)
+                .paddingInner(2)
+                .round(true);
+
+            treemap(hierarchy);
+
+            const colorScheme = document.getElementById('colorScheme').value;
+
+            // Draw cells
+            const cell = svg.selectAll('g')
+                .data(hierarchy.descendants())
+                .join('g')
+                .attr('transform', d => `translate(${d.x0},${d.y0})`);
+
+            // Rectangles
+            cell.append('rect')
+                .attr('class', 'node')
+                .attr('width', d => Math.max(0, d.x1 - d.x0))
+                .attr('height', d => Math.max(0, d.y1 - d.y0))
+                .attr('fill', d => {
+                    if (d.data.isNew) return '#00ff88';
+                    return getColor(d.data, colorScheme);
+                })
+                .attr('stroke', d => d.data.isNew ? '#00ff88' : '#1a1a2e')
+                .attr('stroke-width', d => d.data.isNew ? 2 : 1)
+                .attr('rx', 2)
+                .on('click', (event, d) => {
+                    if (d.data.children && d.data.children.length > 0) {
+                        const newPath = [...path, d.data.name];
+                        render(d.data, newPath);
+                        updateBreadcrumb(newPath);
+                    }
+                })
+                .on('mouseover', (event, d) => showTooltip(event, d.data))
+                .on('mousemove', (event) => moveTooltip(event))
+                .on('mouseout', hideTooltip);
+
+            // Labels
+            cell.append('text')
+                .attr('class', 'node-label')
+                .attr('x', 4)
+                .attr('y', 13)
+                .text(d => {
+                    const width = d.x1 - d.x0;
+                    const height = d.y1 - d.y0;
+                    if (width < 40 || height < 18) return '';
+                    const maxChars = Math.floor(width / 7);
+                    const name = d.data.name;
+                    return name.length > maxChars ? name.slice(0, maxChars - 2) + '..' : name;
+                })
+                .attr('fill', d => d.data.isNew ? '#000' : '#fff')
+                .style('font-weight', d => d.data.children && d.data.children.length > 0 ? '600' : '400');
+        }
+
+        function showTooltip(event, data) {
+            const isFolder = data.children && data.children.length > 0;
+            const ext = data.type || (data.name.includes('.') ? data.name.split('.').pop().toLowerCase() : 'folder');
+
+            let html = `<div class="name">${data.name}</div>`;
+            if (currentPath.length > 1) {
+                html += `<div class="path">${currentPath.join('/')}</div>`;
+            }
+            html += `<div class="desc">${data.description || 'No description available'}</div>`;
+            html += `<div class="type">${isFolder ? 'Folder' : ext.toUpperCase()}</div>`;
+            if (data.isNew) {
+                html += `<div class="type" style="background:#00ff88;color:#000;margin-left:5px;">RECENT</div>`;
+            }
+
+            tooltip.innerHTML = html;
+            tooltip.style.display = 'block';
+            moveTooltip(event);
+        }
+
+        function moveTooltip(event) {
+            const x = event.pageX + 15;
+            const y = event.pageY + 15;
+
+            // Keep tooltip in viewport
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const maxX = window.innerWidth - tooltipRect.width - 20;
+            const maxY = window.innerHeight - tooltipRect.height - 20;
+
+            tooltip.style.left = Math.min(x, maxX) + 'px';
+            tooltip.style.top = Math.min(y, maxY) + 'px';
+        }
+
+        function hideTooltip() {
+            tooltip.style.display = 'none';
+        }
+
+        function updateBreadcrumb(path) {
+            let html = '';
+            path.forEach((segment, i) => {
+                if (i > 0) {
+                    html += '<span class="separator">/</span>';
+                }
+                html += `<span onclick="zoomToPath(${i})">${segment}</span>`;
+            });
+            breadcrumb.innerHTML = html;
+        }
+
+        function zoomToRoot() {
+            render(data, ['RLC-Agent']);
+            updateBreadcrumb(['RLC-Agent']);
+        }
+
+        function zoomToPath(index) {
+            let node = data;
+            const newPath = ['RLC-Agent'];
+
+            for (let i = 1; i <= index; i++) {
+                const segment = currentPath[i];
+                newPath.push(segment);
+                node = node.children.find(c => c.name === segment);
+                if (!node) break;
+            }
+
+            render(node, newPath);
+            updateBreadcrumb(newPath);
+        }
+
+        // Search functionality
+        document.getElementById('search').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            if (!query) {
+                render(currentRoot, currentPath);
+                return;
+            }
+
+            // Highlight matching nodes
+            const svg = d3.select('#treemap svg');
+            svg.selectAll('.node')
+                .attr('opacity', d => {
+                    const name = d.data.name.toLowerCase();
+                    const desc = (d.data.description || '').toLowerCase();
+                    return name.includes(query) || desc.includes(query) ? 1 : 0.2;
+                });
+        });
+
+        // Color scheme change
+        document.getElementById('colorScheme').addEventListener('change', () => {
+            render(currentRoot, currentPath);
+        });
+
+        // Size scheme change
+        document.getElementById('sizeScheme').addEventListener('change', () => {
+            render(currentRoot, currentPath);
+        });
+
+        // Initial render
+        render();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            render(currentRoot, currentPath);
+        });
+    </script>
+</body>
+</html>
