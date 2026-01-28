@@ -30,6 +30,7 @@
 |--------|-----------|--------|----------------|------------|--------|-------|
 | EIA Ethanol | eia_ethanol_collector.py | Yes | No | 612 | **PARTIAL** | Working, has gold views, needs save_to_bronze |
 | EIA Petroleum | eia_petroleum_collector.py | Yes | No | (shared) | **PARTIAL** | Working, shares EIA schema |
+| EIA Biodiesel/RD | (use eia_series_config.json) | Yes | No | 0 | **PARTIAL** | Series config created, needs collector integration |
 | Census Trade | census_trade_collector.py | Yes | Yes | 1,461 | **COMPLETE** | 10-digit HS codes with volume |
 | CFTC COT | cftc_cot_collector.py | Yes | Yes | 306 | **COMPLETE** | Weekly positioning data |
 | EPA RFS | epa_rfs_collector.py | No | No | 0 | **NOT STARTED** | Renewable fuel standard data |

@@ -59,6 +59,10 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 load_dotenv(PROJECT_ROOT / ".env")
 load_dotenv(PROJECT_ROOT / "config" / "credentials.env")
 
+# Graphics output directory
+DATA_DIR = PROJECT_ROOT / "data"
+WEATHER_GRAPHICS_DIR = DATA_DIR / "weather_graphics"
+
 # Default configuration
 DEFAULT_CONFIG = {
     "meteorologist_senders": [
@@ -76,6 +80,9 @@ DEFAULT_CONFIG = {
     "processed_ids_file": "weather_emails_processed.json",
     "cities_file": "weather_cities.json",
     "log_file": "weather_email_agent.log",
+    # Graphics extraction
+    "extract_graphics": True,
+    "graphics_dir": str(WEATHER_GRAPHICS_DIR),
     # LLM Configuration
     "llm_enabled": True,
     "llm_provider": "ollama",  # "ollama", "openai", or "anthropic"
@@ -427,6 +434,21 @@ class WeatherEmailAgent:
             # Extract body
             body_text = self._extract_body(msg['payload'])
 
+            # Extract and save images if enabled
+            extracted_images = []
+            if self.config.get("extract_graphics", True):
+                # Parse date for directory organization
+                try:
+                    from email.utils import parsedate_to_datetime
+                    email_datetime = parsedate_to_datetime(headers.get('Date', ''))
+                    date_str = email_datetime.strftime('%Y-%m-%d')
+                except Exception:
+                    date_str = datetime.now().strftime('%Y-%m-%d')
+
+                extracted_images = self._extract_and_save_images(
+                    msg['payload'], msg_id, date_str
+                )
+
             return {
                 'id': msg_id,
                 'thread_id': msg.get('threadId'),
@@ -436,7 +458,8 @@ class WeatherEmailAgent:
                 'date': headers.get('Date', ''),
                 'body': body_text,
                 'labels': msg.get('labelIds', []),
-                'snippet': msg.get('snippet', '')
+                'snippet': msg.get('snippet', ''),
+                'extracted_images': extracted_images
             }
 
         except Exception as e:
@@ -473,6 +496,100 @@ class WeatherEmailAgent:
                         body_text = nested
 
         return body_text
+
+    def _extract_and_save_images(self, payload: dict, email_id: str, email_date: str) -> List[str]:
+        """
+        Extract image attachments and inline images from email payload.
+
+        Args:
+            payload: Email payload from Gmail API
+            email_id: Gmail message ID
+            email_date: Date string for organizing files (YYYY-MM-DD)
+
+        Returns:
+            List of saved image file paths
+        """
+        if not self.config.get("extract_graphics", True):
+            return []
+
+        saved_images = []
+        graphics_dir = Path(self.config.get("graphics_dir", WEATHER_GRAPHICS_DIR))
+
+        # Create date-specific directory
+        date_dir = graphics_dir / email_date
+        date_dir.mkdir(parents=True, exist_ok=True)
+
+        image_counter = 0
+
+        def process_part(part, depth=0):
+            nonlocal image_counter
+
+            mime_type = part.get('mimeType', '')
+            filename = part.get('filename', '')
+
+            # Check if this is an image
+            is_image = (
+                mime_type.startswith('image/') or
+                filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'))
+            )
+
+            if is_image and part.get('body'):
+                body = part['body']
+
+                # Get attachment data
+                if 'attachmentId' in body:
+                    # Need to fetch attachment separately
+                    try:
+                        attachment = self.service.users().messages().attachments().get(
+                            userId='me',
+                            messageId=email_id,
+                            id=body['attachmentId']
+                        ).execute()
+                        data = attachment.get('data', '')
+                    except Exception as e:
+                        self._log(f"Error fetching attachment: {e}")
+                        return
+                elif 'data' in body:
+                    data = body['data']
+                else:
+                    return
+
+                if data:
+                    try:
+                        # Decode base64
+                        image_data = base64.urlsafe_b64decode(data)
+
+                        # Generate filename
+                        if filename:
+                            # Sanitize filename
+                            safe_filename = re.sub(r'[^\w\-_\.]', '_', filename)
+                        else:
+                            # Generate filename from mime type
+                            ext = mime_type.split('/')[-1] if '/' in mime_type else 'png'
+                            ext = ext.split(';')[0]  # Handle mime type parameters
+                            image_counter += 1
+                            safe_filename = f"weather_image_{email_id[:8]}_{image_counter:03d}.{ext}"
+
+                        # Save image
+                        image_path = date_dir / safe_filename
+                        with open(image_path, 'wb') as f:
+                            f.write(image_data)
+
+                        saved_images.append(str(image_path))
+                        self._log(f"Saved image: {image_path}")
+
+                    except Exception as e:
+                        self._log(f"Error saving image: {e}")
+
+            # Recurse into multipart
+            if 'parts' in part:
+                for subpart in part['parts']:
+                    process_part(subpart, depth + 1)
+
+        # Start processing
+        process_part(payload)
+
+        return saved_images
 
     def forward_email(self, email: Dict[str, Any], recipients: Optional[List[str]] = None) -> bool:
         """Forward an email to configured recipients."""
@@ -967,7 +1084,9 @@ Be specific about temperatures (°F) and precipitation (inches) where available.
             'cities_extracted': [],
             'locations_matched': [],
             'cities_enrolled': [],
-            'emails_saved_to_db': 0
+            'emails_saved_to_db': 0,
+            'images_extracted': 0,
+            'image_paths': []
         }
 
         if not self.connect():
@@ -1027,6 +1146,12 @@ Be specific about temperatures (°F) and precipitation (inches) where available.
             matched_ids, unmatched = self.match_cities_to_locations(cities)
             all_matched_locations.update(matched_ids)
             all_unmatched_cities.update(unmatched)
+
+            # Track extracted images
+            extracted_images = email.get('extracted_images', [])
+            if extracted_images:
+                result['images_extracted'] += len(extracted_images)
+                result['image_paths'].extend(extracted_images)
 
         # Auto-enroll unmatched cities if enabled
         if auto_enroll and all_unmatched_cities:
@@ -1141,6 +1266,13 @@ def main():
         print(f"New cities: {', '.join(result['cities_extracted']) if result['cities_extracted'] else 'None'}")
         print(f"Matched locations: {', '.join(result.get('locations_matched', [])) if result.get('locations_matched') else 'None'}")
         print(f"Cities enrolled: {', '.join(result.get('cities_enrolled', [])) if result.get('cities_enrolled') else 'None'}")
+        print(f"Images extracted: {result.get('images_extracted', 0)}")
+        if result.get('image_paths'):
+            print(f"Image locations:")
+            for img_path in result['image_paths'][:5]:  # Show first 5
+                print(f"  - {img_path}")
+            if len(result['image_paths']) > 5:
+                print(f"  ... and {len(result['image_paths']) - 5} more")
 
 
 if __name__ == "__main__":
