@@ -1,0 +1,38 @@
+============================================================
+WEATHER SUMMARY REPORT
+Generated: 2026-01-28 20:10
+Emails processed: 4
+============================================================
+
+--- Email 1: Northwest Africa Production Potentials Remain Favorable ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Wed, 28 Jan 2026 16:10:10 -0600
+
+Preview: Drew Lerner World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this report...
+
+--- Email 2: China's Winter Crops In Good Shape; Southeast In Drought ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Wed, 28 Jan 2026 15:57:14 -0600
+
+Preview: Drew Lerner World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this report...
+
+--- Email 3: South America, South Africa and Europe Weather Outlook Maps For Wednesday, January 28, 2026 ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Wed, 28 Jan 2026 12:15:40 -0600
+
+Preview: Drew Lerner World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this report...
+
+--- Email 4: Evening Weather Update for U.S. and South America -- Comments and Summary ---
+From: <brad_worldweather@bizkc.rr.com>
+Date: Wed, 28 Jan 2026 17:56:21 -0600
+
+Temperatures mentioned: 2°F
+Precipitation amounts: 1., 1., 2
+Weather conditions: dry, rain, flood, heat
+Locations: Mato Grosso, Parana, Rio Grande do Sul, Delta, Corn Belt, IN
+Preview: The Evening Weather Update For January 28, 2026 COMMENTS AND SUMMARY UNITED STATES The evening GFS model run in the United States showed no significant precipitation changes in week 1. In week 2,...
+
+============================================================
+LOCATIONS MENTIONED (for weather tracking):
+Rio Grande do Sul, Corn Belt, Mato Grosso, IN, Delta, Parana
+============================================================
