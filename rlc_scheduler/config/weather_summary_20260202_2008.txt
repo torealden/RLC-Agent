@@ -1,0 +1,31 @@
+============================================================
+WEATHER SUMMARY REPORT
+Generated: 2026-02-02 20:08
+Emails processed: 3
+============================================================
+
+--- Email 1: Brazil Harvest May Be Impacted By Heavier Rain ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Mon, 2 Feb 2026 13:38:44 -0600
+
+Preview: Drew Lerner World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this report...
+
+--- Email 2: Much Of Argentina Dries; Crop Conditions Vary ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Mon, 2 Feb 2026 12:54:44 -0600
+
+Preview: Drew Lerner World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this report...
+
+--- Email 3: Evening Weather Update for U.S. and South America -- Comments and Summary ---
+From: <brad_worldweather@bizkc.rr.com>
+Date: Mon, 2 Feb 2026 18:17:59 -0600
+
+Precipitation amounts: 2, 1.00, 2, 1.50, 3.25
+Weather conditions: dry, rain
+Locations: Mato Grosso, Rio Grande do Sul, Goias, Buenos Aires, Santa Fe, Delta, Corn Belt, IN
+Preview: The Evening Weather Update For February 2, 2026 COMMENTS AND SUMMARY UNITED STATES The evening GFS model run in the United States increased precipitation across the northern half of the Northern Plain...
+
+============================================================
+LOCATIONS MENTIONED (for weather tracking):
+Rio Grande do Sul, Mato Grosso, Delta, Santa Fe, Corn Belt, IN, Buenos Aires, Goias
+============================================================
