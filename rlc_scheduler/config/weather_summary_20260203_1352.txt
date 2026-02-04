@@ -1,0 +1,70 @@
+============================================================
+WEATHER SUMMARY REPORT
+Generated: 2026-02-03 13:52
+Emails processed: 8
+============================================================
+
+--- Email 1: World Weather To Watch For Tuesday, February 3, 2026 ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Tue, 3 Feb 2026 11:22:22 -0600
+
+Weather conditions: drought, dry, rain, wet, flood, heat, cold, storm, snow, wind
+Locations: Buenos Aires, Cordoba, Midwest, Great Plains, Delta, IN
+Preview: WORLD WEATHER TO WATCH OVERVIEW AND COMMENTS For Tuesday, February 03, 2026 WEATHER TO WATCH · Rain is still advertised for parts of southern Brazil, Uruguay and eastern Argentina during the weekend...
+
+--- Email 2: World Cocoa Weather for Tuesday, February 3, 2026 ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Tue, 3 Feb 2026 10:37:42 -0600
+
+Preview: Drew Lerner World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this report...
+
+--- Email 3: Mid-day U.S. and South America Weather Update -- Comments and Summary ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 3 Feb 2026 11:37:36 -0600
+
+Weather conditions: dry, rain, wet
+Locations: Sao Paulo, Mato Grosso, Parana, Buenos Aires, Cordoba, Delta
+Preview: MID-DAY WEATHER UPDATE FROM WORLD WEATHER, INC. February 3, 2026 Notice: Please be aware that these mid-day weather highlights come purely from the various model data. The information does not...
+
+--- Email 4: Mid-day U.S. and South America Weather Update -- Week 1 ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 3 Feb 2026 10:48:10 -0600
+
+Weather conditions: rain
+Preview: US (Week 1-Discussion of significant model changes) · The GFS model made no significant changes World Weather, Inc. will make no changes to this morning&#39;s official forecast. South America (Week 1-...
+
+--- Email 5: World Weather Outlook for February 3, 2026 ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 3 Feb 2026 08:25:13 -0600
+
+Temperatures mentioned: 11, 104, 108, 100, 100°F
+Precipitation amounts: 0.83, 2.48, 6.66, 1.38, 0.63
+Weather conditions: drought, dry, rain, wet, flood, heat, cold, storm, snow
+Locations: Sao Paulo, Mato Grosso, Parana, Buenos Aires, Cordoba, Santa Fe, Midwest, Delta, Corn Belt, IN
+Preview: WORLD WEATHER, INC. OUTLOOK Tuesday, February 3, 2026 WORLD COARSE GRAIN AND OILSEED AREAS BRAZIL Past Weather · Rain fell on much of the region from Mato Grosso and Mato Grosso do Sul to some nearby...
+
+--- Email 6: Updated 24-Hour North and South America Rainfall and Temperature Maps ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 3 Feb 2026 08:00:20 -0600
+
+Preview: Andy Karst World Weather, Inc. (913) 383-1161 akarst_worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this...
+
+--- Email 7: South America Weather Outlook For February 3, 2026 ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Tue, 3 Feb 2026 07:46:43 -0600
+
+Precipitation amounts: 0.83, 2.48, 6.66, 1.38, 0.63
+Weather conditions: dry, rain, wet, heat, storm
+Locations: Sao Paulo, Mato Grosso, Parana, Rio Grande do Sul, Buenos Aires, Cordoba, Santa Fe
+Preview: South America Weather Outlook Tuesday, February 3, 2026 BRAZIL Past Weather · Rain fell on much of the region from Mato Grosso and Mato Grosso do Sul to some nearby areas in Paraguay, Sao Paulo, and...
+
+--- Email 8: South America, South Africa, and Europe Weather Outlook Maps For February 3, 2026 ---
+From: <scarlett_worldweather@bizkc.rr.com>
+Date: Tue, 3 Feb 2026 10:00:57 -0600
+
+Preview: Scarlett Waters World Weather, Inc. (913) 383-1161 Scarlett_worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in...
+
+============================================================
+LOCATIONS MENTIONED (for weather tracking):
+Buenos Aires, Delta, Corn Belt, Rio Grande do Sul, Santa Fe, Great Plains, IN, Sao Paulo, Midwest, Mato Grosso, Parana, Cordoba
+============================================================
