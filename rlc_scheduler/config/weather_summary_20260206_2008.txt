@@ -1,0 +1,19 @@
+============================================================
+WEATHER SUMMARY REPORT
+Generated: 2026-02-06 20:08
+Emails processed: 1
+============================================================
+
+--- Email 1: World Weather To Watch For Friday, February 6, 2026 ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Fri, 6 Feb 2026 12:50:40 -0600
+
+Precipitation amounts: 102
+Weather conditions: drought, dry, rain, wet, flood, heat, cold, storm, snow, wind
+Locations: Sao Paulo, Mato Grosso, Rio Grande do Sul, Goias, Midwest, Delta, IN
+Preview: WORLD WEATHER TO WATCH OVERVIEW AND COMMENTS For Friday, February 06, 2026 WEATHER TO WATCH · Mid-day GFS model run today increased precipitation in the lower Midwest and northern Delta as well as the...
+
+============================================================
+LOCATIONS MENTIONED (for weather tracking):
+IN, Midwest, Mato Grosso, Rio Grande do Sul, Sao Paulo, Delta, Goias
+============================================================

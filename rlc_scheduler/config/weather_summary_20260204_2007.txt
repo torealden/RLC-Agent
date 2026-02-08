@@ -1,0 +1,19 @@
+============================================================
+WEATHER SUMMARY REPORT
+Generated: 2026-02-04 20:07
+Emails processed: 1
+============================================================
+
+--- Email 1: Evening Weather Update for U.S. and South America -- Comments and Summary ---
+From: <brad_worldweather@bizkc.rr.com>
+Date: Wed, 4 Feb 2026 18:20:15 -0600
+
+Precipitation amounts: 2, 1.00, 1., 2
+Weather conditions: dry, rain, heat, cold, storm
+Locations: Rio Grande do Sul, Delta, Corn Belt, IN
+Preview: The Evening Weather Update For February 4, 2026 COMMENTS AND SUMMARY UNITED STATES The evening GFS model run in the United States increased precipitation in the western Corn Belt and in Nebraska and...
+
+============================================================
+LOCATIONS MENTIONED (for weather tracking):
+Delta, Corn Belt, IN, Rio Grande do Sul
+============================================================
