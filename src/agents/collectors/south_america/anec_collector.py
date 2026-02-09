@@ -52,7 +52,7 @@ except ImportError:
 try:
     import pdfplumber
     PDFPLUMBER_AVAILABLE = True
-except ImportError:
+except Exception:
     PDFPLUMBER_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
