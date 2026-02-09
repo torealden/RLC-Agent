@@ -346,6 +346,15 @@ OTHER_SCHEDULES = {
         "agent": "cme_settlements_agent",
         "description": "Daily futures settlement prices"
     },
+    "anec_exports": {
+        "name": "ANEC Weekly Grain Exports",
+        "schedule": "monday",
+        "time": "14:00",
+        "timezone": "America/Sao_Paulo",
+        "agent": "anec_collector",
+        "agent_path": "src/agents/collectors/south_america/anec_collector.py",
+        "description": "Weekly accumulated grain export volumes from ANEC (soybeans, meal, corn, wheat)"
+    },
     "weather_email": {
         "name": "Weather Email Agent",
         "schedule": "weather_custom",  # Custom schedule for weather emails
@@ -502,7 +511,8 @@ class RLCScheduler:
         time_str = config.get("time", "09:00")
         agent_name = config.get("agent", schedule_id)
 
-        job_func = lambda a=agent_name: self.runner.run_agent(a)
+        agent_path = config.get("agent_path")
+        job_func = lambda a=agent_name, p=agent_path: self.runner.run_agent(a, agent_path=p)
 
         if sched_type == "daily":
             if config.get("weekdays_only"):
