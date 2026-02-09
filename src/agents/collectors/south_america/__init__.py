@@ -1,26 +1,9 @@
 """
-South America Data Collectors
+South America collectors package.
 
-Collectors for agricultural data from South American sources:
-- Brazil: CONAB, Comex Stat, IBGE, ABIOVE, IMEA
-- Argentina: MAGYP, Buenos Aires Grain Exchange
-- Paraguay, Uruguay, Colombia: Trade data
+Note: Do not import collectors here to avoid importing optional dependencies
+or broken modules at package import time. Import what you need directly, e.g.:
+
+from src.agents.collectors.south_america.comexstat_collector import ComexstatCollector
 """
 
-from .brazil_agent import BrazilComexStatAgent
-from .conab_collector import CONABCollector, CONABConfig
-from .conab_soybean_agent import (
-    CONABSoybeanAgent,
-    CONABSoybeanConfig,
-    CollectionResult
-)
-
-__all__ = [
-    # Brazil
-    'BrazilComexStatAgent',
-    'CONABCollector',
-    'CONABConfig',
-    'CONABSoybeanAgent',
-    'CONABSoybeanConfig',
-    'CollectionResult',
-]
