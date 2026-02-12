@@ -2,7 +2,7 @@
 South America Data Collectors
 
 Collectors for agricultural data from South American sources:
-- Brazil: CONAB, Comex Stat, IBGE, ABIOVE, IMEA
+- Brazil: CONAB, Comex Stat, IBGE, ABIOVE, IMEA, ANEC
 - Argentina: MAGYP, Buenos Aires Grain Exchange
 - Paraguay, Uruguay, Colombia: Trade data
 """
@@ -14,6 +14,7 @@ from .conab_soybean_agent import (
     CONABSoybeanConfig,
     CollectionResult
 )
+from .anec_collector import ANECCollector, ANECConfig
 
 __all__ = [
     # Brazil
@@ -23,4 +24,6 @@ __all__ = [
     'CONABSoybeanAgent',
     'CONABSoybeanConfig',
     'CollectionResult',
+    'ANECCollector',
+    'ANECConfig',
 ]
