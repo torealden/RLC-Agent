@@ -1,0 +1,66 @@
+============================================================
+WEATHER SUMMARY REPORT
+Generated: 2026-02-11 13:00
+Emails processed: 8
+============================================================
+
+--- Email 1: Mid-day U.S. and South America Weather Update -- Comments and Summary ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Wed, 11 Feb 2026 11:33:07 -0600
+
+Weather conditions: dry, rain, wet
+Locations: Sao Paulo, Mato Grosso, Parana, Rio Grande do Sul, Goias, Buenos Aires, Cordoba, Delta, Corn Belt
+Preview: MID-DAY WEATHER UPDATE FROM WORLD WEATHER, INC. February 11, 2026 Notice: Please be aware that these mid-day weather highlights come purely from the various model data. The information does not...
+
+--- Email 2: Mid-day U.S. and South America Weather Update -- Week 1 ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Wed, 11 Feb 2026 10:51:53 -0600
+
+Weather conditions: rain, wet
+Locations: Buenos Aires
+Preview: US (Week 1-Discussion of significant model changes) · The GFS model was wetter in the Carolinas Saturday into Sunday Some of this increase was likely needed · The GFS model reduced precipitation in th...
+
+--- Email 3: World Weather Outlook for February 11, 2026 ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Wed, 11 Feb 2026 08:41:04 -0600
+
+Temperatures mentioned: 21°F
+Precipitation amounts: 0.98, 2.95, 0.24, 0.98, 0.24
+Weather conditions: drought, dry, rain, wet, flood, heat, cold, storm, snow, wind
+Locations: Sao Paulo, Mato Grosso, Parana, Rio Grande do Sul, Goias, Buenos Aires, Cordoba, Midwest, Delta, IN
+Preview: WORLD WEATHER, INC. OUTLOOK Wednesday, February 11, 2026 WORLD COARSE GRAIN AND OILSEED AREAS BRAZIL Past Weather · Much of the region from Mato Grosso to Sao Paulo, northeastern Parana, Minas Gerais,...
+
+--- Email 4: Updated 24-Hour North and South America Rainfall and Temperature Maps ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Wed, 11 Feb 2026 08:19:08 -0600
+
+Preview: Andy Karst World Weather, Inc. (913) 383-1161 akarst_worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this...
+
+--- Email 5: South America, South Africa, and Europe Weather Outlook Maps For February 11, 2026 ---
+From: <scarlett_worldweather@bizkc.rr.com>
+Date: Wed, 11 Feb 2026 10:08:38 -0600
+
+Preview: Scarlett Waters World Weather, Inc. (913) 383-1161 Scarlett_worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in...
+
+--- Email 6: World Weather Audio Weather For Wednesday, February 11, 2026 ---
+From: <scarlett_worldweather@bizkc.rr.com>
+Date: Wed, 11 Feb 2026 09:08:36 -0600
+
+Preview: https://worldweather.cc/cron_jobs/broadcasts/morning_market_weather_021126.mp3 -- Send an email to worldweather@bizkc.rr.com to unsubscribe Drew M. Lerner World Weather, Inc. 913-383-1161 Office 913-...
+
+--- Email 7: Indonesia, Malaysia To See Waves Of Rain In Coming Week ---
+From: <brad_worldweather@bizkc.rr.com>
+Date: Wed, 11 Feb 2026 11:45:23 -0600
+
+Preview: Brad Luchen World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com...
+
+--- Email 8: Mexico Drying Down; Timely Rain Needed In Coming Weeks ---
+From: <brad_worldweather@bizkc.rr.com>
+Date: Wed, 11 Feb 2026 10:12:46 -0600
+
+Preview: Brad Luchen World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com...
+
+============================================================
+LOCATIONS MENTIONED (for weather tracking):
+Rio Grande do Sul, Parana, IN, Goias, Sao Paulo, Buenos Aires, Delta, Mato Grosso, Corn Belt, Midwest, Cordoba
+============================================================
