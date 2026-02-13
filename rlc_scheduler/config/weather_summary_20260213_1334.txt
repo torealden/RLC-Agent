@@ -1,0 +1,32 @@
+============================================================
+WEATHER INTELLIGENCE BRIEF
+Generated: 2026-02-13 13:34
+Emails analyzed: 7
+Source: World Weather Inc.
+============================================================
+
+KEY POINTS FOR TRADING DECISIONS:
+US CONDITIONS:
+- Corn Belt: Expect temperature highs around mid to upper 70s with moderate rainfall, potentially beneficial for corn crops but monitor closely.
+- Wheat Belt: Likely cooler temperatures and some rain without damaging effects on wheat fares; watch soil moisture levels. 
+- Delta/South (conditions): Anticipated wet conditions could impact crop yields, consider temporary protective measures against flooding.
+
+SOUTH AMERICA:
+- Brazil - Mato Grosso and Parana are experiencing beneficial rainfall; continue to monitor for potential heavy downpours. 
+  * Rio Grande do Sul received near .25 inches with some areas up to 1.69, generally favorable.
+* Eastern Bahia's mixed precipitation pattern includes benefits but also dry patches and light showers increasing into more rain by Wednesday; mid-to-upper 60s temperatures expected in the south down to lower 90s farther north. 
+
+WATCH LIST:
+- Argentina - Buenos Aires is experiencing flood conditions, with some regions already under water and forecasts indicating more rain on Tuesday; Cordoba also faces heavy rainfall.
+* Brazil should watch for increasing precipitation towards Wednesday expanding into following days in northern areas. 
+
+Additionally: South America will see temperatures fluctuate, generally cooler trends with mixed precipitation patterns leading to beneficial crop conditions except in southeastern Argentina and northeastern regions of Brazil experiencing dry spells.
+- Europe's weather impact on agriculture is not detailed; focus remains mainly within South America for grain trading implications. 
+
+Regions with more specific temperature and precipitation data should be monitored closely as they can significantly influence crop yields, which in turn affect market prices and trader strategies.
+- Watches include Argentina's ongoing flooding issues that might impact the local grain supply temporarily; Brazil's variable rainfall patterns across regions warranting close attention for potential yield improvements or declines.
+
+============================================================
+Locations tracked: Mato Grosso, Santa Fe, Parana, Sao Paulo, Chicago, Rio Grande do Sul, Memphis, Corn Belt, Delta, Midwest, IN, Goias
+Analysis by: OLLAMA (phi3:mini)
+============================================================

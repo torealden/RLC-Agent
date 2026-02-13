@@ -1,0 +1,30 @@
+============================================================
+WEATHER INTELLIGENCE BRIEF
+Generated: 2026-02-12 13:35
+Emails analyzed: 9
+Source: World Weather Inc.
+============================================================
+
+KEY POINTS FOR TRADE DECISIONS:
+
+US CONDITIONS:
+- Corn Belt (Midwest): High rainfall on Feb. 19th, potential flooding concerns; no specific temperatures given.
+- Wheat Belt forecasted to also receive significant precipitation impacting crop condition assessments;
+- Delta/South facing likely drier conditions and reduced risk of further flooding after initial rainfall period ends. Temperature ranges not provided, but general weather relief expected post-rainfall.
+
+SOUTH AMERICA:
+- Brazil (Mato Grosso): Rain accumulation leading to higher soil moisture; conditions suggest a wet spell with potential for thunderstorms following dry periods. Temperature ranges are not specified, but likely fall within mid 70s Fahrenheit.
+- Argentina's Buenos Aires and Cordoba: Heavy band rainfall over several days leading into the weekend followed by drier conditions; temperatures expected to be upper or lower 70s with some highs in the mid and upper 90s near Paraguay. Precipitation up to an estimated .75" of rain, indicative of favorable wet soil moisture for crops.
+
+WATCH LIST:
+- Heavy precipitation pockets over South America with potential thunderstorm development; specifically in Brazilian areas like Rio Grande do Sul and Paraguay. Expect rainfall to be localized, heavy initially but interspersed with dry spells.
+- Northern La Pampa and central Buenos Aires forecasted for increased precipitation later in the week of February 20th into early March; specific temperature ranges not provided, likely within Brazil's usual upper/lower 70s Fahrenheit band. Watch out for potential heavy downpours or storm developments.
+- Changes in weather patterns across North and South America indicate dynamic conditions that may require crop moisture adjustments but no further specific temperature data available at this time. Dry periods followed by rain expected to bring relief after saturated Midwest, U.S., Brazilian fields with the possibility of thunderstorms.
+- Flood threats in Europe not detailed here; however, ongoing precipitation suggests potential flooding concerns that may impact energy commodities and agricultural markets there as well. Detailed weather conditions for specific locations are needed to assess full extent. World Weather Audio reports clear skies over Chicago with slight rain expected but no thunderstorm risks noted.
+
+- South Africa is anticipated to have good crop prospects, yet rainfall shifting east could influence these outcomes; temperature and precipitation specifics are not provided in the text snippet. Further details on African continent weather patterns would be required for comprehensive local assessments.
+
+============================================================
+Locations tracked: Parana, Minneapolis, Rio Grande do Sul, IN, Buenos Aires, Midwest, Chicago, Santa Fe, Gulf Coast, Delta, Cordoba, Mato Grosso
+Analysis by: OLLAMA (phi3:mini)
+============================================================
