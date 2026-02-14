@@ -3079,3 +3079,15 @@
 [2026-02-13 13:39:08] Saved email extract to database: 19c57d83b54a63c2...
 [2026-02-13 13:39:27] Saved email extract to database: 19c57c7e30a35135...
 [2026-02-13 13:39:27] Processing complete
+[2026-02-13 20:00:02] Refreshing expired token...
+[2026-02-13 20:00:03] Connected to Gmail as: tore.alden@roundlakescommodities.com
+[2026-02-13 20:00:03] Searching for meteorologist emails...
+[2026-02-13 20:00:03] Searching: from:worldweather@bizkc.rr.com after:2026/02/12
+[2026-02-13 20:00:03] Found 0 emails from worldweather@bizkc.rr.com
+[2026-02-13 20:00:03] Searching: from:akarst_worldweather@bizkc.rr.com after:2026/02/12
+[2026-02-13 20:00:04] Found 12 emails from akarst_worldweather@bizkc.rr.com
+[2026-02-13 20:00:04] Searching: from:scarlett_worldweather@bizkc.rr.com after:2026/02/12
+[2026-02-13 20:00:04] Found 3 emails from scarlett_worldweather@bizkc.rr.com
+[2026-02-13 20:00:04] Searching: from:brad_worldweather@bizkc.rr.com after:2026/02/12
+[2026-02-13 20:00:04] Found 5 emails from brad_worldweather@bizkc.rr.com
+[2026-02-13 20:00:04] No new meteorologist emails found
