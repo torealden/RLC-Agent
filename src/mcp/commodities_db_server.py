@@ -24,6 +24,13 @@ Tools provided:
 - get_stocks_to_use: Calculate stocks-to-use ratios
 - get_trade_flows: Get export/import data
 - analyze_supply_demand: Run comprehensive S&D analysis
+- get_data_freshness: Check data collection freshness/staleness
+- get_briefing: Get unacknowledged system events (LLM inbox)
+- acknowledge_events: Mark briefing events as read
+- get_collection_history: Recent run history for a collector
+- search_knowledge_graph: Search analyst knowledge graph nodes
+- get_kg_context: Get full analyst context for a KG node
+- get_kg_relationships: Get relationships for a KG node
 """
 
 import os
@@ -424,6 +431,227 @@ def get_brazil_production(commodity: str = 'soybeans', crop_year: str = None) ->
 
 
 # ============================================================================
+# CNS TOOLS: Data Freshness, Briefing, Event Acknowledgment
+# ============================================================================
+
+def get_data_freshness(collector_name: str = None, category: str = None) -> str:
+    """
+    Check data freshness across all collectors.
+
+    Args:
+        collector_name: Optional filter (partial match)
+        category: Optional category filter (grains, energy, etc.)
+
+    Returns:
+        JSON with freshness data sorted by staleness
+    """
+    conditions = []
+    params = []
+
+    if collector_name:
+        conditions.append("collector_name ILIKE %s")
+        params.append(f"%{collector_name}%")
+    if category:
+        conditions.append("category = %s")
+        params.append(category)
+
+    where = " WHERE " + " AND ".join(conditions) if conditions else ""
+
+    sql = f"""
+        SELECT collector_name, display_name, category,
+               last_collected, last_status, last_row_count,
+               data_period, is_new_data,
+               ROUND(hours_since_collection::numeric, 1) AS hours_since_collection,
+               expected_frequency, expected_release_day, expected_release_time_et,
+               is_overdue
+        FROM core.data_freshness
+        {where}
+        ORDER BY is_overdue DESC, hours_since_collection DESC NULLS LAST
+    """
+    result = execute_query(sql, tuple(params) if params else None, limit=100)
+    return json.dumps(result, indent=2, default=json_serializer)
+
+
+def get_briefing(priority: int = None, event_type: str = None) -> str:
+    """
+    Get unacknowledged events from the LLM briefing view.
+    This is the LLM's "inbox" -- what happened since last session.
+
+    Args:
+        priority: Optional max priority (1=critical only, 2=+important, 3=all)
+        event_type: Optional event type filter
+
+    Returns:
+        JSON with unread events
+    """
+    conditions = []
+    params = []
+
+    if priority is not None:
+        conditions.append("priority <= %s")
+        params.append(priority)
+    if event_type:
+        conditions.append("event_type = %s")
+        params.append(event_type)
+
+    where = " WHERE " + " AND ".join(conditions) if conditions else ""
+
+    sql = f"""
+        SELECT id, event_type, event_time, source, summary, details, priority
+        FROM core.llm_briefing
+        {where}
+        ORDER BY priority ASC, event_time DESC
+    """
+    result = execute_query(sql, tuple(params) if params else None, limit=200)
+    return json.dumps(result, indent=2, default=json_serializer)
+
+
+def acknowledge_events(event_ids: list) -> str:
+    """
+    Mark events as read. Calls core.acknowledge_events() stored function.
+
+    This is a WRITE operation -- bypasses execute_query() safety filter
+    intentionally, calling only the specific acknowledge function.
+
+    Args:
+        event_ids: List of integer event IDs to acknowledge
+
+    Returns:
+        JSON with count of events acknowledged
+    """
+    if not event_ids:
+        return json.dumps({"error": "No event_ids provided"})
+
+    try:
+        event_ids = [int(eid) for eid in event_ids]
+    except (ValueError, TypeError):
+        return json.dumps({"error": "event_ids must be a list of integers"})
+
+    conn = get_connection()
+    try:
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute(
+            "SELECT core.acknowledge_events(%s::integer[]) AS acknowledged_count",
+            (event_ids,)
+        )
+        result = cur.fetchone()
+        conn.commit()
+
+        return json.dumps({
+            "acknowledged_count": result['acknowledged_count'],
+            "event_ids": event_ids,
+            "status": "success"
+        }, indent=2, default=json_serializer)
+    except Exception as e:
+        conn.rollback()
+        return json.dumps({"error": str(e)})
+    finally:
+        conn.close()
+
+
+def get_collection_history(collector_name: str, last_n: int = 10) -> str:
+    """
+    Get recent collection history for a specific collector.
+
+    Args:
+        collector_name: Exact collector name (e.g., 'cftc_cot')
+        last_n: Number of recent runs to return (default 10)
+
+    Returns:
+        JSON with run history and summary statistics
+    """
+    sql = """
+        SELECT id, collector_name, run_started_at, run_finished_at,
+               status, rows_collected,
+               data_period, is_new_data, triggered_by, error_message, notes,
+               EXTRACT(EPOCH FROM (run_finished_at - run_started_at)) AS elapsed_seconds
+        FROM core.collection_status
+        WHERE collector_name = %s
+        ORDER BY run_started_at DESC
+    """
+    result = execute_query(sql, (collector_name, ), limit=last_n)
+
+    if 'error' in result or not result.get('rows'):
+        return json.dumps(result, indent=2, default=json_serializer)
+
+    rows = result['rows']
+    total = len(rows)
+    successes = sum(1 for r in rows if r.get('status') == 'success')
+    failures = sum(1 for r in rows if r.get('status') == 'failed')
+    avg_rows = sum(r.get('rows_collected') or 0 for r in rows) / total if total else 0
+    elapsed_vals = [r.get('elapsed_seconds') or 0 for r in rows if r.get('elapsed_seconds')]
+    avg_elapsed = sum(elapsed_vals) / len(elapsed_vals) if elapsed_vals else 0
+
+    output = {
+        "collector_name": collector_name,
+        "runs": rows,
+        "summary": {
+            "total_runs": total,
+            "successes": successes,
+            "failures": failures,
+            "success_rate_pct": round(successes / total * 100, 1) if total else 0,
+            "avg_rows_collected": round(avg_rows),
+            "avg_elapsed_seconds": round(avg_elapsed, 1),
+        }
+    }
+    return json.dumps(output, indent=2, default=json_serializer)
+
+
+# ============================================================================
+# KNOWLEDGE GRAPH TOOLS
+# ============================================================================
+
+# Lazy-init singleton for KGManager
+_kg_manager = None
+
+def _get_kg_manager():
+    """Get or create KGManager singleton."""
+    global _kg_manager
+    if _kg_manager is None:
+        from src.knowledge_graph.kg_manager import KGManager
+        _kg_manager = KGManager()
+    return _kg_manager
+
+
+def search_knowledge_graph(node_type: str = None, label: str = None,
+                           key_pattern: str = None, limit: int = 50) -> str:
+    """Search the analyst knowledge graph for nodes."""
+    kg = _get_kg_manager()
+    nodes = kg.search_nodes(
+        node_type=node_type,
+        label_pattern=label,
+        key_pattern=key_pattern,
+        limit=limit,
+    )
+    return json.dumps({"nodes": nodes, "count": len(nodes)}, indent=2, default=json_serializer)
+
+
+def get_kg_context(node_key: str) -> str:
+    """Get full analyst context for a KG node: node + contexts + edges."""
+    kg = _get_kg_manager()
+    enriched = kg.get_enriched_context(node_key)
+    if enriched is None:
+        return json.dumps({"error": f"Node not found: {node_key}"})
+    return json.dumps(enriched, indent=2, default=json_serializer)
+
+
+def get_kg_relationships(node_key: str, edge_type: str = None,
+                         direction: str = 'both') -> str:
+    """Get relationships for a knowledge graph node."""
+    kg = _get_kg_manager()
+    node = kg.get_node(node_key)
+    if node is None:
+        return json.dumps({"error": f"Node not found: {node_key}"})
+
+    edges = kg.get_node_edges(node_key, edge_type=edge_type, direction=direction)
+    return json.dumps({
+        "node": {"node_key": node["node_key"], "label": node["label"]},
+        "edges": edges,
+        "count": len(edges)
+    }, indent=2, default=json_serializer)
+
+
+# ============================================================================
 # MCP SERVER SETUP
 # ============================================================================
 
@@ -534,6 +762,94 @@ if MCP_AVAILABLE:
                     }
                 }
             ),
+            # --- CNS Tools ---
+            Tool(
+                name="get_data_freshness",
+                description="Check data freshness across all collectors. Shows when each data source was last collected, whether it's overdue, and its expected schedule. Use to answer 'is CFTC data current?' or 'what data is stale?'",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "collector_name": {"type": "string", "description": "Filter by collector name (partial match). E.g., 'cftc', 'eia', 'nass'"},
+                        "category": {"type": "string", "description": "Filter by category: grains, oilseeds, energy, biofuels, weather, positioning, trade"}
+                    }
+                }
+            ),
+            Tool(
+                name="get_briefing",
+                description="Get your briefing: unacknowledged system events since last session. Shows collection completions, failures, data anomalies, overdue alerts. Read this first at session start.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "priority": {"type": "integer", "description": "Max priority level (1=critical only, 2=+important, 3=all). Default: all."},
+                        "event_type": {"type": "string", "description": "Filter: collection_complete, collection_failed, schedule_overdue, data_anomaly, report_generated, system_alert"}
+                    }
+                }
+            ),
+            Tool(
+                name="acknowledge_events",
+                description="Mark briefing events as read after processing them. Pass event IDs from get_briefing. Clears them from future briefings.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "event_ids": {
+                            "type": "array",
+                            "items": {"type": "integer"},
+                            "description": "Array of event IDs to acknowledge"
+                        }
+                    },
+                    "required": ["event_ids"]
+                }
+            ),
+            Tool(
+                name="get_collection_history",
+                description="Get recent run history for a data collector. Shows success/failure trend, row counts, timing, errors. Use to diagnose collection issues.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "collector_name": {"type": "string", "description": "Collector name (e.g., 'cftc_cot', 'eia_ethanol', 'usda_nass_crop_progress')"},
+                        "last_n": {"type": "integer", "description": "Number of recent runs (default 10)", "default": 10}
+                    },
+                    "required": ["collector_name"]
+                }
+            ),
+            # --- Knowledge Graph Tools ---
+            Tool(
+                name="search_knowledge_graph",
+                description="Search the analyst knowledge graph for entities: commodities, data series, reports, regions, policies, seasonal events, market participants. Search by type, name, or key pattern.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "node_type": {"type": "string", "description": "Node type: data_series, commodity, region, report, policy, seasonal_event, market_participant, balance_sheet_line, price_level"},
+                        "label": {"type": "string", "description": "Search label text (partial match, case-insensitive)"},
+                        "key_pattern": {"type": "string", "description": "Search node_key pattern (partial match). E.g., 'cftc.corn' or 'seasonal'"},
+                        "limit": {"type": "integer", "description": "Max results (default 50)", "default": 50}
+                    }
+                }
+            ),
+            Tool(
+                name="get_kg_context",
+                description="Get full analyst context for a knowledge graph node. Returns the node, all analyst contexts (seasonal norms, risk thresholds, expert rules), and all relationships. The 'what would an analyst think?' query.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "node_key": {"type": "string", "description": "Node key (e.g., 'corn', 'soybean_oil', 'managed_money', 'noaa.enso.oni')"}
+                    },
+                    "required": ["node_key"]
+                }
+            ),
+            Tool(
+                name="get_kg_relationships",
+                description="Get relationships (edges) for a knowledge graph node. Shows causal links, cross-market dynamics, substitution hierarchies.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "node_key": {"type": "string", "description": "Node key to get relationships for"},
+                        "edge_type": {"type": "string", "description": "Filter: CAUSES, COMPETES_WITH, SUBSTITUTES, LEADS, SEASONAL_PATTERN, RISK_THRESHOLD, CROSS_MARKET, TRIGGERS"},
+                        "direction": {"type": "string", "description": "'outgoing', 'incoming', or 'both' (default)", "default": "both", "enum": ["outgoing", "incoming", "both"]}
+                    },
+                    "required": ["node_key"]
+                }
+            ),
         ]
 
     @server.call_tool()
@@ -573,6 +889,40 @@ if MCP_AVAILABLE:
                 result = get_brazil_production(
                     arguments.get("commodity", "soybeans"),
                     arguments.get("crop_year")
+                )
+            # CNS Tools
+            elif name == "get_data_freshness":
+                result = get_data_freshness(
+                    arguments.get("collector_name"),
+                    arguments.get("category")
+                )
+            elif name == "get_briefing":
+                result = get_briefing(
+                    arguments.get("priority"),
+                    arguments.get("event_type")
+                )
+            elif name == "acknowledge_events":
+                result = acknowledge_events(arguments["event_ids"])
+            elif name == "get_collection_history":
+                result = get_collection_history(
+                    arguments["collector_name"],
+                    arguments.get("last_n", 10)
+                )
+            # Knowledge Graph Tools
+            elif name == "search_knowledge_graph":
+                result = search_knowledge_graph(
+                    arguments.get("node_type"),
+                    arguments.get("label"),
+                    arguments.get("key_pattern"),
+                    arguments.get("limit", 50)
+                )
+            elif name == "get_kg_context":
+                result = get_kg_context(arguments["node_key"])
+            elif name == "get_kg_relationships":
+                result = get_kg_relationships(
+                    arguments["node_key"],
+                    arguments.get("edge_type"),
+                    arguments.get("direction", "both")
                 )
             else:
                 result = json.dumps({"error": f"Unknown tool: {name}"})
