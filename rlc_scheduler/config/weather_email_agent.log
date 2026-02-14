@@ -3091,3 +3091,15 @@
 [2026-02-13 20:00:04] Searching: from:brad_worldweather@bizkc.rr.com after:2026/02/12
 [2026-02-13 20:00:04] Found 5 emails from brad_worldweather@bizkc.rr.com
 [2026-02-13 20:00:04] No new meteorologist emails found
+[2026-02-14 12:00:01] Refreshing expired token...
+[2026-02-14 12:00:02] Connected to Gmail as: tore.alden@roundlakescommodities.com
+[2026-02-14 12:00:02] Searching for meteorologist emails...
+[2026-02-14 12:00:02] Searching: from:worldweather@bizkc.rr.com after:2026/02/13
+[2026-02-14 12:00:02] Found 0 emails from worldweather@bizkc.rr.com
+[2026-02-14 12:00:02] Searching: from:akarst_worldweather@bizkc.rr.com after:2026/02/13
+[2026-02-14 12:00:02] Found 6 emails from akarst_worldweather@bizkc.rr.com
+[2026-02-14 12:00:02] Searching: from:scarlett_worldweather@bizkc.rr.com after:2026/02/13
+[2026-02-14 12:00:02] Found 1 emails from scarlett_worldweather@bizkc.rr.com
+[2026-02-14 12:00:02] Searching: from:brad_worldweather@bizkc.rr.com after:2026/02/13
+[2026-02-14 12:00:02] Found 2 emails from brad_worldweather@bizkc.rr.com
+[2026-02-14 12:00:02] No new meteorologist emails found
