@@ -1,0 +1,32 @@
+# RLC Commodity Pipeline - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core
+requests>=2.31.0
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# Database
+psycopg2-binary>=2.9.9
+
+# Data Processing
+pandas>=2.1.0
+openpyxl>=3.1.0
+
+# PDF Processing (for AMS reports)
+pdfplumber>=0.10.0
+tabula-py>=2.8.0
+
+# Async & Retry
+httpx>=0.25.0
+tenacity>=8.2.0
+
+# Scheduling
+schedule>=1.2.0
+
+# Logging
+structlog>=23.2.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0

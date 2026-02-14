@@ -1,0 +1,259 @@
+{
+  "version": "1.0",
+  "description": "World Weather Inc. email type classification and extraction rules",
+  "last_updated": "2026-01-29",
+
+  "email_types": {
+    "commentary": {
+      "description": "Breaking news, analysis pieces with specific market implications",
+      "subject_patterns": [
+        "Needs Snow",
+        "Too Dry",
+        "Too Wet",
+        "Threat",
+        "Good For",
+        "Shifts",
+        "In Good Shape",
+        "In Drought",
+        "Favorable",
+        "Unfavorable",
+        "Concern",
+        "Problem",
+        "Improving",
+        "Deteriorating"
+      ],
+      "exclude_patterns": [
+        "Update --",
+        "Outlook Maps",
+        "Maps For"
+      ],
+      "priority": 1,
+      "market_relevance": "high",
+      "extraction": {
+        "primary_source": "body",
+        "pdf_attachment": "optional",
+        "extract_full_text": true,
+        "summarize_to_tokens": 1500,
+        "key_elements": ["headline_thesis", "affected_regions", "crop_impact", "timeline"]
+      },
+      "examples": [
+        "U.S. Wheat Needs Snow Ahead Of Bitter Cold",
+        "Portions of Southern Argentina Too Dry; Rain Moistens North",
+        "Southern Brazil Dryness Good For Early-Season Harvesting",
+        "China's Winter Crops In Good Shape; Southeast In Drought"
+      ]
+    },
+
+    "scheduled_update": {
+      "description": "Regular time-based updates with structured regional sections",
+      "subject_patterns": [
+        "Morning .* Weather Update",
+        "Mid-day .* Weather Update",
+        "Evening Weather Update",
+        "Comments and Summary"
+      ],
+      "priority": 2,
+      "market_relevance": "high",
+      "extraction": {
+        "primary_source": "body",
+        "pdf_attachment": "optional",
+        "parse_sections": true,
+        "section_headers": [
+          "UNITED STATES",
+          "U.S.",
+          "BRAZIL",
+          "ARGENTINA",
+          "AUSTRALIA",
+          "EUROPE",
+          "CHINA",
+          "INDIA",
+          "KEY CHANGES",
+          "SUMMARY"
+        ],
+        "key_elements": ["regional_conditions", "forecast_changes", "precipitation", "temperature"]
+      },
+      "examples": [
+        "Evening Weather Update for U.S. and South America -- Comments and Summary",
+        "Mid-day U.S. and South America Weather Update -- Comments and Summary",
+        "Mid-day U.S. and South America Weather Update -- Week 1"
+      ]
+    },
+
+    "outlook_forecast": {
+      "description": "Forward-looking regional forecasts, often with detailed PDF",
+      "subject_patterns": [
+        "Weather Outlook [Ff]or",
+        "World Weather Outlook",
+        "South America Weather Outlook",
+        "To Watch [Ff]or",
+        "World Weather To Watch"
+      ],
+      "priority": 2,
+      "market_relevance": "high",
+      "extraction": {
+        "primary_source": "pdf",
+        "fallback_source": "body",
+        "extract_tables": true,
+        "key_elements": ["week1_forecast", "week2_forecast", "precip_totals", "temp_anomalies", "key_changes"]
+      },
+      "examples": [
+        "World Weather Outlook for January 21, 2026",
+        "South America Weather Outlook For January 20, 2026",
+        "World Weather To Watch For Wednesday, January 21, 2026"
+      ]
+    },
+
+    "maps_graphics": {
+      "description": "Visual content - rainfall maps, temperature maps, model output",
+      "subject_patterns": [
+        "Maps [Ff]or",
+        "Rainfall and Temperature Maps",
+        "Precipitation.*Maps",
+        "Temperature Maps",
+        "Outlook Maps"
+      ],
+      "priority": 3,
+      "market_relevance": "medium",
+      "extraction": {
+        "primary_source": "attachments",
+        "save_to_folder": true,
+        "catalog_attachments": true,
+        "extract_text": false,
+        "vision_analysis": "optional"
+      },
+      "attachment_types": {
+        "expected": ["pdf", "gif", "png", "jpg"],
+        "naming_pattern": "{date}_{region}_{type}.{ext}"
+      },
+      "examples": [
+        "Updated 24-Hour North and South America Rainfall and Temperature Maps",
+        "Selected Overnight Rainfall and Temperature Maps",
+        "South America, South Africa and Europe Weather Outlook Maps For Wednesday, January 28, 2026"
+      ]
+    },
+
+    "audio_update": {
+      "description": "Audio briefings with minimal text",
+      "subject_patterns": [
+        "Audio Weather Update",
+        "Audio Update"
+      ],
+      "priority": 4,
+      "market_relevance": "medium",
+      "extraction": {
+        "primary_source": "body",
+        "note_audio_link": true,
+        "extract_summary_only": true
+      },
+      "examples": [
+        "Monday Evening Audio Weather Update for Monday, January 19, 2026"
+      ]
+    },
+
+    "specialty_regional": {
+      "description": "Niche/specialty crop or regional updates",
+      "subject_patterns": [
+        "Weekly Citrus",
+        "Coffee Weather",
+        "Cotton Weather",
+        "Sugar Weather",
+        "Cocoa Weather",
+        "Palm Oil Weather"
+      ],
+      "priority": 3,
+      "market_relevance": "low",
+      "extraction": {
+        "primary_source": "body",
+        "commodity_specific": true
+      },
+      "examples": [
+        "Weekly Citrus Weather For Wednesday, January 21, 2025"
+      ]
+    }
+  },
+
+  "regions": {
+    "us_corn_belt": {
+      "aliases": ["Corn Belt", "Midwest", "corn belt", "midwest"],
+      "states": ["IA", "IL", "IN", "OH", "NE", "MN", "SD", "WI", "MO"],
+      "commodities": ["corn", "soybeans"],
+      "critical_periods": {
+        "planting": ["April", "May"],
+        "pollination": ["July"],
+        "pod_fill": ["August"],
+        "harvest": ["September", "October", "November"]
+      }
+    },
+    "us_wheat_belt": {
+      "aliases": ["Wheat Belt", "Plains", "Southern Plains", "Northern Plains"],
+      "states": ["KS", "OK", "TX", "ND", "SD", "MT", "CO", "NE"],
+      "commodities": ["wheat_hrw", "wheat_hrs", "wheat_srw"],
+      "critical_periods": {
+        "winter_dormancy": ["December", "January", "February"],
+        "spring_greenup": ["March", "April"],
+        "heading": ["May", "June"],
+        "harvest": ["June", "July"]
+      }
+    },
+    "us_delta": {
+      "aliases": ["Delta", "Mid-South"],
+      "states": ["AR", "MS", "LA", "TN", "MO"],
+      "commodities": ["cotton", "soybeans", "rice"]
+    },
+    "brazil_center_west": {
+      "aliases": ["Mato Grosso", "MT", "Goias", "GO", "Mato Grosso do Sul", "MS"],
+      "commodities": ["soybeans", "safrinha_corn", "cotton"],
+      "critical_periods": {
+        "soy_planting": ["September", "October", "November"],
+        "soy_development": ["December", "January"],
+        "soy_harvest": ["January", "February", "March"],
+        "safrinha_planting": ["February", "March"],
+        "safrinha_development": ["April", "May"],
+        "safrinha_harvest": ["June", "July"]
+      }
+    },
+    "brazil_south": {
+      "aliases": ["Parana", "PR", "Rio Grande do Sul", "RS", "Santa Catarina", "SC"],
+      "commodities": ["soybeans", "corn", "wheat"],
+      "critical_periods": {
+        "soy_planting": ["October", "November"],
+        "soy_harvest": ["February", "March", "April"],
+        "wheat_planting": ["May", "June"],
+        "wheat_harvest": ["October", "November"]
+      }
+    },
+    "argentina_pampas": {
+      "aliases": ["Buenos Aires", "Cordoba", "Santa Fe", "Pampas"],
+      "commodities": ["soybeans", "corn", "wheat"],
+      "critical_periods": {
+        "corn_planting": ["September", "October"],
+        "soy_planting": ["November", "December"],
+        "wheat_harvest": ["December", "January"],
+        "corn_pollination": ["December", "January"],
+        "soy_pod_fill": ["February", "March"]
+      }
+    }
+  },
+
+  "weather_keywords": {
+    "bullish_triggers": [
+      "drought", "dry", "heat", "hot", "frost", "freeze", "winterkill",
+      "flooding", "excessive rain", "delayed planting", "delayed harvest",
+      "crop stress", "deteriorating", "damage", "losses"
+    ],
+    "bearish_triggers": [
+      "favorable", "ideal", "timely rains", "improving", "recovery",
+      "above-trend yields", "bumper crop", "adequate moisture"
+    ],
+    "neutral": [
+      "normal", "average", "typical", "unchanged", "steady"
+    ]
+  },
+
+  "extraction_settings": {
+    "max_body_chars": 50000,
+    "max_pdf_pages": 20,
+    "chunk_size": 2000,
+    "overlap": 200
+  }
+}

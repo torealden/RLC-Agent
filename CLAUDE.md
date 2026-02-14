@@ -3,7 +3,7 @@
 ## Overview
 RLC-Agent is an agricultural commodity data collection, analysis, and reporting system focused on US and global grain/oilseed markets, biofuels, and energy markets relevant to agriculture. The system uses a **medallion data architecture** (Bronze/Silver/Gold) with PostgreSQL as the primary database.
 
-**Project Location:** `C:\Users\torem\RLC Dropbox\RLC Team Folder\RLC-Agent`
+**Project Location:** `C:\dev\RLC-Agent`
 
 ---
 

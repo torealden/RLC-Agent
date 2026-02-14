@@ -86,8 +86,8 @@ OBS_recordings/
 *.pt
 *.pth
 
-# Archive folder
-archive/
+# Archive folder (root only)
+/archive/
 
 # Temporary and cache files
 *.tmp
