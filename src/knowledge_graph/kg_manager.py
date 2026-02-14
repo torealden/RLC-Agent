@@ -14,6 +14,7 @@ Usage:
     context = kg.get_enriched_context('corn')
 """
 
+import json as _json
 import logging
 from typing import List, Dict, Optional, Any
 from datetime import datetime, date
@@ -38,9 +39,11 @@ def _clean_row(row: dict) -> dict:
 
 class KGManager:
     """
-    Read-only interface to the RLC Knowledge Graph.
+    Interface to the RLC Knowledge Graph.
 
-    All methods return plain dicts/lists (JSON-serializable).
+    Read methods return plain dicts/lists (JSON-serializable).
+    Write methods (upsert_context, bulk_upsert_contexts) enable
+    automated calculators to store computed context.
     Each call opens and closes its own DB connection.
     """
 
@@ -271,3 +274,140 @@ class KGManager:
                 "edges_by_type": edges_by_type,
                 "contexts_by_type": contexts_by_type,
             }
+
+    # ------------------------------------------------------------------
+    # upsert_context (write)
+    # ------------------------------------------------------------------
+    def upsert_context(
+        self,
+        node_key: str,
+        context_type: str,
+        context_key: str,
+        context_value: dict,
+        applicable_when: str = 'always',
+        source: str = 'computed',
+    ) -> Dict[str, Any]:
+        """
+        Insert or update a context entry on a KG node.
+
+        Uses ON CONFLICT on (node_id, context_type, context_key) for
+        idempotent upserts. Designed for automated calculators.
+
+        Returns:
+            Dict with 'context_id', 'action' ('inserted' or 'updated'), 'node_key'
+        Raises:
+            ValueError: If node_key does not exist in kg_node
+        """
+        sql = """
+            WITH target_node AS (
+                SELECT id FROM core.kg_node WHERE node_key = %s
+            )
+            INSERT INTO core.kg_context
+                (node_id, context_type, context_key, context_value,
+                 applicable_when, source, last_updated)
+            SELECT
+                tn.id, %s, %s, %s::jsonb, %s, %s, NOW()
+            FROM target_node tn
+            ON CONFLICT (node_id, context_type, context_key) DO UPDATE SET
+                context_value = EXCLUDED.context_value,
+                applicable_when = EXCLUDED.applicable_when,
+                source = EXCLUDED.source,
+                last_updated = NOW()
+            RETURNING id, (xmax = 0) AS was_inserted
+        """
+
+        with self._get_connection() as conn:
+            cur = conn.cursor()
+            cur.execute(sql, (
+                node_key,
+                context_type,
+                context_key,
+                _json.dumps(context_value, default=str),
+                applicable_when,
+                source,
+            ))
+            row = cur.fetchone()
+            if row is None:
+                raise ValueError(f"Node not found: {node_key}")
+            conn.commit()
+            return {
+                'context_id': row['id'],
+                'action': 'inserted' if row['was_inserted'] else 'updated',
+                'node_key': node_key,
+                'context_type': context_type,
+                'context_key': context_key,
+            }
+
+    # ------------------------------------------------------------------
+    # bulk_upsert_contexts (write)
+    # ------------------------------------------------------------------
+    def bulk_upsert_contexts(
+        self,
+        contexts: List[Dict[str, Any]],
+        source: str = 'computed',
+    ) -> Dict[str, Any]:
+        """
+        Upsert multiple contexts in a single transaction.
+
+        Each dict in contexts must have:
+            node_key, context_type, context_key, context_value
+        Optional: applicable_when (default 'always')
+
+        Returns:
+            Dict with 'total', 'inserted', 'updated', 'failed', 'errors'
+        """
+        sql = """
+            WITH target_node AS (
+                SELECT id FROM core.kg_node WHERE node_key = %s
+            )
+            INSERT INTO core.kg_context
+                (node_id, context_type, context_key, context_value,
+                 applicable_when, source, last_updated)
+            SELECT
+                tn.id, %s, %s, %s::jsonb, %s, %s, NOW()
+            FROM target_node tn
+            ON CONFLICT (node_id, context_type, context_key) DO UPDATE SET
+                context_value = EXCLUDED.context_value,
+                applicable_when = EXCLUDED.applicable_when,
+                source = EXCLUDED.source,
+                last_updated = NOW()
+            RETURNING id, (xmax = 0) AS was_inserted
+        """
+
+        inserted = 0
+        updated = 0
+        failed = 0
+        errors = []
+
+        with self._get_connection() as conn:
+            cur = conn.cursor()
+            for ctx in contexts:
+                try:
+                    cur.execute(sql, (
+                        ctx['node_key'],
+                        ctx['context_type'],
+                        ctx['context_key'],
+                        _json.dumps(ctx['context_value'], default=str),
+                        ctx.get('applicable_when', 'always'),
+                        source,
+                    ))
+                    row = cur.fetchone()
+                    if row is None:
+                        failed += 1
+                        errors.append(f"Node not found: {ctx['node_key']}")
+                    elif row['was_inserted']:
+                        inserted += 1
+                    else:
+                        updated += 1
+                except Exception as e:
+                    failed += 1
+                    errors.append(f"{ctx.get('node_key', '?')}/{ctx.get('context_key', '?')}: {e}")
+            conn.commit()
+
+        return {
+            'total': len(contexts),
+            'inserted': inserted,
+            'updated': updated,
+            'failed': failed,
+            'errors': errors[:10],
+        }

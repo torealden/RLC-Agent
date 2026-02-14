@@ -277,6 +277,27 @@ class CollectorRunner:
                         except Exception as e:
                             logger.debug(f"KG enrichment skipped for {collector_name}: {e}")
 
+                    # Recompute seasonal norms after relevant collectors (best-effort)
+                    if run_result.success and run_result.is_new_data:
+                        try:
+                            from src.knowledge_graph.seasonal_calculator import SeasonalCalculator
+                            calc = SeasonalCalculator()
+                            if collector_name == 'cftc_cot':
+                                calc_result = calc.compute_cftc_seasonal_norms()
+                            elif collector_name == 'usda_nass_crop_progress':
+                                calc_result = calc.compute_crop_condition_norms()
+                            else:
+                                calc_result = None
+                            if calc_result and calc_result.success:
+                                details['seasonal_calc'] = {
+                                    'calculator': calc_result.calculator,
+                                    'commodities': calc_result.commodities_computed,
+                                    'written': calc_result.contexts_written,
+                                    'updated': calc_result.contexts_updated,
+                                }
+                        except Exception as e:
+                            logger.debug(f"Seasonal calc skipped for {collector_name}: {e}")
+
                     self._log_event(conn, event_type, collector_name,
                                      summary, details, priority)
             except Exception as e:
