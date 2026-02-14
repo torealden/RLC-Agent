@@ -487,3 +487,105 @@ Custom visualizations from database data:
 - Ethanol production dashboards
 - Crop condition charts
 - Balance sheet tables
+
+---
+
+## Session Protocol
+
+**On every session start, follow this protocol:**
+
+1. **Check briefing**: Call `get_briefing()` MCP tool to see unread system events (new data arrivals, failures, overdue alerts)
+2. **Check data freshness**: Call `get_data_freshness()` to see which data sources are current vs stale/overdue
+3. **Summarize** what's new and what needs attention for the user
+4. **When analyzing data**: Query the Knowledge Graph for analyst context (see below)
+5. **After processing events**: Call `acknowledge_events([event_ids])` to mark them as read
+
+---
+
+## CNS (Central Nervous System) Tools
+
+The MCP server provides 7 tools for system awareness and analyst intelligence:
+
+### Status & Notification Tools
+
+| Tool | Purpose | When to Use |
+|------|---------|-------------|
+| `get_briefing` | Unacknowledged system events (LLM inbox) | Session start — see what happened since last session |
+| `get_data_freshness` | Data staleness for each collector | Session start — check if any data is overdue |
+| `acknowledge_events` | Mark events as read | After summarizing events for the user |
+| `get_collection_history` | Run history for a specific collector | When debugging failures or checking reliability |
+
+### Knowledge Graph Tools
+
+| Tool | Purpose | When to Use |
+|------|---------|-------------|
+| `search_knowledge_graph` | Search KG nodes by type, label, or key | Finding relevant analyst context for a topic |
+| `get_kg_context` | Full enriched context for a node (contexts + edges + summary) | **Primary tool** — when analyzing any commodity or data series |
+| `get_kg_relationships` | Relationships from/to a node | Exploring causal links, cross-market effects |
+
+### Knowledge Graph Usage
+
+The Knowledge Graph contains **analyst-level frameworks** extracted from professional commodity reports. It encodes:
+- **Expert rules**: "When managed money net long exceeds 90th percentile, liquidation risk increases"
+- **Causal chains**: "Late safrinha planting → reduced Brazil corn yield → tighter global S&D"
+- **Risk thresholds**: Soybean oil price architecture floors/ceilings based on biofuel economics
+- **Seasonal patterns**: Growing season calendar, WASDE report methodology shifts by month
+- **Cross-market links**: Soy oil vs palm oil substitution, wheat-corn feed price linkage
+
+**When analyzing a commodity**, always call `get_kg_context(node_key)` first. The KG provides the analytical framework that turns raw numbers into meaningful insight.
+
+### Key Node Keys Reference
+
+| Category | node_key | What It Provides |
+|----------|----------|------------------|
+| **Commodities** | | |
+| Corn | `corn` | Cross-market relationships, positioning rules |
+| Soybeans | `soybeans` | Chinese demand tracking, pod fill development, Brazil S&D |
+| Soybean Oil | `soybean_oil` | Price architecture (RD capacity, biofuel breakevens) |
+| Soybean Meal | `soybean_meal` | Crush economics, Argentine competition |
+| Ethanol | `ethanol` | RFS mandates, corn grind demand, SRE policy impacts |
+| Wheat (SRW/HRW/HRS) | `wheat_srw`, `wheat_hrw`, `wheat_hrs` | Feed price linkage to corn, winter kill risk |
+| Canola Oil | `canola_oil` | CI advantage for biofuels, Canada supply dynamics |
+| Renewable Diesel | `renewable_diesel` | Feedstock competition, capacity expansion |
+| **Data Series** | | |
+| CFTC COT | `cftc.cot` | Positioning analytics, managed money sentiment |
+| Crop Conditions | `usda.crop_condition_rating` | G/E → yield prediction model, seasonal decline norms |
+| Crop Development | `usda.crop_progress.development` | Silking/blooming/pod stages, frost vulnerability |
+| WASDE Patterns | `usda.wasde.revision_pattern` | Historical yield revision direction by month |
+| Export Sales | `usda.export_sales` | Pace vs USDA projection, Chinese buying patterns |
+| EIA Ethanol | `eia.ethanol` | Production/stocks weekly trends |
+| Brazil CONAB | `brazil.conab` | Crop framework: IMEA planting, STU, crush competition |
+| NOPA Crush | `nopa.crush` | Monthly crush analytics |
+| FSA Acreage | `fsa.acreage` | Acreage revision prediction from certified data |
+| **Analytical Models** | | |
+| Crop Condition → Yield | `crop_condition_yield_model` | G/E change predicts USDA yield change (signature methodology) |
+| Planting Pace → Acreage | `planting_pace_acreage_model` | Early finish → corn up, soy down (counterintuitive) |
+| Quarterly Residual | `quarterly_residual_model` | Stocks estimation from export inspections |
+| Acreage Rules | `acreage_rules_of_thumb` | Farmers prefer corn, late corn kills soy |
+| **Seasonal Events** | | |
+| Peak Weather | `peak_weather_sensitivity` | Jul corn pollination, Aug-Sep soy pod fill |
+| August WASDE Pivot | `august_wasde_pivot` | Methodology shift from trendline to surveys |
+| June 30 Reports | `usda_june30_acreage` | Most volatile trading day framework |
+| **Policy** | | |
+| RFS Mandates | `rfs2` | Renewable fuel standard mechanics |
+| SCOTUS SRE | `scotus_sre_ruling_2021` | Small refinery exemption policy crisis |
+| RVO | `rvo` | Annual renewable volume obligations |
+
+### Example KG Workflow
+
+When a user asks about **corn positioning**:
+1. Call `get_kg_context('cftc.cot')` → returns expert rules on positioning extremes, seasonal patterns
+2. Call `get_kg_context('corn')` → returns cross-market links, demand drivers
+3. Call `get_kg_relationships('corn')` → shows what CAUSES corn price movement
+4. Query `gold.cftc_corn_positioning` for current data
+5. Frame the analysis using KG context: "Net long at X contracts is in the Yth percentile for [month]. Historical pattern suggests..."
+
+---
+
+## Current Knowledge Graph Stats
+
+- **140 nodes** (commodities, data series, models, seasonal events, policies, regions, market participants)
+- **74 edges** (causal links, competition, seasonal patterns, predictions)
+- **47 contexts** (expert rules, risk thresholds, seasonal norms, methodologies)
+- **59 sources** (HB Weekly Text reports from 2020-2023)
+- **6 extraction batches** covering the complete annual analytical cycle

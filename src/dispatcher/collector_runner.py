@@ -261,6 +261,22 @@ class CollectorRunner:
                     if run_result.error_message:
                         details['error'] = run_result.error_message
 
+                    # Enrich with KG context (best-effort)
+                    if run_result.success:
+                        try:
+                            from src.knowledge_graph.kg_enricher import KGEnricher
+                            enricher = KGEnricher()
+                            enrichment = enricher.enrich_collection_event(
+                                collector_name, run_result.rows_collected,
+                                run_result.data_period
+                            )
+                            if enrichment:
+                                details['kg_enrichment'] = enrichment
+                                if enrichment.get('enriched_summary'):
+                                    summary += f" | KG: {enrichment['enriched_summary']}"
+                        except Exception as e:
+                            logger.debug(f"KG enrichment skipped for {collector_name}: {e}")
+
                     self._log_event(conn, event_type, collector_name,
                                      summary, details, priority)
             except Exception as e:

@@ -217,6 +217,26 @@ class HBReportOrchestrator:
 
         return self._finalize_result(result, report_record if 'report_record' in locals() else None)
 
+    def _get_kg_context_for_report(self, commodities: List[str]) -> Dict[str, Any]:
+        """
+        Query knowledge graph for analyst context relevant to this report.
+
+        Returns dict mapping commodity node_key → enriched context,
+        or empty dict if KG is unavailable.
+        """
+        try:
+            from src.knowledge_graph import KGManager
+            kg = KGManager()
+            context = {}
+            for commodity in commodities:
+                enriched = kg.get_enriched_context(commodity)
+                if enriched:
+                    context[commodity] = enriched
+            return context
+        except Exception as e:
+            self.logger.warning(f"KG context unavailable: {e}")
+            return {}
+
     def _create_report_record(self, report_date: date) -> Optional[WeeklyReport]:
         """Create database record for the report"""
         if not self.db_session_factory:
