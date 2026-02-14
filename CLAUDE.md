@@ -600,7 +600,24 @@ When a user asks about **corn positioning**:
 
 - **160 nodes** (commodities, data series, models, seasonal events, policies, regions, market participants)
 - **90 edges** (causal links, competition, seasonal patterns, predictions)
-- **64 contexts** (expert rules, risk thresholds, seasonal norms, computed percentiles, methodologies)
+- **70 contexts** (expert rules, risk thresholds, seasonal norms, computed percentiles, pace tracking)
 - **75 sources** (HB Weekly Text reports, Fastmarkets quarterlies, consulting engagements)
 - **8 extraction batches** covering the complete annual analytical cycle + biofuel demand infrastructure
-- **9 computed contexts** (CFTC monthly percentiles × 6 commodities + crop condition weekly percentiles × 3 commodities)
+- **15 computed contexts**: 9 seasonal norms (CFTC monthly percentiles × 6 + crop condition weekly × 3) + 6 pace tracking (soy crush vs USDA × 4 MYs + corn grind YoY × 2 MYs)
+
+### Computed Context Types
+
+| Type | Source | What It Provides |
+|------|--------|------------------|
+| `seasonal_norm` / `cftc_mm_net_monthly` | seasonal_calculator | Monthly p10/p25/p50/p75/p90 of managed money net positioning |
+| `seasonal_norm` / `crop_condition_ge_weekly` | seasonal_calculator | Weekly p10-p90 of Good/Excellent crop ratings |
+| `pace_tracking` / `soy_crush_pace_myNNNN` | pace_calculator | Soy crush cumulative pace vs USDA annual projection (%) |
+| `pace_tracking` / `corn_grind_pace_myNNNN` | pace_calculator | Corn grind YoY pace comparison |
+
+### Delta Summaries in Event Log
+
+When collectors complete, the `event_log.details` JSONB now includes intelligent delta summaries:
+- **CFTC COT**: week-over-week positioning changes, 1-year percentile ranking, extreme position flags
+- **Crop Conditions**: G/E weekly change, year-over-year comparison
+- **NASS Processing**: month-over-month crush changes with percentage
+- **EIA Ethanol**: production/stocks week-over-week changes (when data available)

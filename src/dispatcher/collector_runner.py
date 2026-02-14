@@ -261,6 +261,20 @@ class CollectorRunner:
                     if run_result.error_message:
                         details['error'] = run_result.error_message
 
+                    # Compute data deltas (best-effort)
+                    if run_result.success and run_result.is_new_data:
+                        try:
+                            from src.dispatcher.delta_summarizer import compute_delta
+                            delta = compute_delta(collector_name, conn)
+                            if delta:
+                                details['delta'] = delta['data']
+                                if delta.get('notable_changes'):
+                                    details['notable_changes'] = delta['notable_changes']
+                                if delta.get('summary_parts'):
+                                    summary += " | " + "; ".join(delta['summary_parts'])
+                        except Exception as e:
+                            logger.debug(f"Delta summary skipped for {collector_name}: {e}")
+
                     # Enrich with KG context (best-effort)
                     if run_result.success:
                         try:
@@ -297,6 +311,28 @@ class CollectorRunner:
                                 }
                         except Exception as e:
                             logger.debug(f"Seasonal calc skipped for {collector_name}: {e}")
+
+                    # Recompute pace tracking after relevant collectors (best-effort)
+                    if run_result.success and run_result.is_new_data:
+                        try:
+                            from src.knowledge_graph.pace_calculator import PaceCalculator
+                            pace = PaceCalculator()
+                            if collector_name == 'nass_processing':
+                                pace_results = pace.run_all()
+                            elif collector_name == 'nopa_crush':
+                                pace_results = [pace.compute_soy_crush_pace()]
+                            else:
+                                pace_results = None
+                            if pace_results:
+                                pace_summary = [
+                                    {'calculator': r.calculator, 'written': r.contexts_written,
+                                     'updated': r.contexts_updated}
+                                    for r in pace_results if r.success
+                                ]
+                                if pace_summary:
+                                    details['pace_calc'] = pace_summary
+                        except Exception as e:
+                            logger.debug(f"Pace calc skipped for {collector_name}: {e}")
 
                     self._log_event(conn, event_type, collector_name,
                                      summary, details, priority)
