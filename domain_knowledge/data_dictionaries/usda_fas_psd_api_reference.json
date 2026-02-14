@@ -1,0 +1,902 @@
+{
+  "metadata": {
+    "title": "USDA FAS Production, Supply, and Distribution (PSD) API Reference",
+    "version": "1.0",
+    "created": "2026-01-30",
+    "author": "RLC Consulting",
+    "description": "Machine-readable reference for USDA FAS PSD API including endpoints, commodity codes, country codes, attribute codes, and query construction",
+    "update_frequency": "As API changes; verify codes via reference endpoints",
+    "related_references": [
+      {
+        "name": "EPA RFS RIN Reference",
+        "path": "/mnt/user-data/uploads/epa_rfs_rin_reference.json",
+        "description": "EPA Renewable Fuel Standard and RIN data reference"
+      },
+      {
+        "name": "EIA Series Reference",
+        "path": "/mnt/user-data/outputs/eia_series_reference.json",
+        "description": "EIA biofuel and energy production series IDs"
+      }
+    ]
+  },
+  "program_overview": {
+    "name": "Production, Supply, and Distribution (PSD) Database",
+    "administrator": "USDA Foreign Agricultural Service (FAS)",
+    "description": "Official USDA database of global agricultural supply and demand estimates used in WASDE reports",
+    "data_start_year": 1960,
+    "geographic_coverage": "100+ countries and regional aggregates",
+    "commodity_coverage": [
+      "Grains (wheat, corn, rice, barley, sorghum, oats, rye, millet)",
+      "Oilseeds (soybeans, rapeseed, sunflowerseed, peanuts, cottonseed)",
+      "Oilseed products (meals, oils)",
+      "Cotton",
+      "Sugar",
+      "Livestock (beef, pork, poultry)",
+      "Dairy (milk, butter, cheese)",
+      "Other (eggs, hides)"
+    ],
+    "update_schedule": {
+      "wasde_commodities": "Monthly on WASDE release day at 12:00 PM ET",
+      "horticultural": "Twice yearly",
+      "export_sales": "Weekly (Thursdays 8:30 AM ET)"
+    }
+  },
+  "api_configuration": {
+    "primary_api": {
+      "name": "FAS OpenData API (Recommended)",
+      "base_url": "https://api.fas.usda.gov",
+      "swagger_spec": "https://api.fas.usda.gov/assets/swagger/swagger.json",
+      "swagger_ui": "https://apps.fas.usda.gov/opendata/swagger/ui/index",
+      "interactive_docs": "https://apps.fas.usda.gov/opendatawebV2/#/home"
+    },
+    "legacy_api": {
+      "name": "PSDOnlineDataServices (Legacy)",
+      "base_url": "https://apps.fas.usda.gov/PSDOnlineDataServices",
+      "swagger_ui": "https://apps.fas.usda.gov/PSDOnlineDataServices/swagger/ui/index",
+      "note": "Less documented; may require precise filtering"
+    },
+    "alternative_endpoint": {
+      "base_url": "https://apps.fas.usda.gov/OpenData/api/psd/",
+      "note": "Mirrors primary API structure"
+    }
+  },
+  "authentication": {
+    "api_key_required": true,
+    "registration_url": "https://api.data.gov/signup/",
+    "key_format": "40-character alphanumeric string",
+    "authentication_methods": [
+      {
+        "method": "HTTP Header (Recommended)",
+        "header_name": "X-Api-Key",
+        "example": "X-Api-Key: YOUR_API_KEY_HERE"
+      },
+      {
+        "method": "Custom Header (Legacy)",
+        "header_name": "API_KEY",
+        "example": "API_KEY: YOUR_API_KEY_HERE"
+      },
+      {
+        "method": "Query Parameter",
+        "parameter": "api_key",
+        "example": "?api_key=YOUR_API_KEY_HERE"
+      }
+    ],
+    "rate_limits": {
+      "registered_key": {
+        "hourly": 1000,
+        "daily": "unlimited"
+      },
+      "demo_key": {
+        "hourly": 30,
+        "daily": 50
+      },
+      "exceeded_response": "HTTP 429",
+      "block_duration": "1 hour"
+    },
+    "rate_limit_headers": {
+      "limit": "X-RateLimit-Limit",
+      "remaining": "X-RateLimit-Remaining"
+    }
+  },
+  "endpoints": {
+    "reference_data": {
+      "regions": {
+        "path": "/api/psd/regions",
+        "method": "GET",
+        "description": "Returns all region codes and names",
+        "full_url": "https://api.fas.usda.gov/api/psd/regions"
+      },
+      "countries": {
+        "path": "/api/psd/countries",
+        "method": "GET",
+        "description": "Returns countries with corresponding region codes",
+        "full_url": "https://api.fas.usda.gov/api/psd/countries"
+      },
+      "commodities": {
+        "path": "/api/psd/commodities",
+        "method": "GET",
+        "description": "Returns all commodities with 7-digit codes",
+        "full_url": "https://api.fas.usda.gov/api/psd/commodities"
+      },
+      "units_of_measure": {
+        "path": "/api/psd/unitsOfMeasure",
+        "method": "GET",
+        "description": "Returns unit of measure codes and descriptions",
+        "full_url": "https://api.fas.usda.gov/api/psd/unitsOfMeasure"
+      },
+      "commodity_attributes": {
+        "path": "/api/psd/commodityAttributes",
+        "method": "GET",
+        "description": "Returns all attribute codes (production, supply, distribution)",
+        "full_url": "https://api.fas.usda.gov/api/psd/commodityAttributes"
+      }
+    },
+    "data_retrieval": {
+      "commodity_country_year": {
+        "path": "/api/psd/commodity/{commodityCode}/country/{countryCode}/year/{marketYear}",
+        "method": "GET",
+        "description": "Forecast data for specific commodity, country, and year",
+        "parameters": {
+          "commodityCode": "7-digit commodity code",
+          "countryCode": "2-letter or 4-digit country code",
+          "marketYear": "4-digit year (e.g., 2024)"
+        }
+      },
+      "commodity_all_countries": {
+        "path": "/api/psd/commodity/{commodityCode}/country/all/year/{marketYear}",
+        "method": "GET",
+        "description": "Forecast data for all countries for a commodity",
+        "parameters": {
+          "commodityCode": "7-digit commodity code",
+          "marketYear": "4-digit year"
+        }
+      },
+      "commodity_world": {
+        "path": "/api/psd/commodity/{commodityCode}/world/year/{marketYear}",
+        "method": "GET",
+        "description": "World-aggregated data for a commodity",
+        "parameters": {
+          "commodityCode": "7-digit commodity code",
+          "marketYear": "4-digit year"
+        }
+      },
+      "data_release_dates": {
+        "path": "/api/psd/commodity/{commodityCode}/dataReleaseDates",
+        "method": "GET",
+        "description": "Last release dates for a commodity",
+        "parameters": {
+          "commodityCode": "7-digit commodity code"
+        }
+      }
+    },
+    "legacy_endpoint": {
+      "get_all_data": {
+        "path": "/api/CommodityData/GetAllData",
+        "method": "GET",
+        "description": "Bulk data retrieval (requires filters)",
+        "base_url": "https://apps.fas.usda.gov/PSDOnlineDataServices"
+      }
+    }
+  },
+  "commodity_codes": {
+    "note": "Always verify current codes via /api/psd/commodities endpoint",
+    "code_format": "7-digit numeric",
+    "grains": {
+      "corn": {
+        "code": "0440000",
+        "name": "Corn",
+        "unit": "1000 MT"
+      },
+      "wheat": {
+        "code": "0410000",
+        "name": "Wheat",
+        "unit": "1000 MT"
+      },
+      "rice_milled": {
+        "code": "0422110",
+        "name": "Rice, Milled",
+        "unit": "1000 MT",
+        "note": "Verify code - may vary"
+      },
+      "barley": {
+        "code": "0430000",
+        "name": "Barley",
+        "unit": "1000 MT",
+        "note": "Verify code"
+      },
+      "sorghum": {
+        "code": "0459100",
+        "name": "Sorghum",
+        "unit": "1000 MT",
+        "note": "Verify code"
+      }
+    },
+    "oilseeds": {
+      "soybeans": {
+        "code": "2222000",
+        "name": "Soybeans",
+        "unit": "1000 MT",
+        "note": "Verify current code"
+      },
+      "soybean_meal": {
+        "code": "2304000",
+        "name": "Meal, Soybean",
+        "unit": "1000 MT",
+        "note": "Verify code - may be 230250"
+      },
+      "soybean_oil": {
+        "code": "1507000",
+        "name": "Oil, Soybean",
+        "unit": "1000 MT"
+      },
+      "rapeseed": {
+        "code": "1205000",
+        "name": "Rapeseed (Canola)",
+        "unit": "1000 MT"
+      },
+      "rapeseed_meal": {
+        "code": "2306400",
+        "name": "Meal, Rapeseed",
+        "unit": "1000 MT"
+      },
+      "rapeseed_oil": {
+        "code": "1514000",
+        "name": "Oil, Rapeseed",
+        "unit": "1000 MT"
+      },
+      "sunflowerseed": {
+        "code": "1206000",
+        "name": "Sunflowerseed",
+        "unit": "1000 MT"
+      },
+      "sunflowerseed_meal": {
+        "code": "2306300",
+        "name": "Meal, Sunflowerseed",
+        "unit": "1000 MT"
+      },
+      "sunflowerseed_oil": {
+        "code": "1512000",
+        "name": "Oil, Sunflowerseed",
+        "unit": "1000 MT"
+      },
+      "palm_oil": {
+        "code": "1511000",
+        "name": "Oil, Palm",
+        "unit": "1000 MT"
+      },
+      "palm_kernel_oil": {
+        "code": "1513200",
+        "name": "Oil, Palm Kernel",
+        "unit": "1000 MT"
+      },
+      "peanuts": {
+        "code": "1202000",
+        "name": "Peanuts (Groundnuts)",
+        "unit": "1000 MT"
+      },
+      "cottonseed": {
+        "code": "1207200",
+        "name": "Cottonseed",
+        "unit": "1000 MT"
+      },
+      "cottonseed_meal": {
+        "code": "2306100",
+        "name": "Meal, Cottonseed",
+        "unit": "1000 MT"
+      },
+      "cottonseed_oil": {
+        "code": "1512200",
+        "name": "Oil, Cottonseed",
+        "unit": "1000 MT"
+      }
+    },
+    "fiber": {
+      "cotton": {
+        "code": "2631000",
+        "name": "Cotton",
+        "unit": "1000 480-lb Bales",
+        "note": "Verify code"
+      }
+    },
+    "sugar": {
+      "sugar_centrifugal": {
+        "code": "1701000",
+        "name": "Sugar, Centrifugal",
+        "unit": "1000 MT",
+        "note": "Verify code"
+      }
+    },
+    "livestock": {
+      "beef_veal": {
+        "code": "0111000",
+        "name": "Meat, Beef and Veal",
+        "unit": "1000 MT CWE",
+        "note": "Carcass Weight Equivalent"
+      },
+      "pork": {
+        "code": "0112000",
+        "name": "Meat, Pork",
+        "unit": "1000 MT CWE"
+      },
+      "poultry_broiler": {
+        "code": "0114000",
+        "name": "Meat, Chicken",
+        "unit": "1000 MT"
+      },
+      "poultry_turkey": {
+        "code": "0115000",
+        "name": "Meat, Turkey",
+        "unit": "1000 MT"
+      }
+    },
+    "dairy": {
+      "milk_fluid": {
+        "code": "0401000",
+        "name": "Milk, Fluid",
+        "unit": "1000 MT"
+      },
+      "butter": {
+        "code": "0405000",
+        "name": "Butter",
+        "unit": "1000 MT"
+      },
+      "cheese": {
+        "code": "0406000",
+        "name": "Cheese",
+        "unit": "1000 MT"
+      },
+      "nonfat_dry_milk": {
+        "code": "0402210",
+        "name": "Milk, Nonfat Dry",
+        "unit": "1000 MT"
+      },
+      "whole_dry_milk": {
+        "code": "0402200",
+        "name": "Milk, Dry Whole",
+        "unit": "1000 MT"
+      }
+    }
+  },
+  "country_codes": {
+    "note": "PSD uses FAS-specific codes; verify via /api/psd/countries endpoint",
+    "code_formats": {
+      "four_digit": "FAS internal numeric code",
+      "two_letter": "ISO-style abbreviation used in API responses"
+    },
+    "major_producers_exporters": {
+      "united_states": {
+        "code_2letter": "US",
+        "name": "United States"
+      },
+      "brazil": {
+        "code_4digit": "3510",
+        "code_2letter": "BR",
+        "name": "Brazil"
+      },
+      "argentina": {
+        "code_4digit": "3570",
+        "code_2letter": "AR",
+        "name": "Argentina"
+      },
+      "canada": {
+        "code_4digit": "1220",
+        "code_2letter": "CA",
+        "name": "Canada"
+      },
+      "australia": {
+        "code_4digit": "6020",
+        "code_2letter": "AU",
+        "name": "Australia"
+      },
+      "russia": {
+        "code_4digit": "4621",
+        "code_2letter": "RU",
+        "name": "Russia"
+      },
+      "ukraine": {
+        "code_4digit": "4623",
+        "code_2letter": "UA",
+        "name": "Ukraine"
+      },
+      "european_union": {
+        "code_2letter": "EU",
+        "name": "European Union",
+        "note": "Aggregate of member states"
+      },
+      "india": {
+        "code_4digit": "5330",
+        "code_2letter": "IN",
+        "name": "India"
+      },
+      "china": {
+        "code_4digit": "5700",
+        "code_2letter": "CN",
+        "name": "China"
+      },
+      "indonesia": {
+        "code_4digit": "5600",
+        "code_2letter": "ID",
+        "name": "Indonesia"
+      },
+      "malaysia": {
+        "code_4digit": "5560",
+        "code_2letter": "MY",
+        "name": "Malaysia"
+      },
+      "thailand": {
+        "code_4digit": "5490",
+        "code_2letter": "TH",
+        "name": "Thailand"
+      },
+      "vietnam": {
+        "code_4digit": "5520",
+        "code_2letter": "VN",
+        "name": "Vietnam"
+      },
+      "japan": {
+        "code_4digit": "5880",
+        "code_2letter": "JP",
+        "name": "Japan"
+      },
+      "mexico": {
+        "code_4digit": "2010",
+        "code_2letter": "MX",
+        "name": "Mexico"
+      },
+      "egypt": {
+        "code_4digit": "7290",
+        "code_2letter": "EG",
+        "name": "Egypt"
+      },
+      "turkey": {
+        "code_4digit": "4890",
+        "code_2letter": "TR",
+        "name": "Turkey"
+      },
+      "pakistan": {
+        "code_4digit": "5370",
+        "code_2letter": "PK",
+        "name": "Pakistan"
+      },
+      "bangladesh": {
+        "code_4digit": "5380",
+        "code_2letter": "BD",
+        "name": "Bangladesh"
+      },
+      "philippines": {
+        "code_4digit": "5660",
+        "code_2letter": "PH",
+        "name": "Philippines"
+      },
+      "south_korea": {
+        "code_4digit": "5900",
+        "code_2letter": "KR",
+        "name": "Korea, South"
+      },
+      "nigeria": {
+        "code_4digit": "7530",
+        "code_2letter": "NG",
+        "name": "Nigeria"
+      },
+      "south_africa": {
+        "code_4digit": "7010",
+        "code_2letter": "ZA",
+        "name": "South Africa"
+      },
+      "kazakhstan": {
+        "code_4digit": "4634",
+        "code_2letter": "KZ",
+        "name": "Kazakhstan"
+      }
+    },
+    "eu_member_states": {
+      "note": "Individual EU countries for detailed analysis",
+      "germany": {"code_4digit": "4280", "code_2letter": "DE"},
+      "france": {"code_4digit": "4270", "code_2letter": "FR"},
+      "spain": {"code_4digit": "4700", "code_2letter": "ES"},
+      "italy": {"code_4digit": "4750", "code_2letter": "IT"},
+      "poland": {"code_4digit": "4550", "code_2letter": "PL"},
+      "romania": {"code_4digit": "4850", "code_2letter": "RO"},
+      "hungary": {"code_4digit": "4370", "code_2letter": "HU"},
+      "netherlands": {"code_4digit": "4210", "code_2letter": "NL"},
+      "belgium_luxembourg": {"code_4digit": "4230", "code_2letter": "BE"}
+    },
+    "special_aggregates": {
+      "world": {
+        "code": "world",
+        "name": "World Total",
+        "endpoint": "/api/psd/commodity/{code}/world/year/{year}"
+      },
+      "all": {
+        "code": "all",
+        "name": "All Countries",
+        "endpoint": "/api/psd/commodity/{code}/country/all/year/{year}"
+      }
+    }
+  },
+  "attribute_codes": {
+    "note": "Retrieve current attributes via /api/psd/commodityAttributes endpoint",
+    "supply_side": {
+      "area_harvested": {
+        "name": "Area Harvested",
+        "description": "Land area harvested",
+        "typical_unit": "1000 HA"
+      },
+      "beginning_stocks": {
+        "name": "Beginning Stocks",
+        "description": "Opening inventory at marketing year start",
+        "typical_unit": "1000 MT"
+      },
+      "production": {
+        "name": "Production",
+        "description": "Total output",
+        "typical_unit": "1000 MT"
+      },
+      "imports": {
+        "name": "Imports",
+        "description": "Total imports",
+        "typical_unit": "1000 MT"
+      },
+      "yield": {
+        "name": "Yield",
+        "description": "Production per unit area",
+        "typical_unit": "MT/HA"
+      },
+      "total_supply": {
+        "name": "Total Supply",
+        "description": "Beginning stocks + Production + Imports",
+        "typical_unit": "1000 MT"
+      },
+      "animal_inventory": {
+        "name": "Animal Inventory",
+        "description": "Livestock head count (livestock commodities)",
+        "typical_unit": "1000 Head"
+      },
+      "slaughter": {
+        "name": "Slaughter",
+        "description": "Animals processed (livestock)",
+        "typical_unit": "1000 Head"
+      }
+    },
+    "demand_side": {
+      "crush": {
+        "name": "Crush",
+        "description": "Amount processed (oilseeds to meal/oil)",
+        "typical_unit": "1000 MT"
+      },
+      "domestic_consumption": {
+        "name": "Domestic Consumption",
+        "description": "Total domestic use",
+        "typical_unit": "1000 MT"
+      },
+      "food_use": {
+        "name": "Food Use Dom. Cons.",
+        "description": "Human food consumption",
+        "typical_unit": "1000 MT"
+      },
+      "feed_use": {
+        "name": "Feed Dom. Consumption",
+        "description": "Animal feed consumption",
+        "typical_unit": "1000 MT"
+      },
+      "seed_use": {
+        "name": "Seed Use",
+        "description": "Planting seed use",
+        "typical_unit": "1000 MT"
+      },
+      "industrial_use": {
+        "name": "Industrial Dom. Cons.",
+        "description": "Industrial applications (ethanol, biodiesel)",
+        "typical_unit": "1000 MT"
+      },
+      "fsi_consumption": {
+        "name": "FSI Consumption",
+        "description": "Food, Seed, Industrial combined",
+        "typical_unit": "1000 MT"
+      },
+      "waste": {
+        "name": "Waste Dom. Cons.",
+        "description": "Losses",
+        "typical_unit": "1000 MT"
+      },
+      "exports": {
+        "name": "Exports",
+        "description": "Total exports",
+        "typical_unit": "1000 MT"
+      },
+      "ending_stocks": {
+        "name": "Ending Stocks",
+        "description": "Closing inventory at marketing year end",
+        "typical_unit": "1000 MT"
+      },
+      "total_distribution": {
+        "name": "Total Distribution",
+        "description": "Dom. Consumption + Exports + Ending Stocks",
+        "typical_unit": "1000 MT"
+      }
+    },
+    "derived_metrics": {
+      "stocks_to_use": {
+        "name": "Stocks-to-Use Ratio",
+        "calculation": "Ending Stocks / Total Consumption",
+        "note": "Calculate from raw data"
+      },
+      "export_share": {
+        "name": "Export Share",
+        "calculation": "Exports / Production",
+        "note": "Calculate from raw data"
+      }
+    }
+  },
+  "units_of_measure": {
+    "note": "Retrieve current units via /api/psd/unitsOfMeasure endpoint",
+    "codes": {
+      "MT": {
+        "description": "Metric Tons",
+        "typical_use": "Smaller quantities"
+      },
+      "1000 MT": {
+        "description": "Thousand Metric Tons",
+        "typical_use": "Most production and trade data"
+      },
+      "MMT": {
+        "description": "Million Metric Tons",
+        "typical_use": "World totals, summaries"
+      },
+      "HA": {
+        "description": "Hectares",
+        "typical_use": "Area (smaller regions)"
+      },
+      "1000 HA": {
+        "description": "Thousand Hectares",
+        "typical_use": "Area harvested"
+      },
+      "MT/HA": {
+        "description": "Metric Tons per Hectare",
+        "typical_use": "Yield"
+      },
+      "Bales": {
+        "description": "480-pound bales",
+        "typical_use": "Cotton"
+      },
+      "1000 Bales": {
+        "description": "Thousand 480-pound bales",
+        "typical_use": "Cotton production/trade"
+      },
+      "Head": {
+        "description": "Animal count",
+        "typical_use": "Livestock inventory"
+      },
+      "1000 Head": {
+        "description": "Thousand head",
+        "typical_use": "Livestock inventory/slaughter"
+      },
+      "CWE": {
+        "description": "Carcass Weight Equivalent",
+        "typical_use": "Meat production"
+      }
+    }
+  },
+  "marketing_year_conventions": {
+    "format": {
+      "api_parameter": "4-digit year (e.g., 2024)",
+      "display_format": "Split year (e.g., 2024/25)",
+      "interpretation": "First year indicates when marketing year BEGINS"
+    },
+    "by_commodity_region": {
+      "us_corn_soybeans": {
+        "start_month": "September",
+        "end_month": "August",
+        "example": "2024/25 = Sep 2024 - Aug 2025"
+      },
+      "us_wheat": {
+        "start_month": "June",
+        "end_month": "May",
+        "example": "2024/25 = Jun 2024 - May 2025"
+      },
+      "us_rice": {
+        "start_month": "August",
+        "end_month": "July"
+      },
+      "brazil_soybeans": {
+        "start_month": "February",
+        "end_month": "January",
+        "note": "Southern hemisphere harvest"
+      },
+      "argentina_soybeans": {
+        "start_month": "March",
+        "end_month": "February",
+        "note": "Southern hemisphere harvest"
+      },
+      "eu_wheat": {
+        "start_month": "July",
+        "end_month": "June"
+      },
+      "eu_rapeseed": {
+        "start_month": "July",
+        "end_month": "June"
+      },
+      "northern_hemisphere_default": {
+        "start_month": "October",
+        "end_month": "September"
+      }
+    },
+    "important_note": "PSD stocks data aggregates differing local marketing years and should NOT be interpreted as world stock levels at a fixed point in time"
+  },
+  "api_query_examples": {
+    "curl_examples": {
+      "get_commodities": {
+        "description": "List all commodity codes",
+        "command": "curl -H 'X-Api-Key: YOUR_KEY' 'https://api.fas.usda.gov/api/psd/commodities'"
+      },
+      "get_countries": {
+        "description": "List all country codes",
+        "command": "curl -H 'X-Api-Key: YOUR_KEY' 'https://api.fas.usda.gov/api/psd/countries'"
+      },
+      "get_attributes": {
+        "description": "List all attribute codes",
+        "command": "curl -H 'X-Api-Key: YOUR_KEY' 'https://api.fas.usda.gov/api/psd/commodityAttributes'"
+      },
+      "corn_brazil_2024": {
+        "description": "Get corn data for Brazil 2024",
+        "command": "curl -H 'X-Api-Key: YOUR_KEY' 'https://api.fas.usda.gov/api/psd/commodity/0440000/country/BR/year/2024'"
+      },
+      "soybeans_world_2024": {
+        "description": "Get world soybean data 2024",
+        "command": "curl -H 'X-Api-Key: YOUR_KEY' 'https://api.fas.usda.gov/api/psd/commodity/2222000/world/year/2024'"
+      },
+      "wheat_all_countries_2024": {
+        "description": "Get wheat data for all countries 2024",
+        "command": "curl -H 'X-Api-Key: YOUR_KEY' 'https://api.fas.usda.gov/api/psd/commodity/0410000/country/all/year/2024'"
+      }
+    },
+    "python_template": {
+      "description": "Python implementation template",
+      "code": "import requests\nimport pandas as pd\n\nAPI_KEY = 'your_api_key_here'\nBASE_URL = 'https://api.fas.usda.gov'\n\ndef get_psd_data(endpoint):\n    headers = {\n        'Accept': 'application/json',\n        'X-Api-Key': API_KEY\n    }\n    response = requests.get(f'{BASE_URL}{endpoint}', headers=headers)\n    if response.status_code == 200:\n        return pd.DataFrame(response.json())\n    else:\n        raise Exception(f'API Error: {response.status_code}')\n\n# Get reference data\ncommodities = get_psd_data('/api/psd/commodities')\ncountries = get_psd_data('/api/psd/countries')\nattributes = get_psd_data('/api/psd/commodityAttributes')\n\n# Get specific data\ncorn_brazil = get_psd_data('/api/psd/commodity/0440000/country/BR/year/2024')"
+    }
+  },
+  "response_structure": {
+    "data_response_fields": [
+      {
+        "field": "commodityCode",
+        "type": "string",
+        "description": "7-digit commodity identifier"
+      },
+      {
+        "field": "countryCode",
+        "type": "string",
+        "description": "Country identifier"
+      },
+      {
+        "field": "marketYear",
+        "type": "integer",
+        "description": "Marketing year"
+      },
+      {
+        "field": "attributeId",
+        "type": "integer",
+        "description": "Maps to attribute names from commodityAttributes"
+      },
+      {
+        "field": "value",
+        "type": "number",
+        "description": "Numeric value for the attribute"
+      },
+      {
+        "field": "unitId",
+        "type": "integer",
+        "description": "Maps to unit names from unitsOfMeasure"
+      }
+    ]
+  },
+  "data_release_schedule": {
+    "wasde_release_days_2026": [
+      "2026-01-12",
+      "2026-02-10",
+      "2026-03-10",
+      "2026-04-09",
+      "2026-05-12",
+      "2026-06-11",
+      "2026-07-10",
+      "2026-08-12",
+      "2026-09-11",
+      "2026-10-09",
+      "2026-11-10",
+      "2026-12-10"
+    ],
+    "psd_update_time": "12:00 PM ET on WASDE release days",
+    "fas_circulars_time": "12:15 PM ET on WASDE release days",
+    "export_sales_reports": "Thursdays 8:30 AM ET (weekly)"
+  },
+  "related_usda_systems": {
+    "wasde": {
+      "name": "World Agricultural Supply and Demand Estimates",
+      "relationship": "PSD is the underlying data source for WASDE summaries",
+      "url": "https://www.usda.gov/oce/commodity-markets/wasde-report",
+      "format": "PDF report",
+      "difference": "WASDE provides summary; PSD provides country-by-country detail"
+    },
+    "gats": {
+      "name": "Global Agricultural Trade System",
+      "url": "https://apps.fas.usda.gov/gats",
+      "relationship": "Complements PSD with actual recorded trade data",
+      "data_source": "U.S. Census Bureau",
+      "updates": "Monthly (~5th of month)",
+      "history": "Back to 1967",
+      "use_case": "Trade flow analysis vs PSD supply-use balance estimates"
+    },
+    "gain": {
+      "name": "Global Agricultural Information Network",
+      "url": "https://gain.fas.usda.gov/",
+      "relationship": "Contains preliminary attaché estimates that feed into PSD",
+      "note": "NOT official USDA data - field intelligence before interagency review",
+      "coverage": "Reports since 1995/96, 2000+ reports annually from 98 offices"
+    },
+    "nass": {
+      "name": "National Agricultural Statistics Service",
+      "url": "https://www.nass.usda.gov/Quick_Stats/",
+      "relationship": "Provides U.S. domestic production statistics used in PSD",
+      "key_reports": ["Crop Progress", "Grain Stocks", "Prospective Plantings", "Planted Acreage"],
+      "focus": "U.S. domestic only; PSD covers international"
+    },
+    "ers": {
+      "name": "Economic Research Service",
+      "url": "https://www.ers.usda.gov/",
+      "relationship": "Uses PSD as primary source for Agricultural Baseline Database",
+      "products": "10-year baseline projections incorporating PSD data"
+    }
+  },
+  "official_resources": {
+    "api_documentation": {
+      "opendata_portal": "https://apps.fas.usda.gov/opendatawebV2/#/home",
+      "swagger_ui": "https://apps.fas.usda.gov/opendata/swagger/ui/index",
+      "legacy_swagger": "https://apps.fas.usda.gov/PSDOnlineDataServices/swagger/ui/index",
+      "api_key_registration": "https://api.data.gov/signup/"
+    },
+    "psd_online": {
+      "main_portal": "https://apps.fas.usda.gov/psdonline/",
+      "fas_databases": "https://www.fas.usda.gov/data/databases-applications"
+    },
+    "commodity_circulars_pdf": {
+      "oilseeds": "https://apps.fas.usda.gov/psdonline/circulars/oilseeds.pdf",
+      "grains": "https://apps.fas.usda.gov/psdonline/circulars/grain.pdf",
+      "cotton": "https://apps.fas.usda.gov/psdonline/circulars/cotton.pdf"
+    },
+    "data_catalogs": {
+      "data_gov": "https://catalog.data.gov/dataset/production-supply-and-distribution-database",
+      "ag_data_commons": "https://data.nal.usda.gov/dataset/usda-foreign-agricultural-service-production-supply-and-distribution-database"
+    },
+    "release_calendars": {
+      "fas_scheduled_reports": "https://www.fas.usda.gov/data/scheduled-reports",
+      "wasde_schedule": "https://www.usda.gov/oce/commodity-markets/wasde-report"
+    }
+  },
+  "quick_lookups": {
+    "commodity_by_use_case": {
+      "ethanol_feedstock_us": "0440000",
+      "biodiesel_feedstock_soy": "2222000",
+      "biodiesel_feedstock_canola": "1205000",
+      "soybean_meal_feed": "2304000",
+      "soybean_oil_food_fuel": "1507000",
+      "corn_feed_fuel": "0440000",
+      "wheat_food": "0410000",
+      "palm_oil_food_fuel": "1511000"
+    },
+    "major_exporters_by_commodity": {
+      "corn": ["US", "BR", "AR", "UA"],
+      "soybeans": ["BR", "US", "AR", "PY"],
+      "wheat": ["RU", "US", "CA", "AU", "UA", "EU"],
+      "palm_oil": ["ID", "MY"],
+      "soybean_meal": ["AR", "BR", "US"],
+      "soybean_oil": ["AR", "BR", "US"]
+    },
+    "major_importers_by_commodity": {
+      "corn": ["CN", "MX", "JP", "EU", "KR"],
+      "soybeans": ["CN", "EU", "MX", "JP"],
+      "wheat": ["EG", "ID", "TR", "PH", "BD"],
+      "palm_oil": ["IN", "CN", "EU", "PK"],
+      "soybean_meal": ["EU", "VN", "ID", "TH"],
+      "soybean_oil": ["IN", "CN", "BD"]
+    }
+  }
+}

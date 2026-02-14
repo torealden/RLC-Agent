@@ -1,0 +1,1191 @@
+{
+  "metadata": {
+    "title": "USDA FAS Crop Explorer NDVI Data System Reference",
+    "version": "1.0.0",
+    "created": "2026-01-30",
+    "author": "RLC Consulting",
+    "purpose": "Machine-readable reference for automated NDVI data collection and crop monitoring",
+    "update_frequency": "Review quarterly for API changes"
+  },
+  "system_overview": {
+    "name": "USDA FAS Crop Explorer",
+    "full_name": "USDA Foreign Agricultural Service International Production Assessment Division Crop Explorer",
+    "organization": "USDA Foreign Agricultural Service (FAS)",
+    "division": "International Production Assessment Division (IPAD)",
+    "description": "Global agricultural monitoring system providing satellite-derived vegetation indices for crop condition assessment across 130+ countries",
+    "primary_use_cases": [
+      "Crop condition monitoring",
+      "Yield forecasting",
+      "Drought assessment",
+      "Agricultural commodity market analysis",
+      "Food security monitoring"
+    ],
+    "data_type": "Satellite-derived vegetation indices (NDVI, EVI) with companion climate data",
+    "geographic_scope": "Global - 130+ countries",
+    "temporal_scope": {
+      "modis_current": "2002-present",
+      "avhrr_archive": "1981-2006",
+      "spot_veg_archive": "1999-2008"
+    }
+  },
+  "access_points": {
+    "crop_explorer_web": {
+      "base_url": "https://ipad.fas.usda.gov/cropexplorer/",
+      "type": "web_application",
+      "authentication": "none",
+      "description": "Primary web interface for interactive data exploration",
+      "pages": {
+        "main": {
+          "path": "/Default.aspx",
+          "description": "Main landing page with global overview"
+        },
+        "country_summary": {
+          "path": "/countrysummary/Default.aspx",
+          "parameters": {
+            "id": {
+              "type": "string",
+              "description": "Country code",
+              "example": "BR"
+            }
+          },
+          "example_url": "https://ipad.fas.usda.gov/countrysummary/Default.aspx?id=BR"
+        },
+        "image_view": {
+          "path": "/imageview.aspx",
+          "parameters": {
+            "regionid": {
+              "type": "string",
+              "description": "Region identifier",
+              "values": ["world", "us", "europe", "umb", "central_america2", "metu", "south_america", "africa", "asia"]
+            },
+            "product": {
+              "type": "string",
+              "description": "Data product type",
+              "values": ["modis_ndvi_8day", "modis_ndvi_anomaly", "viirs_ndvi"]
+            }
+          },
+          "example_url": "https://ipad.fas.usda.gov/cropexplorer/imageview.aspx?regionid=us&product=modis_ndvi_8day"
+        },
+        "subregion_chart": {
+          "path": "/subregion_chart.aspx",
+          "description": "Time-series visualization for specific regions"
+        },
+        "geotiff_download": {
+          "path": "/modis_ndvi/modis_geotiff_new.aspx",
+          "description": "Direct GeoTIFF imagery downloads",
+          "parameters": {
+            "modis_tile": {
+              "type": "string",
+              "format": "x##y##",
+              "description": "MODIS tile identifier",
+              "example": "x24y04"
+            },
+            "doy": {
+              "type": "integer",
+              "range": [1, 365],
+              "description": "Day of year"
+            },
+            "year": {
+              "type": "integer",
+              "description": "4-digit year"
+            },
+            "mdate": {
+              "type": "string",
+              "format": "MM/DD/YYYY",
+              "description": "Date string"
+            }
+          },
+          "example_url": "https://ipad.fas.usda.gov/cropexplorer/modis_ndvi/modis_geotiff_new.aspx?modis_tile=x24y04&doy=185&year=2025&mdate=07/04/2025"
+        },
+        "data_sources": {
+          "path": "/datasources.aspx",
+          "description": "Methodology and data source documentation"
+        }
+      }
+    },
+    "gadas_arcgis": {
+      "base_url": "https://geo.fas.usda.gov/arcgis2/rest/services",
+      "type": "arcgis_rest_api",
+      "description": "Primary programmatic access for NDVI data via ArcGIS REST services",
+      "authentication": {
+        "type": "optional_token",
+        "token_endpoint": "https://geo.fas.usda.gov/arcgis2/tokens/",
+        "note": "Many services are publicly accessible without authentication"
+      },
+      "rate_limits": {
+        "max_record_count": 1000,
+        "description": "Maximum records per query request"
+      },
+      "response_formats": {
+        "json": "?f=json",
+        "pjson": "?f=pjson",
+        "geojson": "?f=geojson",
+        "pbf": "?f=pbf",
+        "kml": "?f=kml",
+        "kmz": "?f=kmz",
+        "html": "?f=html"
+      },
+      "service_catalog": {
+        "vegetation_index": {
+          "path": "/G_VegetationIndex",
+          "description": "Vegetation index imagery and analytics",
+          "layers": {
+            "viirs_ndvi_anomaly": {
+              "path": "/G_VegetationIndex/VIIRS_NDVI_Anomaly_Global_8day/ImageServer",
+              "description": "VIIRS NDVI anomaly 8-day composites"
+            },
+            "modis_pasg": {
+              "path": "/G_VegetationIndex/MODIS_PASG_MONTH/ImageServer",
+              "description": "Percent of Average Seasonal Greenness monthly"
+            }
+          }
+        },
+        "soil_moisture": {
+          "path": "/G_Soil_Moisture",
+          "description": "Soil moisture products"
+        },
+        "climatology": {
+          "path": "/G_Climatology",
+          "description": "Climate data layers"
+        },
+        "smap": {
+          "path": "/G_SMAP",
+          "description": "NASA SMAP soil moisture products"
+        },
+        "crop_mask": {
+          "path": "/G_CropMask_IGBP",
+          "description": "Crop classification masks"
+        },
+        "analytics_tool": {
+          "path": "/G_Tools/Run_Stored_Procedure/GPServer/Tool",
+          "description": "Geoprocessing tool for NDVI analytics queries",
+          "method": "POST",
+          "content_type": "application/x-www-form-urlencoded",
+          "endpoints": {
+            "submit_job": "/submitJob",
+            "check_job": "/jobs/{jobId}",
+            "get_results": "/jobs/{jobId}/results/output_json"
+          },
+          "request_body": {
+            "features": {
+              "type": "json_string",
+              "description": "JSON object with query parameters",
+              "schema": {
+                "source": {
+                  "type": "string",
+                  "required": true,
+                  "values": ["modis_terra", "modis_aqua", "viirs"],
+                  "description": "Satellite data source"
+                },
+                "reportdayofyearstart": {
+                  "type": "integer",
+                  "required": true,
+                  "range": [1, 365],
+                  "description": "Start day of year for query period"
+                },
+                "reportdayofyearend": {
+                  "type": "integer",
+                  "required": true,
+                  "range": [1, 365],
+                  "description": "End day of year for query period"
+                },
+                "reportyear": {
+                  "type": "string",
+                  "required": true,
+                  "format": "YYYY or YYYY,YYYY,YYYY",
+                  "description": "Year(s) to query, comma-separated for multiple",
+                  "examples": ["2025", "2024,2025", "2023,2024,2025"]
+                },
+                "frequency": {
+                  "type": "string",
+                  "required": true,
+                  "values": ["8-day", "16-day", "monthly"],
+                  "description": "Temporal aggregation frequency"
+                },
+                "attribute": {
+                  "type": "string",
+                  "required": true,
+                  "values": ["ndvi", "evi", "anomaly"],
+                  "description": "Vegetation index type"
+                },
+                "ids": {
+                  "type": "string",
+                  "required": false,
+                  "description": "Administrative unit IDs",
+                  "example": "04020394"
+                },
+                "adminunit": {
+                  "type": "string",
+                  "required": false,
+                  "description": "Administrative unit name"
+                }
+              }
+            },
+            "stored_procedure": {
+              "type": "string",
+              "value": "sp_geo_map_analytics",
+              "description": "Stored procedure name"
+            },
+            "environment": {
+              "type": "string",
+              "values": ["dev", "prod"],
+              "default": "dev"
+            },
+            "f": {
+              "type": "string",
+              "value": "json",
+              "description": "Response format"
+            }
+          },
+          "example_request": {
+            "url": "https://geo.fas.usda.gov/arcgis2/rest/services/G_Tools/Run_Stored_Procedure/GPServer/Tool/submitJob",
+            "method": "POST",
+            "body": "features={\"source\":\"modis_terra\",\"reportdayofyearstart\":60,\"reportdayofyearend\":273,\"reportyear\":\"2025\",\"frequency\":\"8-day\",\"attribute\":\"ndvi\",\"ids\":\"04020394\",\"adminunit\":\"\"}&stored_procedure=sp_geo_map_analytics&environment=dev&f=json"
+          }
+        }
+      }
+    },
+    "fas_opendata_api": {
+      "base_url": "https://apps.fas.usda.gov/OpenData/api",
+      "type": "rest_api",
+      "description": "Commodity production and trade data API for integration with NDVI analysis",
+      "swagger_url": "https://apps.fas.usda.gov/opendata/swagger/ui/index",
+      "authentication": {
+        "type": "api_key",
+        "header_name": "API_KEY",
+        "registration_url": "https://api.data.gov",
+        "note": "Free registration required"
+      },
+      "rate_limits": {
+        "requests_per_hour": 1000
+      },
+      "response_format": "application/json",
+      "endpoints": {
+        "reference_data": {
+          "regions": {
+            "path": "/esr/regions",
+            "method": "GET",
+            "description": "List of export regions"
+          },
+          "countries": {
+            "path": "/esr/countries",
+            "method": "GET",
+            "description": "Country codes and names"
+          },
+          "commodities": {
+            "path": "/esr/commodities",
+            "method": "GET",
+            "description": "Commodity codes for export sales"
+          },
+          "psd_commodities": {
+            "path": "/psd/commodities",
+            "method": "GET",
+            "description": "PSD commodity codes"
+          },
+          "psd_attributes": {
+            "path": "/psd/commodityAttributes",
+            "method": "GET",
+            "description": "PSD attribute definitions"
+          }
+        },
+        "commodity_data": {
+          "psd_by_country": {
+            "path": "/psd/commodity/{commodityCode}/country/{countryCode}/year/{marketYear}",
+            "method": "GET",
+            "parameters": {
+              "commodityCode": {"type": "string", "description": "7-digit commodity code"},
+              "countryCode": {"type": "string", "description": "2-letter or 4-digit country code"},
+              "marketYear": {"type": "integer", "description": "Marketing year"}
+            }
+          },
+          "psd_world": {
+            "path": "/psd/commodity/{commodityCode}/world/year/{marketYear}",
+            "method": "GET",
+            "description": "World totals for commodity"
+          },
+          "export_sales": {
+            "path": "/esr/exports/commodityCode/{commodityCode}/allCountries/marketYear/{marketYear}",
+            "method": "GET",
+            "description": "Export sales reporting data"
+          }
+        }
+      }
+    },
+    "psd_online_services": {
+      "base_url": "https://apps.fas.usda.gov/PSDOnlineDataServices/api",
+      "swagger_url": "https://apps.fas.usda.gov/PSDOnlineDataServices/swagger/ui/index",
+      "type": "rest_api",
+      "authentication": {
+        "type": "api_key",
+        "header_name": "API_KEY"
+      },
+      "endpoints": {
+        "all_data": {
+          "path": "/CommodityData/GetAllData",
+          "method": "GET",
+          "description": "Bulk data retrieval"
+        }
+      }
+    }
+  },
+  "ndvi_specifications": {
+    "definition": {
+      "name": "Normalized Difference Vegetation Index",
+      "abbreviation": "NDVI",
+      "formula": "(NIR - RED) / (NIR + RED)",
+      "formula_expanded": "(Band2 - Band1) / (Band2 + Band1)",
+      "description": "Dimensionless index measuring vegetation greenness and density based on differential reflectance of near-infrared and red light"
+    },
+    "data_format": {
+      "data_type": "INT16",
+      "data_type_description": "16-bit signed integer",
+      "scale_factor": 0.0001,
+      "conversion_formula": "NDVI_actual = raw_value * 0.0001",
+      "valid_range": {
+        "raw": {
+          "min": -2000,
+          "max": 10000
+        },
+        "scaled": {
+          "min": -0.2,
+          "max": 1.0
+        }
+      },
+      "fill_value": -3000,
+      "fill_value_meaning": "No data / invalid pixel",
+      "units": "dimensionless"
+    },
+    "value_interpretation": {
+      "ranges": [
+        {
+          "range": [-1.0, 0.0],
+          "surface_type": "Water, clouds, snow",
+          "crop_condition": "N/A",
+          "color_typical": "Blue/White"
+        },
+        {
+          "range": [0.0, 0.1],
+          "surface_type": "Bare soil, rock, sand",
+          "crop_condition": "Fallow or pre-planting",
+          "color_typical": "Brown/Tan"
+        },
+        {
+          "range": [0.1, 0.2],
+          "surface_type": "Very sparse vegetation",
+          "crop_condition": "Early emergence or senescence",
+          "color_typical": "Light brown"
+        },
+        {
+          "range": [0.2, 0.3],
+          "surface_type": "Sparse vegetation",
+          "crop_condition": "Early vegetative growth",
+          "color_typical": "Yellow-green"
+        },
+        {
+          "range": [0.3, 0.5],
+          "surface_type": "Moderate vegetation",
+          "crop_condition": "Active vegetative growth",
+          "color_typical": "Light green"
+        },
+        {
+          "range": [0.5, 0.7],
+          "surface_type": "Dense vegetation",
+          "crop_condition": "Peak vegetative stage",
+          "color_typical": "Green"
+        },
+        {
+          "range": [0.7, 0.9],
+          "surface_type": "Very dense vegetation",
+          "crop_condition": "Maximum canopy closure",
+          "color_typical": "Dark green"
+        },
+        {
+          "range": [0.9, 1.0],
+          "surface_type": "Extremely dense vegetation",
+          "crop_condition": "Rare in agricultural settings",
+          "color_typical": "Very dark green"
+        }
+      ]
+    },
+    "products": {
+      "ndvi_current": {
+        "name": "NDVI (Current)",
+        "description": "Raw vegetation index value for current period",
+        "update_frequency": "8-day",
+        "calculation": "Direct satellite observation composite"
+      },
+      "ndvi_departure_average": {
+        "name": "NDVI Departure from Average",
+        "description": "Current NDVI minus long-term historical mean for same period",
+        "update_frequency": "8-day",
+        "calculation": "Current_NDVI - Historical_Mean_NDVI",
+        "interpretation": {
+          "positive": "Above normal vegetation",
+          "negative": "Below normal vegetation",
+          "zero": "Normal conditions"
+        }
+      },
+      "ndvi_departure_previous_year": {
+        "name": "NDVI Departure from Previous Year",
+        "description": "Year-over-year comparison for same period",
+        "calculation": "Current_NDVI - Previous_Year_Same_Period_NDVI"
+      },
+      "ndvi_departure_previous_period": {
+        "name": "NDVI Departure from Previous Period",
+        "description": "Sequential change from previous 8-day period",
+        "calculation": "Current_NDVI - Previous_8day_NDVI"
+      },
+      "pasg": {
+        "name": "Percent of Average Seasonal Greenness",
+        "abbreviation": "PASG",
+        "description": "Accumulated NDVI as percentage of historical accumulated NDVI",
+        "calculation": "(Current_Accumulated_NDVI / Historical_Accumulated_NDVI) * 100",
+        "units": "percent",
+        "update_frequency": "seasonal"
+      },
+      "vci": {
+        "name": "Vegetation Condition Index",
+        "abbreviation": "VCI",
+        "description": "Relative position of current NDVI within historical range",
+        "calculation": "((NDVI_current - NDVI_min) / (NDVI_max - NDVI_min)) * 100",
+        "units": "percent",
+        "interpretation": {
+          "0-20": "Extreme drought stress",
+          "20-40": "Severe drought stress",
+          "40-60": "Normal conditions",
+          "60-80": "Above normal",
+          "80-100": "Optimal conditions"
+        }
+      },
+      "mvci": {
+        "name": "Mean-referenced VCI",
+        "abbreviation": "MVCI",
+        "calculation": "((NDVI_current - NDVI_mean) / NDVI_mean) * 100",
+        "units": "percent deviation from mean"
+      },
+      "rmndvi": {
+        "name": "Ratio to Median NDVI",
+        "abbreviation": "RMNDVI",
+        "calculation": "(NDVI_current / NDVI_median) * 100",
+        "units": "percent of median"
+      }
+    }
+  },
+  "satellite_sources": {
+    "modis": {
+      "full_name": "Moderate Resolution Imaging Spectroradiometer",
+      "platforms": ["Terra", "Aqua"],
+      "operator": "NASA",
+      "spatial_resolution_meters": 250,
+      "temporal_resolution": "8-day composite",
+      "swath_width_km": 2330,
+      "operational_since": "2000-02-24",
+      "collection": "6.1",
+      "spectral_bands": {
+        "band1_red": {
+          "wavelength_nm": [620, 670],
+          "resolution_m": 250,
+          "use": "NDVI calculation (RED)"
+        },
+        "band2_nir": {
+          "wavelength_nm": [841, 876],
+          "resolution_m": 250,
+          "use": "NDVI calculation (NIR)"
+        },
+        "band3_blue": {
+          "wavelength_nm": [459, 479],
+          "resolution_m": 500,
+          "use": "Atmospheric correction"
+        },
+        "band7_swir": {
+          "wavelength_nm": [2105, 2155],
+          "resolution_m": 500,
+          "use": "Quality assessment"
+        }
+      },
+      "products": {
+        "MOD13Q1": {
+          "platform": "Terra",
+          "resolution_m": 250,
+          "temporal": "16-day",
+          "level": "L3"
+        },
+        "MYD13Q1": {
+          "platform": "Aqua",
+          "resolution_m": 250,
+          "temporal": "16-day",
+          "level": "L3"
+        },
+        "MOD13A1": {
+          "platform": "Terra",
+          "resolution_m": 500,
+          "temporal": "16-day",
+          "level": "L3"
+        },
+        "MOD13A2": {
+          "platform": "Terra",
+          "resolution_m": 1000,
+          "temporal": "16-day",
+          "level": "L3"
+        },
+        "MOD13C1": {
+          "platform": "Terra",
+          "resolution_km": 5.6,
+          "temporal": "16-day",
+          "level": "CMG"
+        },
+        "MOD13C2": {
+          "platform": "Terra",
+          "resolution_km": 5.6,
+          "temporal": "monthly",
+          "level": "CMG"
+        }
+      },
+      "tile_system": {
+        "format": "hXXvYY",
+        "description": "Sinusoidal projection tile grid",
+        "horizontal_tiles": 36,
+        "vertical_tiles": 18,
+        "tile_size_km": 1200
+      }
+    },
+    "viirs": {
+      "full_name": "Visible Infrared Imaging Radiometer Suite",
+      "platforms": ["Suomi NPP", "NOAA-20", "NOAA-21"],
+      "operator": "NOAA/NASA",
+      "spatial_resolution_meters": 375,
+      "temporal_resolution": "8-day composite",
+      "operational_since": "2012-01-01"
+    },
+    "avhrr": {
+      "full_name": "Advanced Very High Resolution Radiometer",
+      "platforms": "NOAA satellite series",
+      "operator": "NOAA",
+      "spatial_resolution_km": 8,
+      "archive_period": {
+        "start": "1981-07-01",
+        "end": "2006-06-30"
+      },
+      "note": "Historical archive only, no longer updated for NDVI"
+    },
+    "spot_vegetation": {
+      "full_name": "SPOT VEGETATION",
+      "platforms": ["SPOT-4", "SPOT-5"],
+      "operator": "CNES/ESA",
+      "spatial_resolution_km": 1,
+      "temporal_resolution": "10-day (dekadal)",
+      "archive_period": {
+        "start": "1999-01-01",
+        "end": "2008-05-31"
+      },
+      "note": "Historical archive only"
+    }
+  },
+  "temporal_specifications": {
+    "update_frequency": {
+      "primary": "8-day",
+      "description": "New composite available every 8 days"
+    },
+    "data_latency": {
+      "lance_nrt": {
+        "name": "Land, Atmosphere Near real-time Capability for EOS",
+        "latency_hours": 3,
+        "description": "Fastest available, preliminary quality"
+      },
+      "nrt_vegetation": {
+        "latency_hours": 24,
+        "description": "Near real-time vegetation products"
+      },
+      "standard_processing": {
+        "latency_days": "2-5",
+        "description": "Full quality processing"
+      },
+      "composite_availability": {
+        "latency_days": 8,
+        "description": "8-day composite available after period ends"
+      }
+    },
+    "historical_data": {
+      "modis": {
+        "start_date": "2002-02-01",
+        "end_date": "present",
+        "continuity": "continuous"
+      },
+      "avhrr": {
+        "start_date": "1981-07-01",
+        "end_date": "2006-06-30",
+        "continuity": "archived"
+      },
+      "spot_vegetation": {
+        "start_date": "1999-01-01",
+        "end_date": "2008-05-31",
+        "continuity": "archived"
+      }
+    },
+    "baseline_periods": {
+      "avhrr_long_term": {
+        "start": "1981-07-01",
+        "end": "2006-06-30",
+        "description": "25-year long-term average"
+      },
+      "spot_veg_short_term": {
+        "periods": ["1999-01 to 2002-12", "2006-06 to 2008-05"],
+        "description": "SPOT-VEG composite baseline"
+      },
+      "modis_rolling": {
+        "start": "2002-02-01",
+        "end": "present",
+        "description": "Rolling average updated with new data"
+      },
+      "glam_reference": {
+        "start": "2000-01-01",
+        "end": "2011-12-31",
+        "description": "NASA GLAM fixed reference period"
+      }
+    },
+    "compositing_method": {
+      "name": "Maximum Value Composite (MVC)",
+      "description": "Selects highest NDVI value within composite period to minimize cloud contamination",
+      "periods": {
+        "8_day": {
+          "days": 8,
+          "composites_per_year": 46
+        },
+        "16_day": {
+          "days": 16,
+          "composites_per_year": 23
+        },
+        "dekadal": {
+          "days": 10,
+          "composites_per_year": 36,
+          "note": "Used by SPOT-VEG and some climate products"
+        },
+        "monthly": {
+          "composites_per_year": 12
+        }
+      }
+    }
+  },
+  "geographic_specifications": {
+    "coverage": {
+      "countries_monitored": 130,
+      "description": "All major agricultural producing and consuming nations"
+    },
+    "region_codes": {
+      "url_parameters": {
+        "world": "Global view",
+        "us": "United States",
+        "europe": "European Union and Europe",
+        "umb": "Ukraine, Moldova, Belarus",
+        "central_america2": "Central America",
+        "metu": "Middle East and Turkey",
+        "south_america": "South America",
+        "africa": "Africa",
+        "asia": "Asia",
+        "oceania": "Australia and Oceania"
+      }
+    },
+    "country_codes": {
+      "system": "USDA FAS 4-digit codes",
+      "note": "Not ISO standard - FAS-specific coding system",
+      "format": "4-digit numeric",
+      "ranges": {
+        "north_america": {
+          "range": "1xxx",
+          "examples": {
+            "1220": "Canada"
+          }
+        },
+        "central_america_caribbean": {
+          "range": "2xxx",
+          "examples": {
+            "2010": "Mexico",
+            "2070": "Guatemala",
+            "2150": "Costa Rica"
+          }
+        },
+        "south_america": {
+          "range": "3xxx",
+          "examples": {
+            "3510": "Brazil",
+            "3570": "Argentina",
+            "3550": "Paraguay",
+            "3580": "Uruguay",
+            "3410": "Colombia",
+            "3310": "Peru",
+            "3350": "Chile"
+          }
+        },
+        "europe": {
+          "range": "4xxx",
+          "examples": {
+            "4280": "Germany",
+            "4270": "France",
+            "4750": "Italy",
+            "4700": "Spain",
+            "4361": "Poland",
+            "4120": "United Kingdom",
+            "4210": "Netherlands"
+          }
+        },
+        "former_soviet_union": {
+          "range": "46xx",
+          "examples": {
+            "4621": "Russia",
+            "4623": "Ukraine",
+            "4634": "Kazakhstan",
+            "4622": "Belarus"
+          }
+        },
+        "asia": {
+          "range": "5xxx",
+          "examples": {
+            "5700": "China",
+            "5330": "India",
+            "5880": "Japan",
+            "5800": "South Korea",
+            "5600": "Indonesia",
+            "5490": "Thailand",
+            "5520": "Vietnam",
+            "5480": "Malaysia",
+            "5310": "Pakistan"
+          }
+        },
+        "oceania": {
+          "range": "6xxx",
+          "examples": {
+            "6020": "Australia",
+            "6160": "New Zealand"
+          }
+        },
+        "africa": {
+          "range": "7xxx",
+          "examples": {
+            "7290": "Egypt",
+            "7530": "Nigeria",
+            "7910": "South Africa",
+            "7620": "Ethiopia",
+            "7310": "Morocco",
+            "7330": "Algeria"
+          }
+        },
+        "middle_east": {
+          "range": "48xx-49xx",
+          "examples": {
+            "4890": "Turkey",
+            "5030": "Iran",
+            "5070": "Iraq",
+            "5170": "Saudi Arabia"
+          }
+        },
+        "unknown": {
+          "code": "9990",
+          "description": "Unspecified destination"
+        }
+      },
+      "two_letter_codes": {
+        "note": "Also supported in some API responses",
+        "examples": {
+          "US": "United States",
+          "BR": "Brazil",
+          "AR": "Argentina",
+          "CN": "China",
+          "IN": "India",
+          "RU": "Russia",
+          "UA": "Ukraine",
+          "AU": "Australia",
+          "CA": "Canada",
+          "EU": "European Union"
+        }
+      }
+    },
+    "crop_regions": {
+      "united_states": {
+        "corn_belt": {
+          "states": ["Iowa", "Illinois", "Indiana", "Ohio", "Nebraska", "Minnesota", "Missouri"],
+          "primary_crops": ["Corn", "Soybeans"]
+        },
+        "winter_wheat_belt": {
+          "states": ["Kansas", "Oklahoma", "Texas", "Nebraska", "Colorado"],
+          "primary_crops": ["Winter wheat"]
+        },
+        "spring_wheat_belt": {
+          "states": ["Montana", "North Dakota", "South Dakota", "Minnesota"],
+          "primary_crops": ["Spring wheat", "Durum wheat"]
+        },
+        "cotton_belt": {
+          "states": ["Texas", "Georgia", "Mississippi", "Arkansas", "Arizona", "California"],
+          "primary_crops": ["Cotton"]
+        },
+        "delta_region": {
+          "states": ["Arkansas", "Louisiana", "Mississippi", "Missouri"],
+          "primary_crops": ["Rice", "Cotton", "Soybeans"]
+        }
+      },
+      "brazil": {
+        "center_west": {
+          "states": ["Mato Grosso", "Goiás", "Mato Grosso do Sul"],
+          "primary_crops": ["Soybeans", "Corn (safrinha)", "Cotton"]
+        },
+        "south": {
+          "states": ["Paraná", "Rio Grande do Sul", "Santa Catarina"],
+          "primary_crops": ["Soybeans", "Wheat", "Corn"]
+        },
+        "matopiba": {
+          "states": ["Maranhão", "Tocantins", "Piauí", "Bahia"],
+          "primary_crops": ["Soybeans", "Cotton"],
+          "note": "Expanding agricultural frontier"
+        }
+      },
+      "argentina": {
+        "pampas": {
+          "provinces": ["Buenos Aires", "Córdoba", "Santa Fe", "Entre Ríos", "La Pampa"],
+          "primary_crops": ["Soybeans", "Corn", "Wheat", "Sunflower"]
+        }
+      }
+    },
+    "boundary_systems": {
+      "fao_gaul": {
+        "name": "FAO Global Administrative Unit Layers",
+        "description": "Standard administrative boundaries"
+      },
+      "usda_custom": {
+        "description": "USDA-defined agricultural regions"
+      },
+      "fips": {
+        "name": "Federal Information Processing Standards",
+        "description": "US county and state codes"
+      }
+    }
+  },
+  "commodity_codes": {
+    "system": "USDA FAS PSD 7-digit codes",
+    "grains": {
+      "0410000": {
+        "name": "Wheat",
+        "marketing_year": {"start_month": 6, "start_day": 1}
+      },
+      "0440000": {
+        "name": "Corn",
+        "marketing_year": {"start_month": 9, "start_day": 1}
+      },
+      "0422110": {
+        "name": "Rice, Milled",
+        "marketing_year": {"start_month": 8, "start_day": 1}
+      },
+      "0430000": {
+        "name": "Barley",
+        "marketing_year": {"start_month": 6, "start_day": 1}
+      },
+      "0459100": {
+        "name": "Sorghum",
+        "marketing_year": {"start_month": 9, "start_day": 1}
+      },
+      "0452000": {
+        "name": "Oats",
+        "marketing_year": {"start_month": 6, "start_day": 1}
+      }
+    },
+    "oilseeds": {
+      "2222000": {
+        "name": "Soybeans",
+        "marketing_year": {"start_month": 9, "start_day": 1}
+      },
+      "2226000": {
+        "name": "Rapeseed (Canola)",
+        "marketing_year": {"start_month": 7, "start_day": 1}
+      },
+      "2224000": {
+        "name": "Sunflowerseed",
+        "marketing_year": {"start_month": 9, "start_day": 1}
+      },
+      "2232000": {
+        "name": "Peanuts",
+        "marketing_year": {"start_month": 8, "start_day": 1}
+      },
+      "2223000": {
+        "name": "Cottonseed",
+        "marketing_year": {"start_month": 8, "start_day": 1}
+      },
+      "4232000": {
+        "name": "Soybean Oil",
+        "marketing_year": {"start_month": 10, "start_day": 1}
+      },
+      "4234000": {
+        "name": "Soybean Meal",
+        "marketing_year": {"start_month": 10, "start_day": 1}
+      }
+    },
+    "fiber": {
+      "2631000": {
+        "name": "Cotton",
+        "marketing_year": {"start_month": 8, "start_day": 1}
+      }
+    }
+  },
+  "marketing_year_conventions": {
+    "format": {
+      "api_parameter": "4-digit year (YYYY)",
+      "display_format": "YYYY/YY (e.g., 2024/25)",
+      "interpretation": "First year indicates when marketing year BEGINS"
+    },
+    "by_commodity": {
+      "wheat_barley_oats": {
+        "start_month": 6,
+        "start_day": 1,
+        "end_month": 5,
+        "end_day": 31,
+        "example": "2024/25 = June 1, 2024 to May 31, 2025"
+      },
+      "corn_sorghum_soybeans": {
+        "start_month": 9,
+        "start_day": 1,
+        "end_month": 8,
+        "end_day": 31,
+        "example": "2024/25 = September 1, 2024 to August 31, 2025"
+      },
+      "cotton_rice": {
+        "start_month": 8,
+        "start_day": 1,
+        "end_month": 7,
+        "end_day": 31,
+        "example": "2024/25 = August 1, 2024 to July 31, 2025"
+      },
+      "soybean_products": {
+        "start_month": 10,
+        "start_day": 1,
+        "end_month": 9,
+        "end_day": 30,
+        "example": "2024/25 = October 1, 2024 to September 30, 2025"
+      }
+    },
+    "southern_hemisphere": {
+      "brazil_soybeans": {
+        "start_month": 2,
+        "start_day": 1,
+        "end_month": 1,
+        "end_day": 31,
+        "note": "Different from US marketing year"
+      },
+      "argentina_soybeans": {
+        "start_month": 4,
+        "start_day": 1,
+        "end_month": 3,
+        "end_day": 31
+      },
+      "australia_wheat": {
+        "start_month": 10,
+        "start_day": 1,
+        "end_month": 9,
+        "end_day": 30
+      }
+    }
+  },
+  "companion_data_series": {
+    "precipitation": {
+      "source": "CHIRPS",
+      "full_name": "Climate Hazards Group InfraRed Precipitation with Station data",
+      "resolution_km": 8,
+      "temporal": "Daily and cumulative",
+      "url": "https://www.chc.ucsb.edu/data/chirps"
+    },
+    "temperature": {
+      "source": "AFWA",
+      "full_name": "Air Force Weather Agency",
+      "resolution_km": "25-51",
+      "temporal": "Daily",
+      "variables": ["Maximum temperature", "Minimum temperature", "Mean temperature"]
+    },
+    "soil_moisture": {
+      "source": "NASA SMAP",
+      "full_name": "Soil Moisture Active Passive",
+      "resolution_km": 9,
+      "temporal": "Every 2-3 days",
+      "gee_collection": "NASA_USDA/HSL/SMAP_soil_moisture",
+      "variables": ["Surface soil moisture", "Subsurface soil moisture", "Soil moisture profile"],
+      "documentation": "https://earth.gsfc.nasa.gov/hydro/data/nasa-usda-global-soil-moisture-data"
+    },
+    "evapotranspiration": {
+      "description": "Satellite-derived actual evapotranspiration",
+      "temporal": "Periodic"
+    },
+    "drought_index": {
+      "type": "SPI",
+      "full_name": "Standardized Precipitation Index",
+      "temporal": "5-day updates",
+      "description": "Drought severity classification"
+    },
+    "snow_cover": {
+      "source": "MODIS",
+      "resolution_m": 500,
+      "temporal": "Daily",
+      "product": "MOD10A1"
+    }
+  },
+  "ndvi_yield_correlations": {
+    "description": "Typical R² values for NDVI-based yield estimation by crop",
+    "note": "Correlations vary by region, year, and growth stage timing",
+    "crops": {
+      "corn": {
+        "peak_ndvi_r2": 0.88,
+        "accumulated_ndvi_r2": 0.93,
+        "reliability": "excellent",
+        "best_timing": "V12-R1 (late vegetative to silking)",
+        "notes": "Strong predictor, especially accumulated NDVI during grain fill"
+      },
+      "soybeans": {
+        "peak_ndvi_r2": 0.62,
+        "accumulated_ndvi_r2": 0.73,
+        "reliability": "good",
+        "best_timing": "R3-R5 (beginning pod to beginning seed)",
+        "notes": "Good under favorable conditions, less reliable in drought years"
+      },
+      "spring_wheat": {
+        "peak_ndvi_r2": 0.40,
+        "accumulated_ndvi_r2": 0.60,
+        "reliability": "moderate",
+        "best_timing": "Heading to grain fill",
+        "notes": "Shorter growing season limits correlation"
+      },
+      "winter_wheat": {
+        "peak_ndvi_r2": "variable",
+        "accumulated_ndvi_r2": "0.50-0.85",
+        "reliability": "region-dependent",
+        "notes": "Dormancy period complicates interpretation"
+      },
+      "cotton": {
+        "peak_ndvi_r2": "poor",
+        "accumulated_ndvi_r2": "poor",
+        "reliability": "not recommended",
+        "notes": "Indeterminate growth habit, NDVI not well suited"
+      },
+      "rice": {
+        "peak_ndvi_r2": 0.70,
+        "accumulated_ndvi_r2": 0.75,
+        "reliability": "good",
+        "notes": "Water background complicates early season readings"
+      }
+    }
+  },
+  "related_usda_systems": {
+    "psd_online": {
+      "name": "Production, Supply, and Distribution",
+      "url": "https://apps.fas.usda.gov/psdonline/",
+      "api_url": "https://apps.fas.usda.gov/OpenData/api/psd/",
+      "description": "Official USDA global supply and demand database",
+      "update_sync": "WASDE release day at 12:00 ET monthly"
+    },
+    "wasde": {
+      "name": "World Agricultural Supply and Demand Estimates",
+      "url": "https://www.usda.gov/oce/commodity/wasde",
+      "description": "Flagship monthly report with official USDA forecasts",
+      "frequency": "Monthly (typically 9th-12th)",
+      "release_time": "12:00 ET"
+    },
+    "gain": {
+      "name": "Global Agricultural Information Network",
+      "url": "https://gain.fas.usda.gov/",
+      "description": "Field reports from USDA attachés worldwide"
+    },
+    "wap_circular": {
+      "name": "World Agricultural Production",
+      "url": "https://apps.fas.usda.gov/psdonline/circulars/production.pdf",
+      "description": "Monthly production circular with crop condition updates",
+      "frequency": "Monthly"
+    },
+    "gadas": {
+      "name": "Global Agricultural and Disaster Assessment System",
+      "url": "https://geo.fas.usda.gov/GADAS/",
+      "description": "GIS platform for agricultural monitoring"
+    },
+    "glam": {
+      "name": "Global Agricultural Monitoring",
+      "url": "https://glam1.gsfc.nasa.gov/",
+      "operator": "NASA GSFC",
+      "description": "NASA's agricultural monitoring system, data partner with USDA"
+    },
+    "cropscape": {
+      "name": "CropScape - Cropland Data Layer",
+      "url": "https://nassgeodata.gmu.edu/CropScape/",
+      "operator": "USDA NASS",
+      "description": "US crop classification maps"
+    }
+  },
+  "implementation_examples": {
+    "python": {
+      "gadas_ndvi_query": {
+        "description": "Query GADAS for NDVI time series",
+        "code": "import requests\nimport json\n\n# Submit analytics job\nurl = 'https://geo.fas.usda.gov/arcgis2/rest/services/G_Tools/Run_Stored_Procedure/GPServer/Tool/submitJob'\n\nfeatures = {\n    'source': 'modis_terra',\n    'reportdayofyearstart': 60,\n    'reportdayofyearend': 273,\n    'reportyear': '2024,2025',\n    'frequency': '8-day',\n    'attribute': 'ndvi',\n    'ids': '',\n    'adminunit': 'Iowa'\n}\n\nparams = {\n    'features': json.dumps(features),\n    'stored_procedure': 'sp_geo_map_analytics',\n    'environment': 'dev',\n    'f': 'json'\n}\n\nresponse = requests.post(url, data=params)\njob_info = response.json()\nprint(f\"Job ID: {job_info.get('jobId')}\")"
+      },
+      "fas_opendata_psd": {
+        "description": "Query FAS Open Data API for production data",
+        "code": "import requests\nimport pandas as pd\n\n# API configuration\nbase_url = 'https://apps.fas.usda.gov/OpenData/api'\nheaders = {\n    'Accept': 'application/json',\n    'API_KEY': 'your_api_key_here'\n}\n\n# Get corn production data\nendpoint = f'{base_url}/psd/commodity/0440000/world/year/2025'\nresponse = requests.get(endpoint, headers=headers)\ndf = pd.DataFrame(response.json())\nprint(df.head())"
+      },
+      "geotiff_download": {
+        "description": "Download MODIS GeoTIFF imagery",
+        "code": "import requests\nfrom datetime import datetime\n\n# Build download URL\ntile = 'x24y04'  # US Midwest tile\nyear = 2025\ndoy = 185  # July 4\nmdate = '07/04/2025'\n\nurl = f'https://ipad.fas.usda.gov/cropexplorer/modis_ndvi/modis_geotiff_new.aspx?modis_tile={tile}&doy={doy}&year={year}&mdate={mdate}'\n\nresponse = requests.get(url)\nif response.status_code == 200:\n    with open(f'ndvi_{tile}_{year}_{doy}.tif', 'wb') as f:\n        f.write(response.content)"
+      }
+    }
+  },
+  "contacts": {
+    "crop_explorer": {
+      "name": "Ronald Frantz",
+      "email": "ronald.frantz@fas.usda.gov",
+      "role": "Crop Explorer administrator"
+    },
+    "gadas_support": {
+      "email": "GMA.GADAS@usda.gov",
+      "description": "General GADAS support"
+    },
+    "gadas_contacts": [
+      {"name": "Lisa Colson", "email": "lisa.colson@usda.gov"},
+      {"name": "Curt Reynolds", "email": "curt.reynolds@usda.gov"}
+    ]
+  },
+  "data_terms": {
+    "license": "Creative Commons Attribution",
+    "public_domain": true,
+    "attribution_required": true,
+    "suggested_citation": "USDA Foreign Agricultural Service, International Production Assessment Division, Crop Explorer. Available at: https://ipad.fas.usda.gov/cropexplorer/"
+  },
+  "troubleshooting": {
+    "common_issues": {
+      "empty_gadas_response": {
+        "problem": "GADAS query returns empty results",
+        "solutions": [
+          "Verify administrative unit name spelling matches exactly",
+          "Check that date range is within available data period (2002-present for MODIS)",
+          "Try using administrative unit ID instead of name",
+          "Ensure frequency parameter matches available products"
+        ]
+      },
+      "api_authentication_failed": {
+        "problem": "FAS Open Data API returns 401/403",
+        "solutions": [
+          "Verify API key is correct and active",
+          "Use header authentication (API_KEY) not query parameter",
+          "Register for new key at api.data.gov if expired",
+          "Check rate limit not exceeded (1000/hour)"
+        ]
+      },
+      "ndvi_values_unexpected": {
+        "problem": "NDVI values outside expected range",
+        "solutions": [
+          "Apply scale factor (0.0001) to raw INT16 values",
+          "Check for fill values (-3000) indicating no data",
+          "Verify cloud masking has been applied",
+          "Consider water bodies or snow affecting values"
+        ]
+      },
+      "geotiff_download_fails": {
+        "problem": "GeoTIFF download returns error or empty file",
+        "solutions": [
+          "Verify MODIS tile code format (x##y##)",
+          "Check that requested date has available data",
+          "Ensure date format matches expected (MM/DD/YYYY)",
+          "Try alternative date within same 8-day period"
+        ]
+      }
+    }
+  }
+}

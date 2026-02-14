@@ -1,0 +1,119 @@
+{
+  "name": "RLC Commodities - Round Lakes",
+
+  "dataColors": [
+    "#168980",
+    "#C4A35A",
+    "#2E7D32",
+    "#F07F09",
+    "#4682B4",
+    "#8B4513",
+    "#6B5B95",
+    "#88B04B",
+    "#955251",
+    "#009B77"
+  ],
+
+  "background": "#FAFAFA",
+  "foreground": "#1A1A1A",
+  "tableAccent": "#1B4D4D",
+
+  "good": "#2E7D32",
+  "neutral": "#C4A35A",
+  "bad": "#C62828",
+
+  "maximum": "#1B5E20",
+  "center": "#FFC107",
+  "minimum": "#B71C1C",
+
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 14,
+      "color": "#1B4D4D"
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 11,
+      "color": "#1A1A1A"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Light",
+      "fontSize": 28,
+      "color": "#168980"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 9,
+      "color": "#5F6B6D"
+    }
+  },
+
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#FFFFFF"}}}],
+        "border": [{"show": true, "color": {"solid": {"color": "#E8E8E8"}}, "radius": 4}],
+        "dropShadow": [{"show": true, "color": {"solid": {"color": "#00000010"}}, "position": "Outer", "preset": "BottomRight"}]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#F5F5F5"}}}],
+        "wallpaper": [{"color": {"solid": {"color": "#F5F5F5"}}}]
+      }
+    },
+    "card": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#FFFFFF"}}}]
+      }
+    },
+    "tableEx": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#FFFFFF"}}}]
+      },
+      "grid": {
+        "gridVertical": [true],
+        "gridVerticalColor": [{"solid": {"color": "#F0F0F0"}}],
+        "gridHorizontal": [true],
+        "gridHorizontalColor": [{"solid": {"color": "#E8E8E8"}}],
+        "rowPadding": [4]
+      },
+      "columnHeaders": {
+        "fontColor": [{"solid": {"color": "#FFFFFF"}}],
+        "backColor": [{"solid": {"color": "#1B4D4D"}}]
+      },
+      "values": {
+        "fontColorPrimary": [{"solid": {"color": "#1A1A1A"}}],
+        "backColorPrimary": [{"solid": {"color": "#FFFFFF"}}],
+        "backColorSecondary": [{"solid": {"color": "#FAFAFA"}}]
+      },
+      "total": {
+        "fontColor": [{"solid": {"color": "#1B4D4D"}}],
+        "backColor": [{"solid": {"color": "#E8F5E9"}}]
+      }
+    },
+    "pivotTable": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#FFFFFF"}}}]
+      },
+      "columnHeaders": {
+        "fontColor": [{"solid": {"color": "#FFFFFF"}}],
+        "backColor": [{"solid": {"color": "#1B4D4D"}}]
+      },
+      "rowHeaders": {
+        "fontColor": [{"solid": {"color": "#1A1A1A"}}],
+        "backColor": [{"solid": {"color": "#F5F5F5"}}]
+      },
+      "values": {
+        "fontColorPrimary": [{"solid": {"color": "#1A1A1A"}}],
+        "backColorPrimary": [{"solid": {"color": "#FFFFFF"}}]
+      }
+    },
+    "slicer": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#FFFFFF"}}}]
+      }
+    }
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "source": "US Census Bureau",
+  "description": "Official release dates for Census Bureau trade data reports",
+  "timezone": "America/New_York",
+  "last_updated": "2026-02-05",
+
+  "reports": {
+    "FT900": {
+      "name": "U.S. International Trade in Goods and Services",
+      "frequency": "monthly",
+      "release_time": "08:30",
+      "data_lag_months": 2,
+      "description": "Monthly trade data by HS code, country, and product",
+      "url": "https://www.census.gov/foreign-trade/Press-Release/current_press_release/",
+
+      "releases": {
+        "2024-09": {"release_date": "2024-11-05", "day": "TUE"},
+        "2024-10": {"release_date": "2024-12-05", "day": "THU"},
+        "2024-11": {"release_date": "2025-01-07", "day": "TUE"},
+        "2024-12": {"release_date": "2025-02-05", "day": "WED"},
+        "2025-01": {"release_date": "2025-03-06", "day": "THU"},
+        "2025-02": {"release_date": "2025-04-03", "day": "THU"},
+        "2025-03": {"release_date": "2025-05-06", "day": "TUE"},
+        "2025-04": {"release_date": "2025-06-05", "day": "THU"},
+        "2025-05": {"release_date": "2025-07-03", "day": "THU"},
+        "2025-06": {"release_date": "2025-08-05", "day": "TUE"},
+        "2025-07": {"release_date": "2025-09-04", "day": "THU"},
+        "2025-08": {"release_date": "2025-11-19", "day": "WED", "notes": "Extended delay"},
+        "2025-09": {"release_date": "2025-12-11", "day": "THU"},
+        "2025-10": {"release_date": "2026-01-08", "day": "THU"},
+        "2025-11": {"release_date": "2026-01-29", "day": "THU"},
+        "2025-12": {"release_date": "2026-02-19", "day": "THU"}
+      }
+    },
+
+    "Advance_Economic_Indicators": {
+      "name": "Advance Economic Indicators",
+      "frequency": "monthly",
+      "release_time": "08:30",
+      "description": "Advance monthly trade figures (preliminary)",
+
+      "releases": {
+        "2024-09": {"release_date": "2024-10-29", "day": "TUE"},
+        "2024-10": {"release_date": "2024-11-27", "day": "WED"},
+        "2024-11": {"release_date": "2024-12-27", "day": "FRI"},
+        "2024-12": {"release_date": "2025-01-29", "day": "WED"},
+        "2025-01": {"release_date": "2025-02-28", "day": "FRI"},
+        "2025-02": {"release_date": "2025-03-27", "day": "THU"},
+        "2025-03": {"release_date": "2025-04-29", "day": "TUE"},
+        "2025-04": {"release_date": "2025-05-30", "day": "FRI"},
+        "2025-05": {"release_date": "2025-06-26", "day": "THU"},
+        "2025-06": {"release_date": "2025-07-29", "day": "TUE"},
+        "2025-07": {"release_date": "2025-08-29", "day": "FRI"},
+        "2025-08": {"release_date": "2025-09-25", "day": "THU"},
+        "2025-09": {"release_date": null, "status": "Suspended"},
+        "2025-10": {"release_date": null, "status": "Suspended"},
+        "2025-11": {"release_date": null, "status": "Suspended"},
+        "2025-12": {"release_date": "2026-02-19", "day": "THU"}
+      }
+    },
+
+    "FT900a_Steel": {
+      "name": "Preliminary U.S. Imports for Consumption of Steel Products",
+      "frequency": "monthly",
+      "release_time": "10:00",
+      "description": "Preliminary steel import data",
+
+      "releases": {
+        "2024-09": {"release_date": "2024-10-25", "day": "FRI"},
+        "2024-10": {"release_date": "2024-11-26", "day": "TUE"},
+        "2024-11": {"release_date": "2024-12-23", "day": "MON"},
+        "2024-12": {"release_date": "2025-01-27", "day": "MON"},
+        "2025-01": {"release_date": "2025-02-26", "day": "WED"},
+        "2025-02": {"release_date": "2025-03-26", "day": "WED"},
+        "2025-03": {"release_date": "2025-04-23", "day": "WED"},
+        "2025-04": {"release_date": "2025-05-23", "day": "FRI"},
+        "2025-05": {"release_date": "2025-06-25", "day": "WED"},
+        "2025-06": {"release_date": "2025-07-25", "day": "FRI"},
+        "2025-07": {"release_date": "2025-08-27", "day": "WED"},
+        "2025-08": {"release_date": "2025-09-24", "day": "WED"},
+        "2025-09": {"release_date": null, "status": "Suspended"},
+        "2025-10": {"release_date": null, "status": "Suspended"},
+        "2025-11": {"release_date": null, "status": "Suspended"},
+        "2025-12": {"release_date": null, "status": "TBD"}
+      }
+    },
+
+    "Profile_Importing_Exporting": {
+      "name": "Profile of U.S. Importing and Exporting Companies",
+      "frequency": "annual",
+      "release_time": "08:30",
+      "description": "Annual profile of trade companies",
+
+      "releases": {
+        "2024": {"release_date": "2025-12-11", "type": "Preliminary"},
+        "2024_final": {"release_date": null, "status": "TBD", "type": "Final"}
+      }
+    },
+
+    "Related_Party": {
+      "name": "Related Party Trade",
+      "frequency": "annual",
+      "release_time": "08:30",
+      "description": "Annual related party trade statistics",
+
+      "releases": {
+        "2024": {"release_date": "2025-07-03", "day": "THU"}
+      }
+    }
+  },
+
+  "collection_triggers": {
+    "description": "When to run collectors based on release dates",
+    "FT900": {
+      "collector": "census_trade_collector",
+      "trigger_delay_minutes": 30,
+      "trigger_time": "09:00",
+      "notes": "Run 30 minutes after release to ensure data is fully available"
+    }
+  },
+
+  "notes": {
+    "suspensions": "Some reports suspended Sep-Nov 2025 - monitor for updates",
+    "source_url": "https://www.census.gov/foreign-trade/schedule/schedule.html"
+  }
+}

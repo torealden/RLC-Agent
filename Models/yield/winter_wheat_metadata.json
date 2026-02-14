@@ -1,0 +1,89 @@
+{
+  "crop": "winter_wheat",
+  "target_week": 38,
+  "n_samples": 225,
+  "train_years": "2005-2025",
+  "feature_names": [
+    "gdd_cum",
+    "gdd_vs_normal_pct",
+    "precip_cum_mm",
+    "precip_vs_normal_pct",
+    "stress_days_heat",
+    "stress_days_drought",
+    "excess_moisture_days",
+    "frost_events",
+    "tmax_weekly_avg",
+    "tmin_weekly_avg",
+    "tavg_weekly",
+    "ndvi_mean",
+    "ndvi_anomaly",
+    "ndvi_trend_4wk",
+    "condition_index",
+    "condition_vs_5yr",
+    "progress_index",
+    "progress_vs_normal",
+    "pct_planted",
+    "pct_emerged",
+    "pct_silking",
+    "pct_dough",
+    "pct_mature",
+    "pct_harvested",
+    "good_excellent_pct",
+    "ww_risk_score",
+    "ww_outlook_sentiment"
+  ],
+  "model_a_features": [
+    "gdd_vs_normal_pct",
+    "precip_vs_normal_pct",
+    "good_excellent_pct",
+    "stress_days_heat",
+    "condition_index",
+    "stress_days_drought"
+  ],
+  "top_features_b": [
+    [
+      "progress_index",
+      0.16027732663563804
+    ],
+    [
+      "stress_days_drought",
+      0.12048731709916488
+    ],
+    [
+      "tmin_weekly_avg",
+      0.09904417546043136
+    ],
+    [
+      "progress_vs_normal",
+      0.09092892033299252
+    ],
+    [
+      "precip_cum_mm",
+      0.08940634909543178
+    ],
+    [
+      "frost_events",
+      0.08439318244756672
+    ],
+    [
+      "tmax_weekly_avg",
+      0.07158959055018957
+    ],
+    [
+      "tavg_weekly",
+      0.07029141791862362
+    ],
+    [
+      "gdd_vs_normal_pct",
+      0.05942346845403557
+    ],
+    [
+      "excess_moisture_days",
+      0.05705290871686324
+    ]
+  ],
+  "rmse_cv": 6.2,
+  "mae_cv": 5.03,
+  "r2_cv": 0.869,
+  "trained_at": "2026-02-12T19:10:35.673211"
+}

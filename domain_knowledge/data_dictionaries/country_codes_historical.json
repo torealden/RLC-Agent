@@ -1,0 +1,177 @@
+{
+  "metadata": {
+    "title": "Census Bureau Historical Country Code Mappings",
+    "description": "Maps dissolved/renamed countries to current successors with effective date ranges",
+    "version": "1.0",
+    "created": "2026-02-07",
+    "notes": {
+      "purpose": "Track historical country code changes for Census Bureau trade data from 1993 to present",
+      "obsolete_marker": "(!) in Census data indicates obsolete country code",
+      "summarization_marker": "(*) in Census data indicates value is summarized from component countries"
+    }
+  },
+  "historical_mappings": {
+    "USSR": {
+      "historical_code": "4620",
+      "historical_name": "U.S.S.R.",
+      "dissolution_date": "1991-12-26",
+      "valid_from": "1993-01-01",
+      "valid_to": "1991-12-26",
+      "primary_successor": {
+        "code": "4621",
+        "name": "Russia"
+      },
+      "successor_countries": [
+        {"code": "4621", "name": "Russia", "region": "FSU", "primary": true},
+        {"code": "4622", "name": "Belarus", "region": "FSU"},
+        {"code": "4623", "name": "Ukraine", "region": "FSU"},
+        {"code": "4631", "name": "Armenia", "region": "FSU"},
+        {"code": "4633", "name": "Azerbaijan", "region": "FSU"},
+        {"code": "4635", "name": "Georgia", "region": "FSU"},
+        {"code": "4637", "name": "Kazakhstan", "region": "FSU"},
+        {"code": "4639", "name": "Kyrgyzstan", "region": "FSU"},
+        {"code": "4641", "name": "Moldova", "region": "FSU"},
+        {"code": "4643", "name": "Tajikistan", "region": "FSU"},
+        {"code": "4645", "name": "Turkmenistan", "region": "FSU"},
+        {"code": "4647", "name": "Uzbekistan", "region": "FSU"},
+        {"code": "4472", "name": "Estonia", "region": "EU27", "notes": "Now EU member"},
+        {"code": "4474", "name": "Latvia", "region": "EU27", "notes": "Now EU member"},
+        {"code": "4476", "name": "Lithuania", "region": "EU27", "notes": "Now EU member"}
+      ],
+      "notes": "Baltic states (Estonia, Latvia, Lithuania) are now EU27 members"
+    },
+    "YUGOSLAVIA": {
+      "historical_code": "4790",
+      "historical_name": "Yugoslavia",
+      "dissolution_date": "1992-04-27",
+      "valid_from": "1993-01-01",
+      "valid_to": "1992-04-27",
+      "primary_successor": {
+        "code": "4783",
+        "name": "Serbia"
+      },
+      "successor_countries": [
+        {"code": "4793", "name": "Slovenia", "region": "EU27", "independence_date": "1991-06-25", "notes": "Now EU member"},
+        {"code": "4791", "name": "Croatia", "region": "EU27", "independence_date": "1991-06-25", "notes": "Now EU member"},
+        {"code": "4227", "name": "Bosnia and Herzegovina", "region": "EUROPE_OTHER", "independence_date": "1992-03-01"},
+        {"code": "4783", "name": "Serbia", "region": "EUROPE_OTHER", "primary": true},
+        {"code": "4787", "name": "Montenegro", "region": "EUROPE_OTHER", "independence_date": "2006-06-03", "notes": "Separated from Serbia 2006"},
+        {"code": "4785", "name": "Kosovo", "region": "EUROPE_OTHER", "independence_date": "2008-02-17", "notes": "Declared independence 2008"},
+        {"code": "4789", "name": "North Macedonia", "region": "EUROPE_OTHER", "independence_date": "1991-09-08", "notes": "Formerly FYROM"}
+      ],
+      "notes": "Slovenia and Croatia are now EU27 members; Kosovo independence disputed"
+    },
+    "CZECHOSLOVAKIA": {
+      "historical_code": "4350",
+      "historical_name": "Czechoslovakia",
+      "dissolution_date": "1993-01-01",
+      "valid_from": "1993-01-01",
+      "valid_to": "1992-12-31",
+      "primary_successor": {
+        "code": "4351",
+        "name": "Czech Republic"
+      },
+      "successor_countries": [
+        {"code": "4351", "name": "Czech Republic", "region": "EU27", "primary": true, "notes": "Also known as Czechia"},
+        {"code": "4781", "name": "Slovakia", "region": "EU27"}
+      ],
+      "notes": "Velvet Divorce - both countries now EU27 members"
+    },
+    "EAST_GERMANY": {
+      "historical_code": "4281",
+      "historical_name": "German Democratic Republic",
+      "dissolution_date": "1990-10-03",
+      "valid_from": "1993-01-01",
+      "valid_to": "1990-10-03",
+      "primary_successor": {
+        "code": "4280",
+        "name": "Germany"
+      },
+      "successor_countries": [
+        {"code": "4280", "name": "Germany", "region": "EU27", "primary": true}
+      ],
+      "notes": "German reunification - merged into Federal Republic of Germany"
+    },
+    "SERBIA_AND_MONTENEGRO": {
+      "historical_code": "4795",
+      "historical_name": "Serbia and Montenegro",
+      "dissolution_date": "2006-06-03",
+      "valid_from": "2003-02-04",
+      "valid_to": "2006-06-03",
+      "primary_successor": {
+        "code": "4783",
+        "name": "Serbia"
+      },
+      "successor_countries": [
+        {"code": "4783", "name": "Serbia", "region": "EUROPE_OTHER", "primary": true},
+        {"code": "4787", "name": "Montenegro", "region": "EUROPE_OTHER"}
+      ],
+      "notes": "State Union that succeeded Federal Republic of Yugoslavia"
+    },
+    "NETHERLANDS_ANTILLES": {
+      "historical_code": "2772",
+      "historical_name": "Netherlands Antilles",
+      "dissolution_date": "2010-10-10",
+      "valid_from": "1993-01-01",
+      "valid_to": "2010-10-10",
+      "primary_successor": {
+        "code": "2773",
+        "name": "Curacao"
+      },
+      "successor_countries": [
+        {"code": "2773", "name": "Curacao", "region": "WESTERN_HEMISPHERE", "primary": true},
+        {"code": "2774", "name": "Sint Maarten", "region": "WESTERN_HEMISPHERE"},
+        {"code": "3515", "name": "Bonaire, Sint Eustatius and Saba", "region": "WESTERN_HEMISPHERE", "notes": "BES islands - special municipalities of Netherlands"}
+      ],
+      "notes": "Dissolved into constituent countries and special municipalities"
+    }
+  },
+  "census_special_codes": {
+    "obsolete_marker": {
+      "symbol": "(!)",
+      "meaning": "Country code is obsolete/historical",
+      "handling": "Map to successor country if trade date is after dissolution date; otherwise keep historical"
+    },
+    "summarization_marker": {
+      "symbol": "(*)",
+      "meaning": "Value represents a summarization including component/predecessor countries",
+      "handling": "Use for historical totals; do not double-count with individual successor countries"
+    },
+    "world_total_codes": {
+      "-": "TOTAL FOR ALL COUNTRIES",
+      "R00": "WORLD TOTAL"
+    },
+    "regional_aggregates": [
+      {"code": "0001", "name": "OPEC"},
+      {"code": "0003", "name": "European Union"},
+      {"code": "0014", "name": "Pacific Rim Countries"},
+      {"code": "0017", "name": "CAFTA-DR"},
+      {"code": "0020", "name": "NAFTA/USMCA"},
+      {"code": "0022", "name": "OECD"},
+      {"code": "0026", "name": "APEC"},
+      {"code": "0027", "name": "ASEAN"},
+      {"code": "0028", "name": "NATO"},
+      {"code": "0029", "name": "LAFTA"},
+      {"code": "0030", "name": "Twenty Latin American Republics"}
+    ]
+  },
+  "country_name_variations": {
+    "description": "Alternative names for countries that may appear in Census data",
+    "mappings": {
+      "BURMA": "MYANMAR",
+      "ZAIRE": "CONGO (KINSHASA)",
+      "IVORY COAST": "COTE D IVOIRE",
+      "SWAZILAND": "ESWATINI",
+      "FYROM": "NORTH MACEDONIA",
+      "MACEDONIA": "NORTH MACEDONIA",
+      "CZECH REPUBLIC": "CZECHIA",
+      "KOREA, REP OF (SOUTH)": "KOREA, SOUTH",
+      "KOREA, DEM PEOPLES REP (NORTH)": "KOREA, NORTH",
+      "RUSSIAN FEDERATION": "RUSSIA",
+      "GREAT BRITAIN": "UNITED KINGDOM",
+      "ENGLAND": "UNITED KINGDOM",
+      "HOLLAND": "NETHERLANDS",
+      "UAE": "UNITED ARAB EMIRATES"
+    }
+  }
+}

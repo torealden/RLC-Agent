@@ -1,0 +1,726 @@
+{
+  "metadata": {
+    "title": "Agricultural Econometric Models Reference",
+    "version": "2.0",
+    "created": "2026-01-30",
+    "organization": "RLC Consulting",
+    "purpose": "Machine-readable reference for LLM-based commodity forecasting systems",
+    "database": "rlc_commodities"
+  },
+  "decision_framework": {
+    "description": "Use this framework to select appropriate models based on task requirements",
+    "steps": [
+      {
+        "step": 1,
+        "action": "parse_request",
+        "description": "Identify commodity, forecast horizon, and output type"
+      },
+      {
+        "step": 2,
+        "action": "query_database",
+        "description": "Retrieve relevant data from rlc_commodities tables"
+      },
+      {
+        "step": 3,
+        "action": "select_model",
+        "description": "Choose model based on horizon and data availability"
+      },
+      {
+        "step": 4,
+        "action": "apply_equations",
+        "description": "Implement model equations with retrieved parameters"
+      },
+      {
+        "step": 5,
+        "action": "generate_forecast",
+        "description": "Produce point estimates and uncertainty ranges"
+      },
+      {
+        "step": 6,
+        "action": "validate",
+        "description": "Check forecast against historical patterns and constraints"
+      },
+      {
+        "step": 7,
+        "action": "document",
+        "description": "Record methodology, assumptions, and data sources"
+      }
+    ],
+    "model_selection_rules": [
+      {
+        "condition": "horizon_days <= 90 AND task_type == 'price_forecast'",
+        "recommended_models": ["lstm", "hybrid_arima_lstm", "var"],
+        "rationale": "Short-term price dynamics require ML/time-series approaches"
+      },
+      {
+        "condition": "horizon_months >= 1 AND horizon_months <= 12 AND task_type == 'balance_sheet'",
+        "recommended_models": ["wasde_framework", "fapri"],
+        "rationale": "Marketing year projections use balance sheet accounting"
+      },
+      {
+        "condition": "horizon_years >= 5",
+        "recommended_models": ["simple_g", "gtap", "impact"],
+        "rationale": "Long-run projections require land supply and trade equilibrium models"
+      },
+      {
+        "condition": "task_type == 'basis_forecast'",
+        "recommended_models": ["basis_regression", "seasonal_adjustment"],
+        "rationale": "Basis requires local supply-demand factors"
+      },
+      {
+        "condition": "commodity_type == 'oilseed' AND task_type == 'crush_margin'",
+        "recommended_models": ["joint_production", "crush_economics"],
+        "rationale": "Oilseeds require joint oil/meal production modeling"
+      }
+    ]
+  },
+  "commodities": {
+    "corn": {
+      "commodity_code": "CORN",
+      "unit": "bushels",
+      "marketing_year_start": "September 1",
+      "key_parameters": {
+        "supply_elasticity": 0.30,
+        "acreage_elasticity": 0.33,
+        "feed_demand_elasticity": -0.10,
+        "export_demand_elasticity": -1.00,
+        "ethanol_yield_gal_per_bu": 2.8,
+        "ddgs_yield_tons_per_bu": 0.0085,
+        "stocks_to_use_price_beta": {
+          "value": -0.22,
+          "interpretation": "1% increase in stocks-to-use reduces price by 0.22%"
+        }
+      },
+      "database_tables": ["usda_wasde", "usda_psd", "cme_futures", "usda_ams_prices"],
+      "critical_thresholds": {
+        "tight_stocks_to_use_pct": 8.0,
+        "comfortable_stocks_to_use_pct": 14.0
+      }
+    },
+    "soybeans": {
+      "commodity_code": "SOYB",
+      "unit": "bushels",
+      "marketing_year_start": "September 1",
+      "key_parameters": {
+        "supply_elasticity": 0.40,
+        "acreage_elasticity": 0.54,
+        "crush_demand_elasticity": -0.15,
+        "export_demand_elasticity": -0.80,
+        "oil_yield_lbs_per_bu": 11.0,
+        "meal_yield_lbs_per_bu": 48.0,
+        "stocks_to_use_price_beta": {
+          "value": -0.40,
+          "interpretation": "1% increase in stocks-to-use reduces price by 0.40%"
+        }
+      },
+      "database_tables": ["usda_wasde", "usda_psd", "cme_futures", "usda_ams_prices"],
+      "critical_thresholds": {
+        "tight_stocks_to_use_pct": 5.0,
+        "comfortable_stocks_to_use_pct": 10.0
+      }
+    },
+    "wheat": {
+      "commodity_code": "WHEAT",
+      "unit": "bushels",
+      "marketing_year_start": "June 1",
+      "key_parameters": {
+        "supply_elasticity": 0.25,
+        "acreage_elasticity": 0.28,
+        "food_demand_elasticity": -0.05,
+        "feed_demand_elasticity": -0.20,
+        "export_demand_elasticity": -0.50,
+        "stocks_to_use_price_beta": {
+          "value": -0.18,
+          "interpretation": "1% increase in stocks-to-use reduces price by 0.18%"
+        }
+      },
+      "database_tables": ["usda_wasde", "usda_psd", "cme_futures", "usda_ams_prices"],
+      "critical_thresholds": {
+        "tight_stocks_to_use_pct": 25.0,
+        "comfortable_stocks_to_use_pct": 35.0
+      }
+    },
+    "soybean_oil": {
+      "commodity_code": "SBOIL",
+      "unit": "pounds",
+      "marketing_year_start": "October 1",
+      "key_parameters": {
+        "demand_elasticity": -0.30,
+        "biodiesel_yield_lbs_per_gal": 7.5,
+        "food_use_share": 0.45,
+        "biofuel_use_share": 0.45,
+        "cross_price_elasticity_palm": 0.35,
+        "cross_price_elasticity_canola": 0.25
+      },
+      "database_tables": ["usda_wasde", "eia_biofuels", "cme_futures"]
+    },
+    "soybean_meal": {
+      "commodity_code": "SBMEAL",
+      "unit": "short_tons",
+      "marketing_year_start": "October 1",
+      "key_parameters": {
+        "protein_content_pct": 47.5,
+        "demand_elasticity": -0.20,
+        "cross_price_elasticity_canola_meal": 0.15,
+        "cross_price_elasticity_ddgs": 0.10
+      },
+      "database_tables": ["usda_wasde", "cme_futures"]
+    },
+    "ethanol": {
+      "commodity_code": "ETH",
+      "unit": "gallons",
+      "key_parameters": {
+        "corn_input_bu_per_gal": 0.357,
+        "blend_wall_e10_billion_gal": 14.5,
+        "rfs_conventional_cap_billion_gal": 15.0,
+        "ddgs_coproduct_lbs_per_gal": 2.4
+      },
+      "database_tables": ["eia_biofuels", "usda_wasde"]
+    }
+  },
+  "models": {
+    "balance_sheet": {
+      "wasde_framework": {
+        "name": "WASDE Balance Sheet Model",
+        "type": "partial_equilibrium",
+        "horizon": "marketing_year",
+        "description": "Supply-demand accounting framework following USDA methodology",
+        "core_identity": "beginning_stocks + production + imports = domestic_use + exports + ending_stocks",
+        "components": {
+          "production": {
+            "equation": "planted_area * harvested_ratio * yield",
+            "sub_models": {
+              "area_response": "A_t = f(P_{t-1}, costs_t, policy_t, A_{t-1})",
+              "yield_trend": "Y_t = trend + weather_deviation + technology_adjustment"
+            }
+          },
+          "domestic_use": {
+            "corn": ["feed_and_residual", "food_seed_industrial", "ethanol"],
+            "soybeans": ["crush", "seed", "residual"],
+            "wheat": ["food", "feed_and_residual", "seed"]
+          },
+          "price_determination": {
+            "method": "stocks_to_use_regression",
+            "equation": "ln(P) = alpha + beta * ln(stocks_to_use) + epsilon"
+          }
+        },
+        "performance_metrics": {
+          "early_season_price_rmse_pct": 18,
+          "post_harvest_price_rmse_pct": 5,
+          "ending_stocks_error_source": "production and export revisions drive 60-70%"
+        },
+        "required_queries": [
+          "SELECT * FROM usda_wasde WHERE commodity = ? AND marketing_year = ?",
+          "SELECT * FROM usda_psd WHERE commodity = ? ORDER BY year DESC LIMIT 10"
+        ]
+      }
+    },
+    "price_forecasting": {
+      "arima": {
+        "name": "ARIMA",
+        "type": "time_series",
+        "horizon": "short_term",
+        "description": "Autoregressive Integrated Moving Average for stationary series",
+        "specification": {
+          "general_form": "ARIMA(p,d,q)",
+          "equation": "Y_t = c + phi_1*Y_{t-1} + ... + phi_p*Y_{t-p} + theta_1*e_{t-1} + ... + theta_q*e_{t-q} + e_t",
+          "typical_orders": {
+            "corn_daily": [2, 1, 1],
+            "soybeans_daily": [1, 1, 1],
+            "wheat_daily": [2, 1, 2]
+          }
+        },
+        "strengths": ["interpretable", "fast_computation", "good_for_stationary_series"],
+        "weaknesses": ["assumes_linearity", "struggles_with_regime_changes"]
+      },
+      "var": {
+        "name": "Vector Autoregression",
+        "type": "time_series",
+        "horizon": "short_to_medium_term",
+        "description": "Multivariate time series capturing cross-commodity dynamics",
+        "specification": {
+          "equation": "Y_t = A_1*Y_{t-1} + ... + A_p*Y_{t-p} + e_t",
+          "typical_variables": ["corn_price", "soybean_price", "wheat_price", "crude_oil", "usd_index"]
+        },
+        "applications": ["price_transmission", "spillover_analysis", "impulse_response"]
+      },
+      "lstm": {
+        "name": "Long Short-Term Memory Neural Network",
+        "type": "deep_learning",
+        "horizon": "short_to_medium_term",
+        "description": "Recurrent neural network capturing long-range dependencies",
+        "architecture": {
+          "input_layer": "price_sequence",
+          "hidden_layers": {
+            "lstm_units": [64, 32],
+            "dropout": 0.2
+          },
+          "output_layer": "dense_1"
+        },
+        "hyperparameters": {
+          "sequence_length": 60,
+          "batch_size": 32,
+          "epochs": 100,
+          "learning_rate": 0.001
+        },
+        "performance": {
+          "vs_arima_improvement_pct": "10-25",
+          "best_for": ["nonlinear_patterns", "regime_changes", "volatility_clustering"]
+        }
+      },
+      "hybrid_arima_lstm": {
+        "name": "Hybrid ARIMA-LSTM",
+        "type": "ensemble",
+        "horizon": "short_to_medium_term",
+        "description": "Combines linear ARIMA with nonlinear LSTM for residuals",
+        "pipeline": [
+          {
+            "step": 1,
+            "model": "arima",
+            "action": "fit_and_forecast_linear_component"
+          },
+          {
+            "step": 2,
+            "model": "lstm",
+            "action": "forecast_residuals_nonlinear_patterns"
+          },
+          {
+            "step": 3,
+            "action": "combine",
+            "method": "additive"
+          }
+        ],
+        "performance": {
+          "vs_single_model_improvement_pct": "5-10"
+        }
+      },
+      "vmd_eemd_lstm": {
+        "name": "VMD-EEMD-LSTM Decomposition Model",
+        "type": "hybrid_decomposition",
+        "horizon": "short_to_medium_term",
+        "description": "Multi-scale decomposition capturing different frequency dynamics",
+        "pipeline": [
+          {
+            "step": 1,
+            "method": "vmd",
+            "action": "decompose_into_variational_mode_functions"
+          },
+          {
+            "step": 2,
+            "method": "eemd",
+            "action": "secondary_decomposition_of_residual"
+          },
+          {
+            "step": 3,
+            "model": "lstm",
+            "action": "forecast_each_component"
+          },
+          {
+            "step": 4,
+            "action": "linear_combination_of_forecasts"
+          }
+        ]
+      },
+      "transformer": {
+        "name": "Transformer Architecture",
+        "type": "deep_learning",
+        "horizon": "medium_term",
+        "description": "Attention-based architecture for time series",
+        "variants": {
+          "informer": "efficient_attention_for_long_sequences",
+          "fedformer": "frequency_enhanced_decomposed_transformer",
+          "itransformer": "inverted_transformer_for_multivariate",
+          "patchtst": "patch_based_time_series_transformer"
+        },
+        "caution": "Mixed results on agricultural data; LSTM often outperforms on limited datasets",
+        "best_for": ["long_sequences", "multivariate_forecasting"]
+      }
+    },
+    "ensemble_methods": {
+      "simple_average": {
+        "description": "Equal-weighted average of model forecasts",
+        "equation": "F_ensemble = (1/n) * sum(F_i)",
+        "when_to_use": "When model performance is similar and uncorrelated"
+      },
+      "variance_weighted": {
+        "description": "Weight inversely proportional to historical variance",
+        "equation": "w_i = (1/var_i) / sum(1/var_j)",
+        "when_to_use": "When some models have consistently lower error"
+      },
+      "adaptive": {
+        "description": "Weights updated based on recent performance",
+        "method": "exponential_smoothing_of_squared_errors",
+        "when_to_use": "When relative model performance varies over time"
+      }
+    },
+    "structural": {
+      "fapri": {
+        "name": "FAPRI Model",
+        "type": "partial_equilibrium",
+        "institution": "Food and Agricultural Policy Research Institute",
+        "description": "Recursive dynamic PE system for US and global markets",
+        "equations": {
+          "acreage": "A_t = f(P_{t-1}, costs_t, policy_t, A_{t-1})",
+          "yield": "Y_t = g(trend, inputs_t, weather_t)"
+        },
+        "parameters": {
+          "yield_elasticity_range": [0.1, 0.3],
+          "monte_carlo_iterations": 500
+        },
+        "documentation_url": "https://www.card.iastate.edu"
+      },
+      "gtap": {
+        "name": "Global Trade Analysis Project",
+        "type": "computable_general_equilibrium",
+        "institution": "Purdue University",
+        "description": "Multi-region multi-sector CGE with perfect competition",
+        "coverage": {
+          "regions": 140,
+          "sectors": 65
+        },
+        "key_parameters": {
+          "armington_elasticities": [2, 5],
+          "land_elasticity_cet": [0.2, 0.5]
+        },
+        "variants": {
+          "gtap_agr": "Agricultural-specific with detailed land allocation",
+          "gtap_bio": "Energy-agriculture linkages for biofuel analysis"
+        },
+        "documentation_url": "https://gtap.agecon.purdue.edu"
+      },
+      "simple_g": {
+        "name": "SIMPLE-G",
+        "type": "partial_equilibrium_gridded",
+        "description": "Simplified Model with gridded land use at 5 arcminute resolution",
+        "applications": ["biofuel_policy", "land_use_change", "nutrient_pollution"],
+        "hertel_equation": "q_L = [delta_D_A + delta_S_L - delta_D_L] / [1 + (eta_SI_A / eta_SE_A) + (eta_D_A / eta_SE_A)] - delta_S_L",
+        "parameters": {
+          "extensive_margin_elasticity": [0.05, 0.20],
+          "intensive_margin_elasticity": [0.30, 0.50],
+          "demand_elasticity": [-0.40, -0.20]
+        }
+      },
+      "impact": {
+        "name": "IFPRI IMPACT Model",
+        "type": "partial_equilibrium",
+        "institution": "International Food Policy Research Institute",
+        "description": "Links economic, water, and crop sub-models",
+        "coverage": {
+          "regions": 320,
+          "commodities": 62
+        },
+        "features": ["dssat_crop_integration", "stochastic_uncertainty", "water_modeling"],
+        "supply_elasticity_range": [0.3, 0.6],
+        "documentation_url": "https://www.ifpri.org/project/impact-model"
+      }
+    },
+    "basis": {
+      "basis_regression": {
+        "name": "Basis Forecasting Model",
+        "description": "Local cash-futures spread prediction",
+        "equation": "Basis_t = alpha + beta_1*transport_cost + beta_2*storage_cost + beta_3*local_supply + beta_4*seasonal + epsilon",
+        "components": {
+          "spatial": "transportation_and_handling_costs",
+          "temporal": "storage_costs_and_convenience_yield",
+          "quality": "grade_differentials",
+          "local_supply_demand": "elevator_capacity_utilization"
+        },
+        "location_factors": {
+          "distance_from_river_terminal": {"coefficient": 0.015, "unit": "cents_per_mile"},
+          "local_ethanol_competition": {"coefficient": -0.05, "unit": "cents_per_plant_within_50mi"},
+          "harvest_premium": {"coefficient": 0.08, "unit": "cents_seasonal_adjustment"}
+        }
+      }
+    },
+    "biofuel": {
+      "corn_ethanol": {
+        "name": "Corn Ethanol Economics",
+        "conversion_rates": {
+          "corn_to_ethanol_gal_per_bu": 2.8,
+          "ddgs_coproduct_lbs_per_gal": 17.0,
+          "co2_coproduct_lbs_per_gal": 6.2
+        },
+        "margin_calculation": {
+          "gross_margin": "(ethanol_price * 2.8 + ddgs_price * 0.0085) - corn_price",
+          "typical_margin_range_per_bu": [0.20, 1.50]
+        },
+        "rfs_parameters": {
+          "conventional_cap_billion_gal": 15.0,
+          "blend_wall_e10_billion_gal": 14.5,
+          "e15_potential_billion_gal": 18.0
+        }
+      },
+      "soy_biodiesel": {
+        "name": "Soybean Oil Biodiesel Economics",
+        "conversion_rates": {
+          "oil_to_biodiesel_lbs_per_gal": 7.5,
+          "glycerin_coproduct_lbs_per_gal": 0.8
+        },
+        "margin_calculation": {
+          "gross_margin": "biodiesel_price - (soy_oil_price * 7.5 / 100) - methanol_cost"
+        }
+      },
+      "renewable_diesel": {
+        "name": "Renewable Diesel / SAF",
+        "feedstock_hierarchy_by_ci": [
+          {"feedstock": "used_cooking_oil", "ci_score": 15, "availability": "limited"},
+          {"feedstock": "tallow", "ci_score": 25, "availability": "moderate"},
+          {"feedstock": "canola_oil", "ci_score": 45, "availability": "growing"},
+          {"feedstock": "soybean_oil", "ci_score": 50, "availability": "abundant"},
+          {"feedstock": "corn_oil", "ci_score": 55, "availability": "moderate"}
+        ],
+        "saf_conversion_efficiency": 0.85
+      },
+      "rfs_volumes": {
+        "2024": {
+          "total_renewable_fuel_billion_gal": 21.54,
+          "advanced_biofuel_billion_gal": 6.54,
+          "cellulosic_biofuel_billion_gal": 1.09,
+          "biomass_based_diesel_billion_rin": 3.04
+        },
+        "2025": {
+          "total_renewable_fuel_billion_gal": 22.33,
+          "advanced_biofuel_billion_gal": 7.33,
+          "cellulosic_biofuel_billion_gal": 1.38,
+          "biomass_based_diesel_billion_rin": 3.35
+        },
+        "2026_proposed": {
+          "total_renewable_fuel_billion_gal": 23.50,
+          "advanced_biofuel_billion_gal": 8.50,
+          "cellulosic_biofuel_billion_gal": 1.70,
+          "biomass_based_diesel_billion_rin": 5.61
+        },
+        "2027_proposed": {
+          "biomass_based_diesel_billion_rin": 7.12
+        },
+        "policy_notes": {
+          "foreign_feedstock_penalty": "Count at 50% rate vs North American inputs",
+          "conventional_biofuel_cap": "Effectively capped at 15 billion gallons"
+        }
+      },
+      "price_impacts": {
+        "corn_price_per_billion_gal_ethanol": {
+          "low_estimate_pct": 2,
+          "high_estimate_pct": 3,
+          "source": "EPA NCEE meta-analysis"
+        },
+        "soybean_price_per_billion_gal_bbd": {
+          "low_estimate_pct": 1.8,
+          "high_estimate_pct": 8.9,
+          "source": "EPA 2025 literature review"
+        }
+      }
+    },
+    "trade": {
+      "gravity_model": {
+        "name": "Gravity Trade Model",
+        "equation": "ln(T_ij) = beta_0 + beta_1*ln(GDP_i) + beta_2*ln(GDP_j) - beta_3*ln(Dist_ij) + epsilon",
+        "typical_parameters": {
+          "distance_elasticity": -1.2,
+          "gdp_elasticity": 0.8
+        }
+      },
+      "stochastic_frontier": {
+        "name": "Stochastic Frontier Trade Analysis",
+        "equation": "ln(T_ij) = beta_0 + beta_1*ln(GDP_i) + beta_2*ln(GDP_j) - beta_3*ln(Dist_ij) + v_ij - u_ij",
+        "description": "Decomposes trade gaps into inefficiency (u) and noise (v)",
+        "efficiency_ratios": {
+          "belt_and_road_grain": [0.6, 0.8],
+          "interpretation": "20-30% unrealized trade potential"
+        }
+      }
+    },
+    "oilseed_crush": {
+      "soybean_crush": {
+        "input_bu": 1,
+        "input_lbs": 60,
+        "output_oil_lbs": 11,
+        "output_meal_lbs": 48,
+        "loss_lbs": 1,
+        "oil_yield_pct": 18.3,
+        "meal_yield_pct": 80.0
+      },
+      "canola_crush": {
+        "oil_yield_pct": 42,
+        "meal_yield_pct": 56,
+        "meal_protein_pct": 38
+      },
+      "crush_margin_equation": "crush_margin = (oil_price * oil_yield + meal_price * meal_yield) - seed_price",
+      "cross_price_elasticities": {
+        "soy_oil_palm_oil": 0.35,
+        "soy_oil_canola_oil": 0.25,
+        "soy_meal_canola_meal": 0.15,
+        "soy_meal_ddgs": 0.10
+      }
+    }
+  },
+  "database_schema": {
+    "usda_wasde": {
+      "description": "Monthly WASDE balance sheet data",
+      "key_columns": ["commodity", "marketing_year", "report_date", "beginning_stocks", "production", "imports", "domestic_use", "exports", "ending_stocks", "season_avg_price"],
+      "update_frequency": "monthly",
+      "query_template": "SELECT * FROM usda_wasde WHERE commodity = '{commodity}' AND marketing_year = '{year}'"
+    },
+    "usda_psd": {
+      "description": "Production, Supply, and Distribution data",
+      "key_columns": ["commodity", "country", "year", "area_harvested", "yield", "production", "imports", "exports", "ending_stocks"],
+      "update_frequency": "monthly",
+      "query_template": "SELECT * FROM usda_psd WHERE commodity = '{commodity}' AND country = '{country}' ORDER BY year DESC"
+    },
+    "census_trade": {
+      "description": "US Census Bureau trade flow data",
+      "key_columns": ["hs_code", "partner_country", "month", "year", "quantity", "value", "unit"],
+      "update_frequency": "monthly",
+      "schedule_b_codes": {
+        "corn": "1005.90",
+        "soybeans": "1201.90",
+        "wheat": "1001",
+        "soybean_oil": "1507",
+        "soybean_meal": "2304.00"
+      }
+    },
+    "cme_futures": {
+      "description": "CME futures prices and settlements",
+      "key_columns": ["symbol", "contract_month", "trade_date", "open", "high", "low", "settle", "volume", "open_interest"],
+      "symbols": {
+        "corn": "ZC",
+        "soybeans": "ZS",
+        "wheat": "ZW",
+        "soybean_oil": "ZL",
+        "soybean_meal": "ZM"
+      },
+      "update_frequency": "daily"
+    },
+    "eia_biofuels": {
+      "description": "EIA biofuel production and stocks data",
+      "key_columns": ["product", "date", "production", "stocks", "imports", "exports"],
+      "products": ["ethanol", "biodiesel", "renewable_diesel"],
+      "update_frequency": "weekly"
+    },
+    "usda_ams_prices": {
+      "description": "USDA AMS cash market prices",
+      "key_columns": ["commodity", "market", "date", "price", "basis"],
+      "update_frequency": "daily"
+    },
+    "usda_export_sales": {
+      "description": "USDA weekly export sales data",
+      "key_columns": ["commodity", "marketing_year", "week_ending", "net_sales", "exports", "outstanding_sales"],
+      "update_frequency": "weekly"
+    },
+    "usda_crop_progress": {
+      "description": "Weekly crop progress and condition",
+      "key_columns": ["commodity", "state", "week_ending", "planted_pct", "emerged_pct", "condition_good_excellent_pct"],
+      "update_frequency": "weekly_apr_nov"
+    }
+  },
+  "external_data_requirements": {
+    "real_time_monitoring": [
+      {
+        "source": "WASDE",
+        "frequency": "monthly",
+        "url": "https://www.usda.gov/oce/commodity/wasde",
+        "critical_for": ["balance_sheet_updates", "price_forecasts"]
+      },
+      {
+        "source": "USDA_Crop_Progress",
+        "frequency": "weekly",
+        "critical_for": ["yield_forecasts", "condition_monitoring"]
+      },
+      {
+        "source": "FGIS_Export_Inspections",
+        "frequency": "weekly",
+        "critical_for": ["export_pace_tracking"]
+      },
+      {
+        "source": "EIA_Weekly_Petroleum",
+        "frequency": "weekly",
+        "critical_for": ["ethanol_production", "biofuel_demand"]
+      }
+    ],
+    "weather_integration": {
+      "sources": ["NOAA_CPC", "ECMWF", "private_providers"],
+      "variables": ["precipitation", "temperature", "soil_moisture", "drought_indices"],
+      "application": "Yield deviation from trend estimation"
+    }
+  },
+  "uncertainty_quantification": {
+    "methods": {
+      "monte_carlo": {
+        "description": "Parameter uncertainty via repeated sampling",
+        "typical_iterations": 500,
+        "output": "distribution_of_outcomes"
+      },
+      "ensemble": {
+        "description": "Combine multiple model outputs",
+        "aggregation": ["mean", "median", "weighted_average"]
+      },
+      "density_forecast": {
+        "description": "Full probability distribution",
+        "output": ["point_estimate", "confidence_intervals", "fan_charts"]
+      }
+    },
+    "reporting_guidelines": {
+      "always_include": ["point_estimate", "confidence_interval_80pct"],
+      "optional": ["full_distribution", "scenario_analysis"]
+    }
+  },
+  "validation_protocols": {
+    "error_metrics": {
+      "rmse": "sqrt(mean((actual - forecast)^2))",
+      "mape": "mean(abs((actual - forecast) / actual)) * 100",
+      "direction_accuracy": "pct_correct_sign_of_change"
+    },
+    "monitoring": [
+      "Track forecast errors against realized values",
+      "Test for structural breaks in model relationships",
+      "Monitor concept drift in ML models",
+      "Decompose errors by balance sheet component"
+    ]
+  },
+  "references": {
+    "foundational": [
+      {
+        "author": "Hertel, T.W.",
+        "year": 2011,
+        "title": "The global supply and demand for agricultural land in 2050: A perfect storm in the making?",
+        "journal": "American Journal of Agricultural Economics",
+        "volume": "93(2)",
+        "pages": "393-410"
+      },
+      {
+        "author": "Roberts, M.J. & Schlenker, W.",
+        "year": 2013,
+        "title": "Identifying supply and demand elasticities of agricultural commodities",
+        "journal": "American Economic Review",
+        "volume": "103(6)",
+        "pages": "2265-2295"
+      }
+    ],
+    "recent_advances": [
+      {
+        "topic": "LSTM for agricultural prices",
+        "year": 2025,
+        "finding": "LSTM/GRU outperform ARIMA by 10-25% RMSE on 23 commodities",
+        "source": "Scientific Reports"
+      },
+      {
+        "topic": "Hybrid decomposition models",
+        "year": 2024,
+        "finding": "VMD-EEMD-LSTM captures multi-scale dynamics effectively",
+        "source": "MDPI Agriculture"
+      },
+      {
+        "topic": "RFS land use impacts",
+        "year": 2024,
+        "finding": "RFS2 increased corn area 9.7%, soybean area 6.7%",
+        "source": "Journal of Agricultural and Applied Economics Association"
+      }
+    ],
+    "institutional": {
+      "usda_wasde": "https://www.usda.gov/oce/commodity/wasde",
+      "fapri": "https://www.card.iastate.edu",
+      "gtap": "https://gtap.agecon.purdue.edu",
+      "ifpri_impact": "https://www.ifpri.org/project/impact-model"
+    }
+  }
+}

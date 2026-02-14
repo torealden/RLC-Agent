@@ -1,0 +1,513 @@
+{
+  "metadata": {
+    "title": "RLC EIA Series ID Reference",
+    "description": "U.S. Energy Information Administration series IDs for energy and biofuel market data",
+    "version": "1.0",
+    "last_updated": "2026-01-28",
+    "api": {
+      "base_url": "https://api.eia.gov/v2/",
+      "version": "2.1.10",
+      "registration": "https://www.eia.gov/opendata/register.php",
+      "documentation": "https://www.eia.gov/opendata/documentation.php",
+      "series_id_format": "[PREFIX].[PRODUCT_CODE]_[ACTIVITY]_[GEOGRAPHY]_[UNITS].[FREQUENCY]",
+      "prefixes": {
+        "PET": "Petroleum",
+        "NG": "Natural Gas",
+        "ELEC": "Electricity"
+      },
+      "frequency_suffixes": {
+        "D": "Daily",
+        "W": "Weekly",
+        "M": "Monthly",
+        "A": "Annual"
+      },
+      "access_methods": {
+        "legacy_series": "/v2/seriesid/[SERIES_ID]?api_key=YOUR_KEY",
+        "hierarchical": "/v2/[category]/[subcategory]/data?api_key=YOUR_KEY"
+      },
+      "query_parameters": {
+        "data[]": "Columns to return (e.g., value)",
+        "facets[field][]": "Filter values",
+        "frequency": "weekly|monthly|annual",
+        "start": "Start date (RFC 3339)",
+        "end": "End date (RFC 3339)",
+        "offset": "Pagination offset",
+        "length": "Max rows (default 5000)"
+      }
+    },
+    "primary_routes": {
+      "petroleum_weekly_supply": "/v2/petroleum/sum/sndw/",
+      "petroleum_monthly_supply": "/v2/petroleum/sum/snd/",
+      "petroleum_weekly_stocks": "/v2/petroleum/stoc/wstk/",
+      "petroleum_exports": "/v2/petroleum/move/exp/",
+      "petroleum_imports": "/v2/petroleum/move/imp/",
+      "ethanol_weekly_production": "/v2/petroleum/pnp/wprode/",
+      "natural_gas_prices": "/v2/natural-gas/pri/sum/",
+      "natural_gas_storage": "/v2/natural-gas/stor/sum/"
+    }
+  },
+  "categories": {
+    "ethanol": {
+      "product_code": "EPOOXE",
+      "notes": "Weekly data from Weekly Petroleum Status Report (Wednesdays); monthly data from Petroleum Supply Monthly (~60-day lag). EIA does not publish dedicated ethanol price series - use CBOT futures or OPIS.",
+      "weekly_production": {
+        "national": {"series_id": "PET.W_EPOOXE_YOP_NUS_MBBLD.W", "description": "U.S. Fuel Ethanol Plant Production", "units": "Thousand Barrels/Day"},
+        "padd1": {"series_id": "PET.W_EPOOXE_YOP_R10_MBBLD.W", "description": "PADD 1 (East Coast) Production", "units": "Thousand Barrels/Day"},
+        "padd2": {"series_id": "PET.W_EPOOXE_YOP_R20_MBBLD.W", "description": "PADD 2 (Midwest) Production", "units": "Thousand Barrels/Day"},
+        "padd3": {"series_id": "PET.W_EPOOXE_YOP_R30_MBBLD.W", "description": "PADD 3 (Gulf Coast) Production", "units": "Thousand Barrels/Day"},
+        "padd4": {"series_id": "PET.W_EPOOXE_YOP_R40_MBBLD.W", "description": "PADD 4 (Rocky Mountain) Production", "units": "Thousand Barrels/Day"},
+        "padd5": {"series_id": "PET.W_EPOOXE_YOP_R50_MBBLD.W", "description": "PADD 5 (West Coast) Production", "units": "Thousand Barrels/Day"}
+      },
+      "weekly_stocks": {
+        "national": {"series_id": "PET.W_EPOOXE_SAE_NUS_MBBL.W", "description": "U.S. Ending Stocks", "units": "Thousand Barrels"},
+        "padd1": {"series_id": "PET.W_EPOOXE_SAE_R10_MBBL.W", "description": "PADD 1 Ending Stocks", "units": "Thousand Barrels"},
+        "padd2": {"series_id": "PET.W_EPOOXE_SAE_R20_MBBL.W", "description": "PADD 2 Ending Stocks", "units": "Thousand Barrels"},
+        "padd3": {"series_id": "PET.W_EPOOXE_SAE_R30_MBBL.W", "description": "PADD 3 Ending Stocks", "units": "Thousand Barrels"},
+        "padd4": {"series_id": "PET.W_EPOOXE_SAE_R40_MBBL.W", "description": "PADD 4 Ending Stocks", "units": "Thousand Barrels"},
+        "padd5": {"series_id": "PET.W_EPOOXE_SAE_R50_MBBL.W", "description": "PADD 5 Ending Stocks", "units": "Thousand Barrels"}
+      },
+      "monthly": {
+        "production": {"series_id": "PET.M_EPOOXE_YOP_NUS_1.M", "description": "U.S. Oxygenate Plant Production", "units": "Thousand Barrels"},
+        "net_production": {"series_id": "PET.M_EPOOXE_YNP_NUS_MBBL.M", "description": "Biofuels Plant Net Production", "units": "Thousand Barrels"},
+        "stocks": {"series_id": "PET.MFESTUS1.M", "description": "U.S. Ending Stocks", "units": "Thousand Barrels"},
+        "product_supplied": {"series_id": "PET.M_EPOOXE_VPP_NUS_MBBL.M", "description": "U.S. Product Supplied (consumption proxy)", "units": "Thousand Barrels"},
+        "product_supplied_daily": {"series_id": "PET.M_EPOOXE_VPP_NUS_MBBLD.M", "description": "Product Supplied", "units": "Thousand Barrels/Day"},
+        "refinery_inputs": {"series_id": "PET.MFERIUS1.M", "description": "Refinery & Blender Net Inputs", "units": "Thousand Barrels"},
+        "exports": {"series_id": "PET.M_EPOOXE_EEX_NUS-Z00_MBBL.M", "description": "U.S. Exports", "units": "Thousand Barrels"},
+        "exports_daily": {"series_id": "PET.M_EPOOXE_EEX_NUS-Z00_MBBLD.M", "description": "U.S. Exports", "units": "Thousand Barrels/Day"},
+        "imports": {"series_id": "PET.MFEIMUS1.M", "description": "U.S. Imports", "units": "Thousand Barrels"},
+        "imports_annual": {"series_id": "PET.MFEIMUS2.A", "description": "U.S. Imports", "units": "Thousand Barrels/Day"}
+      },
+      "inter_padd_movements": {
+        "padd1_net_receipts": {"series_id": "PET.M_EPOOXE_VNR_R10-Z0P_MBBL.M", "description": "PADD 1 Net Receipts", "units": "Thousand Barrels"},
+        "padd2_net_receipts": {"series_id": "PET.M_EPOOXE_VNR_R20-Z0P_MBBL.M", "description": "PADD 2 Net Receipts", "units": "Thousand Barrels"},
+        "padd3_net_receipts": {"series_id": "PET.M_EPOOXE_VNR_R30-Z0P_MBBL.M", "description": "PADD 3 Net Receipts", "units": "Thousand Barrels"},
+        "padd4_net_receipts": {"series_id": "PET.M_EPOOXE_VNR_R40-Z0P_MBBL.M", "description": "PADD 4 Net Receipts", "units": "Thousand Barrels"},
+        "padd5_net_receipts": {"series_id": "PET.M_EPOOXE_VNR_R50-Z0P_MBBL.M", "description": "PADD 5 Net Receipts", "units": "Thousand Barrels"}
+      }
+    },
+    "biodiesel": {
+      "product_code": "EPOORDB",
+      "notes": "Data collected via Form EIA-819. Monthly frequency only.",
+      "production": {
+        "national": {"series_id": "PET.M_EPOORDB_YNP_NUS_MBBL.M", "description": "U.S. Biodiesel Net Production", "units": "Thousand Barrels"},
+        "padd1": {"series_id": "PET.M_EPOORDB_YNP_R10_MBBL.M", "description": "PADD 1 Biodiesel Production", "units": "Thousand Barrels"},
+        "padd2": {"series_id": "PET.M_EPOORDB_YNP_R20_MBBL.M", "description": "PADD 2 Biodiesel Production", "units": "Thousand Barrels"},
+        "padd3": {"series_id": "PET.M_EPOORDB_YNP_R30_MBBL.M", "description": "PADD 3 Biodiesel Production", "units": "Thousand Barrels"},
+        "padd4": {"series_id": "PET.M_EPOORDB_YNP_R40_MBBL.M", "description": "PADD 4 Biodiesel Production", "units": "Thousand Barrels"},
+        "padd5": {"series_id": "PET.M_EPOORDB_YNP_R50_MBBL.M", "description": "PADD 5 Biodiesel Production", "units": "Thousand Barrels"}
+      },
+      "trade": {
+        "imports_all": {"series_id": "PET.M_EPOORDB_IM0_NUS-Z00_MBBL.M", "description": "Biodiesel Imports (All Countries)", "units": "Thousand Barrels"},
+        "imports_canada": {"series_id": "PET.M_EPOORDB_IM0_NUS-NCA_MBBL.M", "description": "Biodiesel Imports from Canada", "units": "Thousand Barrels"},
+        "exports_all": {"series_id": "PET.M_EPOORDB_EEX_NUS-Z00_MBBL.M", "description": "Biodiesel Exports (All Countries)", "units": "Thousand Barrels"},
+        "exports_canada": {"series_id": "PET.M_EPOORDB_EEX_NUS-NCA_MBBL.M", "description": "Biodiesel Exports to Canada", "units": "Thousand Barrels"}
+      }
+    },
+    "renewable_diesel": {
+      "product_code": "EPOORDO",
+      "notes": "Renewable diesel (HDRD) is chemically identical to petroleum diesel. Monthly frequency.",
+      "stocks": {
+        "total": {"series_id": "PET.M_EPOORDO_SAE_NUS_MBBL.M", "description": "Renewable Diesel Total Stocks", "units": "Thousand Barrels"},
+        "refinery": {"series_id": "PET.M_EPOORDO_SKR_NUS_MBBL.M", "description": "Renewable Diesel Refinery Stocks", "units": "Thousand Barrels"},
+        "bulk_terminal": {"series_id": "PET.M_EPOORDO_SKB_NUS_MBBL.M", "description": "Renewable Diesel Bulk Terminal Stocks", "units": "Thousand Barrels"},
+        "pipeline": {"series_id": "PET.M_EPOORDO_SKP_NUS_MBBL.M", "description": "Renewable Diesel Pipeline Stocks", "units": "Thousand Barrels"}
+      }
+    },
+    "biodiesel_renewable_diesel_combined": {
+      "product_code": "EPOORD",
+      "notes": "Combined biodiesel and renewable diesel data",
+      "blending": {
+        "national": {"series_id": "PET.M_EPOORD_YIR_NUS_MBBL.M", "description": "Refinery & Blenders Net Input", "units": "Thousand Barrels"},
+        "padd1": {"series_id": "PET.M_EPOORD_YIR_R10_MBBL.M", "description": "PADD 1 Refinery & Blenders Net Input", "units": "Thousand Barrels"},
+        "padd2": {"series_id": "PET.M_EPOORD_YIR_R20_MBBL.M", "description": "PADD 2 Refinery & Blenders Net Input", "units": "Thousand Barrels"},
+        "padd3": {"series_id": "PET.M_EPOORD_YIR_R30_MBBL.M", "description": "PADD 3 Refinery & Blenders Net Input", "units": "Thousand Barrels"},
+        "padd5": {"series_id": "PET.M_EPOORD_YIR_R50_MBBL.M", "description": "PADD 5 Refinery & Blenders Net Input", "units": "Thousand Barrels"}
+      },
+      "stocks": {
+        "total": {"series_id": "PET.M_EPOORD_SAE_NUS_MBBL.M", "description": "Total Ending Stocks", "units": "Thousand Barrels"},
+        "refinery": {"series_id": "PET.M_EPOORD_SKR_NUS_MBBL.M", "description": "Stocks at Refineries", "units": "Thousand Barrels"}
+      }
+    },
+    "gasoline": {
+      "notes": "Weekly data from Weekly Petroleum Status Report (Wednesdays)",
+      "production": {
+        "national_weekly": {"series_id": "PET.WGFRPUS2.W", "description": "U.S. Finished Motor Gasoline Production", "units": "Thousand Barrels/Day"},
+        "national_monthly": {"series_id": "PET.MGFRPUS2.M", "description": "U.S. Finished Motor Gasoline Production", "units": "Thousand Barrels/Day"},
+        "padd1_weekly": {"series_id": "PET.WGFRPP11.W", "description": "PADD 1 Production", "units": "Thousand Barrels/Day"},
+        "padd2_weekly": {"series_id": "PET.WGFRPP21.W", "description": "PADD 2 Production", "units": "Thousand Barrels/Day"},
+        "padd3_weekly": {"series_id": "PET.WGFRPP31.W", "description": "PADD 3 Production", "units": "Thousand Barrels/Day"},
+        "padd4_weekly": {"series_id": "PET.WGFRPP41.W", "description": "PADD 4 Production", "units": "Thousand Barrels/Day"},
+        "padd5_weekly": {"series_id": "PET.WGFRPP51.W", "description": "PADD 5 Production", "units": "Thousand Barrels/Day"}
+      },
+      "stocks": {
+        "total_national": {"series_id": "PET.WGTSTUS1.W", "description": "U.S. Total Gasoline Stocks", "units": "Thousand Barrels"},
+        "finished": {"series_id": "PET.WGFSTUS1.W", "description": "U.S. Finished Motor Gasoline Stocks", "units": "Thousand Barrels"},
+        "blending_components": {"series_id": "PET.WBCSTUS1.W", "description": "U.S. Gasoline Blending Components Stocks", "units": "Thousand Barrels"},
+        "padd1": {"series_id": "PET.WGTSTP11.W", "description": "PADD 1 (East Coast) Total Stocks", "units": "Thousand Barrels"},
+        "padd2": {"series_id": "PET.WGTSTP21.W", "description": "PADD 2 (Midwest) Total Stocks", "units": "Thousand Barrels"},
+        "padd3": {"series_id": "PET.WGTSTP31.W", "description": "PADD 3 (Gulf Coast) Total Stocks", "units": "Thousand Barrels"},
+        "padd4": {"series_id": "PET.WGTSTP41.W", "description": "PADD 4 (Rocky Mountain) Total Stocks", "units": "Thousand Barrels"},
+        "padd5": {"series_id": "PET.WGTSTP51.W", "description": "PADD 5 (West Coast) Total Stocks", "units": "Thousand Barrels"},
+        "new_england": {"series_id": "PET.WGTST1A1.W", "description": "New England (Sub-PADD 1A) Stocks", "units": "Thousand Barrels"},
+        "central_atlantic": {"series_id": "PET.WGTST1B1.W", "description": "Central Atlantic (Sub-PADD 1B) Stocks", "units": "Thousand Barrels"},
+        "lower_atlantic": {"series_id": "PET.WGTST1C1.W", "description": "Lower Atlantic (Sub-PADD 1C) Stocks", "units": "Thousand Barrels"}
+      },
+      "consumption": {
+        "finished_weekly": {"series_id": "PET.WGFUPUS2.W", "description": "U.S. Finished Motor Gasoline Product Supplied", "units": "Thousand Barrels/Day"},
+        "finished_monthly": {"series_id": "PET.MGFUPUS2.M", "description": "U.S. Finished Motor Gasoline Product Supplied", "units": "Thousand Barrels/Day"},
+        "total_weekly": {"series_id": "PET.WGTUPUS2.W", "description": "U.S. Total Motor Gasoline Product Supplied", "units": "Thousand Barrels/Day"}
+      },
+      "retail_prices": {
+        "all_grades_national": {"series_id": "PET.EMM_EPM0_PTE_NUS_DPG.W", "description": "U.S. All Grades All Formulations Retail", "units": "$/Gallon"},
+        "all_grades_padd1": {"series_id": "PET.EMM_EPM0_PTE_R10_DPG.W", "description": "PADD 1 All Grades Retail", "units": "$/Gallon"},
+        "all_grades_padd2": {"series_id": "PET.EMM_EPM0_PTE_R20_DPG.W", "description": "PADD 2 All Grades Retail", "units": "$/Gallon"},
+        "all_grades_padd3": {"series_id": "PET.EMM_EPM0_PTE_R30_DPG.W", "description": "PADD 3 All Grades Retail", "units": "$/Gallon"},
+        "all_grades_padd4": {"series_id": "PET.EMM_EPM0_PTE_R40_DPG.W", "description": "PADD 4 All Grades Retail", "units": "$/Gallon"},
+        "all_grades_padd5": {"series_id": "PET.EMM_EPM0_PTE_R50_DPG.W", "description": "PADD 5 All Grades Retail", "units": "$/Gallon"},
+        "regular": {"series_id": "PET.EMM_EPMR_PTE_NUS_DPG.W", "description": "U.S. Regular Grade Retail", "units": "$/Gallon"},
+        "midgrade": {"series_id": "PET.EMM_EPMM_PTE_NUS_DPG.W", "description": "U.S. Midgrade Retail", "units": "$/Gallon"},
+        "premium": {"series_id": "PET.EMM_EPMP_PTE_NUS_DPG.W", "description": "U.S. Premium Grade Retail", "units": "$/Gallon"}
+      },
+      "spot_prices": {
+        "ny_harbor_conventional": {"series_id": "PET.EER_EPMRU_PF4_Y35NY_DPG.D", "description": "NY Harbor Conventional Regular Spot FOB", "units": "$/Gallon"},
+        "gulf_coast_conventional": {"series_id": "PET.EER_EPMRU_PF4_RGC_DPG.D", "description": "Gulf Coast Conventional Regular Spot FOB", "units": "$/Gallon"},
+        "la_rbob": {"series_id": "PET.EER_EPMRR_PF4_Y05LA_DPG.D", "description": "Los Angeles RBOB Regular Spot FOB", "units": "$/Gallon"}
+      },
+      "trade": {
+        "total_imports_weekly": {"series_id": "PET.WGTIMUS2.W", "description": "U.S. Total Gasoline Imports", "units": "Thousand Barrels/Day"},
+        "finished_imports_weekly": {"series_id": "PET.WGFIMUS2.W", "description": "U.S. Finished Motor Gasoline Imports", "units": "Thousand Barrels/Day"},
+        "total_exports_weekly": {"series_id": "PET.WGTEXUS2.W", "description": "U.S. Total Gasoline Exports", "units": "Thousand Barrels/Day"},
+        "finished_exports_weekly": {"series_id": "PET.WGFEXUS2.W", "description": "U.S. Finished Motor Gasoline Exports", "units": "Thousand Barrels/Day"},
+        "total_imports_monthly": {"series_id": "PET.MGTIMUS1.M", "description": "U.S. Total Gasoline Imports", "units": "Thousand Barrels"}
+      }
+    },
+    "diesel_distillate": {
+      "notes": "Distillate fuel oil includes diesel, heating oil, and other middle distillates",
+      "production": {
+        "national_weekly": {"series_id": "PET.WDIRPUS2.W", "description": "U.S. Distillate Fuel Oil Production", "units": "Thousand Barrels/Day"},
+        "national_monthly": {"series_id": "PET.MDIRPUS2.M", "description": "U.S. Distillate Fuel Oil Production", "units": "Thousand Barrels/Day"},
+        "padd1_weekly": {"series_id": "PET.WDIRPP11.W", "description": "PADD 1 Production", "units": "Thousand Barrels/Day"},
+        "padd2_weekly": {"series_id": "PET.WDIRPP21.W", "description": "PADD 2 Production", "units": "Thousand Barrels/Day"},
+        "padd3_weekly": {"series_id": "PET.WDIRPP31.W", "description": "PADD 3 Production", "units": "Thousand Barrels/Day"},
+        "padd4_weekly": {"series_id": "PET.WDIRPP41.W", "description": "PADD 4 Production", "units": "Thousand Barrels/Day"},
+        "padd5_weekly": {"series_id": "PET.WDIRPP51.W", "description": "PADD 5 Production", "units": "Thousand Barrels/Day"}
+      },
+      "stocks": {
+        "total_national_weekly": {"series_id": "PET.WDISTUS1.W", "description": "U.S. Total Distillate Fuel Oil Stocks", "units": "Thousand Barrels"},
+        "total_national_monthly": {"series_id": "PET.MDISTUS1.M", "description": "U.S. Total Distillate Stocks", "units": "Thousand Barrels"},
+        "padd1": {"series_id": "PET.WDISTP11.W", "description": "PADD 1 Stocks", "units": "Thousand Barrels"},
+        "padd2": {"series_id": "PET.WDISTP21.W", "description": "PADD 2 Stocks", "units": "Thousand Barrels"},
+        "padd3": {"series_id": "PET.WDISTP31.W", "description": "PADD 3 Stocks", "units": "Thousand Barrels"},
+        "padd4": {"series_id": "PET.WDISTP41.W", "description": "PADD 4 Stocks", "units": "Thousand Barrels"},
+        "padd5": {"series_id": "PET.WDISTP51.W", "description": "PADD 5 Stocks", "units": "Thousand Barrels"},
+        "new_england": {"series_id": "PET.WDIST1A1.W", "description": "New England (Sub-PADD 1A) Stocks", "units": "Thousand Barrels"},
+        "central_atlantic": {"series_id": "PET.WDIST1B1.W", "description": "Central Atlantic (Sub-PADD 1B) Stocks", "units": "Thousand Barrels"},
+        "lower_atlantic": {"series_id": "PET.WDIST1C1.W", "description": "Lower Atlantic (Sub-PADD 1C) Stocks", "units": "Thousand Barrels"}
+      },
+      "stocks_by_sulfur": {
+        "ulsd_15ppm": {"series_id": "PET.WD0ST_NUS_1.W", "description": "ULSD Stocks (≤15 ppm sulfur)", "units": "Thousand Barrels"},
+        "low_sulfur_500ppm": {"series_id": "PET.WD10ST_NUS_1.W", "description": "Distillate Stocks (>15 to 500 ppm sulfur)", "units": "Thousand Barrels"},
+        "high_sulfur": {"series_id": "PET.WD50ST_NUS_1.W", "description": "Distillate Stocks (>500 ppm sulfur)", "units": "Thousand Barrels"}
+      },
+      "consumption": {
+        "weekly": {"series_id": "PET.WDIUPUS2.W", "description": "U.S. Distillate Product Supplied", "units": "Thousand Barrels/Day"},
+        "monthly": {"series_id": "PET.MDIUPUS2.M", "description": "U.S. Distillate Product Supplied", "units": "Thousand Barrels/Day"}
+      },
+      "retail_prices": {
+        "national": {"series_id": "PET.EMD_EPD0_PTE_NUS_DPG.W", "description": "U.S. On-Highway Diesel Retail Price", "units": "$/Gallon"},
+        "padd1": {"series_id": "PET.EMD_EPD0_PTE_R10_DPG.W", "description": "PADD 1 On-Highway Diesel Retail", "units": "$/Gallon"},
+        "padd2": {"series_id": "PET.EMD_EPD0_PTE_R20_DPG.W", "description": "PADD 2 On-Highway Diesel Retail", "units": "$/Gallon"},
+        "padd3": {"series_id": "PET.EMD_EPD0_PTE_R30_DPG.W", "description": "PADD 3 On-Highway Diesel Retail", "units": "$/Gallon"},
+        "padd4": {"series_id": "PET.EMD_EPD0_PTE_R40_DPG.W", "description": "PADD 4 On-Highway Diesel Retail", "units": "$/Gallon"},
+        "padd5": {"series_id": "PET.EMD_EPD0_PTE_R50_DPG.W", "description": "PADD 5 On-Highway Diesel Retail", "units": "$/Gallon"}
+      },
+      "spot_prices": {
+        "ny_harbor_ulsd": {"series_id": "PET.EER_EPD2DXL0_PF4_Y35NY_DPG.D", "description": "NY Harbor ULSD Spot Price FOB", "units": "$/Gallon"},
+        "gulf_coast_ulsd": {"series_id": "PET.EER_EPD2DXL0_PF4_RGC_DPG.D", "description": "Gulf Coast ULSD Spot Price FOB", "units": "$/Gallon"},
+        "la_ulsd": {"series_id": "PET.EER_EPD2DC_PF4_Y05LA_DPG.D", "description": "Los Angeles ULSD Spot Price FOB", "units": "$/Gallon"}
+      },
+      "trade": {
+        "imports_weekly": {"series_id": "PET.WDIIMUS2.W", "description": "U.S. Distillate Imports", "units": "Thousand Barrels/Day"},
+        "exports_weekly": {"series_id": "PET.WDIEXUS2.W", "description": "U.S. Distillate Exports", "units": "Thousand Barrels/Day"},
+        "imports_monthly": {"series_id": "PET.MDIIMUS1.M", "description": "U.S. Distillate Imports", "units": "Thousand Barrels"},
+        "exports_monthly": {"series_id": "PET.MDIEXUS1.M", "description": "U.S. Distillate Exports", "units": "Thousand Barrels"}
+      }
+    },
+    "jet_fuel": {
+      "notes": "Kerosene-type jet fuel. SAF does not have dedicated series - aggregated in 'Other Biofuels'",
+      "production": {
+        "weekly": {"series_id": "PET.WKJRPUS2.W", "description": "U.S. Kerosene-Type Jet Fuel Production", "units": "Thousand Barrels/Day"},
+        "monthly": {"series_id": "PET.MKJRPUS2.M", "description": "U.S. Jet Fuel Production", "units": "Thousand Barrels/Day"}
+      },
+      "stocks": {
+        "national_weekly": {"series_id": "PET.WKJST_NUS_1.W", "description": "U.S. Jet Fuel Stocks", "units": "Thousand Barrels"},
+        "national_alt": {"series_id": "PET.W_EPJK_SAE_NUS_MBBL.W", "description": "U.S. Jet Fuel Ending Stocks", "units": "Thousand Barrels"},
+        "padd1": {"series_id": "PET.W_EPJK_SAE_R10_MBBL.W", "description": "PADD 1 Jet Fuel Stocks", "units": "Thousand Barrels"},
+        "padd2": {"series_id": "PET.W_EPJK_SAE_R20_MBBL.W", "description": "PADD 2 Jet Fuel Stocks", "units": "Thousand Barrels"},
+        "padd3": {"series_id": "PET.W_EPJK_SAE_R30_MBBL.W", "description": "PADD 3 Jet Fuel Stocks", "units": "Thousand Barrels"},
+        "monthly": {"series_id": "PET.MKJST_NUS_1.M", "description": "U.S. Monthly Jet Fuel Stocks", "units": "Thousand Barrels"}
+      },
+      "consumption": {
+        "weekly": {"series_id": "PET.WKJUPUS2.W", "description": "U.S. Jet Fuel Product Supplied", "units": "Thousand Barrels/Day"},
+        "monthly": {"series_id": "PET.MKJUPUS2.M", "description": "U.S. Jet Fuel Product Supplied", "units": "Thousand Barrels/Day"},
+        "days_supply": {"series_id": "PET.W_EPJK_VSD_NUS_DAYS.W", "description": "Jet Fuel Days of Supply", "units": "Days"}
+      },
+      "prices": {
+        "gulf_coast_spot_daily": {"series_id": "PET.EER_EPJK_PF4_RGC_DPG.D", "description": "Gulf Coast Jet Fuel Spot Price FOB", "units": "$/Gallon"},
+        "gulf_coast_spot_weekly": {"series_id": "PET.EER_EPJK_PF4_RGC_DPG.W", "description": "Gulf Coast Jet Fuel Spot (Weekly)", "units": "$/Gallon"},
+        "retail_daily": {"series_id": "PET.EER_EPJK_PTG_NUS_DPG.D", "description": "U.S. Kerosene-Type Jet Fuel Retail", "units": "$/Gallon"},
+        "retail_monthly": {"series_id": "PET.EMM_EPJK_PTG_NUS_DPG.M", "description": "U.S. Jet Fuel Retail Price", "units": "$/Gallon"}
+      },
+      "trade": {
+        "imports_weekly": {"series_id": "PET.W_EPJK_IM0_NUS_MBBLPD.W", "description": "U.S. Jet Fuel Imports", "units": "Thousand Barrels/Day"},
+        "exports_weekly": {"series_id": "PET.W_EPJK_EX0_NUS-Z00_MBBLPD.W", "description": "U.S. Jet Fuel Exports", "units": "Thousand Barrels/Day"},
+        "imports_monthly": {"series_id": "PET.MKJIM_NUS_1.M", "description": "U.S. Jet Fuel Imports", "units": "Thousand Barrels/Day"},
+        "exports_monthly": {"series_id": "PET.MKJEX_NUS_1.M", "description": "U.S. Jet Fuel Exports", "units": "Thousand Barrels/Day"}
+      }
+    },
+    "natural_gas": {
+      "notes": "Natural gas series use NG prefix. Industrial consumption includes fertilizer/ammonia production.",
+      "prices": {
+        "henry_hub_daily": {"series_id": "NG.RNGWHHD.D", "description": "Henry Hub Natural Gas Spot Price", "units": "$/MMBtu"},
+        "henry_hub_weekly": {"series_id": "NG.RNGWHHD.W", "description": "Henry Hub Spot Price (Weekly Avg)", "units": "$/MMBtu"},
+        "henry_hub_monthly": {"series_id": "NG.RNGWHHD.M", "description": "Henry Hub Spot Price (Monthly Avg)", "units": "$/MMBtu"},
+        "henry_hub_annual": {"series_id": "NG.RNGWHHD.A", "description": "Henry Hub Spot Price (Annual Avg)", "units": "$/MMBtu"},
+        "futures_contract1": {"series_id": "NG.RNGC1.D", "description": "Natural Gas Futures Contract 1", "units": "$/MMBtu"},
+        "futures_contract2": {"series_id": "NG.RNGC2.D", "description": "Natural Gas Futures Contract 2", "units": "$/MMBtu"},
+        "futures_contract3": {"series_id": "NG.RNGC3.D", "description": "Natural Gas Futures Contract 3", "units": "$/MMBtu"},
+        "futures_contract4": {"series_id": "NG.RNGC4.D", "description": "Natural Gas Futures Contract 4", "units": "$/MMBtu"},
+        "citygate": {"series_id": "NG.N3050US3.M", "description": "Citygate Price", "units": "$/Mcf"},
+        "residential": {"series_id": "NG.N3010US3.M", "description": "Residential Price", "units": "$/Mcf"},
+        "commercial": {"series_id": "NG.N3020US3.M", "description": "Commercial Price", "units": "$/Mcf"},
+        "industrial": {"series_id": "NG.N3035US3.M", "description": "Industrial Price", "units": "$/Mcf"},
+        "electric_power": {"series_id": "NG.N3045US3.M", "description": "Electric Power Price", "units": "$/Mcf"}
+      },
+      "production": {
+        "gross_withdrawals": {"series_id": "NG.N9010US2.M", "description": "U.S. Gross Withdrawals", "units": "Million Cubic Feet"},
+        "marketed": {"series_id": "NG.N9050US2.M", "description": "U.S. Marketed Production", "units": "Million Cubic Feet"},
+        "dry_production": {"series_id": "NG.N9070US2.M", "description": "U.S. Dry Natural Gas Production", "units": "Million Cubic Feet"},
+        "ngpl": {"series_id": "NG.N9060US2.M", "description": "NGPL Production, Gaseous Equivalent", "units": "Million Cubic Feet"},
+        "gross_withdrawals_annual": {"series_id": "NG.N9010US2.A", "description": "U.S. Gross Withdrawals", "units": "Million Cubic Feet"},
+        "marketed_annual": {"series_id": "NG.N9050US2.A", "description": "U.S. Marketed Production", "units": "Million Cubic Feet"}
+      },
+      "consumption": {
+        "total": {"series_id": "NG.N9140US2.M", "description": "Total U.S. Natural Gas Consumption", "units": "Million Cubic Feet"},
+        "residential": {"series_id": "NG.N3010US2.M", "description": "Residential Consumption", "units": "Million Cubic Feet"},
+        "commercial": {"series_id": "NG.N3020US2.M", "description": "Commercial Consumption", "units": "Million Cubic Feet"},
+        "industrial": {"series_id": "NG.N3035US2.M", "description": "Industrial Consumption (includes fertilizer)", "units": "Million Cubic Feet"},
+        "electric_power": {"series_id": "NG.N3045US2.M", "description": "Electric Power Consumption", "units": "Million Cubic Feet"},
+        "vehicle_fuel": {"series_id": "NG.N3025US2.M", "description": "Vehicle Fuel Consumption", "units": "Million Cubic Feet"},
+        "lease_plant": {"series_id": "NG.N9160US2.M", "description": "Lease and Plant Fuel", "units": "Million Cubic Feet"},
+        "pipeline_distribution": {"series_id": "NG.N9170US2.M", "description": "Pipeline & Distribution Use", "units": "Million Cubic Feet"}
+      },
+      "storage": {
+        "working_gas_lower48": {"series_id": "NG.NW2_EPG0_SWO_R48_BCF.W", "description": "Working Gas in Storage (Lower 48)", "units": "Bcf"},
+        "working_gas_monthly": {"series_id": "NG.N5020US2.M", "description": "Working Gas in Storage", "units": "Million Cubic Feet"},
+        "base_gas": {"series_id": "NG.N5010US2.M", "description": "Base Gas", "units": "Million Cubic Feet"},
+        "total_storage": {"series_id": "NG.N5030US2.M", "description": "Total Gas in Storage", "units": "Million Cubic Feet"},
+        "injections": {"series_id": "NG.N5050US2.M", "description": "Storage Injections", "units": "Million Cubic Feet"},
+        "withdrawals": {"series_id": "NG.N5060US2.M", "description": "Storage Withdrawals", "units": "Million Cubic Feet"},
+        "capacity": {"series_id": "NG.N5290US2.M", "description": "Total Storage Capacity", "units": "Million Cubic Feet"}
+      },
+      "trade": {
+        "total_imports": {"series_id": "NG.N9100US2.M", "description": "Total Imports (Volume)", "units": "Million Cubic Feet"},
+        "pipeline_imports": {"series_id": "NG.N9102US2.M", "description": "Pipeline Imports", "units": "Million Cubic Feet"},
+        "lng_imports": {"series_id": "NG.N9103US2.M", "description": "LNG Imports", "units": "Million Cubic Feet"},
+        "total_exports": {"series_id": "NG.N9130US2.M", "description": "Total Exports", "units": "Million Cubic Feet"},
+        "pipeline_exports": {"series_id": "NG.N9132US2.M", "description": "Pipeline Exports", "units": "Million Cubic Feet"},
+        "lng_exports": {"series_id": "NG.N9133US2.M", "description": "LNG Exports", "units": "Million Cubic Feet"},
+        "import_price": {"series_id": "NG.N9100US3.M", "description": "Import Price", "units": "$/Mcf"},
+        "export_price": {"series_id": "NG.N9130US3.M", "description": "Export Price", "units": "$/Mcf"},
+        "lng_export_price": {"series_id": "NG.N9133US3.M", "description": "LNG Export Price", "units": "$/Mcf"}
+      },
+      "state_industrial_consumption": {
+        "notes": "Key states for ammonia/fertilizer production",
+        "texas": {"series_id": "NG.N3035TX2.M", "description": "Texas Industrial Consumption", "units": "Million Cubic Feet"},
+        "louisiana": {"series_id": "NG.N3035LA2.M", "description": "Louisiana Industrial Consumption", "units": "Million Cubic Feet"},
+        "oklahoma": {"series_id": "NG.N3035OK2.M", "description": "Oklahoma Industrial Consumption", "units": "Million Cubic Feet"}
+      }
+    },
+    "propane": {
+      "notes": "Critical for agricultural drying and rural fuel. Regional residential prices collected October-March only.",
+      "production": {
+        "refinery_weekly": {"series_id": "PET.WPRFPUS2.W", "description": "U.S. Refinery Production of Propane", "units": "Thousand Barrels/Day"},
+        "refinery_monthly": {"series_id": "PET.MPRFPUS2.M", "description": "U.S. Refinery & Blender Net Production", "units": "Thousand Barrels/Day"},
+        "ngp_monthly": {"series_id": "PET.MPLNPUS2.M", "description": "Natural Gas Plant Propane Production", "units": "Thousand Barrels/Day"}
+      },
+      "stocks": {
+        "total_national": {"series_id": "PET.W_EPLLPZ_SAE_NUS_MBBL.W", "description": "U.S. Propane/Propylene Total Stocks", "units": "Thousand Barrels"},
+        "propane_only": {"series_id": "PET.WPRSTUS1.W", "description": "U.S. Propane Stocks (Excl. Propylene)", "units": "Thousand Barrels"},
+        "padd1": {"series_id": "PET.W_EPLLPZ_SAE_R10_MBBL.W", "description": "PADD 1 (East Coast) Stocks", "units": "Thousand Barrels"},
+        "padd2": {"series_id": "PET.W_EPLLPZ_SAE_R20_MBBL.W", "description": "PADD 2 (Midwest) Stocks", "units": "Thousand Barrels"},
+        "padd3": {"series_id": "PET.W_EPLLPZ_SAE_R30_MBBL.W", "description": "PADD 3 (Gulf Coast) Stocks", "units": "Thousand Barrels"},
+        "padd4_5": {"series_id": "PET.W_EPLLPZ_SAE_R4N5_MBBL.W", "description": "PADDs 4&5 Stocks", "units": "Thousand Barrels"},
+        "new_england": {"series_id": "PET.W_EPLLPZ_SAE_R1X_MBBL.W", "description": "New England (PADD 1A) Stocks", "units": "Thousand Barrels"},
+        "monthly": {"series_id": "PET.MPRST_NUS_1.M", "description": "U.S. Monthly Propane Stocks", "units": "Thousand Barrels"}
+      },
+      "prices": {
+        "mont_belvieu_daily": {"series_id": "PET.EER_EPLLPA_PF4_Y44MB_DPG.D", "description": "Mont Belvieu, TX Propane Spot Price", "units": "$/Gallon"},
+        "mont_belvieu_weekly": {"series_id": "PET.EER_EPLLPA_PF4_Y44MB_DPG.W", "description": "Mont Belvieu Propane Spot (Weekly)", "units": "$/Gallon"},
+        "residential_national_weekly": {"series_id": "PET.W_EPLLPA_PRS_NUS_DPG.W", "description": "U.S. Residential Propane Price", "units": "$/Gallon"},
+        "residential_national_monthly": {"series_id": "PET.M_EPLLPA_PRS_NUS_DPG.M", "description": "U.S. Residential Propane Price", "units": "$/Gallon"},
+        "wholesale_national": {"series_id": "PET.W_EPLLPA_PWR_NUS_DPG.W", "description": "U.S. Wholesale Propane Price", "units": "$/Gallon"},
+        "residential_midwest": {"series_id": "PET.W_EPLLPA_PRS_R20_DPG.W", "description": "Midwest (PADD 2) Residential Propane", "units": "$/Gallon"},
+        "residential_minnesota": {"series_id": "PET.W_EPLLPA_PRS_SMN_DPG.W", "description": "Minnesota Residential Propane", "units": "$/Gallon"},
+        "residential_wisconsin": {"series_id": "PET.W_EPLLPA_PRS_SWI_DPG.W", "description": "Wisconsin Residential Propane", "units": "$/Gallon"},
+        "residential_iowa": {"series_id": "PET.W_EPLLPA_PRS_SIA_DPG.W", "description": "Iowa Residential Propane", "units": "$/Gallon"}
+      },
+      "consumption_trade": {
+        "product_supplied_weekly": {"series_id": "PET.WPRUP_NUS_4.W", "description": "U.S. Propane Product Supplied", "units": "Thousand Barrels/Day"},
+        "product_supplied_monthly": {"series_id": "PET.MPRUP_NUS_2.M", "description": "U.S. Propane Product Supplied", "units": "Thousand Barrels/Day"},
+        "imports_monthly": {"series_id": "PET.MPLIM_NUS_1.M", "description": "Propane Imports", "units": "Thousand Barrels/Day"},
+        "exports_weekly": {"series_id": "PET.WPREXUS2.W", "description": "Propane Exports", "units": "Thousand Barrels/Day"},
+        "exports_monthly": {"series_id": "PET.MPLEXP_NUS_2.M", "description": "Propane Exports", "units": "Thousand Barrels/Day"}
+      }
+    },
+    "heating_oil": {
+      "notes": "Part of distillate category. Key for Northeast markets.",
+      "stocks": {
+        "national": {"series_id": "PET.W_EPD0_SAE_NUS_MBBL.W", "description": "U.S. Total Distillate Stocks", "units": "Thousand Barrels"},
+        "padd1": {"series_id": "PET.W_EPD0_SAE_R10_MBBL.W", "description": "PADD 1 (East Coast) Distillate Stocks", "units": "Thousand Barrels"},
+        "new_england": {"series_id": "PET.W_EPD0_SAE_R1X_MBBL.W", "description": "New England (PADD 1A) Distillate Stocks", "units": "Thousand Barrels"},
+        "central_atlantic": {"series_id": "PET.W_EPD0_SAE_R1Y_MBBL.W", "description": "Central Atlantic (PADD 1B) Distillate Stocks", "units": "Thousand Barrels"},
+        "lower_atlantic": {"series_id": "PET.W_EPD0_SAE_R1Z_MBBL.W", "description": "Lower Atlantic (PADD 1C) Distillate Stocks", "units": "Thousand Barrels"}
+      },
+      "prices": {
+        "ny_harbor_spot_daily": {"series_id": "PET.EER_EPD2F_PF4_Y35NY_DPG.D", "description": "NY Harbor No. 2 Heating Oil Spot Price", "units": "$/Gallon"},
+        "ny_harbor_spot_weekly": {"series_id": "PET.EER_EPD2F_PF4_Y35NY_DPG.W", "description": "NY Harbor Heating Oil Spot (Weekly)", "units": "$/Gallon"},
+        "ny_harbor_spot_monthly": {"series_id": "PET.EER_EPD2F_PF4_Y35NY_DPG.M", "description": "NY Harbor Heating Oil Spot (Monthly)", "units": "$/Gallon"},
+        "futures_contract1": {"series_id": "PET.EER_EPD2F_PE2_Y35NY_DPG.D", "description": "NY Harbor Heating Oil Futures (Contract 1)", "units": "$/Gallon"},
+        "residential_national_weekly": {"series_id": "PET.W_EPD2F_PRS_NUS_DPG.W", "description": "U.S. Residential Heating Oil Price", "units": "$/Gallon"},
+        "residential_national_monthly": {"series_id": "PET.M_EPD2F_PRS_NUS_DPG.M", "description": "U.S. Residential Heating Oil Price", "units": "$/Gallon"},
+        "wholesale_national": {"series_id": "PET.W_EPD2F_PWR_NUS_DPG.W", "description": "U.S. Wholesale Heating Oil Price", "units": "$/Gallon"},
+        "residential_new_england": {"series_id": "PET.W_EPD2F_PRS_R1X_DPG.W", "description": "New England Residential Heating Oil", "units": "$/Gallon"},
+        "wholesale_new_england": {"series_id": "PET.W_EPD2F_PWR_R1X_DPG.W", "description": "New England Wholesale Heating Oil", "units": "$/Gallon"}
+      }
+    },
+    "naphtha": {
+      "notes": "Limited data. Renewable naphtha is NOT separately tracked by EIA.",
+      "series": {
+        "refinery_production": {"series_id": "PET.MPNRX_NUS_1.M", "description": "U.S. Refinery Net Production of Naphtha", "units": "Thousand Barrels"},
+        "total_stocks": {"series_id": "PET.MNFSTUS1.M", "description": "U.S. Naphtha Total Stocks", "units": "Thousand Barrels"},
+        "refinery_stocks": {"series_id": "PET.MNFRSUS1.M", "description": "U.S. Naphtha Refinery Stocks", "units": "Thousand Barrels"},
+        "product_supplied": {"series_id": "PET.MNFUPUS2.M", "description": "U.S. Naphtha Product Supplied", "units": "Thousand Barrels/Day"}
+      }
+    }
+  },
+  "quick_lookup": {
+    "most_watched_series": {
+      "ethanol_production": "PET.W_EPOOXE_YOP_NUS_MBBLD.W",
+      "ethanol_stocks": "PET.W_EPOOXE_SAE_NUS_MBBL.W",
+      "biodiesel_production": "PET.M_EPOORDB_YNP_NUS_MBBL.M",
+      "renewable_diesel_stocks": "PET.M_EPOORDO_SAE_NUS_MBBL.M",
+      "gasoline_stocks": "PET.WGTSTUS1.W",
+      "gasoline_consumption": "PET.WGFUPUS2.W",
+      "gasoline_retail_price": "PET.EMM_EPM0_PTE_NUS_DPG.W",
+      "diesel_stocks": "PET.WDISTUS1.W",
+      "diesel_retail_price": "PET.EMD_EPD0_PTE_NUS_DPG.W",
+      "henry_hub_spot": "NG.RNGWHHD.D",
+      "natural_gas_industrial": "NG.N3035US2.M",
+      "natural_gas_storage": "NG.NW2_EPG0_SWO_R48_BCF.W",
+      "propane_stocks": "PET.W_EPLLPZ_SAE_NUS_MBBL.W",
+      "propane_midwest_price": "PET.W_EPLLPA_PRS_R20_DPG.W",
+      "jet_fuel_consumption": "PET.WKJUPUS2.W",
+      "jet_fuel_gulf_spot": "PET.EER_EPJK_PF4_RGC_DPG.D"
+    },
+    "by_frequency": {
+      "daily": [
+        "NG.RNGWHHD.D",
+        "NG.RNGC1.D",
+        "PET.EER_EPMRU_PF4_Y35NY_DPG.D",
+        "PET.EER_EPMRU_PF4_RGC_DPG.D",
+        "PET.EER_EPD2DXL0_PF4_Y35NY_DPG.D",
+        "PET.EER_EPD2DXL0_PF4_RGC_DPG.D",
+        "PET.EER_EPJK_PF4_RGC_DPG.D",
+        "PET.EER_EPLLPA_PF4_Y44MB_DPG.D",
+        "PET.EER_EPD2F_PF4_Y35NY_DPG.D"
+      ],
+      "weekly": [
+        "PET.W_EPOOXE_YOP_NUS_MBBLD.W",
+        "PET.W_EPOOXE_SAE_NUS_MBBL.W",
+        "PET.WGTSTUS1.W",
+        "PET.WGFUPUS2.W",
+        "PET.WDISTUS1.W",
+        "PET.WDIUPUS2.W",
+        "PET.WKJUPUS2.W",
+        "PET.W_EPLLPZ_SAE_NUS_MBBL.W",
+        "NG.NW2_EPG0_SWO_R48_BCF.W"
+      ],
+      "monthly": [
+        "PET.M_EPOORDB_YNP_NUS_MBBL.M",
+        "PET.M_EPOORDO_SAE_NUS_MBBL.M",
+        "NG.N3035US2.M",
+        "NG.N9070US2.M",
+        "NG.RNGWHHD.M"
+      ]
+    },
+    "biofuel_feedstock_tracking": {
+      "source": "Form EIA-819 Monthly Biofuels Report",
+      "url": "https://www.eia.gov/biofuels/update/",
+      "data_url": "https://www.eia.gov/dnav/pet/pet_pnp_feedbiofuel_dcu_nus_m.htm",
+      "categories_tracked": [
+        "Soybean oil",
+        "Canola oil", 
+        "Corn oil",
+        "Palm oil",
+        "Yellow grease (includes UCO)",
+        "Tallow",
+        "White grease",
+        "Poultry fat"
+      ],
+      "units": "Million pounds",
+      "frequency": "Monthly"
+    }
+  },
+  "data_gaps": {
+    "notes": "Critical data not available from EIA - requires alternative sources",
+    "corn_for_ethanol": {
+      "description": "Corn consumed for ethanol production (bushels)",
+      "alternative_source": "USDA NASS",
+      "report": "Grain Crushings and Co-Products Production",
+      "url": "https://usda.library.cornell.edu/concern/publications/n583xt96p"
+    },
+    "ddgs_production": {
+      "description": "Distillers Dried Grains with Solubles production",
+      "alternative_source": "USDA NASS",
+      "report": "Grain Crushings Report"
+    },
+    "corn_oil_from_ethanol": {
+      "description": "Corn oil extracted at ethanol plants",
+      "alternative_source": "USDA NASS",
+      "report": "Grain Crushings Report"
+    },
+    "glycerin_production": {
+      "description": "Glycerin (biodiesel co-product)",
+      "alternative_source": "Not systematically tracked"
+    },
+    "ethanol_prices": {
+      "description": "Fuel ethanol prices",
+      "alternative_source": "CBOT futures, OPIS"
+    },
+    "biodiesel_prices": {
+      "description": "Biodiesel/renewable diesel prices",
+      "alternative_source": "OPIS, industry sources"
+    },
+    "saf_volumes": {
+      "description": "Sustainable Aviation Fuel specific volumes",
+      "alternative_source": "EPA RFS RIN data, California LCFS",
+      "notes": "SAF aggregated in 'Other Biofuels' category in EIA"
+    },
+    "natural_gas_for_ammonia": {
+      "description": "Natural gas consumed specifically for ammonia/fertilizer",
+      "alternative_source": "Not available - only industrial total tracked"
+    }
+  },
+  "seds_codes": {
+    "notes": "State Energy Data System codes for state-level biofuel data",
+    "biodiesel_production_us": "BDPRPUS",
+    "biodiesel_production_state": "BDPRP[XX]",
+    "renewable_diesel_production_us": "B1PRPUS",
+    "renewable_diesel_production_state": "B1PRP[XX]"
+  }
+}

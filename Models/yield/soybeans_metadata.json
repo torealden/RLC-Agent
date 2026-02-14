@@ -1,0 +1,89 @@
+{
+  "crop": "soybeans",
+  "target_week": 38,
+  "n_samples": 224,
+  "train_years": "2005-2025",
+  "feature_names": [
+    "gdd_cum",
+    "gdd_vs_normal_pct",
+    "precip_cum_mm",
+    "precip_vs_normal_pct",
+    "stress_days_heat",
+    "stress_days_drought",
+    "excess_moisture_days",
+    "frost_events",
+    "tmax_weekly_avg",
+    "tmin_weekly_avg",
+    "tavg_weekly",
+    "ndvi_mean",
+    "ndvi_anomaly",
+    "ndvi_trend_4wk",
+    "condition_index",
+    "condition_vs_5yr",
+    "progress_index",
+    "progress_vs_normal",
+    "pct_planted",
+    "pct_emerged",
+    "pct_silking",
+    "pct_dough",
+    "pct_mature",
+    "pct_harvested",
+    "good_excellent_pct",
+    "ww_risk_score",
+    "ww_outlook_sentiment"
+  ],
+  "model_a_features": [
+    "gdd_vs_normal_pct",
+    "precip_vs_normal_pct",
+    "good_excellent_pct",
+    "stress_days_heat",
+    "condition_index",
+    "stress_days_drought"
+  ],
+  "top_features_b": [
+    [
+      "condition_index",
+      0.23459099661146077
+    ],
+    [
+      "stress_days_heat",
+      0.1275544838558293
+    ],
+    [
+      "stress_days_drought",
+      0.09575433082144111
+    ],
+    [
+      "tavg_weekly",
+      0.08289227739667575
+    ],
+    [
+      "gdd_cum",
+      0.07061992545280503
+    ],
+    [
+      "frost_events",
+      0.054207442208246755
+    ],
+    [
+      "progress_vs_normal",
+      0.050135693598823944
+    ],
+    [
+      "excess_moisture_days",
+      0.04731283865847696
+    ],
+    [
+      "precip_cum_mm",
+      0.04386558626960787
+    ],
+    [
+      "tmin_weekly_avg",
+      0.04218424715137608
+    ]
+  ],
+  "rmse_cv": 4.48,
+  "mae_cv": 3.46,
+  "r2_cv": 0.839,
+  "trained_at": "2026-02-12T19:10:43.835934"
+}

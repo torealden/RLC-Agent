@@ -1,0 +1,125 @@
+You are a senior agricultural commodity analyst at HigbyBarrett, a respected commodity research firm known for data-driven market analysis.
+
+Generate a professional weekly market report for the period: January 20 - January 27, 2026
+
+================================================================================
+REPORT STRUCTURE (Follow Exactly)
+================================================================================
+
+1. **EXECUTIVE SUMMARY** (200-250 words)
+   - Key price movements and drivers
+   - Most significant supply/demand developments
+   - Overall market sentiment assessment
+
+2. **MACRO & ENERGY UPDATE** (150 words)
+   - USD trends and impact on exports
+   - Energy prices affecting input costs
+   - Ethanol market fundamentals
+
+3. **WEATHER & CROP CONDITIONS** (150 words)
+   - Current conditions in key growing regions
+   - Impact on crop development/yields
+   - Near-term forecast implications
+
+4. **CORN ANALYSIS** (200 words)
+   - Price action and technical levels
+   - Demand factors: ethanol grind, feed, exports
+   - Supply considerations
+   - Near-term outlook
+
+5. **WHEAT ANALYSIS** (200 words)
+   - Price action by class (SRW, HRW, HRS)
+   - Export competitiveness vs Black Sea
+   - Domestic demand trends
+   - Near-term outlook
+
+6. **SOYBEAN COMPLEX ANALYSIS** (250 words)
+   - Soybeans: Price action, China demand, SA competition
+   - Soybean Meal: Domestic vs export demand, crush margins
+   - Soybean Oil: Biofuel demand, food use trends
+   - Near-term outlook
+
+7. **KEY TRIGGERS TO WATCH** (5-7 bullet points)
+   - Upcoming reports/events
+   - Critical price levels
+   - Weather developments to monitor
+
+================================================================================
+MARKET DATA
+================================================================================
+
+**CASH PRICES (Recent Bids):**
+  - CORN: $4.10/bu at Illinois Grain Bids, IL
+  - SOYBEANS: $10.37/bu at Illinois Grain Bids, IL
+
+
+**WEATHER CONDITIONS BY REGION:**
+  - ARGENTINA_NORTH: Avg 76.3°F, Precip 0.24in (7 obs)
+  - ARGENTINA_PAMPAS: Avg 77.0°F, Precip 0.0in (21 obs)
+  - BRAZIL_CENTER_WEST: Avg 76.7°F, Precip 7.33in (28 obs)
+  - BRAZIL_NORTHEAST: Avg 75.3°F, Precip 1.23in (7 obs)
+  - BRAZIL_SOUTH: Avg 69.5°F, Precip 1.04in (28 obs)
+  - US_CORN_BELT: Avg 15.8°F, Precip 0.18in (55 obs)
+  - US_DELTA: Avg 47.3°F, Precip 0.62in (14 obs)
+  - US_WHEAT_BELT: Avg 25.9°F, Precip 0.11in (35 obs)
+
+
+**EIA ETHANOL DATA (Weekly):**
+  - Production: 1119.0 kbd (-77.0 vs prior week)
+  - Stocks: 25,739 thousand barrels (+1,266 vs prior week)
+  - Blender Input: 852.0 kbd
+  - Implied Annual Corn Grind: ~6,127 million bushels
+
+**SUPPLY & DEMAND BALANCE SHEETS:**
+  **US Soybean S&D:**
+    MY 2024/25: Prod=4366.492000, Exports=1825.000000, End Stocks=380.005000
+    MY 2023/24: Prod=4162.057000, Exports=1694.931700, End Stocks=342.433000
+
+  **US Soybean Meal S&D:**
+    MY 2024/25: Prod=N/A, Exports=N/A, End Stocks=N/A
+    MY 2023/24: Prod=N/A, Exports=N/A, End Stocks=N/A
+
+  **US Soybean Oil S&D:**
+    MY 2024/25: Prod=N/A, Exports=N/A, End Stocks=N/A
+    MY 2023/24: Prod=N/A, Exports=N/A, End Stocks=N/A
+
+  **US Wheat S&D:**
+    MY 2025/26: Prod=1984.537000, Exports=900.000000, End Stocks=2134.018000
+    MY 2024/25: Prod=1978.697000, Exports=825.895000, End Stocks=1992.157000
+
+**DERIVED ANALYTICAL METRICS:**
+  - Soybean Stocks/Use Ratio: 8.7%
+  - Wheat Stocks/Use Ratio: 105.0%
+
+
+**MARKET COMMENTARY SNIPPETS:**
+  - Illinois Grain Bids (2026-01-23): Country Elevator-Central Illinois Average Price: 
+Corn: 4.10  (-21H)  Soybeans: 10.37 (-31H)...
+  - Missouri Daily Grain Bids (2026-01-23): Daily Trends: Corn 0.06 to 0.07 higher, Soybeans unchanged to 0.03 higher, Wheat 0.14 higher, Sorghum 0.06 higher.
+For the week: Corn 0.01 lower to 0.09 higher, Soybeans 0.10 to 0.15 higher, Wheat 0.0...
+  - Colorado Daily Grain Bids (2026-01-23): CO millet and sunflower bids are now a part of the National Daily Sunflower, Flax, Canola and Millet Report and are accessible at:
+https://www.ams.usda.gov/mnreports/AMS_2887.pdf...
+
+
+================================================================================
+WRITING GUIDELINES
+================================================================================
+
+STYLE:
+- Professional, analytical tone appropriate for institutional clients
+- Reference specific data points from above where available
+- Use precise language ("increased 2.3%" not "went up a bit")
+- Where data is limited, state assumptions clearly
+
+ANALYTICAL FRAMEWORK:
+- Connect supply/demand fundamentals to price implications
+- Consider both bullish and bearish factors objectively
+- Note significant YoY changes in balance sheets
+- Highlight key stocks-to-use ratios and their implications
+
+DATA LIMITATIONS:
+- If key data is missing, note it explicitly
+- Use hedged language for projections ("likely," "appears to suggest")
+- Do not fabricate specific numbers not provided in the data
+
+Generate the complete report now:

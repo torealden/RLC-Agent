@@ -1,0 +1,61 @@
+======================================================================
+HARVEST DAILY SYSTEM STATUS REPORT
+======================================================================
+Report Time: 2026-01-28 10:12:40
+Review Period: 2026-01-27 10:12 to now
+Overall Status: HEALTHY
+
+----------------------------------------------------------------------
+SUMMARY
+----------------------------------------------------------------------
+Total Errors: 0
+Total Warnings: 1
+Log Files Reviewed: 2
+Database Tables Checked: 13
+
+----------------------------------------------------------------------
+LOG FILE ANALYSIS
+----------------------------------------------------------------------
+
+✅ overnight_runner_20260127.log
+   Lines: 41 | Errors: 0 | Warnings: 1
+   SUCCESSES:
+      ✓ 2026-01-27 18:43:59,048 - YahooFuturesCollector - INFO - Saved 10 sett
+      ✓ 2026-01-27 18:43:59,048 - OvernightRunner - INFO - SUCCESS: Saved 10 s
+
+✅ hb_report_v2_20260128_060059.log
+   Lines: 0 | Errors: 0 | Warnings: 0
+
+----------------------------------------------------------------------
+DATABASE FRESHNESS
+----------------------------------------------------------------------
+🟢 bronze.weather_raw
+   Rows: 152,763 | Last Update: 4.2h ago | Status: FRESH
+🟢 bronze.weather_email_extract
+   Rows: 45 | Last Update: 2.6h ago | Status: FRESH
+🔴 bronze.weather_alerts_raw
+   Rows: 0 | Last Update: N/A | Status: EMPTY
+🟢 silver.weather_observation
+   Rows: 152,763 | Last Update: 4.2h ago | Status: FRESH
+🟢 bronze.nass_crop_progress
+   Rows: 197 | Last Update: 5.0h ago | Status: FRESH
+🟢 bronze.nass_crop_condition
+   Rows: 252 | Last Update: 5.0h ago | Status: FRESH
+🟢 bronze.nass_production
+   Rows: 52 | Last Update: 5.0h ago | Status: FRESH
+🟢 bronze.census_trade
+   Rows: 1,461 | Last Update: 2.4h ago | Status: FRESH
+🟢 bronze.cftc_cot
+   Rows: 306 | Last Update: 4.4h ago | Status: FRESH
+🟢 bronze.eia_raw_ingestion
+   Rows: 612 | Last Update: 76.5h ago | Status: FRESH
+🔴 silver.eia_petroleum_weekly
+   Rows: 0 | Last Update: N/A | Status: EMPTY
+🟢 bronze.futures_daily_settlement
+   Rows: 10 | Last Update: 15.5h ago | Status: FRESH
+🔴 bronze.conab_production
+   Rows: 0 | Last Update: N/A | Status: EMPTY
+
+----------------------------------------------------------------------
+END OF REPORT
+----------------------------------------------------------------------

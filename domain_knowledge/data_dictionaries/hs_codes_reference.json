@@ -1,0 +1,424 @@
+{
+  "metadata": {
+    "title": "RLC HS Codes Reference",
+    "description": "Harmonized System codes for US trade data - Census Bureau, USDA GATS, USITC DataWeb",
+    "version": "1.0",
+    "last_updated": "2026-02-07",
+    "notes": {
+      "code_format": "10-digit codes (first 6 digits are international HS standard, last 4 are US-specific)",
+      "exports": "Schedule B codes administered by Census Bureau",
+      "imports": "HTS codes administered by USITC",
+      "api_parameter_exports": "E_COMMODITY",
+      "api_parameter_imports": "I_COMMODITY"
+    }
+  },
+  "categories": {
+    "grains": {
+      "corn": {
+        "chapter": "10",
+        "codes": [
+          {"hs_code": "1005.10.00.00", "commodity": "Corn", "description": "Seed corn (certified for planting)"},
+          {"hs_code": "1005.90.20.20", "commodity": "Corn", "description": "Yellow dent corn (primary export grade)"},
+          {"hs_code": "1005.90.40.40", "commodity": "Corn", "description": "White corn"},
+          {"hs_code": "1005.90.40.60", "commodity": "Corn", "description": "Popcorn"},
+          {"hs_code": "1005.90.40.65", "commodity": "Corn", "description": "Other corn varieties"}
+        ]
+      },
+      "wheat": {
+        "chapter": "10",
+        "codes": [
+          {"hs_code": "1001.11.00.00", "commodity": "Wheat", "description": "Durum wheat seed"},
+          {"hs_code": "1001.19.00.00", "commodity": "Wheat", "description": "Other durum wheat"},
+          {"hs_code": "1001.91.00.00", "commodity": "Wheat", "description": "Seed wheat (other than durum)"},
+          {"hs_code": "1001.99.00.00", "commodity": "Wheat", "description": "Other wheat (primary export grades)"}
+        ]
+      },
+      "sorghum": {
+        "chapter": "10",
+        "codes": [
+          {"hs_code": "1007.10.00.00", "commodity": "Sorghum", "description": "Grain sorghum seed"},
+          {"hs_code": "1007.90.00.00", "commodity": "Sorghum", "description": "Other grain sorghum"}
+        ]
+      },
+      "barley": {
+        "chapter": "10",
+        "codes": [
+          {"hs_code": "1003.10.00.00", "commodity": "Barley", "description": "Barley seed"},
+          {"hs_code": "1003.90.00.00", "commodity": "Barley", "description": "Other barley"}
+        ]
+      },
+      "rice": {
+        "chapter": "10",
+        "codes": [
+          {"hs_code": "1006.10.00.00", "commodity": "Rice", "description": "Rice in the husk (paddy/rough)"},
+          {"hs_code": "1006.20.00.00", "commodity": "Rice", "description": "Husked (brown) rice"},
+          {"hs_code": "1006.30.00.00", "commodity": "Rice", "description": "Semi-milled or wholly milled rice"},
+          {"hs_code": "1006.40.00.00", "commodity": "Rice", "description": "Broken rice"}
+        ]
+      }
+    },
+    "oilseeds": {
+      "soybeans": {
+        "chapter": "12",
+        "codes": [
+          {"hs_code": "1201.10.00.00", "commodity": "Soybeans", "description": "Soybean seed (for sowing)"},
+          {"hs_code": "1201.90.00.05", "commodity": "Soybeans", "description": "Soybeans for oil stock"},
+          {"hs_code": "1201.90.00.10", "commodity": "Soybeans", "description": "Certified organic soybeans"},
+          {"hs_code": "1201.90.00.90", "commodity": "Soybeans", "description": "Other soybeans (crush-grade, primary export)"}
+        ]
+      },
+      "canola_rapeseed": {
+        "chapter": "12",
+        "codes": [
+          {"hs_code": "1205.10.00.00", "commodity": "Canola", "description": "Rape/colza seeds, with low erucic acid"},
+          {"hs_code": "1205.10.00.10", "commodity": "Canola", "description": "Rape/colza seeds, intended for sowing"},
+          {"hs_code": "1205.10.00.20", "commodity": "Canola", "description": "Rape/colza seeds, intended for oil stock"},
+          {"hs_code": "1205.10.00.90", "commodity": "Canola", "description": "Rape/colza seeds, not for sowing"},
+          {"hs_code": "1205.90.00.00", "commodity": "Canola", "description": "Other rape or colza seeds, not low erucic acid"},
+          {"hs_code": "1205.90.00.10", "commodity": "Canola", "description": "Other rape or colza seeds, intended for sowing"},
+          {"hs_code": "1205.90.00.20", "commodity": "Canola", "description": "Other rape or colza seeds, intended for oil stock"},
+          {"hs_code": "1205.90.00.90", "commodity": "Canola", "description": "Other rape or colza seeds, not for sowing"}
+        ]
+      },
+      "sunflower": {
+        "chapter": "12",
+        "codes": [
+          {"hs_code": "1206.00.00.00", "commodity": "Sunflower", "description": "Sunflower seeds"}
+        ]
+      },
+      "cottonseed": {
+        "chapter": "12",
+        "codes": [
+          {"hs_code": "1207.21.00.00", "commodity": "Cottonseed", "description": "Cotton seeds, for sowing"},
+          {"hs_code": "1207.29.00.00", "commodity": "Cottonseed", "description": "Cotton seeds, other (primary export)"}
+        ]
+      },
+      "other_oilseeds": {
+        "chapter": "12",
+        "codes": [
+          {"hs_code": "1204.00.00.00", "commodity": "Flaxseed", "description": "Linseed/flaxseed"},
+          {"hs_code": "1207.40.00.00", "commodity": "Sesame", "description": "Sesame seeds"},
+          {"hs_code": "1207.50.00.00", "commodity": "Mustard", "description": "Mustard seeds"},
+          {"hs_code": "1207.60.00.00", "commodity": "Safflower", "description": "Safflower seeds"},
+          {"hs_code": "1202.41.00.00", "commodity": "Peanuts", "description": "Groundnuts, in shell"},
+          {"hs_code": "1202.42.00.00", "commodity": "Peanuts", "description": "Groundnuts, shelled"}
+        ]
+      }
+    },
+    "vegetable_oils": {
+      "soybean_oil": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1507.10.00.00", "commodity": "Soybean Oil", "description": "Crude soybean oil"},
+          {"hs_code": "1507.90.20.00", "commodity": "Soybean Oil", "description": "Pharmaceutical grade soybean oil"},
+          {"hs_code": "1507.90.40.00", "commodity": "Soybean Oil", "description": "Other refined soybean oil"}
+        ]
+      },
+      "canola_rapeseed_oil": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1514.11.00.00", "commodity": "Canola Oil", "description": "Low erucic acid rapeseed oil, crude"},
+          {"hs_code": "1514.19.00.00", "commodity": "Canola Oil", "description": "Low erucic acid rapeseed oil, refined"},
+          {"hs_code": "1514.91.90.10", "commodity": "Canola Oil", "description": "Rape or colza oil, crude (other)"},
+          {"hs_code": "1514.91.90.20", "commodity": "Canola Oil", "description": "Mustard seed oil, crude"},
+          {"hs_code": "1514.99.90.00", "commodity": "Canola Oil", "description": "Refined rapeseed/colza/mustard oils"}
+        ]
+      },
+      "palm_oil": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1511.10.00.00", "commodity": "Palm Oil", "description": "Crude palm oil"},
+          {"hs_code": "1511.90.00.00", "commodity": "Palm Oil", "description": "Refined palm oil and fractions"}
+        ]
+      },
+      "corn_oil": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1515.21.00.00", "commodity": "Corn Oil", "description": "Crude corn oil"},
+          {"hs_code": "1515.29.00.00", "commodity": "Corn Oil", "description": "Refined corn oil and fractions"}
+        ]
+      },
+      "sunflower_oil": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1512.11.00.20", "commodity": "Sunflower Oil", "description": "Crude sunflower-seed oil"},
+          {"hs_code": "1512.19.00.20", "commodity": "Sunflower Oil", "description": "Refined sunflower-seed oil"}
+        ]
+      },
+      "cottonseed_oil": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1512.21.00.00", "commodity": "Cottonseed Oil", "description": "Crude cottonseed oil"},
+          {"hs_code": "1512.29.00.20", "commodity": "Cottonseed Oil", "description": "Refined cottonseed oil, once refined (edible)"},
+          {"hs_code": "1512.29.00.40", "commodity": "Cottonseed Oil", "description": "Refined cottonseed oil, fully refined (other)"}
+        ]
+      },
+      "other_vegetable_oils": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1515.11.00.00", "commodity": "Linseed Oil", "description": "Crude linseed oil"},
+          {"hs_code": "1515.19.00.00", "commodity": "Linseed Oil", "description": "Refined linseed oil"},
+          {"hs_code": "1515.50.00.00", "commodity": "Sesame Oil", "description": "Sesame oil and fractions"},
+          {"hs_code": "1515.90.21.00", "commodity": "Vegetable Oil", "description": "Crude oils (technical/industrial use)"},
+          {"hs_code": "1515.90.60.00", "commodity": "Vegetable Oil", "description": "Other crude vegetable oils"},
+          {"hs_code": "1515.90.80.00", "commodity": "Vegetable Oil", "description": "Other refined vegetable oils"}
+        ]
+      }
+    },
+    "protein_meals": {
+      "soybean_meal": {
+        "chapter": "23",
+        "notes": {
+          "2023_import_split": "Starting 2023, import HS code 2304.00.00.00 was split into 2304.00.00.10 (organic) and 2304.00.00.90 (NES). Export code 2304.00.00.00 remains unchanged.",
+          "units": "Most soybean meal codes report quantity in KG. Exception: 2302.50.00.00 (bran/hulls) reports in metric tons (MT)."
+        },
+        "codes": [
+          {"hs_code": "2304.00.00.00", "commodity": "Soybean Meal", "description": "Soybean oilcake and meal (exports + pre-2023 imports)", "flow": "exports,imports_pre2023", "unit": "KG"},
+          {"hs_code": "2304.00.00.10", "commodity": "Soybean Meal", "description": "Soybean oilcake/meal, organic (imports 2023+)", "flow": "imports_2023+", "unit": "KG", "valid_from": "2023-01"},
+          {"hs_code": "2304.00.00.90", "commodity": "Soybean Meal", "description": "Soybean oilcake/meal, NES (imports 2023+)", "flow": "imports_2023+", "unit": "KG", "valid_from": "2023-01"},
+          {"hs_code": "2302.50.00.00", "commodity": "Soybean Bran", "description": "Bran from legumes (soybean hulls)", "unit": "MT"},
+          {"hs_code": "1208.10.00.00", "commodity": "Soybean Flour", "description": "Soy flour and meal (legacy)", "unit": "KG"},
+          {"hs_code": "1208.10.00.10", "commodity": "Soybean Flour", "description": "Soy flour/meal, organic", "unit": "KG"},
+          {"hs_code": "1208.10.00.90", "commodity": "Soybean Flour", "description": "Soy flour/meal, NES", "unit": "KG"}
+        ]
+      },
+      "other_oilseed_meals": {
+        "chapter": "23",
+        "codes": [
+          {"hs_code": "2305.00.00.00", "commodity": "Peanut Meal", "description": "Peanut (groundnut) oilcake and meal"},
+          {"hs_code": "2306.10.00.00", "commodity": "Cottonseed Meal", "description": "Cottonseed oilcake and meal"},
+          {"hs_code": "2306.30.00.00", "commodity": "Sunflower Meal", "description": "Sunflower seed oilcake and meal"},
+          {"hs_code": "2306.41.00.00", "commodity": "Canola Meal", "description": "Low erucic acid rape/colza seed meal"},
+          {"hs_code": "2306.49.00.00", "commodity": "Canola Meal", "description": "Non-low erucic acid rape/colza oilcake and meal"},
+          {"hs_code": "2306.50.00.00", "commodity": "Coconut Meal", "description": "Coconut/copra oilcake and meal"},
+          {"hs_code": "2306.60.00.00", "commodity": "Palm Kernel Meal", "description": "Palm kernel oilcake and meal"},
+          {"hs_code": "2306.90.00.00", "commodity": "Oilseed Meal", "description": "Other oilseed oilcake and meal"}
+        ]
+      },
+      "ddgs": {
+        "chapter": "23",
+        "codes": [
+          {"hs_code": "2303.30.00.00", "commodity": "DDGS", "description": "Brewing/distilling dregs and waste (DDGS)"}
+        ]
+      },
+      "prepared_animal_feeds": {
+        "chapter": "23",
+        "codes": [
+          {"hs_code": "2309.90.10.00", "commodity": "Animal Feed", "description": "Mixed feeds and mixed-feed ingredients"},
+          {"hs_code": "2309.90.24.00", "commodity": "Animal Feed", "description": "Animal feed containing milk derivatives"},
+          {"hs_code": "2309.90.90.00", "commodity": "Animal Feed", "description": "Other prepared animal feeds"}
+        ]
+      }
+    },
+    "animal_fats": {
+      "lard_pig_fat": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1501.10.00.00", "commodity": "Lard", "description": "Lard"},
+          {"hs_code": "1501.20.00.40", "commodity": "Pig Fat", "description": "Choice white grease"},
+          {"hs_code": "1501.20.00.60", "commodity": "Pig Fat", "description": "Yellow grease"},
+          {"hs_code": "1501.20.00.80", "commodity": "Pig Fat", "description": "Other pig fat"},
+          {"hs_code": "1501.90.00.00", "commodity": "Poultry Fat", "description": "Poultry fat"}
+        ]
+      },
+      "tallow": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1502.10.00.20", "commodity": "Tallow", "description": "Edible tallow"},
+          {"hs_code": "1502.10.00.40", "commodity": "Tallow", "description": "Inedible tallow"},
+          {"hs_code": "1502.90.00.00", "commodity": "Tallow", "description": "Other fats of bovine animals, sheep, goats"}
+        ]
+      },
+      "processed_fats": {
+        "chapter": "15",
+        "codes": [
+          {"hs_code": "1503.00.00.00", "commodity": "Processed Fat", "description": "Lard stearin, lard oil, oleostearin, oleo-oil"},
+          {"hs_code": "1516.10.00.00", "commodity": "Processed Fat", "description": "Animal fats/oils, hydrogenated"},
+          {"hs_code": "1516.20.00.00", "commodity": "Processed Fat", "description": "Vegetable fats/oils, hydrogenated"},
+          {"hs_code": "1518.00.40.00", "commodity": "Waste Oil", "description": "Waste vegetable oil (UCO for biodiesel)"}
+        ]
+      },
+      "glycerin": {
+        "chapter": "15/29",
+        "codes": [
+          {"hs_code": "1520.00.00.00", "commodity": "Glycerin", "description": "Glycerol (glycerine), crude"},
+          {"hs_code": "2905.45.00.00", "commodity": "Glycerin", "description": "Glycerol (refined)"}
+        ]
+      }
+    },
+    "biofuels": {
+      "ethanol": {
+        "chapter": "22",
+        "codes": [
+          {"hs_code": "2207.10.10.00", "commodity": "Ethanol", "description": "Undenatured ethyl alcohol ≥80% (fuel grade)"},
+          {"hs_code": "2207.10.60.00", "commodity": "Ethanol", "description": "Undenatured ethyl alcohol (other)"},
+          {"hs_code": "2207.20.00.10", "commodity": "Ethanol", "description": "Denatured ethyl alcohol (fuel use)"},
+          {"hs_code": "2207.20.00.90", "commodity": "Ethanol", "description": "Denatured ethyl alcohol (non-fuel)"}
+        ]
+      },
+      "biodiesel": {
+        "chapter": "38",
+        "codes": [
+          {"hs_code": "3826.00.10.00", "commodity": "Biodiesel", "description": "Biodiesel, pure (B100)"},
+          {"hs_code": "3826.00.30.00", "commodity": "Biodiesel", "description": "Biodiesel and mixtures (B30-B99)"}
+        ]
+      },
+      "renewable_diesel_saf": {
+        "chapter": "27",
+        "notes": "Renewable diesel (HDRD) and SAF often classified with petroleum equivalents",
+        "codes": [
+          {"hs_code": "2710.19.21.00", "commodity": "Jet Fuel", "description": "Aviation gasoline"},
+          {"hs_code": "2710.19.45.00", "commodity": "Jet Fuel", "description": "Kerosene-type jet fuel"},
+          {"hs_code": "2710.20.05.00", "commodity": "Renewable Diesel", "description": "Biodiesel blends <B30"},
+          {"hs_code": "2710.20.90.00", "commodity": "Renewable Diesel", "description": "Other petroleum oils (includes RD)"}
+        ]
+      }
+    },
+    "petroleum": {
+      "crude_oil": {
+        "chapter": "27",
+        "codes": [
+          {"hs_code": "2709.00.10.00", "commodity": "Crude Oil", "description": "Petroleum oils, crude (low sulfur)"},
+          {"hs_code": "2709.00.20.00", "commodity": "Crude Oil", "description": "Petroleum oils, crude (other)"}
+        ]
+      },
+      "refined_products": {
+        "chapter": "27",
+        "codes": [
+          {"hs_code": "2710.12.10.00", "commodity": "Gasoline", "description": "Motor fuel/gasoline"},
+          {"hs_code": "2710.12.45.00", "commodity": "Naphtha", "description": "Naphtha"},
+          {"hs_code": "2710.19.06.00", "commodity": "Diesel", "description": "Diesel fuel"},
+          {"hs_code": "2710.19.11.00", "commodity": "Heating Oil", "description": "No. 2 heating oil"},
+          {"hs_code": "2710.19.25.00", "commodity": "Kerosene", "description": "Kerosene (other than jet fuel)"}
+        ]
+      },
+      "natural_gas": {
+        "chapter": "27",
+        "codes": [
+          {"hs_code": "2711.11.00.00", "commodity": "LNG", "description": "Liquefied natural gas"},
+          {"hs_code": "2711.21.00.00", "commodity": "Natural Gas", "description": "Natural gas in gaseous state"}
+        ]
+      }
+    },
+    "livestock_meat": {
+      "live_cattle": {
+        "chapter": "01",
+        "codes": [
+          {"hs_code": "0102.21.00.00", "commodity": "Cattle", "description": "Live cattle, pure-bred breeding"},
+          {"hs_code": "0102.29.20.00", "commodity": "Cattle", "description": "Live cattle, dairy cows"},
+          {"hs_code": "0102.29.40.00", "commodity": "Cattle", "description": "Live cattle, for immediate slaughter"},
+          {"hs_code": "0102.29.60.00", "commodity": "Cattle", "description": "Live cattle, other"}
+        ]
+      },
+      "live_swine": {
+        "chapter": "01",
+        "codes": [
+          {"hs_code": "0103.10.00.00", "commodity": "Swine", "description": "Live swine, pure-bred breeding"},
+          {"hs_code": "0103.91.00.00", "commodity": "Swine", "description": "Live swine <50 kg"},
+          {"hs_code": "0103.92.00.00", "commodity": "Swine", "description": "Live swine ≥50 kg"}
+        ]
+      },
+      "beef": {
+        "chapter": "02",
+        "codes": [
+          {"hs_code": "0201.10.05.00", "commodity": "Beef", "description": "Fresh/chilled beef carcasses (HQ)"},
+          {"hs_code": "0201.10.10.00", "commodity": "Beef", "description": "Fresh/chilled beef carcasses (other)"},
+          {"hs_code": "0201.20.02.00", "commodity": "Beef", "description": "Fresh/chilled beef cuts, bone-in (HQ)"},
+          {"hs_code": "0201.20.80.00", "commodity": "Beef", "description": "Fresh/chilled beef cuts, bone-in (other)"},
+          {"hs_code": "0201.30.02.00", "commodity": "Beef", "description": "Fresh/chilled beef, boneless (HQ)"},
+          {"hs_code": "0201.30.80.00", "commodity": "Beef", "description": "Fresh/chilled beef, boneless (other)"},
+          {"hs_code": "0202.10.05.00", "commodity": "Beef", "description": "Frozen beef carcasses (HQ)"},
+          {"hs_code": "0202.10.10.00", "commodity": "Beef", "description": "Frozen beef carcasses (other)"},
+          {"hs_code": "0202.20.02.00", "commodity": "Beef", "description": "Frozen beef cuts, bone-in (HQ)"},
+          {"hs_code": "0202.20.80.00", "commodity": "Beef", "description": "Frozen beef cuts, bone-in (other)"},
+          {"hs_code": "0202.30.02.00", "commodity": "Beef", "description": "Frozen beef, boneless (HQ)"},
+          {"hs_code": "0202.30.80.00", "commodity": "Beef", "description": "Frozen beef, boneless (other)"}
+        ]
+      },
+      "pork": {
+        "chapter": "02",
+        "codes": [
+          {"hs_code": "0203.11.00.00", "commodity": "Pork", "description": "Fresh/chilled pork carcasses"},
+          {"hs_code": "0203.12.10.00", "commodity": "Pork", "description": "Fresh/chilled hams and cuts"},
+          {"hs_code": "0203.19.40.00", "commodity": "Pork", "description": "Other fresh/chilled pork"},
+          {"hs_code": "0203.21.00.00", "commodity": "Pork", "description": "Frozen pork carcasses"},
+          {"hs_code": "0203.22.10.00", "commodity": "Pork", "description": "Frozen hams and cuts"},
+          {"hs_code": "0203.29.40.00", "commodity": "Pork", "description": "Other frozen pork"}
+        ]
+      },
+      "poultry": {
+        "chapter": "02",
+        "codes": [
+          {"hs_code": "0207.11.00.00", "commodity": "Chicken", "description": "Fresh/chilled chicken, whole"},
+          {"hs_code": "0207.12.00.00", "commodity": "Chicken", "description": "Frozen chicken, whole"},
+          {"hs_code": "0207.13.00.00", "commodity": "Chicken", "description": "Chicken cuts and offal, fresh/chilled"},
+          {"hs_code": "0207.14.00.00", "commodity": "Chicken", "description": "Chicken cuts and offal, frozen"},
+          {"hs_code": "0207.24.00.00", "commodity": "Turkey", "description": "Fresh/chilled turkey, whole"},
+          {"hs_code": "0207.25.00.00", "commodity": "Turkey", "description": "Frozen turkey, whole"},
+          {"hs_code": "0207.26.00.00", "commodity": "Turkey", "description": "Turkey cuts and offal, fresh/chilled"},
+          {"hs_code": "0207.27.00.00", "commodity": "Turkey", "description": "Turkey cuts and offal, frozen"}
+        ]
+      }
+    }
+  },
+  "quick_lookup": {
+    "by_commodity": {
+      "corn": ["1005.10.00.00", "1005.90.20.20", "1005.90.40.40", "1005.90.40.60", "1005.90.40.65"],
+      "wheat": ["1001.11.00.00", "1001.19.00.00", "1001.91.00.00", "1001.99.00.00"],
+      "soybeans": ["1201.10.00.00", "1201.90.00.05", "1201.90.00.10", "1201.90.00.90"],
+      "soybean_oil": ["1507.10.00.00", "1507.90.20.00", "1507.90.40.00"],
+      "soybean_meal": ["2304.00.00.00", "2304.00.00.10", "2304.00.00.90", "2302.50.00.00", "1208.10.00.00", "1208.10.00.10", "1208.10.00.90"],
+      "canola_oil": ["1514.11.00.00", "1514.19.00.00"],
+      "palm_oil": ["1511.10.00.00", "1511.90.00.00"],
+      "corn_oil": ["1515.21.00.00", "1515.29.00.00"],
+      "ddgs": ["2303.30.00.00"],
+      "ethanol": ["2207.10.10.00", "2207.10.60.00", "2207.20.00.10", "2207.20.00.90"],
+      "biodiesel": ["3826.00.10.00", "3826.00.30.00"],
+      "renewable_diesel": ["2710.20.05.00", "2710.20.90.00"],
+      "tallow": ["1502.10.00.20", "1502.10.00.40", "1502.90.00.00"],
+      "yellow_grease": ["1501.20.00.60"],
+      "uco": ["1518.00.40.00"],
+      "beef": ["0201.10.05.00", "0201.10.10.00", "0201.20.02.00", "0201.20.80.00", "0201.30.02.00", "0201.30.80.00", "0202.10.05.00", "0202.10.10.00", "0202.20.02.00", "0202.20.80.00", "0202.30.02.00", "0202.30.80.00"],
+      "pork": ["0203.11.00.00", "0203.12.10.00", "0203.19.40.00", "0203.21.00.00", "0203.22.10.00", "0203.29.40.00"],
+      "live_cattle": ["0102.21.00.00", "0102.29.20.00", "0102.29.40.00", "0102.29.60.00"],
+      "crude_oil": ["2709.00.10.00", "2709.00.20.00"],
+      "lng": ["2711.11.00.00"],
+      "natural_gas": ["2711.21.00.00"],
+      "cottonseed": ["1207.21.00.00", "1207.29.00.00"],
+      "cottonseed_oil": ["1512.21.00.00", "1512.29.00.20", "1512.29.00.40"],
+      "cottonseed_meal": ["2306.10.00.00"],
+      "sunflower_oil": ["1512.11.00.20", "1512.19.00.20"]
+    },
+    "primary_codes": {
+      "yellow_corn_exports": "1005.90.20.20",
+      "soybean_exports": "1201.90.00.90",
+      "wheat_exports": "1001.99.00.00",
+      "soybean_meal": "2304.00.00.00",
+      "crude_soybean_oil": "1507.10.00.00",
+      "ddgs": "2303.30.00.00",
+      "fuel_ethanol": "2207.20.00.10",
+      "biodiesel_b100": "3826.00.10.00",
+      "inedible_tallow": "1502.10.00.40",
+      "yellow_grease": "1501.20.00.60",
+      "uco_waste_oil": "1518.00.40.00",
+      "crude_palm_oil": "1511.10.00.00",
+      "crude_canola_oil": "1514.11.00.00",
+      "cottonseed": "1207.29.00.00",
+      "crude_cottonseed_oil": "1512.21.00.00",
+      "cottonseed_meal": "2306.10.00.00",
+      "crude_sunflower_oil": "1512.11.00.20"
+    },
+    "biofuel_feedstocks": {
+      "description": "Common feedstocks for biodiesel/renewable diesel production",
+      "codes": {
+        "soybean_oil_crude": "1507.10.00.00",
+        "canola_oil_crude": "1514.11.00.00",
+        "palm_oil_crude": "1511.10.00.00",
+        "corn_oil_crude": "1515.21.00.00",
+        "tallow_inedible": "1502.10.00.40",
+        "yellow_grease": "1501.20.00.60",
+        "uco_waste_oil": "1518.00.40.00"
+      }
+    }
+  }
+}
