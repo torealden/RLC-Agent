@@ -570,6 +570,20 @@ The Knowledge Graph contains **analyst-level frameworks** extracted from profess
 | RFS Mandates | `rfs2` | Renewable fuel standard mechanics |
 | SCOTUS SRE | `scotus_sre_ruling_2021` | Small refinery exemption policy crisis |
 | RVO | `rvo` | Annual renewable volume obligations |
+| **Biofuel Markets** | | |
+| BBD Balance Sheet | `bbd_balance_sheet_model` | Production vs mandate, capacity utilization, oversupply |
+| BBD Margins | `bbd_margin_model` | Revenue stack (fuel + RIN + LCFS), feedstock cost by mix |
+| Feedstock Supply Chain | `feedstock_supply_chain_model` | UCO/tallow/DCO global supply, import trends |
+| RIN Oversupply | `rin_oversupply_model` | Nesting mechanics, D4/D6 spread, mandate math |
+| SAF | `sustainable_aviation_fuel` | Emerging demand competitor for feedstocks |
+| UCO | `used_cooking_oil` | Lowest CI feedstock, China sourcing, traceability |
+| LCFS Credits | `lcfs_credit_framework` | CI-based credit value by feedstock |
+| Crusher Feasibility | `crusher_feasibility_model` | Consulting framework for crush facility analysis |
+| **Pre-Season Models** | | |
+| Prospective Plantings | `prospective_plantings_framework` | March 31 surprise probability, range analysis |
+| Insurance Price Ratio | `insurance_price_ratio_model` | Feb RP ratio predicts acreage allocation |
+| Balance Sheet Construction | `balance_sheet_construction` | Independent S&D methodology |
+| Outlook Forum Pipeline | `outlook_forum_adjustment_model` | AOF → May WASDE adjustment framework |
 
 ### Example KG Workflow
 
@@ -584,8 +598,9 @@ When a user asks about **corn positioning**:
 
 ## Current Knowledge Graph Stats
 
-- **140 nodes** (commodities, data series, models, seasonal events, policies, regions, market participants)
-- **74 edges** (causal links, competition, seasonal patterns, predictions)
-- **47 contexts** (expert rules, risk thresholds, seasonal norms, methodologies)
-- **59 sources** (HB Weekly Text reports from 2020-2023)
-- **6 extraction batches** covering the complete annual analytical cycle
+- **160 nodes** (commodities, data series, models, seasonal events, policies, regions, market participants)
+- **90 edges** (causal links, competition, seasonal patterns, predictions)
+- **64 contexts** (expert rules, risk thresholds, seasonal norms, computed percentiles, methodologies)
+- **75 sources** (HB Weekly Text reports, Fastmarkets quarterlies, consulting engagements)
+- **8 extraction batches** covering the complete annual analytical cycle + biofuel demand infrastructure
+- **9 computed contexts** (CFTC monthly percentiles × 6 commodities + crop condition weekly percentiles × 3 commodities)

@@ -39,6 +39,8 @@ COLLECTOR_KG_MAP: Dict[str, List[str]] = {
     'usda_nass_acreage': ['fsa.acreage', 'planting_pace_acreage_model', 'acreage_rules_of_thumb'],
     'usda_grain_stocks': ['usda.grain_stocks', 'quarterly_residual_model', 'usda.grain_stocks.feed_residual'],
     'drought_monitor': ['peak_weather_sensitivity', 'corn_pollination_window', 'soybean_pod_fill_aug'],
+    'eia_biofuel': ['eia.monthly_biofuel_production', 'bbd_balance_sheet_model', 'bbd_margin_model'],
+    'census_fat_grease': ['census.fat_grease_trade', 'feedstock_supply_chain_model', 'used_cooking_oil'],
 }
 
 
