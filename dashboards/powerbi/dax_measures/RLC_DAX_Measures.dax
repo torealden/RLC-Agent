@@ -1,0 +1,707 @@
+// =============================================================================
+// RLC COMMODITIES - POWER BI DAX MEASURES
+// =============================================================================
+// Complete DAX measure collection for agricultural commodity dashboards
+// Organized by category for easy implementation
+//
+// Usage: Copy these measures into your Power BI model
+// Prerequisites: Tables from rlc_commodities PostgreSQL database
+// =============================================================================
+
+
+// =============================================================================
+// SECTION 1: MARKETING YEAR CALENDAR TABLE
+// =============================================================================
+// Create this as a calculated table first - it's the foundation for time intelligence
+
+MarketingYearCalendar =
+VAR BaseCalendar = CALENDAR(DATE(2015, 1, 1), DATE(2035, 12, 31))
+RETURN
+ADDCOLUMNS(
+    BaseCalendar,
+    "CalendarYear", YEAR([Date]),
+    "CalendarMonth", MONTH([Date]),
+    "MonthName", FORMAT([Date], "MMM"),
+    "Quarter", "Q" & QUARTER([Date]),
+
+    // Corn/Soybeans Marketing Year (Sep-Aug)
+    "CornSoy_MY",
+        IF(MONTH([Date]) >= 9,
+            YEAR([Date]) & "/" & RIGHT(YEAR([Date]) + 1, 2),
+            (YEAR([Date]) - 1) & "/" & RIGHT(YEAR([Date]), 2)
+        ),
+    "CornSoy_MY_Number",
+        IF(MONTH([Date]) >= 9, YEAR([Date]), YEAR([Date]) - 1),
+    "CornSoy_MY_Month",
+        IF(MONTH([Date]) >= 9, MONTH([Date]) - 8, MONTH([Date]) + 4),
+
+    // Wheat Marketing Year (Jun-May)
+    "Wheat_MY",
+        IF(MONTH([Date]) >= 6,
+            YEAR([Date]) & "/" & RIGHT(YEAR([Date]) + 1, 2),
+            (YEAR([Date]) - 1) & "/" & RIGHT(YEAR([Date]), 2)
+        ),
+    "Wheat_MY_Number",
+        IF(MONTH([Date]) >= 6, YEAR([Date]), YEAR([Date]) - 1),
+    "Wheat_MY_Month",
+        IF(MONTH([Date]) >= 6, MONTH([Date]) - 5, MONTH([Date]) + 7),
+
+    // Cotton/Rice Marketing Year (Aug-Jul)
+    "CottonRice_MY",
+        IF(MONTH([Date]) >= 8,
+            YEAR([Date]) & "/" & RIGHT(YEAR([Date]) + 1, 2),
+            (YEAR([Date]) - 1) & "/" & RIGHT(YEAR([Date]), 2)
+        ),
+
+    // Peanut Marketing Year (Aug-Jul)
+    "Peanut_MY_Number",
+        IF(MONTH([Date]) >= 8, YEAR([Date]), YEAR([Date]) - 1),
+
+    // Utility columns
+    "WeekOfYear", WEEKNUM([Date]),
+    "DayOfYear", DATEDIFF(DATE(YEAR([Date]), 1, 1), [Date], DAY) + 1,
+    "IsWeekend", IF(WEEKDAY([Date], 2) > 5, TRUE(), FALSE())
+)
+
+
+// =============================================================================
+// SECTION 2: BALANCE SHEET STRUCTURE TABLE
+// =============================================================================
+// Create this as a calculated table for proper row ordering in matrices
+
+BalanceSheetStructure =
+DATATABLE(
+    "LineItem", STRING,
+    "SortOrder", INTEGER,
+    "Category", STRING,
+    "IsSubtotal", BOOLEAN,
+    "Indent", INTEGER,
+    {
+        {"Beginning Stocks", 1, "Supply", FALSE, 0},
+        {"Production", 2, "Supply", FALSE, 0},
+        {"Imports", 3, "Supply", FALSE, 0},
+        {"Total Supply", 4, "Supply", TRUE, 0},
+        {"", 5, "Spacer", FALSE, 0},
+        {"Feed & Residual", 6, "Demand", FALSE, 1},
+        {"Food, Seed, Industrial", 7, "Demand", FALSE, 1},
+        {"Crush", 8, "Demand", FALSE, 1},
+        {"Domestic Use", 9, "Demand", TRUE, 0},
+        {"Exports", 10, "Demand", FALSE, 0},
+        {"Total Use", 11, "Demand", TRUE, 0},
+        {"", 12, "Spacer", FALSE, 0},
+        {"Ending Stocks", 13, "Carryout", TRUE, 0},
+        {"Stocks/Use %", 14, "Ratio", FALSE, 0}
+    }
+)
+
+
+// =============================================================================
+// SECTION 3: BASIC AGGREGATION MEASURES
+// =============================================================================
+
+// -- Production Measures --
+
+Total Production =
+SUM('fas_psd'[production])
+
+Total Production MMT =
+DIVIDE([Total Production], 1000, BLANK())
+
+US Production =
+CALCULATE(
+    [Total Production],
+    'fas_psd'[country_code] = "US"
+)
+
+Brazil Production =
+CALCULATE(
+    [Total Production],
+    'fas_psd'[country_code] = "BR"
+)
+
+Argentina Production =
+CALCULATE(
+    [Total Production],
+    'fas_psd'[country_code] = "AR"
+)
+
+
+// -- Stock Measures --
+
+Beginning Stocks =
+SUM('fas_psd'[beginning_stocks])
+
+Ending Stocks =
+SUM('fas_psd'[ending_stocks])
+
+Ending Stocks MMT =
+DIVIDE([Ending Stocks], 1000, BLANK())
+
+
+// -- Trade Measures --
+
+Total Imports =
+SUM('fas_psd'[imports])
+
+Total Exports =
+SUM('fas_psd'[exports])
+
+
+// -- Consumption Measures --
+
+Domestic Consumption =
+SUM('fas_psd'[domestic_consumption])
+
+Feed & Residual =
+SUM('fas_psd'[feed_dom_consumption])
+
+FSI Use =
+SUM('fas_psd'[fsi_consumption])
+
+Crush =
+SUM('fas_psd'[crush])
+
+
+// =============================================================================
+// SECTION 4: SUPPLY & DEMAND CALCULATIONS
+// =============================================================================
+
+Total Supply =
+VAR BeginStocks = [Beginning Stocks]
+VAR Production = [Total Production]
+VAR Imports = [Total Imports]
+RETURN
+    BeginStocks + Production + Imports
+
+Total Use =
+VAR DomUse = [Domestic Consumption]
+VAR Exports = [Total Exports]
+RETURN
+    DomUse + Exports
+
+Stocks to Use Ratio =
+VAR EndingStocks = [Ending Stocks]
+VAR TotalUse = [Total Use]
+RETURN
+    DIVIDE(EndingStocks, TotalUse, BLANK())
+
+Stocks to Use % =
+[Stocks to Use Ratio] * 100
+
+Days of Use =
+VAR EndingStocks = [Ending Stocks]
+VAR DailyUse = DIVIDE([Total Use], 365, BLANK())
+RETURN
+    DIVIDE(EndingStocks, DailyUse, BLANK())
+
+// Balance Check (should be zero)
+Balance Check =
+[Total Supply] - [Total Use] - [Ending Stocks]
+
+
+// =============================================================================
+// SECTION 5: YEAR-OVER-YEAR CALCULATIONS
+// =============================================================================
+
+// Prior Year Production (for Corn/Soy marketing year)
+Production PY =
+VAR CurrentMY = MAX('fas_psd'[marketing_year])
+VAR PriorMY = CurrentMY - 1
+RETURN
+    CALCULATE(
+        [Total Production],
+        REMOVEFILTERS('fas_psd'[marketing_year]),
+        'fas_psd'[marketing_year] = PriorMY
+    )
+
+Production YoY Change =
+VAR CurrentVal = [Total Production]
+VAR PriorVal = [Production PY]
+RETURN
+    IF(
+        NOT ISBLANK(CurrentVal) && NOT ISBLANK(PriorVal),
+        CurrentVal - PriorVal,
+        BLANK()
+    )
+
+Production YoY % =
+DIVIDE([Production YoY Change], [Production PY], BLANK()) * 100
+
+// Prior Year Ending Stocks
+Ending Stocks PY =
+VAR CurrentMY = MAX('fas_psd'[marketing_year])
+VAR PriorMY = CurrentMY - 1
+RETURN
+    CALCULATE(
+        [Ending Stocks],
+        REMOVEFILTERS('fas_psd'[marketing_year]),
+        'fas_psd'[marketing_year] = PriorMY
+    )
+
+Ending Stocks YoY Change =
+[Ending Stocks] - [Ending Stocks PY]
+
+Ending Stocks YoY % =
+DIVIDE([Ending Stocks YoY Change], [Ending Stocks PY], BLANK()) * 100
+
+// Prior Year Exports
+Exports PY =
+VAR CurrentMY = MAX('fas_psd'[marketing_year])
+VAR PriorMY = CurrentMY - 1
+RETURN
+    CALCULATE(
+        [Total Exports],
+        REMOVEFILTERS('fas_psd'[marketing_year]),
+        'fas_psd'[marketing_year] = PriorMY
+    )
+
+Exports YoY % =
+DIVIDE([Total Exports] - [Exports PY], [Exports PY], BLANK()) * 100
+
+
+// =============================================================================
+// SECTION 6: 5-YEAR AVERAGE CALCULATIONS
+// =============================================================================
+
+Production 5Y Avg =
+VAR CurrentMY = MAX('fas_psd'[marketing_year])
+VAR StartMY = CurrentMY - 5
+VAR EndMY = CurrentMY - 1
+RETURN
+    CALCULATE(
+        AVERAGE('fas_psd'[production]),
+        REMOVEFILTERS('fas_psd'[marketing_year]),
+        'fas_psd'[marketing_year] >= StartMY,
+        'fas_psd'[marketing_year] <= EndMY
+    )
+
+Production vs 5Y Avg =
+[Total Production] - [Production 5Y Avg]
+
+Production vs 5Y Avg % =
+DIVIDE([Production vs 5Y Avg], [Production 5Y Avg], BLANK()) * 100
+
+Ending Stocks 5Y Avg =
+VAR CurrentMY = MAX('fas_psd'[marketing_year])
+VAR StartMY = CurrentMY - 5
+VAR EndMY = CurrentMY - 1
+RETURN
+    CALCULATE(
+        AVERAGE('fas_psd'[ending_stocks]),
+        REMOVEFILTERS('fas_psd'[marketing_year]),
+        'fas_psd'[marketing_year] >= StartMY,
+        'fas_psd'[marketing_year] <= EndMY
+    )
+
+Stocks/Use 5Y Avg =
+VAR CurrentMY = MAX('fas_psd'[marketing_year])
+VAR StartMY = CurrentMY - 5
+VAR EndMY = CurrentMY - 1
+VAR AvgStocks =
+    CALCULATE(
+        AVERAGE('fas_psd'[ending_stocks]),
+        REMOVEFILTERS('fas_psd'[marketing_year]),
+        'fas_psd'[marketing_year] >= StartMY,
+        'fas_psd'[marketing_year] <= EndMY
+    )
+VAR AvgUse =
+    CALCULATE(
+        AVERAGE('fas_psd'[domestic_consumption]) + AVERAGE('fas_psd'[exports]),
+        REMOVEFILTERS('fas_psd'[marketing_year]),
+        'fas_psd'[marketing_year] >= StartMY,
+        'fas_psd'[marketing_year] <= EndMY
+    )
+RETURN
+    DIVIDE(AvgStocks, AvgUse, BLANK()) * 100
+
+
+// =============================================================================
+// SECTION 7: MARKET SHARE CALCULATIONS
+// =============================================================================
+
+Production Share Global =
+VAR CountryProd = [Total Production]
+VAR GlobalProd =
+    CALCULATE(
+        [Total Production],
+        REMOVEFILTERS('fas_psd'[country_code]),
+        REMOVEFILTERS('fas_psd'[country])
+    )
+RETURN
+    DIVIDE(CountryProd, GlobalProd, BLANK())
+
+Production Share Global % =
+[Production Share Global] * 100
+
+Export Share Global =
+VAR CountryExports = [Total Exports]
+VAR GlobalExports =
+    CALCULATE(
+        [Total Exports],
+        REMOVEFILTERS('fas_psd'[country_code]),
+        REMOVEFILTERS('fas_psd'[country])
+    )
+RETURN
+    DIVIDE(CountryExports, GlobalExports, BLANK()) * 100
+
+US Export Market Share =
+VAR USExports = CALCULATE([Total Exports], 'fas_psd'[country_code] = "US")
+VAR GlobalExports = CALCULATE([Total Exports], REMOVEFILTERS('fas_psd'[country_code]))
+RETURN
+    DIVIDE(USExports, GlobalExports, BLANK()) * 100
+
+
+// =============================================================================
+// SECTION 8: CFTC POSITIONING MEASURES
+// =============================================================================
+
+MM Net Position =
+SUM('cftc_cot'[mm_net])
+
+MM Net Position Change =
+VAR LatestDate = MAX('cftc_cot'[report_date])
+VAR PriorDate =
+    CALCULATE(
+        MAX('cftc_cot'[report_date]),
+        'cftc_cot'[report_date] < LatestDate
+    )
+VAR LatestPos =
+    CALCULATE(
+        SUM('cftc_cot'[mm_net]),
+        'cftc_cot'[report_date] = LatestDate
+    )
+VAR PriorPos =
+    CALCULATE(
+        SUM('cftc_cot'[mm_net]),
+        'cftc_cot'[report_date] = PriorDate
+    )
+RETURN
+    LatestPos - PriorPos
+
+MM Position Percentile =
+VAR CurrentPos = [MM Net Position]
+VAR AllPositions = ALL('cftc_cot')
+VAR PositionsBelow =
+    COUNTROWS(
+        FILTER(
+            AllPositions,
+            'cftc_cot'[mm_net] < CurrentPos
+        )
+    )
+VAR TotalPositions = COUNTROWS(AllPositions)
+RETURN
+    DIVIDE(PositionsBelow, TotalPositions, 0.5) * 100
+
+Position Sentiment =
+VAR Percentile = [MM Position Percentile]
+RETURN
+    SWITCH(
+        TRUE(),
+        Percentile >= 80, "Extremely Bullish",
+        Percentile >= 60, "Bullish",
+        Percentile >= 40, "Neutral",
+        Percentile >= 20, "Bearish",
+        "Extremely Bearish"
+    )
+
+MM % of Open Interest =
+VAR NetPos = [MM Net Position]
+VAR OI = SUM('cftc_cot'[oi_total])
+RETURN
+    DIVIDE(NetPos, OI, BLANK()) * 100
+
+
+// =============================================================================
+// SECTION 9: CROP CONDITIONS MEASURES
+// =============================================================================
+
+Good Excellent % =
+VAR Good = SUM('nass_crop_condition'[good])
+VAR Excellent = SUM('nass_crop_condition'[excellent])
+RETURN
+    Good + Excellent
+
+Condition Index =
+// Weighted index (1-5 scale)
+VAR VP = SUM('nass_crop_condition'[very_poor]) * 1
+VAR P = SUM('nass_crop_condition'[poor]) * 2
+VAR F = SUM('nass_crop_condition'[fair]) * 3
+VAR G = SUM('nass_crop_condition'[good]) * 4
+VAR E = SUM('nass_crop_condition'[excellent]) * 5
+VAR Total =
+    SUM('nass_crop_condition'[very_poor]) +
+    SUM('nass_crop_condition'[poor]) +
+    SUM('nass_crop_condition'[fair]) +
+    SUM('nass_crop_condition'[good]) +
+    SUM('nass_crop_condition'[excellent])
+RETURN
+    DIVIDE(VP + P + F + G + E, Total, BLANK())
+
+GE % Prior Year =
+VAR CurrentWeek = MAX('nass_crop_condition'[week_ending])
+VAR PriorYearWeek = CurrentWeek - 364
+RETURN
+    CALCULATE(
+        [Good Excellent %],
+        REMOVEFILTERS('nass_crop_condition'[week_ending]),
+        'nass_crop_condition'[week_ending] = PriorYearWeek
+    )
+
+GE % Change vs PY =
+[Good Excellent %] - [GE % Prior Year]
+
+
+// =============================================================================
+// SECTION 10: BRAZIL PRODUCTION MEASURES
+// =============================================================================
+
+Brazil Production MT =
+SUM('conab_production'[production_mt])
+
+Brazil Production MMT =
+DIVIDE([Brazil Production MT], 1000000, BLANK())
+
+Brazil Area Planted =
+SUM('conab_production'[planted_area_ha])
+
+Brazil Area Planted MHA =
+DIVIDE([Brazil Area Planted], 1000000, BLANK())
+
+Brazil Yield =
+DIVIDE([Brazil Production MT], SUM('conab_production'[harvested_area_ha]), BLANK())
+
+Brazil Production by State Rank =
+RANKX(
+    ALL('conab_production'[state]),
+    [Brazil Production MMT],
+    ,
+    DESC,
+    DENSE
+)
+
+// Top 5 States
+Brazil Top 5 States Production =
+CALCULATE(
+    [Brazil Production MMT],
+    TOPN(
+        5,
+        ALL('conab_production'[state]),
+        [Brazil Production MMT],
+        DESC
+    )
+)
+
+
+// =============================================================================
+// SECTION 11: EXPORT SALES TRACKING
+// =============================================================================
+
+Accumulated Exports =
+SUM('fas_export_sales'[accumulated_exports])
+
+Outstanding Sales =
+SUM('fas_export_sales'[outstanding_sales])
+
+Weekly Exports =
+SUM('fas_export_sales'[weekly_exports])
+
+Total Commitments =
+[Accumulated Exports] + [Outstanding Sales]
+
+Export Pace vs USDA =
+VAR Accumulated = [Accumulated Exports]
+VAR USDAEstimate = [Total Exports] * 1000  // Convert to MT
+VAR WeeksElapsed =
+    DATEDIFF(
+        DATE(YEAR(MAX('fas_export_sales'[week_ending])) - 1, 9, 1),
+        MAX('fas_export_sales'[week_ending]),
+        WEEK
+    )
+VAR ExpectedPace = USDAEstimate * WeeksElapsed / 52
+RETURN
+    DIVIDE(Accumulated, ExpectedPace, BLANK()) * 100
+
+
+// =============================================================================
+// SECTION 12: MONTHLY REALIZED TRACKING
+// =============================================================================
+
+Monthly Crush =
+CALCULATE(
+    SUM('monthly_realized'[realized_value]),
+    'monthly_realized'[attribute] = "crush"
+)
+
+Monthly Oil Production =
+CALCULATE(
+    SUM('monthly_realized'[realized_value]),
+    'monthly_realized'[attribute] = "oil_production_crude"
+)
+
+YTD Crush =
+VAR CurrentMY = MAX('monthly_realized'[marketing_year])
+RETURN
+    CALCULATE(
+        SUM('monthly_realized'[realized_value]),
+        'monthly_realized'[attribute] = "crush",
+        'monthly_realized'[marketing_year] = CurrentMY
+    )
+
+Crush Pace vs USDA =
+VAR YTDCrush = [YTD Crush]
+VAR USDAEstimate = [Crush] * 1000000  // Adjust units as needed
+VAR MonthsElapsed = DISTINCTCOUNT('monthly_realized'[month])
+VAR ExpectedPace = USDAEstimate * MonthsElapsed / 12
+RETURN
+    DIVIDE(YTDCrush, ExpectedPace, BLANK()) * 100
+
+
+// =============================================================================
+// SECTION 13: UNIT CONVERSION MEASURES
+// =============================================================================
+
+// Bushels to Metric Tons
+Production Bu to MT (Corn) =
+[Total Production] * 0.0254
+
+Production Bu to MT (Soybeans) =
+[Total Production] * 0.0272
+
+Production Bu to MT (Wheat) =
+[Total Production] * 0.0272
+
+// Metric Tons to Bushels
+Production MT to Bu (Corn) =
+[Total Production] * 39.368
+
+Production MT to Bu (Soybeans) =
+[Total Production] * 36.744
+
+
+// =============================================================================
+// SECTION 14: CONDITIONAL FORMATTING MEASURES
+// =============================================================================
+
+STU Risk Color =
+VAR STU = [Stocks to Use %]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(STU), BLANK(),
+        STU >= 25, "#2E7D32",
+        STU >= 15, "#66BB6A",
+        STU >= 10, "#FFC107",
+        STU >= 5, "#FF9800",
+        "#C62828"
+    )
+
+YoY Change Arrow =
+VAR Change = [Production YoY %]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(Change), "",
+        Change > 10, "▲▲",
+        Change > 0, "▲",
+        Change > -10, "▼",
+        "▼▼"
+    )
+
+YoY Change Color =
+VAR Change = [Production YoY %]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(Change), BLANK(),
+        Change > 0, "#2E7D32",
+        Change < 0, "#C62828",
+        "#5F6B6D"
+    )
+
+Position Signal Color =
+VAR Percentile = [MM Position Percentile]
+RETURN
+    SWITCH(
+        TRUE(),
+        Percentile >= 80, "#1B5E20",
+        Percentile >= 60, "#66BB6A",
+        Percentile >= 40, "#FFC107",
+        Percentile >= 20, "#EF5350",
+        "#B71C1C"
+    )
+
+
+// =============================================================================
+// SECTION 15: KPI DISPLAY MEASURES
+// =============================================================================
+
+// Formatted display measures for cards
+
+Production Display =
+VAR Prod = [Total Production MMT]
+RETURN
+    FORMAT(Prod, "#,##0.0") & " MMT"
+
+Stocks/Use Display =
+VAR STU = [Stocks to Use %]
+RETURN
+    FORMAT(STU, "#0.0") & "%"
+
+YoY Change Display =
+VAR Change = [Production YoY %]
+VAR Arrow = [YoY Change Arrow]
+RETURN
+    Arrow & " " & FORMAT(Change, "+#0.0%;-#0.0%")
+
+Position Display =
+VAR Pos = [MM Net Position]
+VAR Sign = IF(Pos >= 0, "+", "")
+RETURN
+    Sign & FORMAT(Pos / 1000, "#,##0") & "K"
+
+
+// =============================================================================
+// SECTION 16: BALANCE SHEET MATRIX MEASURE
+// =============================================================================
+
+Balance Sheet Value =
+VAR LineItem = SELECTEDVALUE('BalanceSheetStructure'[LineItem])
+RETURN
+    SWITCH(
+        LineItem,
+        "Beginning Stocks", [Beginning Stocks],
+        "Production", [Total Production],
+        "Imports", [Total Imports],
+        "Total Supply", [Total Supply],
+        "Feed & Residual", [Feed & Residual],
+        "Food, Seed, Industrial", [FSI Use],
+        "Crush", [Crush],
+        "Domestic Use", [Domestic Consumption],
+        "Exports", [Total Exports],
+        "Total Use", [Total Use],
+        "Ending Stocks", [Ending Stocks],
+        "Stocks/Use %", [Stocks to Use %],
+        BLANK()
+    )
+
+Balance Sheet Value PY =
+VAR LineItem = SELECTEDVALUE('BalanceSheetStructure'[LineItem])
+VAR CurrentMY = MAX('fas_psd'[marketing_year])
+VAR PriorMY = CurrentMY - 1
+RETURN
+    CALCULATE(
+        [Balance Sheet Value],
+        REMOVEFILTERS('fas_psd'[marketing_year]),
+        'fas_psd'[marketing_year] = PriorMY
+    )
+
+Balance Sheet YoY Change =
+[Balance Sheet Value] - [Balance Sheet Value PY]
+
+Balance Sheet YoY % =
+DIVIDE([Balance Sheet YoY Change], [Balance Sheet Value PY], BLANK()) * 100
+
+
+// =============================================================================
+// END OF DAX MEASURES
+// =============================================================================

@@ -1,0 +1,89 @@
+{
+  "crop": "cotton",
+  "target_week": 38,
+  "n_samples": 77,
+  "train_years": "2005-2025",
+  "feature_names": [
+    "gdd_cum",
+    "gdd_vs_normal_pct",
+    "precip_cum_mm",
+    "precip_vs_normal_pct",
+    "stress_days_heat",
+    "stress_days_drought",
+    "excess_moisture_days",
+    "frost_events",
+    "tmax_weekly_avg",
+    "tmin_weekly_avg",
+    "tavg_weekly",
+    "ndvi_mean",
+    "ndvi_anomaly",
+    "ndvi_trend_4wk",
+    "condition_index",
+    "condition_vs_5yr",
+    "progress_index",
+    "progress_vs_normal",
+    "pct_planted",
+    "pct_emerged",
+    "pct_silking",
+    "pct_dough",
+    "pct_mature",
+    "pct_harvested",
+    "good_excellent_pct",
+    "ww_risk_score",
+    "ww_outlook_sentiment"
+  ],
+  "model_a_features": [
+    "gdd_vs_normal_pct",
+    "precip_vs_normal_pct",
+    "good_excellent_pct",
+    "stress_days_heat",
+    "condition_index",
+    "stress_days_drought"
+  ],
+  "top_features_b": [
+    [
+      "stress_days_heat",
+      0.22863063596522581
+    ],
+    [
+      "frost_events",
+      0.14823434937440483
+    ],
+    [
+      "condition_index",
+      0.09988895533265077
+    ],
+    [
+      "precip_vs_normal_pct",
+      0.08356680361405892
+    ],
+    [
+      "excess_moisture_days",
+      0.07466787292187384
+    ],
+    [
+      "precip_cum_mm",
+      0.06164734001039634
+    ],
+    [
+      "tmin_weekly_avg",
+      0.05676164220678497
+    ],
+    [
+      "stress_days_drought",
+      0.0491926122901555
+    ],
+    [
+      "tmax_weekly_avg",
+      0.042989490531048925
+    ],
+    [
+      "gdd_vs_normal_pct",
+      0.033951287164447855
+    ]
+  ],
+  "rmse_cv": 161.97,
+  "mae_cv": 127.32,
+  "r2_cv": 0.588,
+  "trained_at": "2026-02-12T19:10:25.800724"
+}

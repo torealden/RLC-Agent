@@ -1,0 +1,98 @@
+{
+  "collector_name": "epa_echo_collector",
+  "collector_version": "1.0.0",
+  "description": "EPA ECHO facility data for soybean and oilseed processors",
+
+  "api": {
+    "base_url": "https://echodata.epa.gov/echo/",
+    "endpoints": {
+      "air_facility_search": "air_rest_services.get_facilities",
+      "air_download": "air_rest_services.get_download",
+      "detailed_facility_report": "dfr_rest_services.get_dfr",
+      "metadata": "air_rest_services.metadata"
+    },
+    "requires_api_key": false,
+    "rate_limit_delay_seconds": 1.0,
+    "max_retries": 3,
+    "backoff_multiplier": 2,
+    "timeout_seconds": 30
+  },
+
+  "search_profiles": {
+    "soybean_oilseed": {
+      "description": "Soybean and oilseed processing plants",
+      "sic_codes": ["2075", "2076"],
+      "naics_codes": ["311224", "311222", "311223", "311225"],
+      "sic_descriptions": {
+        "2075": "Soybean Oil Mills",
+        "2076": "Vegetable Oil Mills, Except Corn, Cottonseed, and Soybean"
+      },
+      "naics_descriptions": {
+        "311224": "Soybean and Other Oilseed Processing (NAICS 2017)",
+        "311222": "Soybean Processing (NAICS 2022)",
+        "311223": "Other Oilseed Processing (NAICS 2022)",
+        "311225": "Fats and Oils Refining and Blending"
+      }
+    },
+    "ethanol": {
+      "description": "Ethanol production plants",
+      "sic_codes": ["2869"],
+      "naics_codes": ["325193", "325199"],
+      "sic_descriptions": {
+        "2869": "Industrial Organic Chemicals, NEC"
+      },
+      "naics_descriptions": {
+        "325193": "Ethyl Alcohol Manufacturing",
+        "325199": "All Other Basic Organic Chemical Manufacturing"
+      }
+    },
+    "biodiesel_renewable_diesel": {
+      "description": "Biodiesel and renewable diesel plants",
+      "sic_codes": ["2911", "2992"],
+      "naics_codes": ["324199", "325199"],
+      "sic_descriptions": {
+        "2911": "Petroleum Refining",
+        "2992": "Lubricating Oils and Greases"
+      },
+      "naics_descriptions": {
+        "324199": "All Other Petroleum and Coal Products Manufacturing",
+        "325199": "All Other Basic Organic Chemical Manufacturing"
+      }
+    },
+    "wheat_milling": {
+      "description": "Wheat and flour milling plants",
+      "sic_codes": ["2041", "2044", "2045", "2046"],
+      "naics_codes": ["311211", "311212", "311213"],
+      "sic_descriptions": {
+        "2041": "Flour and Other Grain Mill Products",
+        "2044": "Rice Milling",
+        "2045": "Prepared Flour Mixes and Doughs",
+        "2046": "Wet Corn Milling"
+      },
+      "naics_descriptions": {
+        "311211": "Flour Milling",
+        "311212": "Rice Milling",
+        "311213": "Malt Manufacturing"
+      }
+    }
+  },
+
+  "paths": {
+    "output_dir": "collectors/epa_echo/output",
+    "raw_json_dir": "collectors/epa_echo/raw",
+    "collector_log_dir": "logs/collectors/epa_echo",
+    "checker_log_dir": "logs/checkers/epa_echo"
+  },
+
+  "download_columns": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30",
+
+  "checker": {
+    "default_mode": "sample",
+    "sample_percentage": 20,
+    "mismatch_severity": {
+      "HIGH": ["AIRStreet", "AIRCity", "FacLat", "FacLong"],
+      "MEDIUM": ["AIRName", "AIRStatus", "FacSICCodes", "AIRNAICS", "AIRPrograms", "AIRClassification"],
+      "LOW": ["AIRCounty", "AIREPARegion", "FacFIPSCode", "AIRUniverse"]
+    }
+  }
+}

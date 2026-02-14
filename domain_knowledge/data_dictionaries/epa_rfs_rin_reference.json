@@ -1,0 +1,559 @@
+{
+  "metadata": {
+    "title": "EPA Renewable Fuel Standard (RFS) and RIN Reference",
+    "version": "1.0",
+    "created": "2026-01-28",
+    "author": "RLC Consulting",
+    "description": "Machine-readable reference for EPA RFS program data, RIN categories, compliance requirements, and data sources",
+    "update_frequency": "As EPA rules change",
+    "related_references": [
+      {
+        "name": "EIA Series Reference",
+        "path": "/mnt/user-data/outputs/eia_series_reference.json",
+        "description": "EIA biofuel and energy production series IDs"
+      }
+    ]
+  },
+  "program_overview": {
+    "name": "Renewable Fuel Standard (RFS)",
+    "administrator": "EPA Office of Transportation and Air Quality (OTAQ)",
+    "statutory_authority": [
+      {
+        "law": "Energy Policy Act of 2005",
+        "citation": "P.L. 109-58",
+        "description": "Established RFS1"
+      },
+      {
+        "law": "Energy Independence and Security Act of 2007",
+        "citation": "P.L. 110-140",
+        "description": "Expanded to RFS2, set volume tables through 2022"
+      },
+      {
+        "law": "Clean Air Act Section 211(o)",
+        "citation": "42 U.S.C. 7545(o)",
+        "description": "Codified RFS requirements"
+      }
+    ],
+    "key_dates": {
+      "rfs1_enacted": "2005",
+      "rfs2_enacted": "2007",
+      "emts_launched": "2010-07-01",
+      "statutory_volumes_end": "2022",
+      "set_authority_begins": "2023"
+    }
+  },
+  "d_codes": {
+    "D3": {
+      "name": "Cellulosic Biofuel",
+      "ghg_reduction_threshold": ">=60%",
+      "ghg_baseline": "2005 petroleum",
+      "feedstock_requirement": "Cellulose, hemicellulose, or lignin",
+      "common_fuel_types": [
+        "Cellulosic ethanol",
+        "Renewable CNG/LNG from cellulosic sources",
+        "Biogas from landfills",
+        "Biogas from agricultural digesters",
+        "Renewable natural gas (RNG) from cellulosic feedstock"
+      ],
+      "satisfies_rvos": ["cellulosic", "advanced", "total_renewable"],
+      "typical_equivalence_value": 1.0,
+      "notes": "Primary growth category; RNG from landfills is major contributor"
+    },
+    "D4": {
+      "name": "Biomass-Based Diesel (BBD)",
+      "ghg_reduction_threshold": ">=50%",
+      "ghg_baseline": "2005 diesel",
+      "feedstock_requirement": "Non-cellulosic renewable biomass",
+      "common_fuel_types": [
+        "Biodiesel (FAME)",
+        "Renewable diesel (hydrotreated)",
+        "Renewable jet fuel (non-cellulosic)"
+      ],
+      "common_feedstocks": [
+        "Soybean oil",
+        "Canola oil",
+        "Corn oil (distillers)",
+        "Used cooking oil (UCO)",
+        "Tallow",
+        "Yellow grease",
+        "White grease",
+        "Poultry fat"
+      ],
+      "satisfies_rvos": ["biomass_based_diesel", "advanced", "total_renewable"],
+      "typical_equivalence_values": {
+        "biodiesel": 1.5,
+        "renewable_diesel": 1.7
+      },
+      "notes": "Largest advanced biofuel category; soybean oil is marginal feedstock"
+    },
+    "D5": {
+      "name": "Advanced Biofuel",
+      "ghg_reduction_threshold": ">=50%",
+      "ghg_baseline": "2005 petroleum",
+      "feedstock_requirement": "Any renewable biomass EXCEPT corn starch",
+      "common_fuel_types": [
+        "Sugarcane ethanol",
+        "Non-corn starch ethanol (wheat, barley, sorghum)",
+        "Renewable naphtha",
+        "Renewable LPG",
+        "RNG not qualifying for D3",
+        "Renewable diesel via co-processing"
+      ],
+      "satisfies_rvos": ["advanced", "total_renewable"],
+      "typical_equivalence_value": 1.0,
+      "notes": "Catch-all for advanced biofuels not fitting D3 or D4"
+    },
+    "D6": {
+      "name": "Renewable Fuel (Conventional)",
+      "ghg_reduction_threshold": ">=20% for post-2007 facilities",
+      "ghg_baseline": "2005 petroleum",
+      "feedstock_requirement": "Any qualifying renewable biomass",
+      "common_fuel_types": [
+        "Corn starch ethanol",
+        "Grain sorghum ethanol"
+      ],
+      "satisfies_rvos": ["total_renewable"],
+      "typical_equivalence_value": 1.0,
+      "grandfathering": "Facilities operating before Dec 19, 2007 exempt from GHG threshold",
+      "notes": "Largest volume category; ~95% is corn ethanol"
+    },
+    "D7": {
+      "name": "Cellulosic Diesel",
+      "ghg_reduction_threshold": ">=60%",
+      "ghg_baseline": "2005 petroleum",
+      "feedstock_requirement": "Cellulose, hemicellulose, or lignin",
+      "common_fuel_types": [
+        "Renewable diesel from cellulosic biomass",
+        "Cellulosic jet fuel (SAF)"
+      ],
+      "satisfies_rvos": ["cellulosic_or_bbd", "advanced", "total_renewable"],
+      "typical_equivalence_values": {
+        "renewable_diesel": 1.7,
+        "saf": 1.6
+      },
+      "special_rule": "Obligated party chooses whether to apply toward cellulosic OR BBD RVO (not both)",
+      "notes": "Dual-qualifying category for cellulosic diesel fuels"
+    }
+  },
+  "nesting_structure": {
+    "description": "Inner categories can satisfy outer RVO requirements",
+    "hierarchy": {
+      "total_renewable_fuel": {
+        "satisfied_by": ["D3", "D4", "D5", "D6", "D7"],
+        "level": 1
+      },
+      "advanced_biofuel": {
+        "satisfied_by": ["D3", "D4", "D5", "D7"],
+        "level": 2
+      },
+      "cellulosic_biofuel": {
+        "satisfied_by": ["D3", "D7"],
+        "level": 3
+      },
+      "biomass_based_diesel": {
+        "satisfied_by": ["D4", "D7"],
+        "level": 3
+      }
+    },
+    "d7_rule": "D7 can satisfy cellulosic OR BBD RVO, but not both simultaneously"
+  },
+  "equivalence_values": {
+    "cfr_reference": "40 CFR 80.1415",
+    "baseline": "Denatured ethanol = 1.0",
+    "values": {
+      "denatured_ethanol": {
+        "ev": 1.0,
+        "unit": "per gallon"
+      },
+      "biodiesel": {
+        "ev": 1.5,
+        "unit": "per gallon",
+        "notes": "Fatty acid methyl esters (FAME)"
+      },
+      "butanol": {
+        "ev": 1.3,
+        "unit": "per gallon"
+      },
+      "renewable_diesel": {
+        "ev": 1.7,
+        "unit": "per gallon",
+        "requirement": "LHV >= 123,500 Btu/gal"
+      },
+      "renewable_cng_lng_rng": {
+        "ev": 1.0,
+        "unit": "per 77,000 Btu LHV"
+      },
+      "renewable_electricity": {
+        "ev": 1.0,
+        "unit": "per 22.6 kWh",
+        "status": "Being removed in proposed 2026 rule"
+      },
+      "sustainable_aviation_fuel": {
+        "ev": 1.6,
+        "unit": "per gallon",
+        "notes": "Varies by pathway"
+      }
+    },
+    "calculation": "Physical gallons × EV = RIN gallons"
+  },
+  "rin_structure": {
+    "total_length": 38,
+    "format": "KYYYYCCCCFFFFFBBBBBRRDSSSSSSSSEEEEEEEE",
+    "fields": [
+      {
+        "name": "K",
+        "position": 1,
+        "length": 1,
+        "description": "Assignment code",
+        "values": {
+          "1": "Assigned (attached to fuel)",
+          "2": "Separated (detached, tradable)"
+        }
+      },
+      {
+        "name": "YYYY",
+        "position": "2-5",
+        "length": 4,
+        "description": "Year of production"
+      },
+      {
+        "name": "CCCC",
+        "position": "6-9",
+        "length": 4,
+        "description": "Company registration ID"
+      },
+      {
+        "name": "FFFFF",
+        "position": "10-14",
+        "length": 5,
+        "description": "Facility ID"
+      },
+      {
+        "name": "BBBBB",
+        "position": "15-19",
+        "length": 5,
+        "description": "Batch number"
+      },
+      {
+        "name": "RR",
+        "position": "20-21",
+        "length": 2,
+        "description": "Equivalence value (e.g., 10, 15, 17)"
+      },
+      {
+        "name": "D",
+        "position": 22,
+        "length": 1,
+        "description": "D-code (3, 4, 5, 6, or 7)"
+      },
+      {
+        "name": "SSSSSSSS",
+        "position": "23-30",
+        "length": 8,
+        "description": "Start RIN number for batch"
+      },
+      {
+        "name": "EEEEEEEE",
+        "position": "31-38",
+        "length": 8,
+        "description": "End RIN number for batch"
+      }
+    ]
+  },
+  "rin_lifecycle": {
+    "stages": [
+      {
+        "stage": "generation",
+        "description": "RIN created when renewable fuel produced/imported",
+        "k_code": 1,
+        "reporting_deadline": "5 business days"
+      },
+      {
+        "stage": "assignment",
+        "description": "RIN attached to physical fuel batch",
+        "k_code": 1,
+        "notes": "RIN travels with fuel"
+      },
+      {
+        "stage": "separation",
+        "description": "RIN detached from fuel batch",
+        "k_code": 2,
+        "cfr_reference": "40 CFR 80.1429",
+        "reporting_deadline": "5 business days",
+        "conditions": [
+          "Fuel blended into gasoline/diesel",
+          "Fuel used neat as transportation fuel",
+          "Fuel exported",
+          "Fuel designated for heating oil"
+        ]
+      },
+      {
+        "stage": "trading",
+        "description": "Separated RINs traded between registered parties",
+        "k_code": 2,
+        "reporting_deadline": "5 business days"
+      },
+      {
+        "stage": "retirement",
+        "description": "RINs submitted for compliance or other purposes",
+        "types": {
+          "compliance": {
+            "description": "Annual RVO compliance",
+            "deadline": "March 31 following compliance year"
+          },
+          "export": {
+            "description": "Renewable fuel export",
+            "deadline": "30 days after export"
+          },
+          "invalid": {
+            "description": "Error correction",
+            "deadline": "As discovered"
+          }
+        }
+      },
+      {
+        "stage": "expiration",
+        "description": "Unused RINs expire after validity period",
+        "validity": "Year generated + 1 year",
+        "example": "2024 RINs valid for 2024-2025 compliance only"
+      }
+    ],
+    "prior_year_rin_limit": "20% of current year RVO"
+  },
+  "rvo_requirements": {
+    "2023_2025_final": {
+      "rule_name": "Set 1 Rule",
+      "citation": "88 FR 44468",
+      "published": "2023-07-12",
+      "volumes_billion_rins": {
+        "2023": {
+          "cellulosic": 0.72,
+          "biomass_based_diesel_gal": 2.82,
+          "advanced": 5.94,
+          "total_renewable": 20.94
+        },
+        "2024": {
+          "cellulosic": 1.09,
+          "biomass_based_diesel_gal": 2.89,
+          "advanced": 6.54,
+          "total_renewable": 21.54
+        },
+        "2025": {
+          "cellulosic": 1.19,
+          "cellulosic_note": "Partially waived from original",
+          "biomass_based_diesel_gal": 2.95,
+          "advanced": 7.33,
+          "total_renewable": 22.33
+        }
+      }
+    },
+    "2026_2027_proposed": {
+      "rule_name": "Set 2 Rule (Proposed)",
+      "citation": "90 FR 25786",
+      "published": "2025-06-17",
+      "status": "proposed",
+      "volumes_billion_rins": {
+        "2026": {
+          "cellulosic": 1.30,
+          "biomass_based_diesel": 7.12,
+          "advanced": 9.02,
+          "total_renewable": 24.52
+        },
+        "2027": {
+          "cellulosic": 1.36,
+          "biomass_based_diesel": 7.50,
+          "advanced": 9.46,
+          "total_renewable": 25.46
+        }
+      },
+      "key_changes": [
+        "BBD specified in RINs instead of physical gallons",
+        "Reducing RIN value for imported fuels/feedstocks to 50%",
+        "Removing renewable electricity (eRINs)",
+        "New equivalence values for RD, naphtha, jet fuel"
+      ]
+    },
+    "calculation": {
+      "formula": "RVO = (Gasoline_Volume + Diesel_Volume) × Percentage_Standard + Deficit_Carryover",
+      "deadline": "March 31 following compliance year"
+    }
+  },
+  "party_categories": {
+    "obligated_parties": {
+      "description": "Must retire RINs to satisfy RVO",
+      "types": [
+        {
+          "name": "Refiner",
+          "description": "Produces gasoline or diesel fuel domestically"
+        },
+        {
+          "name": "Importer",
+          "description": "Imports gasoline or diesel fuel into the U.S."
+        }
+      ]
+    },
+    "non_obligated_parties": [
+      {
+        "name": "RIN Originator",
+        "description": "Domestic renewable fuel producer or importer generating RINs"
+      },
+      {
+        "name": "RIN Owner",
+        "description": "Owns/transacts RINs but does not generate or retire for compliance"
+      },
+      {
+        "name": "Exporter",
+        "description": "Exports renewable fuel; must retire RINs within 30 days"
+      },
+      {
+        "name": "Foreign Producer",
+        "description": "Foreign renewable fuel producer per 40 CFR 80.1466"
+      }
+    ]
+  },
+  "data_sources": {
+    "emts_public_data": {
+      "name": "EPA EMTS Public Data Portal",
+      "url": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/public-data-renewable-fuel-standard",
+      "platform": "Qlik Sense",
+      "data_start": "2010-07-01",
+      "update_frequency": "monthly",
+      "data_lag": "30-60 days",
+      "api_available": false
+    },
+    "csv_downloads": {
+      "rin_generation": {
+        "page_url": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/spreadsheet-rin-generation-data-renewable-fuel",
+        "file_pattern": "generationbreakout_[mon][year].csv",
+        "base_url": "https://www.epa.gov/system/files/other-files/",
+        "example_urls": [
+          "https://www.epa.gov/system/files/other-files/2025-12/generationbreakout_nov2025.csv",
+          "https://www.epa.gov/system/files/other-files/2025-11/generationbreakout_oct2025.csv"
+        ],
+        "update_frequency": "monthly"
+      },
+      "rin_generation_volume": {
+        "page_url": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/spreadsheet-rin-generation-and-renewable-fuel",
+        "update_frequency": "monthly"
+      },
+      "rin_generation_fuel_type": {
+        "page_url": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/spreadsheet-rin-generation-and-renewable-fuel-0",
+        "update_frequency": "monthly"
+      },
+      "available_rins": {
+        "page_url": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/spreadsheet-available-rins-date-renewable-fuel",
+        "update_frequency": "quarterly"
+      },
+      "rin_retirement": {
+        "page_url": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/spreadsheet-rin-retirement-data-renewable-fuel",
+        "update_frequency": "annual"
+      },
+      "rin_separation": {
+        "page_url": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/spreadsheet-rin-separation-data-renewable-fuel",
+        "update_frequency": "monthly"
+      }
+    },
+    "reporting_codes": {
+      "page_url": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/reporting-codes-and-fuel-pathways-epa-moderated",
+      "description": "EMTS fuel type codes and approved pathways"
+    },
+    "approved_pathways": {
+      "page_url": "https://www.epa.gov/renewable-fuel-standard/approved-pathways-renewable-fuel",
+      "description": "Full list of approved fuel pathways"
+    }
+  },
+  "price_data": {
+    "source": "EPA weekly RIN price reports",
+    "coverage": "Separated RINs only",
+    "metrics": ["Volume-weighted average price", "By D-code", "By QAP status"],
+    "filters": {
+      "pre_2020": {
+        "D3": {"min": 0.05, "max": 3.50},
+        "D4": {"min": 0.05, "max": 2.00},
+        "D5": {"min": 0.05, "max": 2.00},
+        "D6": {"min": 0.01, "max": 2.00}
+      },
+      "post_2019": {
+        "D3": {"min": 0.05, "max": 3.50},
+        "D4": {"min": 0.05, "max": 3.00},
+        "D5": {"min": 0.05, "max": 3.00},
+        "D6": {"min": 0.01, "max": 2.00}
+      }
+    }
+  },
+  "cellulosic_waiver_credit": {
+    "purpose": "Alternative compliance when cellulosic biofuel unavailable",
+    "mechanism": "CWC + D4 or D5 RIN = satisfies cellulosic RVO",
+    "price_formula": "MAX($0.25, $3.00 - 12_month_avg_wholesale_gasoline)",
+    "market_impact": "Sets ceiling for D3 RIN prices"
+  },
+  "regulatory_references": {
+    "primary_regulation": "40 CFR Part 80 Subpart M",
+    "ecfr_url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-C/part-80/subpart-M",
+    "key_sections": {
+      "definitions": "40 CFR 80.1401",
+      "standards_determination": "40 CFR 80.1405",
+      "rvo_calculations": "40 CFR 80.1406",
+      "equivalence_values": "40 CFR 80.1415",
+      "d_codes_pathways": "40 CFR 80.1426",
+      "compliance_demonstration": "40 CFR 80.1427",
+      "rin_separation": "40 CFR 80.1429",
+      "invalid_rins": "40 CFR 80.1431",
+      "reporting": "40 CFR 80.1451",
+      "foreign_producers": "40 CFR 80.1466"
+    }
+  },
+  "eia_crosswalk": {
+    "description": "Cross-reference EPA RIN data with EIA production series",
+    "mappings": [
+      {
+        "epa_metric": "D6 RIN generation",
+        "eia_series": "STEO.ETHPROD.M",
+        "eia_description": "Fuel Ethanol Production"
+      },
+      {
+        "epa_metric": "D4 RIN generation (biodiesel)",
+        "eia_series": "PET.M_EPOORDB_YPR_NUS_MBBLD.M",
+        "eia_description": "Biodiesel Production"
+      },
+      {
+        "epa_metric": "D4 RIN generation (renewable diesel)",
+        "eia_series": "PET.M_EPOORDS_YPR_NUS_MBBLD.M",
+        "eia_description": "Renewable Diesel Production"
+      }
+    ],
+    "notes": "Physical gallons (EIA) vs RIN gallons (EPA) - multiply EIA by EV for comparison"
+  },
+  "quick_lookups": {
+    "d_code_by_fuel": {
+      "corn_ethanol": "D6",
+      "sugarcane_ethanol": "D5",
+      "cellulosic_ethanol": "D3",
+      "biodiesel_soy": "D4",
+      "biodiesel_uco": "D4",
+      "renewable_diesel_soy": "D4",
+      "renewable_diesel_uco": "D4",
+      "renewable_diesel_cellulosic": "D7",
+      "rng_landfill": "D3",
+      "rng_agricultural": "D3",
+      "rng_non_cellulosic": "D5",
+      "saf_hefa": "D4",
+      "saf_cellulosic": "D7"
+    },
+    "ev_by_fuel": {
+      "ethanol": 1.0,
+      "biodiesel": 1.5,
+      "renewable_diesel": 1.7,
+      "butanol": 1.3,
+      "rng": 1.0,
+      "saf": 1.6
+    },
+    "ghg_threshold_by_d_code": {
+      "D3": 60,
+      "D4": 50,
+      "D5": 50,
+      "D6": 20,
+      "D7": 60
+    }
+  }
+}

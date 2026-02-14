@@ -1,0 +1,275 @@
+-- ============================================================================
+-- ADD MISSING COUNTRIES TO TRADE REFERENCE
+-- ============================================================================
+-- Adds: Bahrain, Mongolia, Bhutan, Fiji, Papua New Guinea, Samoa, Greenland, United States
+-- ============================================================================
+
+-- First, let's clear and rebuild the country reference with proper row numbers
+-- This ensures consistent spreadsheet row assignments
+
+TRUNCATE silver.trade_country_reference RESTART IDENTITY CASCADE;
+
+-- ============================================================================
+-- EUROPEAN UNION (27)
+-- ============================================================================
+INSERT INTO silver.trade_country_reference
+(country_name, country_name_alt, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active)
+VALUES
+('EUROPEAN UNION-27', NULL, 'EU27', 1, 0, 4, TRUE, TRUE),
+('AUSTRIA', NULL, 'EU27', 1, 1, 5, FALSE, TRUE),
+('BELGIUM', NULL, 'EU27', 1, 2, 6, FALSE, TRUE),
+('BULGARIA', NULL, 'EU27', 1, 3, 7, FALSE, TRUE),
+('CROATIA', NULL, 'EU27', 1, 4, 8, FALSE, TRUE),
+('CYPRUS', NULL, 'EU27', 1, 5, 9, FALSE, TRUE),
+('CZECH REPUBLIC', 'CZECHIA', 'EU27', 1, 6, 10, FALSE, TRUE),
+('DENMARK', NULL, 'EU27', 1, 7, 11, FALSE, TRUE),
+('ESTONIA', NULL, 'EU27', 1, 8, 12, FALSE, TRUE),
+('FINLAND', NULL, 'EU27', 1, 9, 13, FALSE, TRUE),
+('FRANCE', NULL, 'EU27', 1, 10, 14, FALSE, TRUE),
+('GERMANY', NULL, 'EU27', 1, 11, 15, FALSE, TRUE),
+('GREECE', NULL, 'EU27', 1, 12, 16, FALSE, TRUE),
+('HUNGARY', NULL, 'EU27', 1, 13, 17, FALSE, TRUE),
+('IRELAND', NULL, 'EU27', 1, 14, 18, FALSE, TRUE),
+('ITALY', NULL, 'EU27', 1, 15, 19, FALSE, TRUE),
+('LATVIA', NULL, 'EU27', 1, 16, 20, FALSE, TRUE),
+('LITHUANIA', NULL, 'EU27', 1, 17, 21, FALSE, TRUE),
+('LUXEMBOURG', NULL, 'EU27', 1, 18, 22, FALSE, TRUE),
+('MALTA', NULL, 'EU27', 1, 19, 23, FALSE, TRUE),
+('NETHERLANDS', NULL, 'EU27', 1, 20, 24, FALSE, TRUE),
+('POLAND', NULL, 'EU27', 1, 21, 25, FALSE, TRUE),
+('PORTUGAL', NULL, 'EU27', 1, 22, 26, FALSE, TRUE),
+('ROMANIA', NULL, 'EU27', 1, 23, 27, FALSE, TRUE),
+('SLOVAKIA', NULL, 'EU27', 1, 24, 28, FALSE, TRUE),
+('SLOVENIA', NULL, 'EU27', 1, 25, 29, FALSE, TRUE),
+('SPAIN', NULL, 'EU27', 1, 26, 30, FALSE, TRUE),
+('SWEDEN', NULL, 'EU27', 1, 27, 31, FALSE, TRUE);
+
+-- ============================================================================
+-- OTHER EUROPE (including UK post-Brexit)
+-- ============================================================================
+INSERT INTO silver.trade_country_reference
+(country_name, country_name_alt, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active)
+VALUES
+('OTHER EUROPE TOTAL', NULL, 'EUROPE_OTHER', 2, 0, 33, TRUE, TRUE),
+('ALBANIA', NULL, 'EUROPE_OTHER', 2, 1, 34, FALSE, TRUE),
+('ANDORRA', NULL, 'EUROPE_OTHER', 2, 2, 35, FALSE, TRUE),
+('BOSNIA AND HERZEGOVINA', 'BOSNIA-HERCEGOVINA', 'EUROPE_OTHER', 2, 3, 36, FALSE, TRUE),
+('ICELAND', NULL, 'EUROPE_OTHER', 2, 4, 37, FALSE, TRUE),
+('KOSOVO', NULL, 'EUROPE_OTHER', 2, 5, 38, FALSE, TRUE),
+('MONTENEGRO', NULL, 'EUROPE_OTHER', 2, 6, 39, FALSE, TRUE),
+('NORTH MACEDONIA', 'MACEDONIA', 'EUROPE_OTHER', 2, 7, 40, FALSE, TRUE),
+('NORWAY', NULL, 'EUROPE_OTHER', 2, 8, 41, FALSE, TRUE),
+('SERBIA', NULL, 'EUROPE_OTHER', 2, 9, 42, FALSE, TRUE),
+('SWITZERLAND', NULL, 'EUROPE_OTHER', 2, 10, 43, FALSE, TRUE),
+('TURKEY', NULL, 'EUROPE_OTHER', 2, 11, 44, FALSE, TRUE),
+('UNITED KINGDOM', 'UK', 'EUROPE_OTHER', 2, 12, 45, FALSE, TRUE);
+
+-- ============================================================================
+-- FORMER SOVIET UNION (FSU)
+-- ============================================================================
+INSERT INTO silver.trade_country_reference
+(country_name, country_name_alt, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active)
+VALUES
+('FSU TOTAL', NULL, 'FSU', 3, 0, 47, TRUE, TRUE),
+('ARMENIA', NULL, 'FSU', 3, 1, 48, FALSE, TRUE),
+('AZERBAIJAN', NULL, 'FSU', 3, 2, 49, FALSE, TRUE),
+('BELARUS', NULL, 'FSU', 3, 3, 50, FALSE, TRUE),
+('GEORGIA', NULL, 'FSU', 3, 4, 51, FALSE, TRUE),
+('KAZAKHSTAN', NULL, 'FSU', 3, 5, 52, FALSE, TRUE),
+('KYRGYZSTAN', NULL, 'FSU', 3, 6, 53, FALSE, TRUE),
+('MOLDOVA', NULL, 'FSU', 3, 7, 54, FALSE, TRUE),
+('RUSSIA', 'RUSSIAN FEDERATION', 'FSU', 3, 8, 55, FALSE, TRUE),
+('TAJIKISTAN', NULL, 'FSU', 3, 9, 56, FALSE, TRUE),
+('TURKMENISTAN', NULL, 'FSU', 3, 10, 57, FALSE, TRUE),
+('UKRAINE', NULL, 'FSU', 3, 11, 58, FALSE, TRUE),
+('UZBEKISTAN', NULL, 'FSU', 3, 12, 59, FALSE, TRUE);
+
+-- ============================================================================
+-- ASIA & OCEANIA (with new additions)
+-- ============================================================================
+INSERT INTO silver.trade_country_reference
+(country_name, country_name_alt, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active)
+VALUES
+('ASIA & OCEANIA TOTAL', NULL, 'ASIA_OCEANIA', 4, 0, 61, TRUE, TRUE),
+('AFGHANISTAN', NULL, 'ASIA_OCEANIA', 4, 1, 62, FALSE, TRUE),
+('AUSTRALIA', NULL, 'ASIA_OCEANIA', 4, 2, 63, FALSE, TRUE),
+('BAHRAIN', NULL, 'ASIA_OCEANIA', 4, 3, 64, FALSE, TRUE),
+('BANGLADESH', NULL, 'ASIA_OCEANIA', 4, 4, 65, FALSE, TRUE),
+('BHUTAN', NULL, 'ASIA_OCEANIA', 4, 5, 66, FALSE, TRUE),
+('BRUNEI', NULL, 'ASIA_OCEANIA', 4, 6, 67, FALSE, TRUE),
+('CAMBODIA', 'KAMPUCHEA', 'ASIA_OCEANIA', 4, 7, 68, FALSE, TRUE),
+('CHINA', 'CHINA, PEOPLES REPUBLIC OF', 'ASIA_OCEANIA', 4, 8, 69, FALSE, TRUE),
+('FIJI', NULL, 'ASIA_OCEANIA', 4, 9, 70, FALSE, TRUE),
+('HONG KONG', NULL, 'ASIA_OCEANIA', 4, 10, 71, FALSE, TRUE),
+('INDIA', NULL, 'ASIA_OCEANIA', 4, 11, 72, FALSE, TRUE),
+('INDONESIA', NULL, 'ASIA_OCEANIA', 4, 12, 73, FALSE, TRUE),
+('IRAN', NULL, 'ASIA_OCEANIA', 4, 13, 74, FALSE, TRUE),
+('IRAQ', NULL, 'ASIA_OCEANIA', 4, 14, 75, FALSE, TRUE),
+('ISRAEL', NULL, 'ASIA_OCEANIA', 4, 15, 76, FALSE, TRUE),
+('JAPAN', NULL, 'ASIA_OCEANIA', 4, 16, 77, FALSE, TRUE),
+('JORDAN', NULL, 'ASIA_OCEANIA', 4, 17, 78, FALSE, TRUE),
+('KOREA, NORTH', NULL, 'ASIA_OCEANIA', 4, 18, 79, FALSE, TRUE),
+('KOREA, SOUTH', NULL, 'ASIA_OCEANIA', 4, 19, 80, FALSE, TRUE),
+('KUWAIT', NULL, 'ASIA_OCEANIA', 4, 20, 81, FALSE, TRUE),
+('LAOS', 'LAO', 'ASIA_OCEANIA', 4, 21, 82, FALSE, TRUE),
+('LEBANON', NULL, 'ASIA_OCEANIA', 4, 22, 83, FALSE, TRUE),
+('MACAU', 'MACAO', 'ASIA_OCEANIA', 4, 23, 84, FALSE, TRUE),
+('MALAYSIA', NULL, 'ASIA_OCEANIA', 4, 24, 85, FALSE, TRUE),
+('MALDIVES', NULL, 'ASIA_OCEANIA', 4, 25, 86, FALSE, TRUE),
+('MONGOLIA', NULL, 'ASIA_OCEANIA', 4, 26, 87, FALSE, TRUE),
+('MYANMAR', 'BURMA', 'ASIA_OCEANIA', 4, 27, 88, FALSE, TRUE),
+('NEPAL', NULL, 'ASIA_OCEANIA', 4, 28, 89, FALSE, TRUE),
+('NEW ZEALAND', NULL, 'ASIA_OCEANIA', 4, 29, 90, FALSE, TRUE),
+('OMAN', NULL, 'ASIA_OCEANIA', 4, 30, 91, FALSE, TRUE),
+('PAKISTAN', NULL, 'ASIA_OCEANIA', 4, 31, 92, FALSE, TRUE),
+('PAPUA NEW GUINEA', NULL, 'ASIA_OCEANIA', 4, 32, 93, FALSE, TRUE),
+('PHILIPPINES', NULL, 'ASIA_OCEANIA', 4, 33, 94, FALSE, TRUE),
+('QATAR', NULL, 'ASIA_OCEANIA', 4, 34, 95, FALSE, TRUE),
+('SAMOA', 'WESTERN SAMOA', 'ASIA_OCEANIA', 4, 35, 96, FALSE, TRUE),
+('SAUDI ARABIA', NULL, 'ASIA_OCEANIA', 4, 36, 97, FALSE, TRUE),
+('SINGAPORE', NULL, 'ASIA_OCEANIA', 4, 37, 98, FALSE, TRUE),
+('SRI LANKA', NULL, 'ASIA_OCEANIA', 4, 38, 99, FALSE, TRUE),
+('SYRIA', NULL, 'ASIA_OCEANIA', 4, 39, 100, FALSE, TRUE),
+('TAIWAN', NULL, 'ASIA_OCEANIA', 4, 40, 101, FALSE, TRUE),
+('THAILAND', NULL, 'ASIA_OCEANIA', 4, 41, 102, FALSE, TRUE),
+('TIMOR-LESTE', 'EAST TIMOR', 'ASIA_OCEANIA', 4, 42, 103, FALSE, TRUE),
+('UNITED ARAB EMIRATES', 'UAE', 'ASIA_OCEANIA', 4, 43, 104, FALSE, TRUE),
+('VIETNAM', NULL, 'ASIA_OCEANIA', 4, 44, 105, FALSE, TRUE),
+('YEMEN', 'YEMEN, REPUBLIC OF', 'ASIA_OCEANIA', 4, 45, 106, FALSE, TRUE);
+
+-- ============================================================================
+-- AFRICA
+-- ============================================================================
+INSERT INTO silver.trade_country_reference
+(country_name, country_name_alt, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active)
+VALUES
+('AFRICA TOTAL', NULL, 'AFRICA', 5, 0, 108, TRUE, TRUE),
+('ALGERIA', NULL, 'AFRICA', 5, 1, 109, FALSE, TRUE),
+('ANGOLA', NULL, 'AFRICA', 5, 2, 110, FALSE, TRUE),
+('BENIN', 'DAHOMEY', 'AFRICA', 5, 3, 111, FALSE, TRUE),
+('BOTSWANA', NULL, 'AFRICA', 5, 4, 112, FALSE, TRUE),
+('BURKINA FASO', 'UPPER VOLTA', 'AFRICA', 5, 5, 113, FALSE, TRUE),
+('BURUNDI', NULL, 'AFRICA', 5, 6, 114, FALSE, TRUE),
+('CAMEROON', NULL, 'AFRICA', 5, 7, 115, FALSE, TRUE),
+('CAPE VERDE', NULL, 'AFRICA', 5, 8, 116, FALSE, TRUE),
+('CENTRAL AFRICAN REPUBLIC', NULL, 'AFRICA', 5, 9, 117, FALSE, TRUE),
+('CHAD', NULL, 'AFRICA', 5, 10, 118, FALSE, TRUE),
+('COMOROS', NULL, 'AFRICA', 5, 11, 119, FALSE, TRUE),
+('CONGO (BRAZZAVILLE)', NULL, 'AFRICA', 5, 12, 120, FALSE, TRUE),
+('CONGO (KINSHASA)', 'ZAIRE', 'AFRICA', 5, 13, 121, FALSE, TRUE),
+('COTE D IVOIRE', 'IVORY COAST', 'AFRICA', 5, 14, 122, FALSE, TRUE),
+('DJIBOUTI', NULL, 'AFRICA', 5, 15, 123, FALSE, TRUE),
+('EGYPT', NULL, 'AFRICA', 5, 16, 124, FALSE, TRUE),
+('EQUATORIAL GUINEA', NULL, 'AFRICA', 5, 17, 125, FALSE, TRUE),
+('ERITREA', NULL, 'AFRICA', 5, 18, 126, FALSE, TRUE),
+('ESWATINI', 'SWAZILAND', 'AFRICA', 5, 19, 127, FALSE, TRUE),
+('ETHIOPIA', NULL, 'AFRICA', 5, 20, 128, FALSE, TRUE),
+('GABON', NULL, 'AFRICA', 5, 21, 129, FALSE, TRUE),
+('GAMBIA', NULL, 'AFRICA', 5, 22, 130, FALSE, TRUE),
+('GHANA', NULL, 'AFRICA', 5, 23, 131, FALSE, TRUE),
+('GUINEA', NULL, 'AFRICA', 5, 24, 132, FALSE, TRUE),
+('GUINEA-BISSAU', NULL, 'AFRICA', 5, 25, 133, FALSE, TRUE),
+('KENYA', NULL, 'AFRICA', 5, 26, 134, FALSE, TRUE),
+('LESOTHO', NULL, 'AFRICA', 5, 27, 135, FALSE, TRUE),
+('LIBERIA', NULL, 'AFRICA', 5, 28, 136, FALSE, TRUE),
+('LIBYA', NULL, 'AFRICA', 5, 29, 137, FALSE, TRUE),
+('MADAGASCAR', NULL, 'AFRICA', 5, 30, 138, FALSE, TRUE),
+('MALAWI', NULL, 'AFRICA', 5, 31, 139, FALSE, TRUE),
+('MALI', NULL, 'AFRICA', 5, 32, 140, FALSE, TRUE),
+('MAURITANIA', NULL, 'AFRICA', 5, 33, 141, FALSE, TRUE),
+('MAURITIUS', NULL, 'AFRICA', 5, 34, 142, FALSE, TRUE),
+('MOROCCO', NULL, 'AFRICA', 5, 35, 143, FALSE, TRUE),
+('MOZAMBIQUE', NULL, 'AFRICA', 5, 36, 144, FALSE, TRUE),
+('NAMIBIA', NULL, 'AFRICA', 5, 37, 145, FALSE, TRUE),
+('NIGER', NULL, 'AFRICA', 5, 38, 146, FALSE, TRUE),
+('NIGERIA', NULL, 'AFRICA', 5, 39, 147, FALSE, TRUE),
+('REUNION', NULL, 'AFRICA', 5, 40, 148, FALSE, TRUE),
+('RWANDA', NULL, 'AFRICA', 5, 41, 149, FALSE, TRUE),
+('SAO TOME AND PRINCIPE', NULL, 'AFRICA', 5, 42, 150, FALSE, TRUE),
+('SENEGAL', NULL, 'AFRICA', 5, 43, 151, FALSE, TRUE),
+('SEYCHELLES', NULL, 'AFRICA', 5, 44, 152, FALSE, TRUE),
+('SIERRA LEONE', NULL, 'AFRICA', 5, 45, 153, FALSE, TRUE),
+('SOMALIA', NULL, 'AFRICA', 5, 46, 154, FALSE, TRUE),
+('SOUTH AFRICA', NULL, 'AFRICA', 5, 47, 155, FALSE, TRUE),
+('SOUTH SUDAN', NULL, 'AFRICA', 5, 48, 156, FALSE, TRUE),
+('SUDAN', NULL, 'AFRICA', 5, 49, 157, FALSE, TRUE),
+('TANZANIA', NULL, 'AFRICA', 5, 50, 158, FALSE, TRUE),
+('TOGO', NULL, 'AFRICA', 5, 51, 159, FALSE, TRUE),
+('TUNISIA', NULL, 'AFRICA', 5, 52, 160, FALSE, TRUE),
+('UGANDA', NULL, 'AFRICA', 5, 53, 161, FALSE, TRUE),
+('ZAMBIA', NULL, 'AFRICA', 5, 54, 162, FALSE, TRUE),
+('ZIMBABWE', NULL, 'AFRICA', 5, 55, 163, FALSE, TRUE);
+
+-- ============================================================================
+-- WESTERN HEMISPHERE (with Greenland and United States)
+-- ============================================================================
+INSERT INTO silver.trade_country_reference
+(country_name, country_name_alt, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active)
+VALUES
+('WESTERN HEMISPHERE TOTAL', NULL, 'WESTERN_HEMISPHERE', 6, 0, 165, TRUE, TRUE),
+('ANGUILLA', NULL, 'WESTERN_HEMISPHERE', 6, 1, 166, FALSE, TRUE),
+('ANTIGUA AND BARBUDA', NULL, 'WESTERN_HEMISPHERE', 6, 2, 167, FALSE, TRUE),
+('ARGENTINA', NULL, 'WESTERN_HEMISPHERE', 6, 3, 168, FALSE, TRUE),
+('ARUBA', NULL, 'WESTERN_HEMISPHERE', 6, 4, 169, FALSE, TRUE),
+('BAHAMAS', NULL, 'WESTERN_HEMISPHERE', 6, 5, 170, FALSE, TRUE),
+('BARBADOS', NULL, 'WESTERN_HEMISPHERE', 6, 6, 171, FALSE, TRUE),
+('BELIZE', NULL, 'WESTERN_HEMISPHERE', 6, 7, 172, FALSE, TRUE),
+('BERMUDA', NULL, 'WESTERN_HEMISPHERE', 6, 8, 173, FALSE, TRUE),
+('BOLIVIA', NULL, 'WESTERN_HEMISPHERE', 6, 9, 174, FALSE, TRUE),
+('BONAIRE', NULL, 'WESTERN_HEMISPHERE', 6, 10, 175, FALSE, TRUE),
+('BRAZIL', NULL, 'WESTERN_HEMISPHERE', 6, 11, 176, FALSE, TRUE),
+('BRITISH VIRGIN ISLANDS', NULL, 'WESTERN_HEMISPHERE', 6, 12, 177, FALSE, TRUE),
+('CANADA', NULL, 'WESTERN_HEMISPHERE', 6, 13, 178, FALSE, TRUE),
+('CAYMAN ISLANDS', NULL, 'WESTERN_HEMISPHERE', 6, 14, 179, FALSE, TRUE),
+('CHILE', NULL, 'WESTERN_HEMISPHERE', 6, 15, 180, FALSE, TRUE),
+('COLOMBIA', NULL, 'WESTERN_HEMISPHERE', 6, 16, 181, FALSE, TRUE),
+('COSTA RICA', NULL, 'WESTERN_HEMISPHERE', 6, 17, 182, FALSE, TRUE),
+('CUBA', NULL, 'WESTERN_HEMISPHERE', 6, 18, 183, FALSE, TRUE),
+('CURACAO', NULL, 'WESTERN_HEMISPHERE', 6, 19, 184, FALSE, TRUE),
+('DOMINICA', NULL, 'WESTERN_HEMISPHERE', 6, 20, 185, FALSE, TRUE),
+('DOMINICAN REPUBLIC', NULL, 'WESTERN_HEMISPHERE', 6, 21, 186, FALSE, TRUE),
+('ECUADOR', NULL, 'WESTERN_HEMISPHERE', 6, 22, 187, FALSE, TRUE),
+('EL SALVADOR', NULL, 'WESTERN_HEMISPHERE', 6, 23, 188, FALSE, TRUE),
+('FRENCH GUIANA', NULL, 'WESTERN_HEMISPHERE', 6, 24, 189, FALSE, TRUE),
+('GREENLAND', NULL, 'WESTERN_HEMISPHERE', 6, 25, 190, FALSE, TRUE),
+('GRENADA', NULL, 'WESTERN_HEMISPHERE', 6, 26, 191, FALSE, TRUE),
+('GUADELOUPE', NULL, 'WESTERN_HEMISPHERE', 6, 27, 192, FALSE, TRUE),
+('GUATEMALA', NULL, 'WESTERN_HEMISPHERE', 6, 28, 193, FALSE, TRUE),
+('GUYANA', NULL, 'WESTERN_HEMISPHERE', 6, 29, 194, FALSE, TRUE),
+('HAITI', NULL, 'WESTERN_HEMISPHERE', 6, 30, 195, FALSE, TRUE),
+('HONDURAS', NULL, 'WESTERN_HEMISPHERE', 6, 31, 196, FALSE, TRUE),
+('JAMAICA', NULL, 'WESTERN_HEMISPHERE', 6, 32, 197, FALSE, TRUE),
+('MARTINIQUE', NULL, 'WESTERN_HEMISPHERE', 6, 33, 198, FALSE, TRUE),
+('MEXICO', NULL, 'WESTERN_HEMISPHERE', 6, 34, 199, FALSE, TRUE),
+('MONTSERRAT', NULL, 'WESTERN_HEMISPHERE', 6, 35, 200, FALSE, TRUE),
+('NICARAGUA', NULL, 'WESTERN_HEMISPHERE', 6, 36, 201, FALSE, TRUE),
+('PANAMA', NULL, 'WESTERN_HEMISPHERE', 6, 37, 202, FALSE, TRUE),
+('PARAGUAY', NULL, 'WESTERN_HEMISPHERE', 6, 38, 203, FALSE, TRUE),
+('PERU', NULL, 'WESTERN_HEMISPHERE', 6, 39, 204, FALSE, TRUE),
+('ST KITTS AND NEVIS', 'SAINT KITTS AND NEVIS', 'WESTERN_HEMISPHERE', 6, 40, 205, FALSE, TRUE),
+('ST LUCIA', 'SAINT LUCIA', 'WESTERN_HEMISPHERE', 6, 41, 206, FALSE, TRUE),
+('ST VINCENT AND GRENADINES', 'SAINT VINCENT AND THE GRENADINES', 'WESTERN_HEMISPHERE', 6, 42, 207, FALSE, TRUE),
+('SURINAME', NULL, 'WESTERN_HEMISPHERE', 6, 43, 208, FALSE, TRUE),
+('TRINIDAD AND TOBAGO', NULL, 'WESTERN_HEMISPHERE', 6, 44, 209, FALSE, TRUE),
+('TURKS AND CAICOS', 'TURKS AND CAICOS ISLANDS', 'WESTERN_HEMISPHERE', 6, 45, 210, FALSE, TRUE),
+('UNITED STATES', 'USA', 'WESTERN_HEMISPHERE', 6, 46, 211, FALSE, TRUE),
+('URUGUAY', NULL, 'WESTERN_HEMISPHERE', 6, 47, 212, FALSE, TRUE),
+('VENEZUELA', NULL, 'WESTERN_HEMISPHERE', 6, 48, 213, FALSE, TRUE),
+('VIRGIN ISLANDS US', 'VIRGIN ISLANDS OF THE UNITED STATES', 'WESTERN_HEMISPHERE', 6, 49, 214, FALSE, TRUE);
+
+-- ============================================================================
+-- WORLD TOTAL
+-- ============================================================================
+INSERT INTO silver.trade_country_reference
+(country_name, country_name_alt, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active)
+VALUES
+('SUM OF REGIONAL TOTALS', NULL, 'WORLD', 7, 0, 216, TRUE, TRUE),
+('WORLD TOTAL', NULL, 'WORLD', 7, 1, 217, TRUE, TRUE);
+
+-- ============================================================================
+-- VERIFICATION
+-- ============================================================================
+SELECT region, COUNT(*) as country_count
+FROM silver.trade_country_reference
+GROUP BY region
+ORDER BY MIN(region_sort_order);

@@ -1,0 +1,22 @@
+============================================================
+WEATHER SUMMARY REPORT
+Generated: 2026-01-21 07:30
+Emails processed: 2
+============================================================
+
+--- Email 1: Portions of Southern Argentina Too Dry; Rain Moistens North ---
+From: "World Weather, Inc. " <worldweather@bizkc.rr.com>
+Date: Wed, 21 Jan 2026 04:31:48 -0600
+
+Preview: Drew Lerner World Weather, Inc. (913) 383-1161 worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this report...
+
+--- Email 2: Selected Overnight Rainfall and Temperature Maps ---
+From: Andy Karst <akarst_worldweather@bizkc.rr.com>
+Date: Wed, 21 Jan 2026 05:22:33 -0600
+
+Preview: Andy Karst World Weather, Inc. (913) 383-1161 akarst_worldweather@bizkc.rr.com World Weather, Inc. forecasts and comments pertaining to present, past and future weather conditions included in this...
+
+============================================================
+LOCATIONS MENTIONED (for weather tracking):
+None identified
+============================================================

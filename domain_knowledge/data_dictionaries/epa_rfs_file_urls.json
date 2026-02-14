@@ -1,0 +1,137 @@
+{
+  "metadata": {
+    "title": "EPA RFS Data File URLs",
+    "description": "URLs for EPA EMTS public data CSV files",
+    "source": "https://www.epa.gov/fuels-registration-reporting-and-compliance-help/public-data-renewable-fuel-standard",
+    "last_updated": "2026-01-28",
+    "update_notes": "Complete set of EPA RFS files downloaded for Dec 2025"
+  },
+  "url_patterns": {
+    "generation_breakout": {
+      "description": "Annual RIN generation by D-code and producer type (domestic/importer/foreign)",
+      "pattern": "https://www.epa.gov/system/files/other-files/{YYYY}-{MM}/generationbreakout_{mon}{data_year}.csv",
+      "example": "https://www.epa.gov/system/files/other-files/2026-01/generationbreakout_dec2025.csv",
+      "columns": ["RIN_YEAR", "Fuel Code", "DOMESTIC", "IMPORTER", "Foreign Generation", "Total RINs"],
+      "notes": "Published monthly, ~30-60 days after data month. Annual totals by D-code."
+    },
+    "rin_data_monthly": {
+      "description": "Monthly RIN generation by D-code - provides time series granularity",
+      "pattern": "https://www.epa.gov/system/files/other-files/{YYYY}-{MM}/rindata_{mon}{data_year}.csv",
+      "example": "https://www.epa.gov/system/files/other-files/2026-01/rindata_dec2025.csv",
+      "columns": ["FUEL_CODE", "RIN_YEAR", "Production Month", "RIN_QUANTITY", "BATCH_VOLUME"],
+      "notes": "Monthly data starting July 2010. Essential for seasonal analysis."
+    },
+    "fuel_production": {
+      "description": "Fuel production by specific fuel type and category",
+      "pattern": "https://www.epa.gov/system/files/other-files/{YYYY}-{MM}/fuelproduction_{mon}{data_year}.csv",
+      "example": "https://www.epa.gov/system/files/other-files/2026-01/fuelproduction_dec2025.csv",
+      "columns": ["RIN Year", "Fuel", "Fuel Code", "Fuel Category", "Fuel Category Code", "RIN Quantity", "Batch Volume"],
+      "notes": "Detailed breakdown by fuel type (Naphtha, LPG, Biodiesel, RD, etc.)"
+    },
+    "available_rins": {
+      "description": "Available RINs inventory by year, D-code, and assignment status",
+      "pattern": "https://www.epa.gov/system/files/other-files/{YYYY}-{MM}/availablerins_{mon}{data_year}.csv",
+      "example": "https://www.epa.gov/system/files/other-files/2026-01/availablerins_dec2025.csv",
+      "columns": ["RIN_YEAR", "FUEL_CD", "ASSIGNMENT", "Total Generated", "Total Retired", "Total Locked", "Total Available"],
+      "notes": "Shows separated vs assigned RINs. Key for supply analysis."
+    },
+    "retirement_transactions": {
+      "description": "RIN retirements by reason code",
+      "pattern": "https://www.epa.gov/system/files/other-files/{YYYY}-{MM}/retiretransaction_{mon}{data_year}.csv",
+      "example": "https://www.epa.gov/system/files/other-files/2026-01/retiretransaction_dec2025.csv",
+      "columns": ["RIN_YEAR", "FUEL_CD", "FUEL_CD_DESCRIPTION", "RETIRE_REASON_CD", "RETIRE_REASON_CD_DESCRIPTION", "RIN_QUANTITY"],
+      "notes": "Shows compliance (code 80), invalid RINs (50), enforcement (70), etc."
+    },
+    "separation_transactions": {
+      "description": "RIN separations by reason code",
+      "pattern": "https://www.epa.gov/system/files/other-files/{YYYY}-{MM}/separatetransaction_{mon}{data_year}.csv",
+      "example": "https://www.epa.gov/system/files/other-files/2026-01/separatetransaction_dec2025.csv",
+      "columns": ["RIN Year", "Fuel Cd", "Fuel Cd Description", "Sep Reason Cd", "Separate Reason Cd Description", "RIN Quantity"],
+      "notes": "Shows separation by obligated party (10), blending (20), export (50), etc."
+    }
+  },
+  "downloaded_files": {
+    "dec2025": {
+      "publication_date": "2026-01",
+      "files": [
+        {
+          "type": "generation_breakout",
+          "url": "https://www.epa.gov/system/files/other-files/2026-01/generationbreakout_dec2025.csv",
+          "local_file": "generationbreakout_dec2025.csv",
+          "downloaded": "2026-01-28"
+        },
+        {
+          "type": "rin_data_monthly",
+          "url": "https://www.epa.gov/system/files/other-files/2026-01/rindata_dec2025.csv",
+          "local_file": "rindata_dec2025.csv",
+          "downloaded": "2026-01-28"
+        },
+        {
+          "type": "fuel_production",
+          "url": "https://www.epa.gov/system/files/other-files/2026-01/fuelproduction_dec2025.csv",
+          "local_file": "fuelproduction_dec2025.csv",
+          "downloaded": "2026-01-28"
+        },
+        {
+          "type": "available_rins",
+          "url": "https://www.epa.gov/system/files/other-files/2026-01/availablerins_dec2025.csv",
+          "local_file": "availablerins_dec2025.csv",
+          "downloaded": "2026-01-28"
+        },
+        {
+          "type": "retirement_transactions",
+          "url": "https://www.epa.gov/system/files/other-files/2026-01/retiretransaction_dec2025.csv",
+          "local_file": "retiretransaction_dec2025.csv",
+          "downloaded": "2026-01-28"
+        },
+        {
+          "type": "separation_transactions",
+          "url": "https://www.epa.gov/system/files/other-files/2026-01/separatetransaction_dec2025.csv",
+          "local_file": "separatetransaction_dec2025.csv",
+          "downloaded": "2026-01-28"
+        }
+      ]
+    }
+  },
+  "collection_schedule": {
+    "monthly_update": {
+      "frequency": "monthly",
+      "typical_release": "First week of month for 2-months prior data",
+      "data_lag_days": 30,
+      "files_to_download": [
+        "generationbreakout",
+        "rindata",
+        "fuelproduction",
+        "availablerins",
+        "retiretransaction",
+        "separatetransaction"
+      ]
+    }
+  },
+  "retirement_reason_codes": {
+    "10": "Reported spill",
+    "20": "Contaminated or spoiled fuel",
+    "30": "Import volume correction",
+    "40": "Renewable fuel used in ocean-going vessel",
+    "50": "Invalid RIN",
+    "60": "Volume error correction",
+    "70": "Enforcement Obligation",
+    "80": "Demonstrate annual compliance",
+    "90": "Renewable fuel used in non-transportation application",
+    "100": "Delayed RIN Retire per 40CFR 80.1426(g)(3)",
+    "110": "Remedial action - Retirement pursuant to 80.1431(c)",
+    "120": "Remedial Action - Retire for Compliance",
+    "130": "Remediation of Invalid RIN Use for Compliance"
+  },
+  "separation_reason_codes": {
+    "10": "Receipt of Renewable Fuel by Obligated Party",
+    "20": "Blending to Produce Transportation Fuel",
+    "30": "Designation as Transportation Fuel without blending",
+    "40": "Upstream Delegation for Blending",
+    "50": "Export of Renewable Fuel",
+    "60": "Use as Heating Oil or Jet Fuel",
+    "70": "Use in non-road engine or vehicle",
+    "80": "Designation as Heating Oil or Jet Fuel without blending",
+    "90": "Delayed RIN Separation per 40 CFR 80.1426(g)(8)"
+  }
+}

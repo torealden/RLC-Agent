@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "commodities-db": {
+      "command": "python",
+      "args": ["src/mcp/commodities_db_server.py"],
+      "cwd": "C:\\Users\\torem\\RLC Dropbox\\RLC Team Folder\\RLC-Agent",
+      "env": {}
+    }
+  }
+}

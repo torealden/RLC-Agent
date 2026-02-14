@@ -1,0 +1,602 @@
+{
+  "metadata": {
+    "title": "US Census Bureau International Trade Data Reference",
+    "description": "US-specific trade codes (Schedule B for exports, HTS for imports) and Census Bureau API documentation",
+    "version": "1.0",
+    "created": "2026-01-28",
+    "author": "RLC Consulting",
+    "country": "US",
+    "scope": "US export and import trade data via Census Bureau API",
+    "related_references": [
+      {
+        "name": "International HS Codes Reference",
+        "path": "hs_codes_international.json",
+        "description": "Universal 6-digit HS codes (base for all country-specific extensions)"
+      }
+    ]
+  },
+  "code_systems": {
+    "schedule_b": {
+      "name": "Schedule B",
+      "full_name": "Schedule B - Statistical Classification of Domestic and Foreign Commodities Exported from the United States",
+      "administrator": "US Census Bureau",
+      "use": "US EXPORTS only",
+      "format": "10-digit",
+      "structure": "First 6 digits = International HS code, Last 4 digits = US-specific",
+      "api_parameter": "E_COMMODITY",
+      "notes": "Required for Electronic Export Information (EEI) filing"
+    },
+    "hts": {
+      "name": "HTS",
+      "full_name": "Harmonized Tariff Schedule of the United States",
+      "administrator": "US International Trade Commission (USITC)",
+      "use": "US IMPORTS only",
+      "format": "10-digit",
+      "structure": "First 6 digits = International HS code, Last 4 digits = US-specific tariff classification",
+      "api_parameter": "I_COMMODITY",
+      "notes": "Used for customs duty determination"
+    }
+  },
+  "api": {
+    "base_url": "https://api.census.gov/data/timeseries/intltrade",
+    "documentation": "https://www.census.gov/foreign-trade/reference/guides/Guide_to_International_Trade_Datasets.pdf",
+    "registration": "https://api.census.gov/data/key_signup.html",
+    "rate_limit": "500 calls/day without API key, unlimited with key",
+    "data_format": "JSON",
+    "data_start": "2013-01",
+    "update_schedule": "Monthly, released with FT-900 report (typically 5th business day of month for 2-month prior data)",
+    "endpoints": {
+      "exports": {
+        "hs": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/exports/hs",
+          "description": "Monthly US exports by Schedule B (HS) code",
+          "detail_levels": ["HS2", "HS4", "HS6", "HS10"],
+          "geography": "District, Country"
+        },
+        "statehs": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/exports/statehs",
+          "description": "Monthly US exports by state and HS code",
+          "detail_levels": ["HS2", "HS4", "HS6"],
+          "geography": "State, Country",
+          "note": "HS10 not available due to confidentiality"
+        },
+        "porths": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/exports/porths",
+          "description": "Monthly US exports by port and HS code",
+          "detail_levels": ["HS2", "HS4", "HS6"],
+          "geography": "Port, Country"
+        },
+        "naics": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/exports/naics",
+          "description": "Monthly US exports by NAICS code",
+          "detail_levels": ["NA2", "NA3", "NA4", "NA5", "NA6"],
+          "geography": "District, Country"
+        },
+        "enduse": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/exports/enduse",
+          "description": "Monthly US exports by end-use code",
+          "detail_levels": ["EU1", "EU5"],
+          "geography": "District, Country"
+        },
+        "sitc": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/exports/sitc",
+          "description": "Monthly US exports by SITC code",
+          "geography": "District, Country"
+        },
+        "usda": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/exports/usda",
+          "description": "Monthly US exports by USDA agricultural/non-agricultural code",
+          "geography": "District, Country"
+        }
+      },
+      "imports": {
+        "hs": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/imports/hs",
+          "description": "Monthly US imports by HTS code",
+          "detail_levels": ["HS2", "HS4", "HS6", "HS10"],
+          "geography": "District, Country"
+        },
+        "statehs": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/imports/statehs",
+          "description": "Monthly US imports by state of destination and HTS code",
+          "detail_levels": ["HS2", "HS4", "HS6"],
+          "geography": "State, Country"
+        },
+        "porths": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/imports/porths",
+          "description": "Monthly US imports by port and HTS code",
+          "detail_levels": ["HS2", "HS4", "HS6"],
+          "geography": "Port, Country"
+        },
+        "naics": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/imports/naics",
+          "description": "Monthly US imports by NAICS code",
+          "detail_levels": ["NA2", "NA3", "NA4", "NA5", "NA6"],
+          "geography": "District, Country"
+        },
+        "enduse": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/imports/enduse",
+          "description": "Monthly US imports by end-use code",
+          "detail_levels": ["EU1", "EU5"],
+          "geography": "District, Country"
+        },
+        "sitc": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/imports/sitc",
+          "description": "Monthly US imports by SITC code",
+          "geography": "District, Country"
+        },
+        "usda": {
+          "url": "https://api.census.gov/data/timeseries/intltrade/imports/usda",
+          "description": "Monthly US imports by USDA code",
+          "geography": "District, Country"
+        }
+      }
+    },
+    "key_parameters": {
+      "time": {
+        "description": "Time period in YYYY-MM format",
+        "examples": ["2024-01", "from+2023-01+to+2023-12", "from+2024-01"]
+      },
+      "YEAR": {
+        "description": "4-digit year (alternative to time)",
+        "examples": ["2024"]
+      },
+      "MONTH": {
+        "description": "2-digit month (use with YEAR)",
+        "examples": ["01", "12"]
+      },
+      "E_COMMODITY": {
+        "description": "Schedule B export commodity code",
+        "examples": ["1005902020", "1201900090", "22*"]
+      },
+      "I_COMMODITY": {
+        "description": "HTS import commodity code",
+        "examples": ["1005902020", "1201900090"]
+      },
+      "CTY_CODE": {
+        "description": "4-digit country code",
+        "examples": ["1220", "2010", "5700"]
+      },
+      "COMM_LVL": {
+        "description": "Commodity aggregation level",
+        "values": ["HS2", "HS4", "HS6", "HS10", "NA2", "NA3", "NA4", "NA5", "NA6", "EU1", "EU5", "MAN"]
+      },
+      "SUMMARY_LVL": {
+        "description": "Detail vs country grouping",
+        "values": {
+          "DET": "Individual country detail",
+          "CGP": "Country groupings only"
+        }
+      },
+      "DISTRICT": {
+        "description": "2-digit customs district code"
+      },
+      "PORT": {
+        "description": "4-digit port code"
+      },
+      "STATE": {
+        "description": "2-letter state code"
+      },
+      "DF": {
+        "description": "Domestic/Foreign indicator (exports only)",
+        "values": {
+          "1": "Domestic exports",
+          "2": "Foreign re-exports"
+        }
+      }
+    },
+    "value_parameters": {
+      "exports": {
+        "ALL_VAL_MO": "Total export value (monthly)",
+        "ALL_VAL_YR": "Total export value (year-to-date)",
+        "QTY_1_MO": "Quantity 1 (monthly)",
+        "QTY_1_YR": "Quantity 1 (year-to-date)",
+        "QTY_2_MO": "Quantity 2 (monthly, if applicable)",
+        "AIR_VAL_MO": "Air shipment value",
+        "VES_VAL_MO": "Vessel shipment value",
+        "CNT_VAL_MO": "Containerized vessel value",
+        "AIR_WGT_MO": "Air shipping weight",
+        "VES_WGT_MO": "Vessel shipping weight"
+      },
+      "imports": {
+        "GEN_VAL_MO": "General imports value (monthly)",
+        "GEN_VAL_YR": "General imports value (year-to-date)",
+        "CON_VAL_MO": "Consumption imports value (monthly)",
+        "CON_VAL_YR": "Consumption imports value (year-to-date)",
+        "GEN_QY1_MO": "General imports quantity 1",
+        "CON_QY1_MO": "Consumption imports quantity 1",
+        "GEN_CIF_MO": "General imports CIF value",
+        "CAL_DUT_MO": "Calculated duty",
+        "DUT_VAL_MO": "Dutiable value",
+        "AIR_VAL_MO": "Air shipment value",
+        "VES_VAL_MO": "Vessel shipment value"
+      }
+    },
+    "example_calls": {
+      "total_exports_by_country": "https://api.census.gov/data/timeseries/intltrade/exports/hs?get=CTY_CODE,CTY_NAME,ALL_VAL_MO&time=2024-01",
+      "soybean_exports_to_china": "https://api.census.gov/data/timeseries/intltrade/exports/hs?get=E_COMMODITY,ALL_VAL_MO,QTY_1_MO&time=2024-01&E_COMMODITY=1201900090&CTY_CODE=5700",
+      "corn_exports_all_countries": "https://api.census.gov/data/timeseries/intltrade/exports/hs?get=CTY_CODE,CTY_NAME,ALL_VAL_MO,QTY_1_MO&time=2024-01&E_COMMODITY=1005902020",
+      "ethanol_imports_by_country": "https://api.census.gov/data/timeseries/intltrade/imports/hs?get=CTY_CODE,CTY_NAME,GEN_VAL_MO,GEN_QY1_MO&time=2024-01&I_COMMODITY=2207200010",
+      "all_chapter_12_exports": "https://api.census.gov/data/timeseries/intltrade/exports/hs?get=E_COMMODITY,ALL_VAL_MO&time=2024-01&E_COMMODITY=12*&COMM_LVL=HS4",
+      "time_series_soybeans": "https://api.census.gov/data/timeseries/intltrade/exports/hs?get=ALL_VAL_MO,QTY_1_MO&E_COMMODITY=1201900090&CTY_CODE=5700&time=from+2023-01+to+2023-12"
+    },
+    "notes": {
+      "missing_values": "Zero values may be missing data. Use FLAG parameters (e.g., QTY_1_MO_FLAG) to check - 'M' indicates missing",
+      "wildcards": "Use * for wildcard matching (e.g., E_COMMODITY=12* for all chapter 12)",
+      "cardinality": "Break large queries into smaller chunks to avoid timeouts",
+      "special_characters": "Use hexadecimal equivalents for special characters (e.g., %2B for +)",
+      "confidentiality": "HS10, NA5, NA6 not available in state/port endpoints due to disclosure restrictions"
+    }
+  },
+  "country_codes": {
+    "description": "Common country codes for Census API CTY_CODE parameter",
+    "major_trading_partners": {
+      "1220": "Canada",
+      "2010": "Mexico",
+      "5700": "China",
+      "5880": "Japan",
+      "5800": "South Korea",
+      "5830": "Taiwan",
+      "5500": "India",
+      "4280": "Germany",
+      "4120": "Netherlands",
+      "4210": "United Kingdom",
+      "3510": "Brazil",
+      "3570": "Argentina",
+      "5660": "Indonesia",
+      "5490": "Vietnam",
+      "5570": "Malaysia",
+      "5560": "Philippines",
+      "5840": "Thailand",
+      "7240": "Egypt",
+      "7820": "South Africa",
+      "7050": "Nigeria",
+      "4759": "Spain",
+      "4270": "France",
+      "4759": "Italy",
+      "4330": "Belgium",
+      "4610": "Poland",
+      "4430": "Turkey",
+      "5310": "Saudi Arabia",
+      "5195": "United Arab Emirates"
+    },
+    "groupings": {
+      "0001": "OPEC",
+      "0003": "European Union",
+      "0014": "Pacific Rim Countries",
+      "0017": "CAFTA-DR",
+      "0020": "NAFTA (now USMCA)",
+      "0022": "OECD",
+      "0026": "APEC",
+      "0027": "ASEAN",
+      "1XXX": "North America",
+      "2XXX": "Central America",
+      "3XXX": "South America",
+      "4XXX": "Europe",
+      "5XXX": "Asia",
+      "6XXX": "Australia and Oceania",
+      "7XXX": "Africa"
+    }
+  },
+  "schedule_b_codes": {
+    "description": "US-specific 10-digit Schedule B export codes for RLC commodity tracking",
+    "note": "First 6 digits match international HS codes. Last 4 digits are US-specific.",
+    "grains": {
+      "corn": {
+        "chapter": "10",
+        "codes": [
+          {"code": "1005100000", "description": "Corn (maize) seed"},
+          {"code": "1005902020", "description": "Yellow dent corn", "primary": true},
+          {"code": "1005904040", "description": "Corn (maize), other, white"},
+          {"code": "1005904060", "description": "Popcorn"},
+          {"code": "1005904065", "description": "Corn (maize), other NESOI"}
+        ]
+      },
+      "wheat": {
+        "chapter": "10",
+        "codes": [
+          {"code": "1001110000", "description": "Durum wheat seed"},
+          {"code": "1001190000", "description": "Durum wheat, other"},
+          {"code": "1001910000", "description": "Wheat seed (other than durum)"},
+          {"code": "1001990000", "description": "Wheat and meslin, other", "primary": true}
+        ]
+      },
+      "soybeans": {
+        "chapter": "12",
+        "codes": [
+          {"code": "1201100000", "description": "Soybean seed"},
+          {"code": "1201900005", "description": "Soybeans, whether or not broken, for oil stock"},
+          {"code": "1201900010", "description": "Soybeans, certified organic"},
+          {"code": "1201900090", "description": "Soybeans, whether or not broken, other", "primary": true}
+        ]
+      },
+      "sorghum": {
+        "chapter": "10",
+        "codes": [
+          {"code": "1007100000", "description": "Grain sorghum seed"},
+          {"code": "1007900000", "description": "Grain sorghum, other", "primary": true}
+        ]
+      },
+      "barley": {
+        "chapter": "10",
+        "codes": [
+          {"code": "1003100000", "description": "Barley seed"},
+          {"code": "1003900000", "description": "Barley, other", "primary": true}
+        ]
+      },
+      "rice": {
+        "chapter": "10",
+        "codes": [
+          {"code": "1006100000", "description": "Rice in the husk (paddy/rough)"},
+          {"code": "1006200000", "description": "Husked (brown) rice"},
+          {"code": "1006300000", "description": "Semi-milled or wholly milled rice"},
+          {"code": "1006400000", "description": "Broken rice"}
+        ]
+      }
+    },
+    "oilseeds_other": {
+      "canola_rapeseed": {
+        "chapter": "12",
+        "codes": [
+          {"code": "1205100000", "description": "Low erucic acid rape/colza seeds"},
+          {"code": "1205900000", "description": "Rape or colza seeds, other"}
+        ]
+      },
+      "sunflower": {
+        "chapter": "12",
+        "codes": [
+          {"code": "1206000000", "description": "Sunflower seeds"}
+        ]
+      },
+      "peanuts": {
+        "chapter": "12",
+        "codes": [
+          {"code": "1202410000", "description": "Groundnuts, in shell"},
+          {"code": "1202420000", "description": "Groundnuts, shelled"}
+        ]
+      }
+    },
+    "vegetable_oils": {
+      "soybean_oil": {
+        "chapter": "15",
+        "codes": [
+          {"code": "1507100000", "description": "Crude soybean oil", "primary": true},
+          {"code": "1507902000", "description": "Soybean oil, refined, pharmaceutical grade"},
+          {"code": "1507904000", "description": "Soybean oil, refined, other"}
+        ]
+      },
+      "canola_oil": {
+        "chapter": "15",
+        "codes": [
+          {"code": "1514110000", "description": "Low erucic acid rapeseed oil, crude", "primary": true},
+          {"code": "1514190000", "description": "Low erucic acid rapeseed oil, refined"}
+        ]
+      },
+      "corn_oil": {
+        "chapter": "15",
+        "codes": [
+          {"code": "1515210000", "description": "Corn oil, crude", "primary": true},
+          {"code": "1515290000", "description": "Corn oil, refined"}
+        ]
+      },
+      "palm_oil": {
+        "chapter": "15",
+        "codes": [
+          {"code": "1511100000", "description": "Crude palm oil", "primary": true},
+          {"code": "1511900000", "description": "Palm oil, refined"}
+        ]
+      },
+      "sunflower_oil": {
+        "chapter": "15",
+        "codes": [
+          {"code": "1512110000", "description": "Crude sunflower-seed oil"},
+          {"code": "1512190000", "description": "Sunflower-seed oil, refined"}
+        ]
+      }
+    },
+    "protein_meals": {
+      "soybean_meal": {
+        "chapter": "23",
+        "codes": [
+          {"code": "2304000000", "description": "Soybean oilcake and meal", "primary": true}
+        ]
+      },
+      "ddgs": {
+        "chapter": "23",
+        "codes": [
+          {"code": "2303300000", "description": "Distillers grains (DDGS)", "primary": true}
+        ]
+      },
+      "canola_meal": {
+        "chapter": "23",
+        "codes": [
+          {"code": "2306410000", "description": "Low erucic acid rape/colza oilcake and meal"}
+        ]
+      },
+      "sunflower_meal": {
+        "chapter": "23",
+        "codes": [
+          {"code": "2306300000", "description": "Sunflower-seed oilcake and meal"}
+        ]
+      }
+    },
+    "animal_fats_greases": {
+      "tallow": {
+        "chapter": "15",
+        "codes": [
+          {"code": "1502100020", "description": "Tallow, edible"},
+          {"code": "1502100040", "description": "Tallow, inedible", "primary": true},
+          {"code": "1502900000", "description": "Fats of bovine animals, sheep or goats, other"}
+        ]
+      },
+      "lard_greases": {
+        "chapter": "15",
+        "codes": [
+          {"code": "1501100040", "description": "Lard"},
+          {"code": "1501200020", "description": "Pig fat, rendered"},
+          {"code": "1501200060", "description": "Yellow grease", "primary": true},
+          {"code": "1501900040", "description": "Poultry fat"}
+        ]
+      },
+      "waste_oils": {
+        "chapter": "15",
+        "codes": [
+          {"code": "1518004000", "description": "Inedible mixtures/preparations of animal/vegetable fats (includes UCO)", "primary": true}
+        ]
+      }
+    },
+    "biofuels": {
+      "ethanol": {
+        "chapter": "22",
+        "codes": [
+          {"code": "2207101000", "description": "Undenatured ethyl alcohol, 80%+ by volume, for beverages"},
+          {"code": "2207106000", "description": "Undenatured ethyl alcohol, 80%+ by volume, other"},
+          {"code": "2207200010", "description": "Denatured ethyl alcohol, fuel use", "primary": true},
+          {"code": "2207200090", "description": "Denatured ethyl alcohol, other"}
+        ]
+      },
+      "biodiesel": {
+        "chapter": "38",
+        "codes": [
+          {"code": "3826001000", "description": "Biodiesel, pure (B100)", "primary": true},
+          {"code": "3826003000", "description": "Biodiesel mixtures (blends)"}
+        ]
+      },
+      "renewable_diesel": {
+        "chapter": "27",
+        "codes": [
+          {"code": "2710200500", "description": "Petroleum oils w/ biodiesel, <30% by weight"},
+          {"code": "2710209000", "description": "Petroleum oils w/ biodiesel, other"}
+        ],
+        "note": "Renewable diesel (HDRD) often classified with petroleum equivalents"
+      }
+    },
+    "livestock_meat": {
+      "live_cattle": {
+        "chapter": "01",
+        "codes": [
+          {"code": "0102210000", "description": "Live cattle, pure-bred breeding"},
+          {"code": "0102292000", "description": "Live cattle, dairy cows"},
+          {"code": "0102294000", "description": "Live cattle, for immediate slaughter"},
+          {"code": "0102296000", "description": "Live cattle, other"}
+        ]
+      },
+      "beef": {
+        "chapter": "02",
+        "codes": [
+          {"code": "0201100500", "description": "Fresh/chilled beef carcasses, high quality"},
+          {"code": "0201101000", "description": "Fresh/chilled beef carcasses, other"},
+          {"code": "0201300200", "description": "Fresh/chilled beef, boneless, high quality"},
+          {"code": "0201308000", "description": "Fresh/chilled beef, boneless, other"},
+          {"code": "0202300200", "description": "Frozen beef, boneless, high quality"},
+          {"code": "0202308000", "description": "Frozen beef, boneless, other"}
+        ]
+      },
+      "pork": {
+        "chapter": "02",
+        "codes": [
+          {"code": "0203110000", "description": "Fresh/chilled pork carcasses"},
+          {"code": "0203121000", "description": "Fresh/chilled pork hams and cuts"},
+          {"code": "0203210000", "description": "Frozen pork carcasses"},
+          {"code": "0203221000", "description": "Frozen pork hams and cuts"}
+        ]
+      },
+      "poultry": {
+        "chapter": "02",
+        "codes": [
+          {"code": "0207110000", "description": "Fresh/chilled chicken, whole"},
+          {"code": "0207120000", "description": "Frozen chicken, whole"},
+          {"code": "0207130000", "description": "Chicken cuts and offal, fresh/chilled"},
+          {"code": "0207140000", "description": "Chicken cuts and offal, frozen"}
+        ]
+      }
+    },
+    "petroleum": {
+      "crude_oil": {
+        "chapter": "27",
+        "codes": [
+          {"code": "2709001000", "description": "Petroleum oils, crude, testing under 25 API"},
+          {"code": "2709002000", "description": "Petroleum oils, crude, testing 25+ API"}
+        ]
+      },
+      "refined_products": {
+        "chapter": "27",
+        "codes": [
+          {"code": "2710121000", "description": "Motor fuel/gasoline"},
+          {"code": "2710124500", "description": "Naphtha"},
+          {"code": "2710190600", "description": "Diesel fuel"},
+          {"code": "2710191100", "description": "No. 2 heating oil"},
+          {"code": "2710194500", "description": "Kerosene-type jet fuel"}
+        ]
+      },
+      "natural_gas": {
+        "chapter": "27",
+        "codes": [
+          {"code": "2711110000", "description": "Liquefied natural gas (LNG)"},
+          {"code": "2711210000", "description": "Natural gas in gaseous state"}
+        ]
+      }
+    }
+  },
+  "hts_codes": {
+    "description": "US-specific 10-digit HTS import codes for RLC commodity tracking",
+    "note": "HTS codes for imports may differ slightly from Schedule B codes for same commodity",
+    "reference": "Use Schedule B codes above as primary reference - HTS codes largely mirror them for agricultural commodities",
+    "key_differences": {
+      "note": "HTS includes tariff rate provisions not present in Schedule B",
+      "example": "HTS may have country-specific subcodes for preferential duty treatment"
+    }
+  },
+  "quick_lookup": {
+    "primary_export_codes": {
+      "yellow_corn": "1005902020",
+      "soybeans": "1201900090",
+      "wheat": "1001990000",
+      "soybean_meal": "2304000000",
+      "crude_soybean_oil": "1507100000",
+      "ddgs": "2303300000",
+      "fuel_ethanol": "2207200010",
+      "biodiesel_b100": "3826001000",
+      "inedible_tallow": "1502100040",
+      "yellow_grease": "1501200060",
+      "uco_waste_oil": "1518004000",
+      "crude_canola_oil": "1514110000",
+      "crude_corn_oil": "1515210000",
+      "crude_palm_oil": "1511100000",
+      "grain_sorghum": "1007900000"
+    },
+    "biofuel_feedstocks": {
+      "soybean_oil_crude": "1507100000",
+      "canola_oil_crude": "1514110000",
+      "corn_oil_crude": "1515210000",
+      "palm_oil_crude": "1511100000",
+      "tallow_inedible": "1502100040",
+      "yellow_grease": "1501200060",
+      "uco_waste_oils": "1518004000"
+    },
+    "by_chapter": {
+      "01": "Live animals",
+      "02": "Meat and edible meat offal",
+      "10": "Cereals (corn, wheat, rice, barley, sorghum)",
+      "12": "Oilseeds (soybeans, canola, sunflower)",
+      "15": "Animal/vegetable fats and oils",
+      "22": "Beverages, spirits, vinegar (ethanol)",
+      "23": "Residues from food industries (meals, DDGS)",
+      "27": "Mineral fuels, oils (petroleum, natural gas, renewable diesel)",
+      "38": "Chemical products (biodiesel)"
+    }
+  },
+  "data_notes": {
+    "value_units": "US dollars (customs value for imports, FAS value for exports)",
+    "quantity_units": "Varies by commodity - check UNIT_QY1 parameter",
+    "common_quantity_units": {
+      "KG": "Kilograms",
+      "MT": "Metric tons",
+      "BBL": "Barrels (42 gallons)",
+      "LTR": "Liters",
+      "NO": "Number/count"
+    },
+    "revision_schedule": "Data revised annually with April release",
+    "lag": "Approximately 45-50 days from end of reference month"
+  }
+}

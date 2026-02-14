@@ -1,0 +1,793 @@
+{
+  "metadata": {
+    "name": "RLC Commodities Power BI Reference",
+    "version": "1.0.0",
+    "description": "Machine-readable reference for generating Power BI visualizations from the rlc_commodities PostgreSQL database",
+    "database": {
+      "name": "rlc_commodities",
+      "host": "localhost",
+      "port": 5432,
+      "type": "PostgreSQL",
+      "architecture": "medallion"
+    },
+    "created": "2026-01-30",
+    "author": "Round Lakes Companies"
+  },
+
+  "marketing_years": {
+    "corn_soybeans": {
+      "start_month": 9,
+      "start_month_name": "September",
+      "end_month": 8,
+      "end_month_name": "August",
+      "format_example": "2024/25",
+      "my_number_logic": "IF(MONTH >= 9, YEAR + 1, YEAR)",
+      "my_month_logic": "IF(MONTH >= 9, MONTH - 8, MONTH + 4)",
+      "commodities": ["corn", "soybeans", "sorghum"]
+    },
+    "wheat": {
+      "start_month": 6,
+      "start_month_name": "June",
+      "end_month": 5,
+      "end_month_name": "May",
+      "format_example": "2024/25",
+      "my_number_logic": "IF(MONTH >= 6, YEAR + 1, YEAR)",
+      "my_month_logic": "IF(MONTH >= 6, MONTH - 5, MONTH + 7)",
+      "commodities": ["wheat", "barley"]
+    },
+    "cotton_rice": {
+      "start_month": 8,
+      "start_month_name": "August",
+      "end_month": 7,
+      "end_month_name": "July",
+      "format_example": "2024/25",
+      "my_number_logic": "IF(MONTH >= 8, YEAR + 1, YEAR)",
+      "commodities": ["cotton", "rice"]
+    }
+  },
+
+  "unit_conversions": {
+    "bushels_to_mt": {
+      "corn": 0.0254,
+      "soybeans": 0.0272,
+      "wheat": 0.0272
+    },
+    "mt_to_bushels": {
+      "corn": 39.368,
+      "soybeans": 36.744,
+      "wheat": 36.744
+    },
+    "bushel_weights_lbs": {
+      "corn": 56,
+      "soybeans": 60,
+      "wheat": 60,
+      "barley": 48,
+      "oats": 32
+    },
+    "metric_ton_kg": 1000,
+    "metric_ton_lbs": 2204.6,
+    "short_ton_kg": 907,
+    "short_ton_lbs": 2000
+  },
+
+  "country_codes": {
+    "major_exporters": {
+      "US": {"name": "United States", "role": "Major producer/exporter"},
+      "BR": {"name": "Brazil", "role": "#1 soy exporter, major corn"},
+      "AR": {"name": "Argentina", "role": "Major soy/corn exporter"},
+      "RS": {"name": "Russia", "alt": "RU", "role": "#1 wheat exporter"},
+      "UP": {"name": "Ukraine", "alt": "UA", "role": "Major corn/wheat exporter"},
+      "AS": {"name": "Australia", "alt": "AU", "role": "Major wheat exporter"},
+      "CA": {"name": "Canada", "role": "Major wheat, canola"}
+    },
+    "major_importers": {
+      "CH": {"name": "China", "alt": "CN", "role": "#1 soybean importer"},
+      "E4": {"name": "European Union", "alt": "EU", "role": "Major importer"},
+      "JA": {"name": "Japan", "alt": "JP", "role": "Major corn/soy importer"},
+      "MX": {"name": "Mexico", "role": "Major corn importer"},
+      "KS": {"name": "South Korea", "alt": "KR", "role": "Major corn/soy importer"}
+    },
+    "palm_oil_producers": {
+      "ID": {"name": "Indonesia", "role": "#1 palm oil producer"},
+      "MY": {"name": "Malaysia", "role": "#2 palm oil producer"}
+    }
+  },
+
+  "database_schema": {
+    "bronze_layer": {
+      "fas_psd": {
+        "description": "USDA FAS Production, Supply, Distribution data",
+        "key_columns": ["commodity", "country_code", "marketing_year"],
+        "measures": ["production", "beginning_stocks", "imports", "total_supply", "domestic_consumption", "feed_dom_consumption", "fsi_consumption", "crush", "exports", "ending_stocks"],
+        "unit": "1000 MT"
+      },
+      "fas_export_sales": {
+        "description": "Weekly US export sales by destination",
+        "key_columns": ["commodity", "country", "marketing_year", "week_ending"],
+        "measures": ["weekly_exports", "accumulated_exports", "outstanding_sales", "net_sales"],
+        "unit": "MT"
+      },
+      "conab_production": {
+        "description": "Brazil CONAB production by state",
+        "key_columns": ["crop", "state", "crop_year"],
+        "measures": ["area_planted_ha", "production_tonnes", "yield_kg_ha"]
+      },
+      "nass_crop_progress": {
+        "description": "USDA NASS weekly crop progress",
+        "key_columns": ["commodity", "state", "week_ending", "activity"],
+        "measures": ["progress_pct"]
+      },
+      "nass_crop_condition": {
+        "description": "USDA NASS weekly crop conditions",
+        "key_columns": ["commodity", "state", "week_ending"],
+        "measures": ["very_poor", "poor", "fair", "good", "excellent"]
+      },
+      "cftc_cot": {
+        "description": "CFTC Commitment of Traders positioning",
+        "key_columns": ["commodity", "report_date"],
+        "measures": ["mm_long", "mm_short", "mm_net_long", "comm_long", "comm_short", "comm_net_long", "oi_total"]
+      },
+      "weather_raw": {
+        "description": "Hourly weather observations",
+        "key_columns": ["station_id", "state", "observation_time"],
+        "measures": ["temp_f", "precip_in", "humidity_pct", "wind_speed_mph"]
+      },
+      "eia_raw_ingestion": {
+        "description": "EIA petroleum and biofuels data",
+        "key_columns": ["series_id", "period"],
+        "measures": ["value"]
+      },
+      "epa_rfs_rin": {
+        "description": "EPA RFS RIN generation and compliance",
+        "key_columns": ["fuel_pathway", "report_month"],
+        "measures": ["rin_generated", "rin_retired"]
+      }
+    },
+    "gold_layer": {
+      "balance_sheets": [
+        "fas_us_corn_balance_sheet",
+        "fas_us_soybeans_balance_sheet",
+        "fas_us_wheat_balance_sheet",
+        "us_soybean_balance_sheet",
+        "us_soybean_meal_balance_sheet",
+        "us_soybean_oil_balance_sheet",
+        "brazil_balance_sheet"
+      ],
+      "production": [
+        "brazil_soybean_production",
+        "brazil_corn_production",
+        "brazil_national_production",
+        "brazil_production_by_state"
+      ],
+      "conditions": [
+        "nass_condition_yoy",
+        "nass_latest_progress"
+      ],
+      "positioning": [
+        "cftc_sentiment",
+        "cftc_mm_extremes"
+      ],
+      "weather": [
+        "weather_latest",
+        "weather_summary",
+        "weather_regional_summary"
+      ],
+      "energy": [
+        "eia_ethanol_weekly",
+        "eia_petroleum_weekly",
+        "eia_prices_daily",
+        "rin_monthly_trend",
+        "rin_generation_summary",
+        "d6_ethanol_trend",
+        "d4_bbd_trend"
+      ],
+      "prices": [
+        "futures_daily_validated"
+      ]
+    }
+  },
+
+  "dax_templates": {
+    "marketing_year_calendar": {
+      "description": "Creates a date dimension table with marketing year columns",
+      "dax": "MarketingYearCalendar = \nVAR CornSoyFirstMonth = 9\nVAR WheatFirstMonth = 6\nRETURN\nADDCOLUMNS(\n    CALENDAR(DATE(2010, 1, 1), DATE(2030, 12, 31)),\n    \"Calendar Year\", YEAR([Date]),\n    \"Calendar Month\", MONTH([Date]),\n    \"CornSoy_MY\", \n        IF(MONTH([Date]) >= 9,\n            YEAR([Date]) & \"/\" & RIGHT(YEAR([Date]) + 1, 2),\n            (YEAR([Date]) - 1) & \"/\" & RIGHT(YEAR([Date]), 2)\n        ),\n    \"CornSoy_MY_Number\",\n        IF(MONTH([Date]) >= 9, YEAR([Date]) + 1, YEAR([Date])),\n    \"CornSoy_MY_Month\",\n        IF(MONTH([Date]) >= 9, MONTH([Date]) - 8, MONTH([Date]) + 4),\n    \"Wheat_MY\",\n        IF(MONTH([Date]) >= 6,\n            YEAR([Date]) & \"/\" & RIGHT(YEAR([Date]) + 1, 2),\n            (YEAR([Date]) - 1) & \"/\" & RIGHT(YEAR([Date]), 2)\n        ),\n    \"Wheat_MY_Number\",\n        IF(MONTH([Date]) >= 6, YEAR([Date]) + 1, YEAR([Date])),\n    \"YearMonthNumber\", YEAR([Date]) * 12 + MONTH([Date]) - 1\n)"
+    },
+    "basic_aggregations": {
+      "total_production": {
+        "description": "Sum of production across filter context",
+        "dax": "Total Production := SUM(Commodities[Production])"
+      },
+      "total_exports": {
+        "description": "Sum of exports across filter context",
+        "dax": "Total Exports := SUM(Commodities[Exports])"
+      },
+      "ending_stocks": {
+        "description": "Sum of ending stocks across filter context",
+        "dax": "Ending Stocks := SUM(Commodities[EndingStocks])"
+      },
+      "domestic_use": {
+        "description": "Sum of domestic consumption across filter context",
+        "dax": "Domestic Use := SUM(Commodities[DomesticConsumption])"
+      }
+    },
+    "supply_demand_calculations": {
+      "total_supply": {
+        "description": "Beginning stocks + Production + Imports",
+        "dax": "Total Supply := \nVAR BeginStocks = SUM(Commodities[BeginningStocks])\nVAR Production = SUM(Commodities[Production])\nVAR Imports = SUM(Commodities[Imports])\nRETURN BeginStocks + Production + Imports"
+      },
+      "total_use": {
+        "description": "Domestic consumption + Exports",
+        "dax": "Total Use := \nVAR DomUse = SUM(Commodities[DomesticConsumption])\nVAR Exports = SUM(Commodities[Exports])\nRETURN DomUse + Exports"
+      },
+      "stocks_to_use_ratio": {
+        "description": "Ending stocks divided by total use (key market tightness indicator)",
+        "dax": "Stocks to Use Ratio := \nVAR EndingStocks = SUM(Commodities[EndingStocks])\nVAR TotalUse = [Total Use]\nRETURN DIVIDE(EndingStocks, TotalUse, BLANK())"
+      },
+      "stocks_to_use_pct": {
+        "description": "Stocks to use as percentage",
+        "dax": "Stocks to Use % := [Stocks to Use Ratio] * 100"
+      },
+      "days_of_use": {
+        "description": "Ending stocks expressed as days of consumption",
+        "dax": "Days of Use := \nVAR EndingStocks = SUM(Commodities[EndingStocks])\nVAR DailyUse = DIVIDE([Total Use], 365)\nRETURN DIVIDE(EndingStocks, DailyUse, BLANK())"
+      }
+    },
+    "year_over_year": {
+      "prior_year_value_cornsoy": {
+        "description": "Gets prior marketing year value for corn/soy (Sept-Aug)",
+        "dax": "Production PY (Corn MY) := \nVAR CurrentMY = MAX('MarketingYearCalendar'[CornSoy_MY_Number])\nVAR PreviousMY = CurrentMY - 1\nRETURN\n    CALCULATE(\n        SUM(Commodities[Production]),\n        REMOVEFILTERS('MarketingYearCalendar'),\n        'MarketingYearCalendar'[CornSoy_MY_Number] = PreviousMY\n    )"
+      },
+      "prior_year_value_wheat": {
+        "description": "Gets prior marketing year value for wheat (June-May)",
+        "dax": "Production PY (Wheat MY) := \nVAR CurrentMY = MAX('MarketingYearCalendar'[Wheat_MY_Number])\nVAR PreviousMY = CurrentMY - 1\nRETURN\n    CALCULATE(\n        SUM(Commodities[Production]),\n        REMOVEFILTERS('MarketingYearCalendar'),\n        'MarketingYearCalendar'[Wheat_MY_Number] = PreviousMY\n    )"
+      },
+      "yoy_change": {
+        "description": "Absolute change from prior year",
+        "dax": "Production YoY Change := \nVAR CurrentValue = [Total Production]\nVAR PriorValue = [Production PY (Corn MY)]\nRETURN IF(\n    NOT ISBLANK(CurrentValue) && NOT ISBLANK(PriorValue),\n    CurrentValue - PriorValue\n)"
+      },
+      "yoy_pct_change": {
+        "description": "Percentage change from prior year",
+        "dax": "Production YoY % := \nDIVIDE([Production YoY Change], [Production PY (Corn MY)])"
+      }
+    },
+    "share_calculations": {
+      "share_of_global": {
+        "description": "Country/region share of global total",
+        "dax": "Production Share of Global := \nVAR CountryProduction = SUM(Commodities[Production])\nVAR GlobalProduction = \n    CALCULATE(\n        SUM(Commodities[Production]),\n        REMOVEFILTERS(Country)\n    )\nRETURN DIVIDE(CountryProduction, GlobalProduction)"
+      },
+      "share_of_selected": {
+        "description": "Share within currently selected/filtered items",
+        "dax": "Production Share of Selected := \nVAR CountryProduction = SUM(Commodities[Production])\nVAR SelectedProduction = \n    CALCULATE(\n        SUM(Commodities[Production]),\n        ALLSELECTED(Country)\n    )\nRETURN DIVIDE(CountryProduction, SelectedProduction)"
+      }
+    },
+    "rolling_calculations": {
+      "rolling_5yr_avg": {
+        "description": "5-year rolling average for trend analysis",
+        "dax": "Production Rolling 5Y Avg := \nVAR NumYears = 5\nVAR LastMYNumber = MAX('MarketingYearCalendar'[CornSoy_MY_Number])\nVAR FirstMYNumber = LastMYNumber - NumYears + 1\nVAR PeriodYears = \n    FILTER(\n        ALL('MarketingYearCalendar'[CornSoy_MY_Number]),\n        'MarketingYearCalendar'[CornSoy_MY_Number] >= FirstMYNumber\n        && 'MarketingYearCalendar'[CornSoy_MY_Number] <= LastMYNumber\n    )\nRETURN\n    CALCULATE(\n        AVERAGEX(\n            VALUES('MarketingYearCalendar'[CornSoy_MY_Number]),\n            SUM(Commodities[Production])\n        ),\n        REMOVEFILTERS('MarketingYearCalendar'),\n        PeriodYears\n    )"
+      },
+      "deviation_from_avg": {
+        "description": "Current value minus rolling average",
+        "dax": "Production vs 5Y Avg := \n[Total Production] - [Production Rolling 5Y Avg]"
+      },
+      "deviation_from_avg_pct": {
+        "description": "Percentage deviation from rolling average",
+        "dax": "Production vs 5Y Avg % := \nDIVIDE([Production vs 5Y Avg], [Production Rolling 5Y Avg])"
+      }
+    },
+    "cftc_positioning": {
+      "net_position": {
+        "description": "Managed money net long position",
+        "dax": "MM Net Position := \nSUM(CFTC[MM_Long]) - SUM(CFTC[MM_Short])"
+      },
+      "net_position_pct_oi": {
+        "description": "Net position as percentage of open interest",
+        "dax": "MM Net % of OI := \nDIVIDE([MM Net Position], SUM(CFTC[OI_Total]), 0)"
+      },
+      "position_percentile": {
+        "description": "Current position's percentile rank in historical context",
+        "dax": "Position Percentile := \nVAR CurrentPosition = [MM Net Position]\nVAR PositionsBelowCurrent = \n    COUNTROWS(\n        FILTER(\n            ALL(CFTC),\n            [MM Net Position] < CurrentPosition\n        )\n    )\nVAR TotalPositions = COUNTROWS(ALL(CFTC))\nRETURN DIVIDE(PositionsBelowCurrent, TotalPositions, 0)"
+      },
+      "extreme_position_flag": {
+        "description": "Flags extremely long or short positions",
+        "dax": "Extreme Position Flag := \nVAR Percentile = [Position Percentile]\nRETURN\n    SWITCH(\n        TRUE(),\n        Percentile >= 0.90, \"Extremely Long\",\n        Percentile <= 0.10, \"Extremely Short\",\n        \"Normal Range\"\n    )"
+      }
+    },
+    "crop_conditions": {
+      "good_excellent_pct": {
+        "description": "Combined Good + Excellent condition rating",
+        "dax": "Good/Excellent % := \nVAR Good = SUM(Conditions[Good])\nVAR Excellent = SUM(Conditions[Excellent])\nRETURN Good + Excellent"
+      },
+      "condition_index": {
+        "description": "Weighted condition index (1-5 scale)",
+        "dax": "Condition Index := \nVAR VP = SUM(Conditions[VeryPoor]) * 1\nVAR P = SUM(Conditions[Poor]) * 2\nVAR F = SUM(Conditions[Fair]) * 3\nVAR G = SUM(Conditions[Good]) * 4\nVAR E = SUM(Conditions[Excellent]) * 5\nVAR Total = SUM(Conditions[VeryPoor]) + SUM(Conditions[Poor]) + SUM(Conditions[Fair]) + SUM(Conditions[Good]) + SUM(Conditions[Excellent])\nRETURN DIVIDE(VP + P + F + G + E, Total)"
+      }
+    },
+    "weather": {
+      "temp_deviation": {
+        "description": "Temperature deviation from normal",
+        "dax": "Temp Deviation := \n[Actual Temperature] - [Normal Temperature]"
+      },
+      "precip_deviation_pct": {
+        "description": "Precipitation deviation as percentage of normal",
+        "dax": "Precip Deviation % := \nDIVIDE(\n    [Actual Precipitation] - [Normal Precipitation],\n    [Normal Precipitation],\n    0\n)"
+      },
+      "drought_classification": {
+        "description": "US Drought Monitor style classification",
+        "dax": "Drought Classification := \nVAR PrecipDev = [Precip Deviation %]\nRETURN\n    SWITCH(\n        TRUE(),\n        PrecipDev <= -0.70, \"D4 - Exceptional\",\n        PrecipDev <= -0.50, \"D3 - Extreme\",\n        PrecipDev <= -0.30, \"D2 - Severe\",\n        PrecipDev <= -0.15, \"D1 - Moderate\",\n        PrecipDev <= 0, \"D0 - Abnormally Dry\",\n        \"Normal/Above Normal\"\n    )"
+      }
+    },
+    "conditional_formatting_colors": {
+      "stu_risk_color": {
+        "description": "Color coding for stocks-to-use risk levels",
+        "dax": "STU Risk Color := \nVAR STURatio = [Stocks to Use Ratio]\nRETURN\n    SWITCH(\n        TRUE(),\n        ISBLANK(STURatio), BLANK(),\n        STURatio >= 0.25, \"#2E7D32\",\n        STURatio >= 0.15, \"#4CAF50\",\n        STURatio >= 0.10, \"#FFC107\",\n        STURatio >= 0.05, \"#FF9800\",\n        \"#D32F2F\"\n    )"
+      },
+      "yoy_change_color": {
+        "description": "Color coding for year-over-year changes",
+        "dax": "YoY Change Color := \nVAR Change = [Production YoY Change]\nRETURN\n    SWITCH(\n        TRUE(),\n        ISBLANK(Change), BLANK(),\n        Change > 0, \"#178E0B\",\n        Change < 0, \"#AB1A1A\",\n        \"#5F6B6D\"\n    )"
+      },
+      "position_color": {
+        "description": "Color coding for CFTC positioning",
+        "dax": "Position Color := \nVAR NetPos = [MM Net Position]\nRETURN\n    SWITCH(\n        TRUE(),\n        NetPos > 100000, \"#1B5E20\",\n        NetPos > 50000, \"#4CAF50\",\n        NetPos > 0, \"#81C784\",\n        NetPos > -50000, \"#EF9A9A\",\n        NetPos > -100000, \"#E53935\",\n        \"#B71C1C\"\n    )"
+      }
+    },
+    "balance_sheet_structure": {
+      "description": "Master measure for custom-ordered balance sheet rows",
+      "dax": "Balance Sheet Value = \nSWITCH(\n    TRUE(),\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Beginning Stocks\", \n        [Beginning Stocks],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Production\", \n        [Total Production],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Imports\", \n        [Total Imports],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Total Supply\", \n        [Total Supply],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Feed & Residual\", \n        [Feed Use],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Food, Seed, Industrial\", \n        [FSI Use],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Domestic Use\", \n        [Domestic Use],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Exports\", \n        [Total Exports],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Total Use\", \n        [Total Use],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Ending Stocks\", \n        [Ending Stocks],\n    SELECTEDVALUE(BalanceSheetStructure[LineItem]) = \"Stocks/Use %\", \n        [Stocks to Use %],\n    BLANK()\n)"
+    }
+  },
+
+  "dimension_tables": {
+    "balance_sheet_structure": {
+      "description": "Controls balance sheet line item ordering and formatting",
+      "columns": ["LineItem", "SortOrder", "IsSubtotal", "Category", "Indent"],
+      "data": [
+        {"LineItem": "Beginning Stocks", "SortOrder": 1, "IsSubtotal": false, "Category": "Supply", "Indent": 0},
+        {"LineItem": "Production", "SortOrder": 2, "IsSubtotal": false, "Category": "Supply", "Indent": 0},
+        {"LineItem": "Imports", "SortOrder": 3, "IsSubtotal": false, "Category": "Supply", "Indent": 0},
+        {"LineItem": "Total Supply", "SortOrder": 4, "IsSubtotal": true, "Category": "Supply", "Indent": 0},
+        {"LineItem": "Feed & Residual", "SortOrder": 5, "IsSubtotal": false, "Category": "Demand", "Indent": 1},
+        {"LineItem": "Food, Seed, Industrial", "SortOrder": 6, "IsSubtotal": false, "Category": "Demand", "Indent": 1},
+        {"LineItem": "Domestic Use", "SortOrder": 7, "IsSubtotal": true, "Category": "Demand", "Indent": 0},
+        {"LineItem": "Exports", "SortOrder": 8, "IsSubtotal": false, "Category": "Demand", "Indent": 0},
+        {"LineItem": "Total Use", "SortOrder": 9, "IsSubtotal": true, "Category": "Demand", "Indent": 0},
+        {"LineItem": "Ending Stocks", "SortOrder": 10, "IsSubtotal": true, "Category": "Carryout", "Indent": 0},
+        {"LineItem": "Stocks/Use %", "SortOrder": 11, "IsSubtotal": false, "Category": "Ratio", "Indent": 0}
+      ]
+    },
+    "commodity_dimension": {
+      "description": "Master commodity reference table",
+      "columns": ["CommodityCode", "CommodityName", "MarketingYearType", "UnitUS", "UnitGlobal", "BushelWeightLbs"],
+      "data": [
+        {"CommodityCode": "corn", "CommodityName": "Corn", "MarketingYearType": "corn_soybeans", "UnitUS": "Million Bushels", "UnitGlobal": "1000 MT", "BushelWeightLbs": 56},
+        {"CommodityCode": "soybeans", "CommodityName": "Soybeans", "MarketingYearType": "corn_soybeans", "UnitUS": "Million Bushels", "UnitGlobal": "1000 MT", "BushelWeightLbs": 60},
+        {"CommodityCode": "wheat", "CommodityName": "Wheat", "MarketingYearType": "wheat", "UnitUS": "Million Bushels", "UnitGlobal": "1000 MT", "BushelWeightLbs": 60},
+        {"CommodityCode": "soybean_meal", "CommodityName": "Soybean Meal", "MarketingYearType": "corn_soybeans", "UnitUS": "1000 Short Tons", "UnitGlobal": "1000 MT", "BushelWeightLbs": null},
+        {"CommodityCode": "soybean_oil", "CommodityName": "Soybean Oil", "MarketingYearType": "corn_soybeans", "UnitUS": "Million Pounds", "UnitGlobal": "1000 MT", "BushelWeightLbs": null},
+        {"CommodityCode": "cotton", "CommodityName": "Cotton", "MarketingYearType": "cotton_rice", "UnitUS": "1000 480-lb Bales", "UnitGlobal": "1000 MT", "BushelWeightLbs": null},
+        {"CommodityCode": "rice", "CommodityName": "Rice", "MarketingYearType": "cotton_rice", "UnitUS": "Million Cwt", "UnitGlobal": "1000 MT", "BushelWeightLbs": null}
+      ]
+    }
+  },
+
+  "visual_configurations": {
+    "balance_sheet_matrix": {
+      "visual_type": "matrix",
+      "row_wells": ["BalanceSheetStructure[LineItem]"],
+      "column_wells": ["MarketingYear[MY_Display]"],
+      "value_wells": ["[Balance Sheet Value]", "[Balance Sheet Value PY]", "[vs Prior Year]", "[vs Prior Year %]"],
+      "formatting": {
+        "layout": "tabular",
+        "stepped_layout": false,
+        "row_subtotals": false,
+        "column_subtotals": false,
+        "row_headers_alignment": "left",
+        "values_alignment": "right",
+        "column_headers_alignment": "center",
+        "font_family": "Segoe UI",
+        "font_size": 10,
+        "gridlines_horizontal": true,
+        "gridlines_vertical": false,
+        "gridline_color": "#E0E0E0"
+      },
+      "conditional_formatting": [
+        {"field": "[vs Prior Year]", "type": "data_bars", "positive_color": "#178E0B", "negative_color": "#AB1A1A"},
+        {"field": "[vs Prior Year %]", "type": "icons", "icon_set": "arrows"}
+      ]
+    },
+    "production_trend_line": {
+      "visual_type": "lineChart",
+      "axis_wells": ["MarketingYear[MY_Display]"],
+      "legend_wells": ["Country[CountryName]"],
+      "value_wells": ["[Total Production]"],
+      "formatting": {
+        "show_markers": true,
+        "marker_size": 5,
+        "line_width": 2,
+        "show_data_labels": false
+      },
+      "analytics": [
+        {"type": "average_line", "label": "5-Year Average"},
+        {"type": "min_line", "label": "Historical Low"},
+        {"type": "max_line", "label": "Historical High"}
+      ]
+    },
+    "supply_demand_combo": {
+      "visual_type": "lineStackedColumnComboChart",
+      "shared_axis_wells": ["MarketingYear[MY_Display]"],
+      "column_series_wells": ["[Beginning Stocks]", "[Total Production]", "[Total Imports]"],
+      "line_values_wells": ["[Ending Stocks]"],
+      "formatting": {
+        "column_colors": ["#90CAF9", "#4CAF50", "#FFC107"],
+        "line_color": "#D32F2F",
+        "line_width": 3,
+        "show_secondary_axis": true,
+        "secondary_axis_title": "Ending Stocks"
+      }
+    },
+    "trade_flow_map": {
+      "visual_type": "flowMap",
+      "source": "AppSource - Flow Map by Weiwei Cui",
+      "origin_wells": ["OriginCountry[CountryCode]"],
+      "destination_wells": ["DestinationCountry[CountryCode]"],
+      "width_wells": ["[Export Volume]"],
+      "formatting": {
+        "flow_style": "great_circle",
+        "show_arrows": true,
+        "opacity": 0.7,
+        "color_by_origin": true
+      }
+    },
+    "production_choropleth": {
+      "visual_type": "filledMap",
+      "location_wells": ["Geography[StateName]"],
+      "legend_wells": [],
+      "values_wells": ["[Total Production]"],
+      "formatting": {
+        "color_scale": "diverging",
+        "min_color": "#FFECB3",
+        "mid_color": "#FFA726",
+        "max_color": "#E65100",
+        "show_data_labels": true
+      }
+    },
+    "cftc_gauge": {
+      "visual_type": "gauge",
+      "value_wells": ["[MM Net % of OI]"],
+      "formatting": {
+        "min_value": -0.5,
+        "max_value": 0.5,
+        "target_value": 0,
+        "callout_value_display": "value_and_target",
+        "color_bands": [
+          {"start": -0.5, "end": -0.2, "color": "#D32F2F"},
+          {"start": -0.2, "end": 0.2, "color": "#FFC107"},
+          {"start": 0.2, "end": 0.5, "color": "#4CAF50"}
+        ]
+      }
+    },
+    "weather_heatmap": {
+      "visual_type": "matrix",
+      "row_wells": ["Geography[Region]"],
+      "column_wells": ["Date[WeekNumber]"],
+      "value_wells": ["[Temp Deviation]"],
+      "formatting": {
+        "layout": "tabular",
+        "show_values": false
+      },
+      "conditional_formatting": [
+        {"field": "[Temp Deviation]", "type": "background_color", "color_scale": "diverging", "min_color": "#2196F3", "mid_color": "#FFFFFF", "max_color": "#F44336"}
+      ]
+    },
+    "kpi_card": {
+      "visual_type": "card",
+      "value_wells": ["[Ending Stocks]"],
+      "formatting": {
+        "category_label": "2024/25 Ending Stocks",
+        "display_units": "millions",
+        "decimal_places": 0,
+        "font_size": 45,
+        "font_color": "#1a1a1a"
+      }
+    },
+    "sparkline_table": {
+      "visual_type": "table",
+      "column_wells": ["Country[CountryName]", "[Total Production]", "[Production Sparkline]", "[Production YoY %]"],
+      "formatting": {
+        "sparkline_y_axis": "[Total Production]",
+        "sparkline_x_axis": "MarketingYear[MY_Number]",
+        "sparkline_max_points": 10
+      }
+    }
+  },
+
+  "theme": {
+    "name": "RLC Agricultural Commodities",
+    "dataColors": [
+      "#168980",
+      "#F4D25A",
+      "#F07F09",
+      "#5F6B6D",
+      "#178E0B",
+      "#E5AC12",
+      "#AB1A1A",
+      "#B59525",
+      "#3F51B5",
+      "#9C27B0"
+    ],
+    "background": "#FFFFFF",
+    "foreground": "#1a1a1a",
+    "tableAccent": "#168980",
+    "good": "#178E0B",
+    "neutral": "#E5AC12",
+    "bad": "#AB1A1A",
+    "maximum": "#1B5E20",
+    "center": "#FFC107",
+    "minimum": "#B71C1C",
+    "textClasses": {
+      "title": {
+        "fontFamily": "Segoe UI Semibold",
+        "fontSize": 16,
+        "fontWeight": "600",
+        "color": "#1a1a1a"
+      },
+      "header": {
+        "fontFamily": "Segoe UI Semibold",
+        "fontSize": 12,
+        "fontWeight": "600",
+        "color": "#1a1a1a"
+      },
+      "callout": {
+        "fontFamily": "Segoe UI",
+        "fontSize": 24,
+        "fontWeight": "700",
+        "color": "#168980"
+      },
+      "label": {
+        "fontFamily": "Segoe UI",
+        "fontSize": 10,
+        "fontWeight": "400",
+        "color": "#5F6B6D"
+      }
+    },
+    "visualStyles": {
+      "*": {
+        "*": {
+          "background": [{"color": {"solid": {"color": "#FFFFFF"}}}],
+          "border": [{"color": {"solid": {"color": "#E0E0E0"}}}],
+          "outlineColor": [{"solid": {"color": "#E0E0E0"}}],
+          "outlineWeight": [1]
+        }
+      },
+      "page": {
+        "*": {
+          "background": [{"color": {"solid": {"color": "#F5F5F5"}}}]
+        }
+      }
+    }
+  },
+
+  "color_palettes": {
+    "agricultural_primary": {
+      "grain_gold": "#F4D25A",
+      "corn_orange": "#F07F09",
+      "soy_green": "#168980",
+      "wheat_amber": "#B59525"
+    },
+    "sentiment": {
+      "bullish_strong": "#1B5E20",
+      "bullish": "#4CAF50",
+      "bullish_mild": "#81C784",
+      "neutral": "#FFC107",
+      "bearish_mild": "#EF9A9A",
+      "bearish": "#E53935",
+      "bearish_strong": "#B71C1C"
+    },
+    "supply_tightness": {
+      "comfortable": "#2E7D32",
+      "adequate": "#4CAF50",
+      "tight": "#FFC107",
+      "very_tight": "#FF9800",
+      "critical": "#D32F2F"
+    },
+    "drought_monitor": {
+      "D0_abnormally_dry": "#FCD37F",
+      "D1_moderate": "#FFAA00",
+      "D2_severe": "#E60000",
+      "D3_extreme": "#730000",
+      "D4_exceptional": "#330000",
+      "wet_light": "#ADD8E6",
+      "wet_moderate": "#4682B4",
+      "wet_heavy": "#000066"
+    },
+    "countries": {
+      "US": "#3C3B6E",
+      "Brazil": "#009C3B",
+      "Argentina": "#74ACDF",
+      "China": "#DE2910",
+      "EU": "#003399",
+      "Russia": "#0039A6",
+      "Ukraine": "#FFD500",
+      "Australia": "#00008B",
+      "Canada": "#FF0000"
+    }
+  },
+
+  "naming_conventions": {
+    "measures": {
+      "format": "Human Readable with Spaces",
+      "examples": {
+        "good": ["Total Production", "Ending Stocks", "Stocks to Use %", "Production YoY Change", "MM Net Position"],
+        "bad": ["TtlProd", "EndStks", "STU_Pct", "Prod_YoY_Chg", "MM_Net_Pos"]
+      },
+      "time_suffixes": {
+        "prior_year": " PY",
+        "year_to_date": " YTD",
+        "marketing_year_to_date": " MYTD",
+        "rolling_average": " Rolling Xyr Avg",
+        "year_over_year": " YoY"
+      }
+    },
+    "calculated_columns": {
+      "format": "PascalCase with underscores for table prefixes",
+      "examples": ["Country_Region", "MY_Number", "IsSubtotal"]
+    },
+    "tables": {
+      "dimension_prefix": "dim_",
+      "fact_prefix": "fact_",
+      "bridge_prefix": "bridge_"
+    },
+    "parameters": {
+      "format": "PascalCase",
+      "examples": ["ServerName", "DatabaseName", "RangeStart", "RangeEnd"]
+    }
+  },
+
+  "deployment": {
+    "connection_modes": {
+      "import": {
+        "use_cases": ["Historical data", "Complex DAX calculations", "Small-medium datasets"],
+        "max_model_size_pro": "1 GB",
+        "max_model_size_premium": "400 GB"
+      },
+      "directquery": {
+        "use_cases": ["Real-time data", "Large datasets", "Security pass-through"],
+        "limitations": ["Limited DAX functions", "Query performance dependent on source"]
+      },
+      "composite": {
+        "use_cases": ["Mix of historical and real-time", "Optimal performance + freshness"],
+        "configuration": "Import for dimensions and historical facts, DirectQuery for real-time"
+      }
+    },
+    "refresh": {
+      "pro_license": {
+        "max_refreshes_per_day": 8,
+        "timeout_hours": 2
+      },
+      "premium_license": {
+        "max_refreshes_per_day": 48,
+        "timeout_hours": 5
+      },
+      "incremental_refresh": {
+        "range_start_parameter": "RangeStart",
+        "range_end_parameter": "RangeEnd",
+        "archive_period_years": 10,
+        "refresh_period_days": 30
+      }
+    },
+    "gateway": {
+      "type": "On-premises data gateway",
+      "requirement": "Required for PostgreSQL scheduled refresh",
+      "configuration": {
+        "data_source_type": "PostgreSQL",
+        "server": "localhost:5432",
+        "database": "rlc_commodities",
+        "authentication": "Basic"
+      }
+    },
+    "embedding": {
+      "publish_to_web": {
+        "authentication": "None (public)",
+        "use_case": "Public dashboards",
+        "security_note": "No RLS, no sensitive data"
+      },
+      "secure_embed": {
+        "authentication": "Microsoft account",
+        "use_case": "Internal portals",
+        "security_note": "RLS enforced"
+      },
+      "power_bi_embedded": {
+        "authentication": "App tokens",
+        "use_case": "Customer-facing applications",
+        "requirement": "Premium or Embedded capacity"
+      }
+    },
+    "row_level_security": {
+      "internal_role": {
+        "name": "Internal",
+        "filter": "[DataClassification] = \"Internal\" || [DataClassification] = \"Public\""
+      },
+      "public_role": {
+        "name": "Public",
+        "filter": "[DataClassification] = \"Public\""
+      },
+      "note": "RLS only applies to Viewer role; Admins/Members/Contributors bypass filters"
+    }
+  },
+
+  "sql_queries": {
+    "us_corn_balance_sheet": "SELECT * FROM gold.fas_us_corn_balance_sheet ORDER BY marketing_year DESC LIMIT 5;",
+    "us_soybean_balance_sheet": "SELECT * FROM gold.fas_us_soybeans_balance_sheet ORDER BY marketing_year DESC LIMIT 5;",
+    "global_production_by_country": "SELECT country, country_code, marketing_year, production, exports, ending_stocks\nFROM bronze.fas_psd\nWHERE commodity = '{commodity}' AND marketing_year >= {start_year}\nORDER BY production DESC;",
+    "brazil_production_by_state": "SELECT * FROM gold.brazil_soybean_production WHERE crop_year = '{crop_year}' ORDER BY production DESC;",
+    "export_sales_by_destination": "SELECT country, accumulated_exports, outstanding_sales\nFROM bronze.fas_export_sales\nWHERE commodity = '{commodity}'\n  AND week_ending = (SELECT MAX(week_ending) FROM bronze.fas_export_sales WHERE commodity = '{commodity}')\nORDER BY accumulated_exports DESC LIMIT 10;",
+    "cftc_current_positioning": "SELECT * FROM gold.cftc_sentiment;",
+    "weather_latest": "SELECT * FROM gold.weather_latest ORDER BY state, location;",
+    "stocks_to_use_trend": "SELECT\n    marketing_year,\n    ending_stocks,\n    domestic_consumption + exports as total_use,\n    ROUND(ending_stocks / (domestic_consumption + exports) * 100, 1) as stocks_use_pct\nFROM bronze.fas_psd\nWHERE commodity = '{commodity}' AND country_code = 'US'\nORDER BY marketing_year;",
+    "production_share_global": "SELECT\n    country,\n    marketing_year,\n    production,\n    ROUND(production / SUM(production) OVER (PARTITION BY marketing_year) * 100, 1) as pct_of_total\nFROM bronze.fas_psd\nWHERE commodity = '{commodity}' AND marketing_year = {year} AND production > 1000\nORDER BY production DESC;"
+  },
+
+  "appstore_visuals": {
+    "recommended": [
+      {
+        "name": "Flow Map",
+        "publisher": "Weiwei Cui",
+        "use_case": "Trade flow visualization with directional arrows",
+        "url": "https://appsource.microsoft.com/en-us/product/power-bi-visuals/WA104380901"
+      },
+      {
+        "name": "Synoptic Panel",
+        "publisher": "OKViz",
+        "use_case": "Custom region maps with SVG overlays",
+        "url": "https://appsource.microsoft.com/en-us/product/power-bi-visuals/WA104380873"
+      },
+      {
+        "name": "Bullet Chart",
+        "publisher": "OKViz",
+        "use_case": "KPI comparison against targets",
+        "url": "https://appsource.microsoft.com/en-us/product/power-bi-visuals/WA104380755"
+      },
+      {
+        "name": "Infographic Designer",
+        "publisher": "Infragistics",
+        "use_case": "Custom infographic visualizations",
+        "url": "https://appsource.microsoft.com/en-us/product/power-bi-visuals/WA104380898"
+      },
+      {
+        "name": "Sankey Chart",
+        "publisher": "ChartExpo",
+        "use_case": "Flow diagrams showing supply chain or trade relationships"
+      }
+    ]
+  },
+
+  "best_practices": {
+    "performance": [
+      "Use Import mode for dimension tables and historical facts",
+      "Enable query folding in Power Query where possible",
+      "Create aggregation tables for large fact tables",
+      "Limit DirectQuery to real-time requirements only",
+      "Use REMOVEFILTERS() instead of ALL() when possible"
+    ],
+    "modeling": [
+      "Use star schema with single-direction relationships",
+      "Create separate date tables for each marketing year type",
+      "Define explicit measures instead of implicit aggregations",
+      "Set appropriate data categories on geographic columns",
+      "Hide foreign key columns from report view"
+    ],
+    "dax": [
+      "Use VAR/RETURN pattern for readability and performance",
+      "Use DIVIDE() instead of / to handle division by zero",
+      "Avoid FILTER() with large tables; use CALCULATETABLE() or direct filters",
+      "Use ISBLANK() checks before calculations",
+      "Document complex measures with comments using //"
+    ],
+    "visualization": [
+      "Limit to 3-5 colors per visual",
+      "Use consistent formatting across all reports",
+      "Add alt text for accessibility",
+      "Set logical tab order for keyboard navigation",
+      "Use tooltips for additional context without cluttering visuals"
+    ]
+  }
+}

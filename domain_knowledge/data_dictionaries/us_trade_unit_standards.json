@@ -1,0 +1,181 @@
+{
+  "metadata": {
+    "title": "US Trade Data Unit Standards",
+    "description": "Unit conversion standards for US trade volume columns and balance sheets",
+    "version": "1.0",
+    "created": "2026-02-08",
+    "notes": {
+      "trade_columns": "Monthly trade volume columns in trade spreadsheets",
+      "balance_sheet": "Annual/marketing year balance sheet totals",
+      "non_us": "All non-US data uses Metric Tonnes (MT) or 1,000 MT"
+    }
+  },
+
+  "conversion_factors": {
+    "MT_to_Short_Tons": 1.10231,
+    "MT_to_000_Pounds": 2.20462,
+    "MT_to_Million_Pounds": 0.00220462,
+    "MT_to_000_Bushels_Soybeans": 0.03674,
+    "MT_to_000_Bushels_Corn": 0.03937,
+    "MT_to_000_Bushels_Wheat": 0.03674,
+    "Bushels_per_MT_Soybeans": 36.744,
+    "Bushels_per_MT_Corn": 39.368,
+    "Bushels_per_MT_Wheat": 36.744,
+    "Pounds_per_MT": 2204.62
+  },
+
+  "vegetable_oils": {
+    "description": "All vegetable oils, fats, and greases",
+    "commodities": ["soybean_oil", "cottonseed_oil", "sunflower_oil", "canola_oil", "corn_oil", "palm_oil", "palm_kernel_oil", "peanut_oil", "safflower_oil", "tallow", "lard", "yellow_grease", "uco"],
+    "trade_column_unit": "000 Pounds",
+    "balance_sheet_unit": "Million Pounds",
+    "source_unit": "MT",
+    "trade_conversion": 2.20462,
+    "balance_sheet_conversion": 0.00220462,
+    "notes": "Consistent across all vegetable oils and animal fats"
+  },
+
+  "protein_meals": {
+    "description": "Oilseed meals and protein feeds",
+    "commodities": ["soybean_meal", "cottonseed_meal", "sunflower_meal", "canola_meal", "peanut_meal", "ddgs", "corn_gluten_feed", "corn_gluten_meal"],
+    "trade_column_unit": "Short Tons",
+    "balance_sheet_unit": "000 Short Tons",
+    "source_unit": "MT",
+    "trade_conversion": 1.10231,
+    "balance_sheet_conversion": 0.00110231,
+    "notes": "DDGS included with protein meals"
+  },
+
+  "oilseeds": {
+    "soybeans": {
+      "trade_column_unit": "000 Bushels",
+      "balance_sheet_unit": "Million Bushels",
+      "source_unit": "MT",
+      "trade_conversion": 36.744,
+      "balance_sheet_conversion": 0.036744,
+      "bushels_per_mt": 36.744,
+      "notes": "Primary US oilseed, reported in bushels"
+    },
+    "flaxseed": {
+      "trade_column_unit": "000 Bushels",
+      "balance_sheet_unit": "Million Bushels",
+      "source_unit": "MT",
+      "trade_conversion": 39.368,
+      "balance_sheet_conversion": 0.039368,
+      "bushels_per_mt": 39.368,
+      "notes": "Like soybeans, reported in bushels"
+    },
+    "cottonseed": {
+      "trade_column_unit": "Short Tons",
+      "balance_sheet_unit": "000 Short Tons",
+      "source_unit": "MT",
+      "trade_conversion": 1.10231,
+      "balance_sheet_conversion": 0.00110231,
+      "notes": "Cottonseed uses short tons, unique among oilseeds"
+    },
+    "canola_rapeseed": {
+      "trade_column_unit": "000 Pounds",
+      "balance_sheet_unit": "Million Pounds",
+      "source_unit": "MT",
+      "trade_conversion": 2.20462,
+      "balance_sheet_conversion": 0.00220462,
+      "notes": "Also known as rapeseed"
+    },
+    "sunflowerseed": {
+      "trade_column_unit": "000 Pounds",
+      "balance_sheet_unit": "Million Pounds",
+      "source_unit": "MT",
+      "trade_conversion": 2.20462,
+      "balance_sheet_conversion": 0.00220462,
+      "notes": "Includes oil-type and confection-type"
+    },
+    "peanuts_groundnuts": {
+      "trade_column_unit": "000 Pounds",
+      "balance_sheet_unit": "Million Pounds",
+      "source_unit": "MT",
+      "trade_conversion": 2.20462,
+      "balance_sheet_conversion": 0.00220462,
+      "notes": "Also called groundnuts"
+    },
+    "safflowerseed": {
+      "trade_column_unit": "000 Pounds",
+      "balance_sheet_unit": "Million Pounds",
+      "source_unit": "MT",
+      "trade_conversion": 2.20462,
+      "balance_sheet_conversion": 0.00220462,
+      "notes": "Minor oilseed"
+    }
+  },
+
+  "feed_grains": {
+    "_note": "For future extension - not currently implemented",
+    "corn": {
+      "trade_column_unit": "000 Bushels",
+      "balance_sheet_unit": "Million Bushels",
+      "source_unit": "MT",
+      "trade_conversion": 39.368,
+      "balance_sheet_conversion": 0.039368,
+      "bushels_per_mt": 39.368
+    },
+    "sorghum": {
+      "trade_column_unit": "000 Bushels",
+      "balance_sheet_unit": "Million Bushels",
+      "source_unit": "MT",
+      "trade_conversion": 39.368,
+      "balance_sheet_conversion": 0.039368,
+      "bushels_per_mt": 39.368
+    },
+    "barley": {
+      "trade_column_unit": "000 Bushels",
+      "balance_sheet_unit": "Million Bushels",
+      "source_unit": "MT",
+      "trade_conversion": 45.93,
+      "balance_sheet_conversion": 0.04593,
+      "bushels_per_mt": 45.93
+    }
+  },
+
+  "food_grains": {
+    "_note": "For future extension - not currently implemented",
+    "wheat": {
+      "trade_column_unit": "000 Bushels",
+      "balance_sheet_unit": "Million Bushels",
+      "source_unit": "MT",
+      "trade_conversion": 36.744,
+      "balance_sheet_conversion": 0.036744,
+      "bushels_per_mt": 36.744
+    },
+    "rice": {
+      "trade_column_unit": "000 CWT",
+      "balance_sheet_unit": "Million CWT",
+      "source_unit": "MT",
+      "notes": "Rice uses hundredweight (CWT)"
+    }
+  },
+
+  "biofuels": {
+    "ethanol": {
+      "trade_column_unit": "000 Gallons",
+      "balance_sheet_unit": "Million Gallons",
+      "source_unit": "Liters",
+      "trade_conversion": 0.264172,
+      "notes": "Liters to gallons"
+    },
+    "biodiesel": {
+      "trade_column_unit": "000 Gallons",
+      "balance_sheet_unit": "Million Gallons",
+      "source_unit": "Liters",
+      "trade_conversion": 0.264172,
+      "notes": "Liters to gallons"
+    }
+  },
+
+  "non_us_standard": {
+    "description": "Standard units for all non-US countries",
+    "trade_column_unit": "1,000 MT",
+    "balance_sheet_unit": "1,000 MT",
+    "source_unit": "MT",
+    "trade_conversion": 0.001,
+    "notes": "Metric tonnes used universally outside US"
+  }
+}

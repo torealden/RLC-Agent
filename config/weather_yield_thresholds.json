@@ -1,0 +1,209 @@
+{
+  "description": "Weather thresholds for crop yield impact assessment",
+  "version": "1.0",
+  "last_updated": "2025-01-30",
+
+  "crops": {
+    "corn": {
+      "gdd_base_c": 10,
+      "gdd_cap_c": 30,
+      "optimal_temp_range_c": [25, 33],
+      "heat_stress_threshold_c": 30,
+      "severe_heat_threshold_c": 35,
+      "frost_threshold_c": 0,
+      "night_stress_threshold_c": 25,
+
+      "weekly_water_needs_mm": {
+        "vegetative": [19, 25],
+        "pollination": [38, 50],
+        "grain_fill": [25, 38]
+      },
+      "drought_threshold_mm_week": 13,
+      "excess_moisture_mm_week": 75,
+
+      "growth_stages": {
+        "planting": {"start_month": 4, "start_day": 15, "end_month": 5, "end_day": 25},
+        "emergence": {"start_month": 5, "start_day": 1, "end_month": 6, "end_day": 10},
+        "vegetative": {"start_month": 6, "start_day": 1, "end_month": 7, "end_day": 10},
+        "pollination": {"start_month": 7, "start_day": 10, "end_month": 8, "end_day": 5, "critical": true},
+        "grain_fill": {"start_month": 8, "start_day": 1, "end_month": 9, "end_day": 10},
+        "maturity": {"start_month": 9, "start_day": 1, "end_month": 10, "end_day": 15}
+      },
+
+      "yield_impacts": {
+        "drought_1wk_vegetative_pct": [-2, -5],
+        "drought_1wk_pollination_pct": [-5, -15],
+        "drought_2wk_pollination_pct": [-15, -40],
+        "heat_3day_100f_pollination_pct": [-10, -25],
+        "heat_5day_95f_grainfill_pct": [-5, -10],
+        "late_frost_emergence": "replant",
+        "excess_rain_planting_pct": [-2, -8],
+        "flood_48hr_pct": [-5, -20]
+      }
+    },
+
+    "soybeans": {
+      "gdd_base_c": 10,
+      "gdd_cap_c": null,
+      "optimal_temp_range_c": [25, 30],
+      "heat_stress_threshold_c": 30,
+      "severe_heat_threshold_c": 35,
+      "frost_threshold_c": 0,
+
+      "weekly_water_needs_mm": {
+        "vegetative": [13, 19],
+        "flowering": [32, 44],
+        "seed_fill": [25, 38]
+      },
+      "drought_threshold_mm_week": 13,
+      "excess_moisture_mm_week": 75,
+
+      "growth_stages": {
+        "planting": {"start_month": 5, "start_day": 1, "end_month": 6, "end_day": 10},
+        "emergence": {"start_month": 5, "start_day": 15, "end_month": 6, "end_day": 25},
+        "vegetative": {"start_month": 6, "start_day": 15, "end_month": 7, "end_day": 20},
+        "flowering": {"start_month": 7, "start_day": 15, "end_month": 8, "end_day": 15, "critical": true},
+        "seed_fill": {"start_month": 8, "start_day": 10, "end_month": 9, "end_day": 15},
+        "maturity": {"start_month": 9, "start_day": 10, "end_month": 10, "end_day": 10}
+      },
+
+      "yield_impacts": {
+        "drought_2wk_flowering_pct": [-10, -20],
+        "drought_2wk_podfill_pct": [-8, -15],
+        "heat_3day_100f_flowering_pct": [-5, -15],
+        "early_frost_r6r7_pct": [-5, -15],
+        "excess_moisture_harvest_pct": [-2, -5]
+      }
+    },
+
+    "wheat": {
+      "gdd_base_c": 0,
+      "gdd_cap_c": null,
+      "optimal_temp_range_c": [15, 25],
+      "heat_stress_threshold_c": 30,
+      "severe_heat_threshold_c": 35,
+      "frost_threshold_c": -5,
+      "winterkill_threshold_c": -20,
+
+      "weekly_water_needs_mm": {
+        "spring_growth": [19, 25],
+        "heading": [25, 32],
+        "grain_fill": [19, 25]
+      },
+      "drought_threshold_mm_week": 13,
+
+      "growth_stages_winter": {
+        "planting": {"start_month": 9, "start_day": 15, "end_month": 11, "end_day": 1},
+        "fall_tillering": {"start_month": 10, "start_day": 15, "end_month": 12, "end_day": 1},
+        "dormancy": {"start_month": 12, "start_day": 1, "end_month": 2, "end_day": 28},
+        "greenup": {"start_month": 3, "start_day": 15, "end_month": 4, "end_day": 30},
+        "heading": {"start_month": 5, "start_day": 1, "end_month": 5, "end_day": 25, "critical": true},
+        "grain_fill": {"start_month": 5, "start_day": 20, "end_month": 6, "end_day": 20},
+        "harvest": {"start_month": 6, "start_day": 10, "end_month": 7, "end_day": 15}
+      }
+    }
+  },
+
+  "anomaly_thresholds": {
+    "precipitation": {
+      "severe_deficit_pct": -30,
+      "moderate_deficit_pct": -15,
+      "normal_range_pct": [-15, 20],
+      "above_normal_pct": 20,
+      "excess_pct": 50
+    },
+    "temperature": {
+      "well_below_normal_c": -3,
+      "below_normal_c": -1.5,
+      "normal_range_c": [-1.5, 1.5],
+      "above_normal_c": 1.5,
+      "well_above_normal_c": 3
+    },
+    "gdd": {
+      "behind_pace_pct": -10,
+      "normal_range_pct": [-10, 10],
+      "ahead_pace_pct": 10
+    }
+  },
+
+  "stress_indicators": {
+    "consecutive_dry_days_concern": 5,
+    "consecutive_dry_days_severe": 10,
+    "heat_stress_hours_concern": 4,
+    "heat_stress_hours_severe": 8,
+    "flooding_hours_damage": 48
+  },
+
+  "regions": {
+    "US_CORN_BELT": {
+      "states": ["IA", "IL", "NE", "MN", "IN", "OH", "SD", "WI", "MO", "KS"],
+      "primary_crops": ["corn", "soybeans"],
+      "production_share_corn_pct": 65,
+      "production_share_soy_pct": 60
+    },
+    "US_DELTA": {
+      "states": ["AR", "MS", "LA", "MO"],
+      "primary_crops": ["soybeans", "cotton", "rice"]
+    },
+    "US_PLAINS": {
+      "states": ["KS", "NE", "SD", "ND", "OK", "TX"],
+      "primary_crops": ["wheat", "corn"]
+    },
+    "BR_MATO_GROSSO": {
+      "states": ["MT"],
+      "primary_crops": ["soybeans", "corn"],
+      "production_share_soy_pct": 27
+    },
+    "BR_PARANA": {
+      "states": ["PR"],
+      "primary_crops": ["soybeans", "corn", "wheat"]
+    },
+    "BR_RIO_GRANDE_SUL": {
+      "states": ["RS"],
+      "primary_crops": ["soybeans", "rice", "wheat"]
+    },
+    "AR_PAMPAS": {
+      "provinces": ["Buenos Aires", "Cordoba", "Santa Fe"],
+      "primary_crops": ["soybeans", "corn", "wheat"]
+    }
+  },
+
+  "market_signals": {
+    "moisture": {
+      "drought_stress_developing": {
+        "condition": "precip_anomaly_pct < -30 AND consecutive_dry_days > 5",
+        "bias": "bullish"
+      },
+      "below_normal": {
+        "condition": "precip_anomaly_pct BETWEEN -30 AND -15",
+        "bias": "slight_bullish"
+      },
+      "near_normal": {
+        "condition": "precip_anomaly_pct BETWEEN -15 AND 20",
+        "bias": "neutral"
+      },
+      "above_normal": {
+        "condition": "precip_anomaly_pct BETWEEN 20 AND 50",
+        "bias": "slight_bearish"
+      },
+      "excess_moisture": {
+        "condition": "precip_anomaly_pct > 50",
+        "bias": "context_dependent"
+      }
+    },
+    "temperature": {
+      "severe_heat": {
+        "condition": "extreme_heat_hours > 4",
+        "bias": "bullish_if_critical_stage"
+      },
+      "moderate_heat": {
+        "condition": "heat_stress_hours > 8",
+        "bias": "slight_bullish"
+      },
+      "frost_risk": {
+        "condition": "frost_risk = true",
+        "bias": "bullish_if_vulnerable"
+      }
+    }
+  }
+}

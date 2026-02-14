@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #1f4e79; border-bottom: 2px solid #1f4e79; padding-bottom: 10px; }
+        h2 { color: #2e75b6; margin-top: 30px; }
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; color: white; font-weight: bold; }
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
+        .summary-card { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; }
+        .summary-card .number { font-size: 32px; font-weight: bold; color: #1f4e79; }
+        .summary-card .label { color: #6c757d; font-size: 12px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6; }
+        th { background: #f8f9fa; font-weight: 600; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .success { color: #28a745; }
+        .status-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6; color: #6c757d; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 HARVEST Daily Status Report</h1>
+
+        <p><strong>Report Time:</strong> 2026-01-28 10:32:33</p>
+        <p><strong>Review Period:</strong> 2026-01-27 10:32 to now</p>
+        <p><strong>Overall Status:</strong>
+            <span class="status-badge" style="background: #28a745">
+                HEALTHY
+            </span>
+        </p>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="number" style="color: #28a745">0</div>
+                <div class="label">Errors</div>
+            </div>
+            <div class="summary-card">
+                <div class="number" style="color: #28a745">1</div>
+                <div class="label">Warnings</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">2</div>
+                <div class="label">Logs Reviewed</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">11/13</div>
+                <div class="label">Data Fresh</div>
+            </div>
+        </div>
+
+        <h2>📋 Log File Analysis</h2>
+        <table>
+            <tr>
+                <th>Log File</th>
+                <th>Lines</th>
+                <th>Errors</th>
+                <th>Warnings</th>
+                <th>Status</th>
+            </tr>
+
+            <tr class="">
+                <td>overnight_runner_20260127.log</td>
+                <td>41</td>
+                <td class="">0</td>
+                <td class="warning">1</td>
+                <td>✅</td>
+            </tr>
+
+            <tr class="">
+                <td>hb_report_v2_20260128_060059.log</td>
+                <td>0</td>
+                <td class="">0</td>
+                <td class="">0</td>
+                <td>✅</td>
+            </tr>
+
+        </table>
+
+        <h2>🗄️ Database Freshness</h2>
+        <table>
+            <tr>
+                <th>Table</th>
+                <th>Rows</th>
+                <th>Last Update</th>
+                <th>Status</th>
+            </tr>
+
+            <tr>
+                <td>bronze.weather_raw</td>
+                <td>152,763</td>
+                <td>4.5h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>bronze.weather_email_extract</td>
+                <td>45</td>
+                <td>2.9h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>bronze.weather_alerts_raw</td>
+                <td>0</td>
+                <td>N/A</td>
+                <td><span class="status-dot" style="background: #6c757d"></span>EMPTY</td>
+            </tr>
+
+            <tr>
+                <td>silver.weather_observation</td>
+                <td>152,763</td>
+                <td>4.5h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>bronze.nass_crop_progress</td>
+                <td>197</td>
+                <td>5.4h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>bronze.nass_crop_condition</td>
+                <td>252</td>
+                <td>5.4h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>bronze.nass_production</td>
+                <td>52</td>
+                <td>5.4h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>bronze.census_trade</td>
+                <td>1,461</td>
+                <td>2.7h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>bronze.cftc_cot</td>
+                <td>306</td>
+                <td>4.7h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>bronze.eia_raw_ingestion</td>
+                <td>612</td>
+                <td>76.8h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>silver.eia_petroleum_weekly</td>
+                <td>0</td>
+                <td>N/A</td>
+                <td><span class="status-dot" style="background: #6c757d"></span>EMPTY</td>
+            </tr>
+
+            <tr>
+                <td>bronze.futures_daily_settlement</td>
+                <td>10</td>
+                <td>15.8h ago</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+            <tr>
+                <td>bronze.conab_production</td>
+                <td>7,255</td>
+                <td>N/A</td>
+                <td><span class="status-dot" style="background: #28a745"></span>FRESH</td>
+            </tr>
+
+        </table>
+
+        <div class="footer">
+            <p>Generated by HARVEST Log Review Agent</p>
+            <p>Project: RLC-Agent | Location: C:\Users\torem\RLC Dropbox\RLC Team Folder\RLC-Agent</p>
+        </div>
+    </div>
+</body>
+</html>

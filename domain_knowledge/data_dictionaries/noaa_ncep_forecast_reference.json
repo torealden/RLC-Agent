@@ -1,0 +1,579 @@
+{
+  "metadata": {
+    "title": "NOAA/NCEP Forecast Data Reference for Agricultural Yield Prediction",
+    "version": "1.0.0",
+    "created": "2026-01-30",
+    "author": "RLC Consulting",
+    "purpose": "LLM-Agent reference for automated forecast data collection pipelines"
+  },
+  "models": {
+    "gfs": {
+      "name": "Global Forecast System",
+      "agency": "NCEP/NOAA",
+      "description": "Primary global numerical weather prediction model",
+      "specifications": {
+        "resolution_km": 25,
+        "resolution_degrees": 0.25,
+        "native_resolution_km": 13,
+        "forecast_horizon_days": 16,
+        "update_frequency_hours": 6,
+        "initialization_times_utc": ["00", "06", "12", "18"],
+        "data_availability_lag_hours": 3.5,
+        "coverage": "global"
+      },
+      "temporal_resolution": {
+        "hours_0_120": "hourly",
+        "hours_120_240": "3-hourly",
+        "hours_240_384": "12-hourly"
+      },
+      "aws_s3": {
+        "bucket": "noaa-gfs-bdp-pds",
+        "region": "us-east-1",
+        "path_pattern": "gfs.{YYYYMMDD}/{HH}/atmos/gfs.t{HH}z.{product}.f{FFF}.grib2",
+        "sns_topic": "arn:aws:sns:us-east-1:123901341784:NewGFSObject"
+      },
+      "nomads": {
+        "base_url": "https://nomads.ncep.noaa.gov",
+        "grib_filter": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl",
+        "opendap": "https://nomads.ncep.noaa.gov/dods/gfs_0p25"
+      },
+      "products": {
+        "pgrb2.0p25": {
+          "description": "Primary atmospheric variables at 0.25 degree",
+          "file_pattern": "gfs.t{HH}z.pgrb2.0p25.f{FFF}"
+        },
+        "sfluxgrbf": {
+          "description": "Surface flux variables - best for agriculture",
+          "file_pattern": "gfs.t{HH}z.sfluxgrbf{FFF}.grib2"
+        }
+      },
+      "agricultural_priority": 1
+    },
+    "hrrr": {
+      "name": "High-Resolution Rapid Refresh",
+      "agency": "NCEP/NOAA",
+      "description": "Convection-allowing model for short-term high-resolution forecasts",
+      "specifications": {
+        "resolution_km": 3,
+        "forecast_horizon_hours": 48,
+        "update_frequency_hours": 1,
+        "initialization_times_utc": "hourly",
+        "data_availability_lag_hours": 1,
+        "coverage": "CONUS"
+      },
+      "aws_s3": {
+        "bucket": "noaa-hrrr-bdp-pds",
+        "region": "us-east-1",
+        "path_pattern": "hrrr.{YYYYMMDD}/conus/hrrr.t{HH}z.wrfsfcf{FF}.grib2"
+      },
+      "nomads": {
+        "base_url": "https://nomads.ncep.noaa.gov",
+        "grib_filter": "https://nomads.ncep.noaa.gov/cgi-bin/filter_hrrr_2d.pl"
+      },
+      "best_use_cases": [
+        "frost_protection_activation",
+        "irrigation_timing",
+        "spray_window_decisions",
+        "harvest_scheduling",
+        "localized_precipitation"
+      ],
+      "agricultural_priority": 2
+    },
+    "cfs": {
+      "name": "Climate Forecast System v2",
+      "agency": "NCEP/NOAA",
+      "description": "Coupled atmosphere-ocean model for seasonal forecasts",
+      "specifications": {
+        "resolution_km": 56,
+        "resolution_degrees": 0.5,
+        "forecast_horizon_months": 9,
+        "update_frequency_hours": 6,
+        "initialization_times_utc": ["00", "06", "12", "18"],
+        "coverage": "global"
+      },
+      "aws_s3": {
+        "bucket": "noaa-cfs-pds",
+        "region": "us-east-1"
+      },
+      "nomads": {
+        "base_url": "https://nomads.ncep.noaa.gov",
+        "opendap": "https://nomads.ncep.noaa.gov/dods/cfs_flx"
+      },
+      "reforecast": {
+        "period": "1982-2011",
+        "use": "statistical_calibration"
+      },
+      "best_use_cases": [
+        "planting_date_decisions",
+        "seasonal_irrigation_budgeting",
+        "commodity_market_planning",
+        "el_nino_la_nina_impacts"
+      ],
+      "agricultural_priority": 3
+    },
+    "nbm": {
+      "name": "National Blend of Models",
+      "agency": "NCEP/NOAA",
+      "description": "Bias-corrected ensemble blending 31 model inputs",
+      "specifications": {
+        "resolution_km": 2.5,
+        "forecast_horizon_days": 11,
+        "update_frequency_hours": 1,
+        "coverage": "CONUS",
+        "ensemble_members": 31
+      },
+      "aws_s3": {
+        "bucket": "noaa-nbm-grib2-pds",
+        "region": "us-east-1"
+      },
+      "features": [
+        "probabilistic_forecasts",
+        "bias_correction",
+        "multi_model_consensus"
+      ],
+      "best_use_cases": [
+        "probability_of_precipitation",
+        "temperature_exceedance_risk",
+        "crop_stress_probability"
+      ],
+      "agricultural_priority": 4
+    },
+    "gefs": {
+      "name": "Global Ensemble Forecast System",
+      "agency": "NCEP/NOAA",
+      "description": "Ensemble system for forecast uncertainty quantification",
+      "specifications": {
+        "resolution_km": 25,
+        "forecast_horizon_days": 16,
+        "update_frequency_hours": 6,
+        "initialization_times_utc": ["00", "06", "12", "18"],
+        "ensemble_members": 21,
+        "coverage": "global"
+      },
+      "aws_s3": {
+        "bucket": "noaa-gefs-pds",
+        "region": "us-east-1"
+      },
+      "best_use_cases": [
+        "forecast_uncertainty",
+        "risk_assessment",
+        "ensemble_mean_forecasts"
+      ],
+      "agricultural_priority": 5
+    },
+    "nam": {
+      "name": "North American Mesoscale",
+      "agency": "NCEP/NOAA",
+      "description": "Regional model for North American forecasts",
+      "specifications": {
+        "resolution_km": 12,
+        "forecast_horizon_hours": 84,
+        "update_frequency_hours": 6,
+        "coverage": "North America"
+      },
+      "aws_s3": {
+        "bucket": "noaa-nam-pds",
+        "region": "us-east-1"
+      },
+      "agricultural_priority": 6
+    }
+  },
+  "analysis_products": {
+    "nldas": {
+      "name": "North American Land Data Assimilation System",
+      "version": "NLDAS-2",
+      "agency": "NASA/NOAA",
+      "description": "Historical and near-real-time land surface analysis",
+      "specifications": {
+        "resolution_degrees": 0.125,
+        "resolution_km": 14,
+        "temporal_resolution": "hourly",
+        "historical_start": "1979-01-01",
+        "latency_days": 4,
+        "coverage": "North America"
+      },
+      "land_surface_models": ["Noah", "Mosaic", "SAC", "VIC"],
+      "access": {
+        "provider": "NASA GES DISC",
+        "url": "https://disc.gsfc.nasa.gov/datasets?keywords=NLDAS",
+        "requires_earthdata_login": true
+      },
+      "soil_moisture_depths_cm": [0, 10, 40, 100, 200],
+      "agricultural_priority": 1
+    },
+    "sport_lis": {
+      "name": "NASA SPoRT Land Information System",
+      "agency": "NASA",
+      "description": "Real-time soil moisture percentiles",
+      "specifications": {
+        "resolution_km": 3,
+        "climatology_period": "1981-2013",
+        "update_frequency": "daily"
+      },
+      "products": ["soil_moisture_percentile", "soil_moisture_anomaly"],
+      "agricultural_priority": 2
+    },
+    "drought_monitor": {
+      "name": "U.S. Drought Monitor",
+      "agencies": ["NOAA", "USDA", "NDMC"],
+      "description": "Weekly county-level drought intensity",
+      "specifications": {
+        "spatial_resolution": "county",
+        "temporal_resolution": "weekly",
+        "update_day": "Thursday"
+      },
+      "drought_categories": {
+        "D0": "Abnormally Dry",
+        "D1": "Moderate Drought",
+        "D2": "Severe Drought",
+        "D3": "Extreme Drought",
+        "D4": "Exceptional Drought"
+      },
+      "access_url": "https://droughtmonitor.unl.edu/Data.aspx",
+      "agricultural_priority": 3
+    },
+    "cpc_gdd": {
+      "name": "CPC Growing Degree Days",
+      "agency": "NOAA Climate Prediction Center",
+      "description": "Weekly corn-specific GDD statistics",
+      "parameters": {
+        "base_temperature_f": 50,
+        "cap_temperature_f": 86,
+        "crop": "corn"
+      },
+      "access_url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/cdus/degree_days/",
+      "agricultural_priority": 4
+    }
+  },
+  "agricultural_variables": {
+    "soil_moisture": {
+      "grib2_name": "SOILW",
+      "description": "Volumetric soil moisture content",
+      "units": "fraction",
+      "depths_cm": {
+        "layer_1": {"top": 0, "bottom": 10},
+        "layer_2": {"top": 10, "bottom": 40},
+        "layer_3": {"top": 40, "bottom": 100},
+        "layer_4": {"top": 100, "bottom": 200}
+      },
+      "agricultural_relevance": "Root zone water availability",
+      "yield_correlation": "high",
+      "priority": 1
+    },
+    "soil_temperature": {
+      "grib2_name": "TSOIL",
+      "description": "Soil temperature",
+      "units": "K",
+      "depths_cm": {
+        "layer_1": {"top": 0, "bottom": 10},
+        "layer_2": {"top": 10, "bottom": 40},
+        "layer_3": {"top": 40, "bottom": 100},
+        "layer_4": {"top": 100, "bottom": 200}
+      },
+      "agricultural_relevance": "Planting/germination conditions",
+      "priority": 2
+    },
+    "temperature_2m": {
+      "grib2_name": "TMP",
+      "level": "2 m above ground",
+      "description": "Air temperature at 2 meters",
+      "units": "K",
+      "agricultural_relevance": "GDD accumulation, heat stress",
+      "yield_correlation": "high",
+      "priority": 3
+    },
+    "temperature_max": {
+      "grib2_name": "TMAX",
+      "level": "2 m above ground",
+      "description": "Maximum temperature",
+      "units": "K",
+      "agricultural_relevance": "Heat stress during critical growth stages",
+      "priority": 4
+    },
+    "temperature_min": {
+      "grib2_name": "TMIN",
+      "level": "2 m above ground",
+      "description": "Minimum temperature",
+      "units": "K",
+      "agricultural_relevance": "Frost risk, night respiration",
+      "yield_correlation": "high",
+      "priority": 5
+    },
+    "precipitation_accumulated": {
+      "grib2_name": "APCP",
+      "level": "surface",
+      "description": "Total accumulated precipitation",
+      "units": "kg/m^2",
+      "agricultural_relevance": "Water stress indicators",
+      "yield_correlation": "highest",
+      "critical_months": ["July"],
+      "priority": 6
+    },
+    "precipitation_rate": {
+      "grib2_name": "PRATE",
+      "level": "surface",
+      "description": "Precipitation rate",
+      "units": "kg/m^2/s",
+      "agricultural_relevance": "Instantaneous precipitation intensity",
+      "priority": 7
+    },
+    "evapotranspiration": {
+      "grib2_name": "PEVPR",
+      "level": "surface",
+      "description": "Potential evaporation rate",
+      "units": "W/m^2",
+      "agricultural_relevance": "Irrigation demand estimation",
+      "priority": 8
+    },
+    "latent_heat_flux": {
+      "grib2_name": "LHTFL",
+      "level": "surface",
+      "description": "Latent heat net flux",
+      "units": "W/m^2",
+      "agricultural_relevance": "Actual evapotranspiration proxy",
+      "priority": 9
+    },
+    "downward_shortwave": {
+      "grib2_name": "DSWRF",
+      "level": "surface",
+      "description": "Downward short-wave radiation flux",
+      "units": "W/m^2",
+      "agricultural_relevance": "Photosynthesis modeling, solar radiation",
+      "priority": 10
+    },
+    "relative_humidity": {
+      "grib2_name": "RH",
+      "level": "2 m above ground",
+      "description": "Relative humidity",
+      "units": "%",
+      "agricultural_relevance": "Disease pressure, pollination",
+      "priority": 11
+    },
+    "wind_speed": {
+      "grib2_names": ["UGRD", "VGRD"],
+      "level": "10 m above ground",
+      "description": "U and V wind components",
+      "units": "m/s",
+      "agricultural_relevance": "Spray drift, evapotranspiration",
+      "priority": 12
+    }
+  },
+  "crop_specific_parameters": {
+    "corn": {
+      "gdd_base_f": 50,
+      "gdd_cap_f": 86,
+      "critical_stages": {
+        "planting": {"typical_months": ["April", "May"]},
+        "vegetative": {"typical_months": ["May", "June", "July"]},
+        "silking": {"typical_months": ["July"], "weather_sensitivity": "highest"},
+        "grain_fill": {"typical_months": ["August", "September"]}
+      },
+      "key_weather_variables": [
+        "july_precipitation",
+        "july_temperature",
+        "soil_moisture_0_40cm",
+        "gdd_accumulation"
+      ],
+      "yield_correlation_research": {
+        "source": "farmdocdaily.illinois.edu",
+        "findings": "July precipitation has highest correlation with US corn yields"
+      }
+    },
+    "soybeans": {
+      "gdd_base_f": 50,
+      "gdd_cap_f": 86,
+      "critical_stages": {
+        "planting": {"typical_months": ["May", "June"]},
+        "vegetative": {"typical_months": ["June", "July"]},
+        "pod_fill": {"typical_months": ["August"], "weather_sensitivity": "highest"},
+        "maturity": {"typical_months": ["September", "October"]}
+      },
+      "key_weather_variables": [
+        "august_precipitation",
+        "august_temperature",
+        "soil_moisture_0_40cm"
+      ]
+    },
+    "wheat_winter": {
+      "gdd_base_f": 32,
+      "vernalization_required": true,
+      "critical_stages": {
+        "planting": {"typical_months": ["September", "October"]},
+        "dormancy": {"typical_months": ["November", "December", "January", "February"]},
+        "green_up": {"typical_months": ["March", "April"]},
+        "heading": {"typical_months": ["May"], "weather_sensitivity": "highest"},
+        "harvest": {"typical_months": ["June", "July"]}
+      }
+    }
+  },
+  "data_access": {
+    "aws_open_data": {
+      "authentication": "none",
+      "sla_availability": 0.999,
+      "latency_behind_nomads_minutes": 15,
+      "recommended_for": "production_pipelines",
+      "python_example": {
+        "library": "boto3",
+        "code": "import boto3\nfrom botocore import UNSIGNED\nfrom botocore.client import Config\n\ns3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))\ns3.download_file('noaa-gfs-bdp-pds', 'gfs.20260130/00/atmos/gfs.t00z.sfluxgrbf024.grib2', 'local.grib2')"
+      }
+    },
+    "nomads": {
+      "base_url": "https://nomads.ncep.noaa.gov",
+      "grib_filter_subsetting": true,
+      "opendap_available": true,
+      "recommended_for": "variable_subsetting",
+      "grib_filter_example": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f024&var_TMP=on&var_SOILW=on&var_APCP=on&subregion=&leftlon=-100&rightlon=-80&toplat=50&bottomlat=35&dir=%2Fgfs.20260130%2F00%2Fatmos"
+    },
+    "herbie_library": {
+      "description": "Python library for simplified NWP data access",
+      "github": "https://github.com/blaylockbk/Herbie",
+      "install": "pip install herbie-data",
+      "supported_models": ["GFS", "HRRR", "RAP", "NAM", "NBM", "GEFS", "ECMWF"],
+      "features": [
+        "automatic_source_failover",
+        "xarray_integration",
+        "variable_subsetting"
+      ],
+      "example": {
+        "code": "from herbie import Herbie\nH = Herbie('2026-01-30 00:00', model='gfs', product='sflux', fxx=24)\nds = H.xarray(':SOILW:')"
+      }
+    }
+  },
+  "processing": {
+    "file_format": "GRIB2",
+    "compression_ratio_vs_netcdf": 6,
+    "python_libraries": {
+      "cfgrib": {
+        "description": "ECMWF library for reading GRIB via xarray",
+        "install": "conda install -c conda-forge cfgrib",
+        "requires": "ecCodes library",
+        "example": "ds = xr.open_dataset('file.grib2', engine='cfgrib')"
+      },
+      "pygrib": {
+        "description": "Direct GRIB reading library",
+        "install": "pip install pygrib"
+      },
+      "xarray": {
+        "description": "N-dimensional array processing",
+        "install": "pip install xarray"
+      },
+      "rioxarray": {
+        "description": "Rasterio extension for xarray - geospatial operations",
+        "install": "pip install rioxarray",
+        "use_case": "Reprojecting forecast grids to match NDVI data"
+      }
+    },
+    "wgrib2": {
+      "description": "NOAA command-line GRIB2 utility",
+      "documentation": "https://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/",
+      "use_cases": [
+        "variable_extraction",
+        "format_conversion",
+        "inventory_listing",
+        "subsetting"
+      ]
+    }
+  },
+  "database_schema": {
+    "recommended_database": "TimescaleDB with PostGIS",
+    "rationale": "Combines time-series optimization with spatial query capabilities",
+    "tables": {
+      "forecast_data": {
+        "columns": {
+          "time": {"type": "TIMESTAMPTZ", "nullable": false, "description": "Forecast valid time"},
+          "forecast_hour": {"type": "INTEGER", "description": "Hours from model initialization"},
+          "model_run": {"type": "TIMESTAMPTZ", "description": "Model initialization time"},
+          "model": {"type": "VARCHAR(10)", "description": "Model name (gfs, hrrr, etc.)"},
+          "location": {"type": "GEOGRAPHY(POINT, 4326)", "description": "Lat/lon point"},
+          "region_id": {"type": "VARCHAR(10)", "description": "County FIPS or region code"},
+          "temperature_2m_k": {"type": "DOUBLE PRECISION"},
+          "temperature_max_k": {"type": "DOUBLE PRECISION"},
+          "temperature_min_k": {"type": "DOUBLE PRECISION"},
+          "precipitation_mm": {"type": "DOUBLE PRECISION"},
+          "soil_moisture_0_10cm": {"type": "DOUBLE PRECISION"},
+          "soil_moisture_10_40cm": {"type": "DOUBLE PRECISION"},
+          "soil_moisture_40_100cm": {"type": "DOUBLE PRECISION"},
+          "evapotranspiration_mm": {"type": "DOUBLE PRECISION"},
+          "solar_radiation_wm2": {"type": "DOUBLE PRECISION"},
+          "gdd_daily": {"type": "DOUBLE PRECISION"},
+          "created_at": {"type": "TIMESTAMPTZ", "default": "NOW()"}
+        },
+        "hypertable": {"time_column": "time"},
+        "indexes": ["model_run", "region_id", "model"]
+      },
+      "gdd_accumulation": {
+        "description": "Running GDD totals by region and crop",
+        "columns": {
+          "date": {"type": "DATE", "nullable": false},
+          "region_id": {"type": "VARCHAR(10)"},
+          "crop": {"type": "VARCHAR(20)"},
+          "gdd_daily": {"type": "DOUBLE PRECISION"},
+          "gdd_cumulative": {"type": "DOUBLE PRECISION"},
+          "gdd_normal": {"type": "DOUBLE PRECISION"},
+          "gdd_departure": {"type": "DOUBLE PRECISION"}
+        }
+      }
+    },
+    "views": {
+      "corn_belt_7day_precip_forecast": {
+        "description": "Aggregated 7-day precipitation forecast for Corn Belt",
+        "use_case": "LLM agent semantic query"
+      },
+      "current_drought_status": {
+        "description": "Latest drought monitor data by county",
+        "use_case": "LLM agent semantic query"
+      }
+    }
+  },
+  "integration_with_existing_data": {
+    "ndvi": {
+      "alignment_method": "rioxarray.reproject_match()",
+      "typical_resolution": "250m to 1km",
+      "temporal_compositing": "8-day or 16-day",
+      "fusion_approach": "Resample forecast grids to NDVI resolution for pixel-level analysis"
+    },
+    "daily_observations": {
+      "sources": ["GHCN-Daily", "ASOS", "state_mesonets"],
+      "use_for": ["forecast_verification", "bias_correction", "gap_filling"]
+    }
+  },
+  "implementation_roadmap": {
+    "phase_1": {
+      "name": "Core GFS Pipeline",
+      "duration_weeks": 2,
+      "tasks": [
+        "Deploy AWS S3 ingestion for GFS surface flux",
+        "Extract soil moisture, temperature, precipitation, ET",
+        "Compute GDD forecasts (corn: base 50°F, cap 86°F)",
+        "Store county-level aggregates aligned with observations"
+      ]
+    },
+    "phase_2": {
+      "name": "Multi-Model Expansion",
+      "duration_weeks": 2,
+      "tasks": [
+        "Add CFS seasonal forecasts",
+        "Integrate NBM probabilistic products",
+        "Implement HRRR for real-time alerts"
+      ]
+    },
+    "phase_3": {
+      "name": "Enhanced Products",
+      "duration_weeks": 2,
+      "tasks": [
+        "Incorporate NLDAS soil moisture analysis",
+        "Add Drought Monitor integration",
+        "Compute derived indices (crop moisture stress)"
+      ]
+    }
+  },
+  "api_endpoints_summary": {
+    "gfs_grib_filter": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl",
+    "hrrr_grib_filter": "https://nomads.ncep.noaa.gov/cgi-bin/filter_hrrr_2d.pl",
+    "gfs_opendap": "https://nomads.ncep.noaa.gov/dods/gfs_0p25",
+    "cfs_opendap": "https://nomads.ncep.noaa.gov/dods/cfs_flx",
+    "drought_monitor_data": "https://droughtmonitor.unl.edu/Data.aspx",
+    "cpc_gdd": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/cdus/degree_days/",
+    "nldas_ges_disc": "https://disc.gsfc.nasa.gov/datasets?keywords=NLDAS"
+  }
+}

@@ -1,0 +1,4 @@
+commodity,country,marketing_year,area_planted,area_harvested,yield,beginning_stocks,production,imports,total_supply,crush,exports,domestic_use,total_use,ending_stocks,stocks_use_ratio,unit,notes
+soybeans,United States,2024,86.5,85.5,50.2,264,4290,20,4574,2295,1780,95,4170,404,9.7,mil bu,Pre-harvest estimate
+soybeans,United States,2025,87.0,86.0,52.0,404,4472,20,4896,2350,1850,100,4300,596,13.9,mil bu,Trend yield assumption
+soybeans,United States,2026,88.0,87.0,51.5,596,4481,20,5097,2400,1900,100,4400,697,15.8,mil bu,Early outlook

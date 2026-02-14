@@ -18,6 +18,9 @@ config/credentials.env
 # MCP configuration (may contain API keys)
 .mcp.json
 
+# Claude Code local settings
+.claude/
+
 # IDE
 .idea/
 .vscode/
@@ -82,6 +85,9 @@ OBS_recordings/
 *.onnx
 *.pt
 *.pth
+
+# Archive folder
+archive/
 
 # Temporary and cache files
 *.tmp

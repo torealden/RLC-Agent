@@ -1,0 +1,336 @@
+{
+  "api_name": "USDA FAS OpenData API",
+  "base_url": "https://api.fas.usda.gov/api",
+  "auth": {
+    "type": "api_key",
+    "header_name": "X-API-KEY",
+    "env_var": "FAS_API_KEY",
+    "registration_url": "https://api.fas.usda.gov"
+  },
+  "esr_commodity_codes": {
+    "corn": 401,
+    "soybeans": 801,
+    "wheat_all": 107,
+    "wheat_hrw": 101,
+    "wheat_srw": 102,
+    "wheat_hrs": 103,
+    "wheat_white": 104,
+    "soybean_meal": 901,
+    "soybean_oil": 902,
+    "sorghum": 701,
+    "cotton": 1404,
+    "rice": 1505
+  },
+  "psd_commodity_codes": {
+    "corn": "0440000",
+    "wheat": "0410000",
+    "soybeans": "2222000",
+    "soybean_meal": "0813100",
+    "soybean_oil": "4232000",
+    "sorghum": "0459000",
+    "cotton": "2631000",
+    "rice_milled": "0422110"
+  },
+  "endpoints": {
+    "esr": {
+      "description": "Export Sales Report - Weekly export sales data",
+      "reference": {
+        "regions": {
+          "path": "/api/esr/regions",
+          "method": "GET",
+          "description": "Region codes and names"
+        },
+        "countries": {
+          "path": "/api/esr/countries",
+          "method": "GET",
+          "description": "Countries mapped to region codes"
+        },
+        "commodities": {
+          "path": "/api/esr/commodities",
+          "method": "GET",
+          "description": "Commodity information listings"
+        },
+        "units_of_measure": {
+          "path": "/api/esr/unitsOfMeasure",
+          "method": "GET",
+          "description": "Units of measure data"
+        },
+        "release_dates": {
+          "path": "/api/esr/datareleasedates",
+          "method": "GET",
+          "description": "Commodity-level data release dates"
+        }
+      },
+      "data": {
+        "exports_all_countries": {
+          "path": "/api/esr/exports/commodityCode/{commodityCode}/allCountries/marketYear/{marketYear}",
+          "method": "GET",
+          "parameters": {
+            "commodityCode": {"type": "integer", "required": true, "description": "Commodity code (e.g., 0440000 for corn)"},
+            "marketYear": {"type": "integer", "required": true, "description": "Marketing year (e.g., 2025)"}
+          },
+          "description": "Export records to all countries for a commodity and marketing year"
+        },
+        "exports_by_country": {
+          "path": "/api/esr/exports/commodityCode/{commodityCode}/countryCode/{countryCode}/marketYear/{marketYear}",
+          "method": "GET",
+          "parameters": {
+            "commodityCode": {"type": "integer", "required": true},
+            "countryCode": {"type": "integer", "required": true},
+            "marketYear": {"type": "integer", "required": true}
+          },
+          "description": "Exports for specific country and commodity"
+        }
+      }
+    },
+    "psd": {
+      "description": "Production, Supply & Distribution - S&D balance data",
+      "reference": {
+        "regions": {
+          "path": "/api/psd/regions",
+          "method": "GET",
+          "description": "PSD regional classifications"
+        },
+        "countries": {
+          "path": "/api/psd/countries",
+          "method": "GET",
+          "description": "Countries with regional associations"
+        },
+        "commodities": {
+          "path": "/api/psd/commodities",
+          "method": "GET",
+          "description": "Commodity codes and descriptions"
+        },
+        "units_of_measure": {
+          "path": "/api/psd/unitsOfMeasure",
+          "method": "GET",
+          "description": "Units of measure identifiers"
+        },
+        "attributes": {
+          "path": "/api/psd/commodityAttributes",
+          "method": "GET",
+          "description": "Production/Supply/Distribution attribute IDs"
+        }
+      },
+      "data": {
+        "release_dates": {
+          "path": "/api/psd/commodity/{commodityCode}/dataReleaseDates",
+          "method": "GET",
+          "parameters": {
+            "commodityCode": {"type": "string", "required": true}
+          },
+          "description": "Forecast release dates for a commodity"
+        },
+        "all_countries": {
+          "path": "/api/psd/commodity/{commodityCode}/country/all/year/{marketYear}",
+          "method": "GET",
+          "parameters": {
+            "commodityCode": {"type": "string", "required": true},
+            "marketYear": {"type": "integer", "required": true}
+          },
+          "description": "Forecasts for all countries by year"
+        },
+        "by_country": {
+          "path": "/api/psd/commodity/{commodityCode}/country/{countryCode}/year/{marketYear}",
+          "method": "GET",
+          "parameters": {
+            "commodityCode": {"type": "string", "required": true},
+            "countryCode": {"type": "string", "required": true},
+            "marketYear": {"type": "integer", "required": true}
+          },
+          "description": "Country-specific commodity forecasts"
+        },
+        "world": {
+          "path": "/api/psd/commodity/{commodityCode}/world/year/{marketYear}",
+          "method": "GET",
+          "parameters": {
+            "commodityCode": {"type": "string", "required": true},
+            "marketYear": {"type": "integer", "required": true}
+          },
+          "description": "Aggregated worldwide forecasts"
+        }
+      }
+    },
+    "gats": {
+      "description": "Global Agricultural Trade System - Census & UN ComTrade data",
+      "reference": {
+        "regions": {
+          "path": "/api/gats/regions",
+          "method": "GET",
+          "description": "Region codes and names"
+        },
+        "countries": {
+          "path": "/api/gats/countries",
+          "method": "GET",
+          "description": "Country listings with regions"
+        },
+        "commodities_hs10": {
+          "path": "/api/gats/commodities",
+          "method": "GET",
+          "description": "HS10-level commodity classifications"
+        },
+        "commodities_hs6": {
+          "path": "/api/gats/HS6Commodities",
+          "method": "GET",
+          "description": "HS6-level commodity classifications"
+        },
+        "units_of_measure": {
+          "path": "/api/gats/unitsOfMeasure",
+          "method": "GET",
+          "description": "Units of measure"
+        },
+        "customs_districts": {
+          "path": "/api/gats/customsDistricts",
+          "method": "GET",
+          "description": "US Customs Districts"
+        }
+      },
+      "release_dates": {
+        "census_exports": {
+          "path": "/api/gats/census/data/exports/dataReleaseDates",
+          "method": "GET",
+          "description": "Census export release dates"
+        },
+        "census_imports": {
+          "path": "/api/gats/census/data/imports/dataReleaseDates",
+          "method": "GET",
+          "description": "Census import release dates"
+        },
+        "un_exports": {
+          "path": "/api/gats/UNTrade/data/exports/dataReleaseDates",
+          "method": "GET",
+          "description": "UN Trade export release dates"
+        },
+        "un_imports": {
+          "path": "/api/gats/UNTrade/data/imports/dataReleaseDates",
+          "method": "GET",
+          "description": "UN Trade import release dates"
+        }
+      },
+      "data": {
+        "census_imports": {
+          "path": "/api/gats/censusImports/partnerCode/{partnerCode}/year/{year}/month/{month}",
+          "method": "GET",
+          "parameters": {
+            "partnerCode": {"type": "string", "required": true},
+            "year": {"type": "integer", "required": true},
+            "month": {"type": "integer", "required": true}
+          },
+          "description": "US imports by partner country"
+        },
+        "census_exports": {
+          "path": "/api/gats/censusExports/partnerCode/{partnerCode}/year/{year}/month/{month}",
+          "method": "GET",
+          "parameters": {
+            "partnerCode": {"type": "string", "required": true},
+            "year": {"type": "integer", "required": true},
+            "month": {"type": "integer", "required": true}
+          },
+          "description": "US exports by partner country"
+        },
+        "census_reexports": {
+          "path": "/api/gats/censusReExports/partnerCode/{partnerCode}/year/{year}/month/{month}",
+          "method": "GET",
+          "parameters": {
+            "partnerCode": {"type": "string", "required": true},
+            "year": {"type": "integer", "required": true},
+            "month": {"type": "integer", "required": true}
+          },
+          "description": "US re-exports"
+        },
+        "district_exports": {
+          "path": "/api/gats/customsDistrictExports/partnerCode/{partnerCode}/year/{year}/month/{month}",
+          "method": "GET",
+          "parameters": {
+            "partnerCode": {"type": "string", "required": true},
+            "year": {"type": "integer", "required": true},
+            "month": {"type": "integer", "required": true}
+          },
+          "description": "Exports by customs district"
+        },
+        "district_imports": {
+          "path": "/api/gats/customsDistrictImports/partnerCode/{partnerCode}/year/{year}/month/{month}",
+          "method": "GET",
+          "parameters": {
+            "partnerCode": {"type": "string", "required": true},
+            "year": {"type": "integer", "required": true},
+            "month": {"type": "integer", "required": true}
+          },
+          "description": "Imports by customs district"
+        },
+        "un_imports": {
+          "path": "/api/gats/UNTradeImports/reporterCode/{reporterCode}/year/{year}",
+          "method": "GET",
+          "parameters": {
+            "reporterCode": {"type": "string", "required": true},
+            "year": {"type": "string", "required": true}
+          },
+          "description": "UN ComTrade imports"
+        },
+        "un_exports": {
+          "path": "/api/gats/UNTradeExports/reporterCode/{reporterCode}/year/{year}",
+          "method": "GET",
+          "parameters": {
+            "reporterCode": {"type": "string", "required": true},
+            "year": {"type": "string", "required": true}
+          },
+          "description": "UN ComTrade exports"
+        }
+      }
+    }
+  },
+  "response_fields": {
+    "esr": {
+      "weekEndingDate": "Week ending date",
+      "marketYear": "Marketing year",
+      "countryDescription": "Destination country",
+      "countryCode": "Country code",
+      "regionDescription": "Region name",
+      "weeklyExports": "Weekly export volume",
+      "accumulatedExports": "Cumulative exports",
+      "outstandingSales": "Outstanding commitments",
+      "grossNewSales": "New sales",
+      "netSales": "Net sales",
+      "prevMarketYearAccumulatedExports": "Prior year comparison"
+    },
+    "psd": {
+      "marketYear": "Marketing year",
+      "countryDescription": "Country name",
+      "beginningStocks": "Beginning stocks",
+      "production": "Production",
+      "imports": "Imports",
+      "totalSupply": "Total supply",
+      "domesticConsumption": "Domestic use",
+      "exports": "Exports",
+      "totalUse": "Total use",
+      "endingStocks": "Ending stocks",
+      "areaHarvested": "Harvested area",
+      "yieldPerHectare": "Yield"
+    }
+  },
+  "examples": {
+    "corn_exports_2025": {
+      "url": "https://api.fas.usda.gov/api/esr/exports/commodityCode/401/allCountries/marketYear/2025",
+      "headers": {
+        "X-API-KEY": "${FAS_API_KEY}",
+        "Accept": "application/json"
+      }
+    },
+    "soybeans_exports_2025": {
+      "url": "https://api.fas.usda.gov/api/esr/exports/commodityCode/801/allCountries/marketYear/2025",
+      "headers": {
+        "X-API-KEY": "${FAS_API_KEY}",
+        "Accept": "application/json"
+      }
+    },
+    "us_corn_psd_2025": {
+      "url": "https://api.fas.usda.gov/api/psd/commodity/0440000/country/US/year/2025",
+      "headers": {
+        "X-API-KEY": "${FAS_API_KEY}",
+        "Accept": "application/json"
+      }
+    }
+  },
+  "verified": "2026-01-29",
+  "notes": "ESR and PSD use DIFFERENT commodity codes. ESR uses integer codes, PSD uses string codes."
+}

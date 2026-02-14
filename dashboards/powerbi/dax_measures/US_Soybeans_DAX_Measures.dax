@@ -1,0 +1,476 @@
+// ============================================================================
+// US SOYBEANS DASHBOARD - DAX MEASURES
+// ============================================================================
+// Copy these measures into Power BI Desktop
+// Home > Modeling > New Measure
+// ============================================================================
+
+
+// ============================================================================
+// SECTION 1: MARKETING YEAR UTILITIES
+// ============================================================================
+
+Current Marketing Year =
+VAR CurrentMonth = MONTH(TODAY())
+VAR CurrentYear = YEAR(TODAY())
+RETURN
+IF(CurrentMonth >= 9, CurrentYear + 1, CurrentYear)
+
+Prior Marketing Year = [Current Marketing Year] - 1
+
+Two Years Ago Marketing Year = [Current Marketing Year] - 2
+
+MY Label Current =
+VAR MY = [Current Marketing Year]
+RETURN (MY - 1) & "/" & RIGHT(MY, 2)
+
+MY Label Prior =
+VAR MY = [Prior Marketing Year]
+RETURN (MY - 1) & "/" & RIGHT(MY, 2)
+
+
+// ============================================================================
+// SECTION 2: KPI CARD MEASURES
+// ============================================================================
+
+// --- US Production ---
+US Soy Production =
+CALCULATE(
+    MAX(fas_psd[production]),
+    fas_psd[commodity] = "soybeans",
+    fas_psd[country_code] = "US",
+    fas_psd[marketing_year] = [Current Marketing Year]
+)
+
+US Soy Production Prior =
+CALCULATE(
+    MAX(fas_psd[production]),
+    fas_psd[commodity] = "soybeans",
+    fas_psd[country_code] = "US",
+    fas_psd[marketing_year] = [Prior Marketing Year]
+)
+
+US Soy Production YoY % =
+DIVIDE([US Soy Production] - [US Soy Production Prior], [US Soy Production Prior], 0)
+
+US Soy Production Display =
+FORMAT([US Soy Production] / 1000, "#,##0.000") & " BB"
+
+US Soy Production YoY Display =
+VAR Change = [US Soy Production YoY %]
+RETURN
+IF(Change >= 0, "▲ ", "▼ ") & FORMAT(ABS(Change), "+#0.0%;-#0.0%")
+
+
+// --- Crush ---
+US Soy Crush =
+CALCULATE(
+    MAX(fas_psd[feed_dom_consumption]),
+    fas_psd[commodity] = "soybeans",
+    fas_psd[country_code] = "US",
+    fas_psd[marketing_year] = [Current Marketing Year]
+)
+
+US Soy Crush Prior =
+CALCULATE(
+    MAX(fas_psd[feed_dom_consumption]),
+    fas_psd[commodity] = "soybeans",
+    fas_psd[country_code] = "US",
+    fas_psd[marketing_year] = [Prior Marketing Year]
+)
+
+US Soy Crush YoY % =
+DIVIDE([US Soy Crush] - [US Soy Crush Prior], [US Soy Crush Prior], 0)
+
+US Soy Crush Display =
+FORMAT([US Soy Crush] / 1000, "#,##0.00") & " BB"
+
+
+// --- Exports ---
+US Soy Exports =
+CALCULATE(
+    MAX(fas_psd[exports]),
+    fas_psd[commodity] = "soybeans",
+    fas_psd[country_code] = "US",
+    fas_psd[marketing_year] = [Current Marketing Year]
+)
+
+US Soy Exports Prior =
+CALCULATE(
+    MAX(fas_psd[exports]),
+    fas_psd[commodity] = "soybeans",
+    fas_psd[country_code] = "US",
+    fas_psd[marketing_year] = [Prior Marketing Year]
+)
+
+US Soy Exports YoY % =
+DIVIDE([US Soy Exports] - [US Soy Exports Prior], [US Soy Exports Prior], 0)
+
+US Soy Exports Display =
+FORMAT([US Soy Exports] / 1000, "#,##0.00") & " BB"
+
+
+// --- Ending Stocks ---
+US Soy Ending Stocks =
+CALCULATE(
+    MAX(fas_psd[ending_stocks]),
+    fas_psd[commodity] = "soybeans",
+    fas_psd[country_code] = "US",
+    fas_psd[marketing_year] = [Current Marketing Year]
+)
+
+US Soy Ending Stocks Prior =
+CALCULATE(
+    MAX(fas_psd[ending_stocks]),
+    fas_psd[commodity] = "soybeans",
+    fas_psd[country_code] = "US",
+    fas_psd[marketing_year] = [Prior Marketing Year]
+)
+
+US Soy Ending Stocks YoY % =
+DIVIDE([US Soy Ending Stocks] - [US Soy Ending Stocks Prior], [US Soy Ending Stocks Prior], 0)
+
+US Soy Ending Stocks Display =
+FORMAT([US Soy Ending Stocks], "#,##0") & " MB"
+
+
+// --- Stocks/Use Ratio ---
+US Soy Total Use =
+CALCULATE(
+    MAX(fas_psd[total_distribution]),
+    fas_psd[commodity] = "soybeans",
+    fas_psd[country_code] = "US",
+    fas_psd[marketing_year] = [Current Marketing Year]
+)
+
+Stocks to Use Ratio =
+DIVIDE([US Soy Ending Stocks], [US Soy Total Use], 0)
+
+Stocks to Use Display =
+FORMAT([Stocks to Use Ratio], "0.0%")
+
+Stocks to Use Label =
+VAR SU = [Stocks to Use Ratio]
+RETURN
+SWITCH(
+    TRUE(),
+    SU < 0.08, "CRITICAL",
+    SU < 0.12, "TIGHT",
+    SU < 0.18, "BALANCED",
+    "COMFORTABLE"
+)
+
+Stocks to Use Color =
+VAR SU = [Stocks to Use Ratio]
+RETURN
+SWITCH(
+    TRUE(),
+    SU < 0.08, "#C62828",
+    SU < 0.12, "#FF9800",
+    SU < 0.18, "#FFC107",
+    SU < 0.25, "#66BB6A",
+    "#2E7D32"
+)
+
+
+// ============================================================================
+// SECTION 3: USDA COMP TABLE MEASURES (Matching your screenshot layout)
+// ============================================================================
+
+// These measures work with the usda_comp_soybeans view or fas_psd table
+// Use in a Matrix visual with Category as rows, Marketing Year as columns
+
+// --- Dynamic value based on selected category and year ---
+USDA Value =
+VAR SelectedCategory = SELECTEDVALUE('Balance Sheet Structure'[Category])
+VAR SelectedMY = SELECTEDVALUE(usda_comp_soybeans[marketing_year])
+RETURN
+SWITCH(
+    SelectedCategory,
+    "Planted Area", CALCULATE(MAX(usda_comp_soybeans[usda_area_planted]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Harvested Area", CALCULATE(MAX(usda_comp_soybeans[usda_area_harvested]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Yield", CALCULATE(MAX(usda_comp_soybeans[usda_yield]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Beginning Stocks", CALCULATE(MAX(usda_comp_soybeans[usda_beg_stocks]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Production", CALCULATE(MAX(usda_comp_soybeans[usda_production]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Imports", CALCULATE(MAX(usda_comp_soybeans[usda_imports]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Total Supply", CALCULATE(MAX(usda_comp_soybeans[usda_total_supply]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Crush", CALCULATE(MAX(usda_comp_soybeans[usda_crush]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Exports", CALCULATE(MAX(usda_comp_soybeans[usda_exports]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Ending Stocks", CALCULATE(MAX(usda_comp_soybeans[usda_ending_stocks]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Stocks/Use", CALCULATE(MAX(usda_comp_soybeans[usda_su_pct]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    BLANK()
+)
+
+// --- Change from prior report ---
+Change from Prior Report =
+VAR SelectedCategory = SELECTEDVALUE('Balance Sheet Structure'[Category])
+VAR SelectedMY = SELECTEDVALUE(usda_comp_soybeans[marketing_year])
+RETURN
+SWITCH(
+    SelectedCategory,
+    "Planted Area", CALCULATE(MAX(usda_comp_soybeans[area_planted_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Harvested Area", CALCULATE(MAX(usda_comp_soybeans[area_harvested_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Yield", CALCULATE(MAX(usda_comp_soybeans[yield_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Beginning Stocks", CALCULATE(MAX(usda_comp_soybeans[beg_stocks_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Production", CALCULATE(MAX(usda_comp_soybeans[production_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Imports", CALCULATE(MAX(usda_comp_soybeans[imports_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Total Supply", CALCULATE(MAX(usda_comp_soybeans[total_supply_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Crush", CALCULATE(MAX(usda_comp_soybeans[crush_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Exports", CALCULATE(MAX(usda_comp_soybeans[exports_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Ending Stocks", CALCULATE(MAX(usda_comp_soybeans[ending_stocks_chg]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    BLANK()
+)
+
+// --- RLC Estimate ---
+RLC Estimate =
+VAR SelectedCategory = SELECTEDVALUE('Balance Sheet Structure'[Category])
+VAR SelectedMY = SELECTEDVALUE(usda_comp_soybeans[marketing_year])
+RETURN
+SWITCH(
+    SelectedCategory,
+    "Beginning Stocks", CALCULATE(MAX(usda_comp_soybeans[rlc_beg_stocks]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Production", CALCULATE(MAX(usda_comp_soybeans[rlc_production]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Imports", CALCULATE(MAX(usda_comp_soybeans[rlc_imports]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Total Supply", CALCULATE(MAX(usda_comp_soybeans[rlc_total_supply]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Crush", CALCULATE(MAX(usda_comp_soybeans[rlc_crush]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Exports", CALCULATE(MAX(usda_comp_soybeans[rlc_exports]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Ending Stocks", CALCULATE(MAX(usda_comp_soybeans[rlc_ending_stocks]), usda_comp_soybeans[marketing_year] = SelectedMY),
+    "Stocks/Use", CALCULATE(MAX(usda_comp_soybeans[rlc_su_ratio]) * 100, usda_comp_soybeans[marketing_year] = SelectedMY),
+    BLANK()
+)
+
+// --- Color for Change column (green positive, red negative) ---
+Change Color =
+VAR ChangeValue = [Change from Prior Report]
+RETURN
+IF(ISBLANK(ChangeValue), "#808080",
+    IF(ChangeValue > 0, "#2E7D32",
+        IF(ChangeValue < 0, "#C62828", "#808080")
+    )
+)
+
+// --- Arrow indicator for change ---
+Change Arrow =
+VAR ChangeValue = [Change from Prior Report]
+RETURN
+IF(ISBLANK(ChangeValue), "",
+    IF(ChangeValue > 0, "▲",
+        IF(ChangeValue < 0, "▼", "─")
+    )
+)
+
+
+// ============================================================================
+// SECTION 4: CRUSH MARGIN CALCULATION
+// ============================================================================
+
+// Yields from Fats & Oils report (use these as parameters or get from data)
+Meal Yield = 47.84  // lbs per bushel
+Oil Yield = 11.79   // lbs per bushel
+
+// Prices (assuming you have futures_price table)
+Soybean Price =
+CALCULATE(
+    LASTNONBLANK(futures_price[settlement_price], 1),
+    futures_price[commodity] = "soybeans"
+)
+
+Meal Price =
+CALCULATE(
+    LASTNONBLANK(futures_price[settlement_price], 1),
+    futures_price[commodity] = "soybean_meal"
+)
+
+Oil Price =
+CALCULATE(
+    LASTNONBLANK(futures_price[settlement_price], 1),
+    futures_price[commodity] = "soybean_oil"
+)
+
+// Board Crush Margin
+// Meal: $/ton × lbs/bu ÷ 2000 = $/bu from meal
+// Oil: cents/lb × lbs/bu ÷ 100 = $/bu from oil
+Gross Crush Margin =
+VAR MealValue = [Meal Price] * [Meal Yield] / 2000
+VAR OilValue = [Oil Price] * [Oil Yield] / 100
+VAR SoyPrice = [Soybean Price]
+RETURN
+MealValue + OilValue - SoyPrice
+
+Crush Margin Display =
+FORMAT([Gross Crush Margin], "$#,##0.00") & " /bu"
+
+Crush Margin Color =
+IF([Gross Crush Margin] > 0, "#2E7D32", "#C62828")
+
+
+// ============================================================================
+// SECTION 5: STALE DATA OVERLAY MEASURES
+// ============================================================================
+
+// Check if PSD data is stale (not updated since last WASDE)
+PSD Last Updated =
+MAX(fas_psd[collected_at])
+
+PSD Expected Update =
+// WASDE releases on 12th of each month
+VAR Today = TODAY()
+VAR CurrentDay = DAY(Today)
+RETURN
+IF(
+    CurrentDay >= 12,
+    DATE(YEAR(Today), MONTH(Today), 12),
+    EOMONTH(Today, -1) + 12
+)
+
+PSD Is Stale =
+[PSD Last Updated] < [PSD Expected Update]
+
+// Overlay opacity (0 = fully visible, 0.75 = 75% grey overlay)
+Stale Data Overlay Opacity =
+IF([PSD Is Stale], 0.75, 0)
+
+// Message to show when stale
+Stale Data Message =
+IF([PSD Is Stale],
+    "Data not updated since " & FORMAT([PSD Last Updated], "MMM DD") & " - Expected update: " & FORMAT([PSD Expected Update], "MMM DD"),
+    ""
+)
+
+// For conditional formatting background color
+Stale Data Background =
+IF([PSD Is Stale], "#C0C0C0", "#FFFFFF")
+
+
+// ============================================================================
+// SECTION 6: BULLET CHART MEASURES (Crush Pace)
+// ============================================================================
+
+// Monthly actual crush
+Monthly Crush Actual =
+CALCULATE(
+    SUM(monthly_realized[realized_value]),
+    monthly_realized[commodity] = "soybeans",
+    monthly_realized[attribute] = "crush"
+)
+
+// Monthly target (annual / 12)
+Monthly Crush Target =
+[US Soy Crush] / 12
+
+// YTD crush total
+YTD Crush =
+CALCULATE(
+    SUM(monthly_realized[realized_value]),
+    monthly_realized[commodity] = "soybeans",
+    monthly_realized[attribute] = "crush",
+    FILTER(
+        ALL(monthly_realized),
+        monthly_realized[marketing_year] = [Current Marketing Year]
+    )
+)
+
+// Progress percentage
+Crush Progress Pct =
+DIVIDE([YTD Crush], [US Soy Crush], 0)
+
+// Bullet chart ranges (for background bands)
+Crush Poor Max = [Monthly Crush Target] * 0.9      // Below 90% = poor
+Crush Satisfactory Max = [Monthly Crush Target] * 1.05  // 90-105% = satisfactory
+Crush Good Max = [Monthly Crush Target] * 1.15     // 105-115% = good
+
+// Performance indicator
+Crush Performance =
+VAR Actual = [Monthly Crush Actual]
+VAR Target = [Monthly Crush Target]
+VAR Ratio = DIVIDE(Actual, Target, 0)
+RETURN
+SWITCH(
+    TRUE(),
+    Ratio >= 1.05, "Above Target",
+    Ratio >= 0.95, "On Target",
+    "Below Target"
+)
+
+
+// ============================================================================
+// SECTION 7: CROP CONDITIONS
+// ============================================================================
+
+Soy Condition GE Current =
+CALCULATE(
+    MAX(nass_condition[good_pct]) + MAX(nass_condition[excellent_pct]),
+    nass_condition[commodity] = "soybeans",
+    nass_condition[year] = YEAR(TODAY())
+)
+
+Soy Condition GE Prior =
+CALCULATE(
+    MAX(nass_condition[good_pct]) + MAX(nass_condition[excellent_pct]),
+    nass_condition[commodity] = "soybeans",
+    nass_condition[year] = YEAR(TODAY()) - 1
+)
+
+Soy Condition vs Prior =
+[Soy Condition GE Current] - [Soy Condition GE Prior]
+
+Condition Display =
+FORMAT([Soy Condition GE Current], "0%") & " G/E"
+
+
+// ============================================================================
+// SECTION 8: CFTC POSITIONING
+// ============================================================================
+
+CFTC Net Position =
+CALCULATE(
+    MAX(cftc_sentiment[net_position]),
+    cftc_sentiment[commodity] = "soybeans"
+)
+
+CFTC Position Label =
+VAR NetPos = [CFTC Net Position]
+RETURN
+SWITCH(
+    TRUE(),
+    NetPos > 100000, "BULLISH",
+    NetPos > 0, "MILDLY BULLISH",
+    NetPos > -100000, "MILDLY BEARISH",
+    "BEARISH"
+)
+
+CFTC Position Display =
+VAR NetPos = [CFTC Net Position]
+RETURN
+IF(NetPos >= 0, "+", "") & FORMAT(NetPos / 1000, "#,##0") & "K"
+
+CFTC Position Color =
+VAR NetPos = [CFTC Net Position]
+RETURN
+IF(NetPos > 0, "#2E7D32", "#C62828")
+
+
+// ============================================================================
+// SECTION 9: YOY CHANGE FORMATTING (Universal)
+// ============================================================================
+
+YoY Arrow =
+VAR Change = SELECTEDMEASURE()
+RETURN
+IF(Change > 0.001, "▲",
+    IF(Change < -0.001, "▼", "─")
+)
+
+YoY Color =
+VAR Change = SELECTEDMEASURE()
+RETURN
+SWITCH(
+    TRUE(),
+    Change > 0.10, "#1B5E20",   // Dark green for >10%
+    Change > 0.05, "#2E7D32",   // Green for 5-10%
+    Change > 0.01, "#66BB6A",   // Light green for 1-5%
+    Change > -0.01, "#808080",  // Grey for flat
+    Change > -0.05, "#FF8A65",  // Light red for -1 to -5%
+    Change > -0.10, "#C62828",  // Red for -5 to -10%
+    "#B71C1C"                   // Dark red for <-10%
+)
