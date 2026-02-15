@@ -579,6 +579,17 @@ The Knowledge Graph contains **analyst-level frameworks** extracted from profess
 | UCO | `used_cooking_oil` | Lowest CI feedstock, China sourcing, traceability |
 | LCFS Credits | `lcfs_credit_framework` | CI-based credit value by feedstock |
 | Crusher Feasibility | `crusher_feasibility_model` | Consulting framework for crush facility analysis |
+| **HOBO RD/SAF Study** | | |
+| HOBO Renewables | `hobo_renewables` | Clinton County HEFA facility, 125 MMgy RD/SAF, SWOT, execution timeline |
+| HEFA Technology | `hefa_technology` | HEFA process, 100+ plants, feedstock flexibility |
+| RD/SAF Price Stacks | `rd_price_stack`, `saf_price_stack` | Revenue stack construction: ULSD + RINs + LCFS + 45Z |
+| Feedstock Sensitivity | `feedstock_sensitivity_rule` | $0.05/lb feedstock = $0.35-0.40/gal margin impact |
+| CI Value Framework | `ci_value_framework` | Each 5 CI points = ~$0.15/gal = $20-30M/yr |
+| Base Case Margins | `base_case_margins` | IL/CA/AB margin projections by product |
+| DGD / Neste | `diamond_green_diesel`, `neste_corporation` | Competitor benchmarks, margin compression 2024 |
+| 45Z Credit | `cfpc_45z` | Production credit mechanics, extension scenarios |
+| ReFuelEU | `refueleu_mandate` | EU SAF mandate trajectory 2%→6%→20% |
+| Canada CFR | `canada_cfr` | Canadian clean fuel regs, credit arbitrage |
 | **Pre-Season Models** | | |
 | Prospective Plantings | `prospective_plantings_framework` | March 31 surprise probability, range analysis |
 | Insurance Price Ratio | `insurance_price_ratio_model` | Feb RP ratio predicts acreage allocation |
@@ -598,11 +609,11 @@ When a user asks about **corn positioning**:
 
 ## Current Knowledge Graph Stats
 
-- **160 nodes** (commodities, data series, models, seasonal events, policies, regions, market participants)
-- **90 edges** (causal links, competition, seasonal patterns, predictions)
-- **70 contexts** (expert rules, risk thresholds, seasonal norms, computed percentiles, pace tracking)
-- **75 sources** (HB Weekly Text reports, Fastmarkets quarterlies, consulting engagements)
-- **8 extraction batches** covering the complete annual analytical cycle + biofuel demand infrastructure
+- **224 nodes** (commodities, data series, models, seasonal events, policies, regions, market participants, companies, strategies)
+- **143 edges** (causal links, competition, seasonal patterns, predictions, policy dependencies)
+- **121 contexts** (expert rules, risk thresholds, seasonal norms, computed percentiles, pace tracking, margin frameworks)
+- **82 sources** (HB Weekly Text reports, Fastmarkets quarterlies, consulting engagements, HOBO feasibility study)
+- **9 extraction batches** covering the complete annual analytical cycle + biofuel demand infrastructure + HOBO RD/SAF feasibility study
 - **15 computed contexts**: 9 seasonal norms (CFTC monthly percentiles × 6 + crop condition weekly × 3) + 6 pace tracking (soy crush vs USDA × 4 MYs + corn grind YoY × 2 MYs)
 
 ### Computed Context Types
