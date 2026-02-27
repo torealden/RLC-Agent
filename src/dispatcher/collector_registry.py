@@ -34,8 +34,8 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'class': 'USDATFASCollector',
     },
     'usda_wasde': {
-        'module': 'src.agents.collectors.us.usda_fas_collector',
-        'class': 'USDATFASCollector',
+        'module': 'src.agents.collectors.us.usda_wasde_collector',
+        'class': 'USDAWASPECollector',
     },
     'cme_settlements': {
         'module': 'src.agents.collectors.market.cme_settlements_collector',
