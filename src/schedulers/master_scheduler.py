@@ -228,7 +228,7 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
     # -------------------------------------------------------------------------
     'usda_wasde': CollectorSchedule(
         collector_name='usda_wasde',
-        collector_class='USDATFASCollector',  # Uses FAS API for WASDE data
+        collector_class='USDAWASPECollector',  # Dedicated WASDE CSV collector
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.MONTHLY,
             day_of_month=12,  # Usually ~12th
