@@ -122,32 +122,44 @@ class RLCAgent:
         """
         self.logger.info(f"Collecting data: source={source}, commodity={commodity}")
 
-        results = {
-            "timestamp": datetime.now().isoformat(),
-            "source": source or "all",
-            "commodity": commodity,
-            "success": True,
-            "records": 0,
-            "errors": [],
-        }
-
-        # TODO: Implement actual collection using collectors
-        # from src.agents.collectors.us import CFTCCOTCollector, USDATFASCollector
-
-        return results
+        if source:
+            result = self._get_dispatcher().run_collector(source)
+            return {
+                "timestamp": datetime.now().isoformat(),
+                "source": source,
+                "commodity": commodity,
+                "success": result.success,
+                "records": result.rows_collected,
+                "errors": [result.error_message] if result.error_message else [],
+            }
+        else:
+            results = self._get_dispatcher().run_todays_collectors()
+            return {
+                "timestamp": datetime.now().isoformat(),
+                "source": "all_scheduled",
+                "commodity": commodity,
+                "success": all(r.success for r in results),
+                "records": sum(r.rows_collected for r in results),
+                "errors": [r.error_message for r in results if r.error_message],
+            }
 
     def run_daily_collection(self) -> Dict[str, Any]:
         """Run the daily data collection workflow."""
         self.logger.info("Starting daily data collection...")
 
-        # TODO: Use master scheduler to run appropriate collectors
-        results = {
+        run_results = self._get_dispatcher().run_todays_collectors()
+        return {
             "date": date.today().isoformat(),
-            "collections": [],
-            "success": True,
+            "collections": [
+                {
+                    "collector": r.collector_name,
+                    "status": r.status,
+                    "rows": r.rows_collected,
+                }
+                for r in run_results
+            ],
+            "success": all(r.success for r in run_results),
         }
-
-        return results
 
     # =========================================================================
     # ANALYSIS
@@ -323,6 +335,13 @@ class RLCAgent:
     # SCHEDULER
     # =========================================================================
 
+    def _get_dispatcher(self):
+        """Get or create the dispatcher instance."""
+        if not hasattr(self, '_dispatcher') or self._dispatcher is None:
+            from src.dispatcher.dispatcher import Dispatcher
+            self._dispatcher = Dispatcher()
+        return self._dispatcher
+
     def start_scheduler(self, background: bool = True) -> bool:
         """
         Start the data collection scheduler.
@@ -334,20 +353,40 @@ class RLCAgent:
             True if started successfully
         """
         self.logger.info(f"Starting scheduler (background={background})")
-
-        # TODO: Implement using master scheduler
-
-        return True
+        try:
+            self._get_dispatcher().start()
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to start scheduler: {e}")
+            return False
 
     def stop_scheduler(self) -> bool:
         """Stop the data collection scheduler."""
         self.logger.info("Stopping scheduler")
+        if hasattr(self, '_dispatcher') and self._dispatcher:
+            self._dispatcher.stop()
         return True
 
     def get_schedule(self) -> List[Dict[str, Any]]:
         """Get the current collection schedule."""
-        # TODO: Return schedule from master scheduler
-        return []
+        status = self._get_dispatcher().get_status()
+        return status.get('jobs', [])
+
+    def get_data_freshness(self) -> List[Dict[str, Any]]:
+        """Query core.data_freshness view for current data state."""
+        from src.services.database.db_config import get_connection
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM core.data_freshness ORDER BY hours_since_collection DESC NULLS LAST")
+            return [dict(row) for row in cursor.fetchall()]
+
+    def get_briefing(self) -> List[Dict[str, Any]]:
+        """Get unacknowledged events from core.llm_briefing."""
+        from src.services.database.db_config import get_connection
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM core.llm_briefing")
+            return [dict(row) for row in cursor.fetchall()]
 
 
 def main():

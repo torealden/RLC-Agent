@@ -346,17 +346,8 @@ OTHER_SCHEDULES = {
         "agent": "cme_settlements_agent",
         "description": "Daily futures settlement prices"
     },
-    "anec_exports": {
-        "name": "ANEC Weekly Grain Exports",
-        "schedule": "monday",
-        "time": "14:00",
-        "timezone": "America/Sao_Paulo",
-        "agent": "anec_collector",
-        "agent_path": "src/agents/collectors/south_america/anec_collector.py",
-        "description": "Weekly accumulated grain export volumes from ANEC (soybeans, meal, corn, wheat)"
-    },
-    "weather_email": {
-        "name": "Weather Email Agent",
+    "weather_intelligence": {
+        "name": "Weather Intelligence Agent",
         "schedule": "weather_custom",  # Custom schedule for weather emails
         # Weekdays: 7:30 AM, 1:00 PM, 8:00 PM ET
         # Saturday: 12:00 PM ET
@@ -365,9 +356,18 @@ OTHER_SCHEDULES = {
         "saturday_times": ["12:00"],
         "sunday_times": ["09:00", "19:00"],
         "timezone": "America/New_York",
-        "agent": "weather_email_agent",
-        "agent_path": "rlc_scheduler/agents/weather_email_agent.py",
-        "description": "Forward meteorologist emails and generate weather summaries"
+        "agent": "weather_intelligence_agent",
+        "agent_path": r"C:\Users\torem\rlc_scheduler\agents\weather_intelligence_agent.py",
+        "description": "Process meteorologist emails with LLM-powered synthesis for market-focused weather briefs"
+    },
+    "weather_collector": {
+        "name": "Weather Data Collector",
+        "schedule": "daily",  # Runs once daily
+        "time": "06:00",  # 6 AM before morning weather email summary
+        "timezone": "America/Chicago",
+        "agent": "weather_collector_agent",
+        "agent_path": r"C:\RLC-Agent\rlc_scheduler\agents\weather_collector_agent.py",
+        "description": "Collect daily weather data for agricultural locations"
     }
 }
 
@@ -398,15 +398,20 @@ class AgentRunner:
         }
 
         try:
-            # If agent_path provided (relative to RLC-Agent), use it
+            # If agent_path provided, use it (supports both absolute and relative paths)
             if agent_path:
-                # Resolve relative to RLC-Agent home folder
-                rlc_agent_home = Path(__file__).parent.parent  # rlc_scheduler -> RLC-Agent
-                resolved_path = rlc_agent_home / agent_path
-                if resolved_path.exists():
-                    found_path = resolved_path
+                path_obj = Path(agent_path)
+                # Check if it's an absolute path first
+                if path_obj.is_absolute() and path_obj.exists():
+                    found_path = path_obj
                 else:
-                    found_path = None
+                    # Resolve relative to RLC-Agent home folder
+                    rlc_agent_home = Path(__file__).parent.parent  # rlc_scheduler -> RLC-Agent
+                    resolved_path = rlc_agent_home / agent_path
+                    if resolved_path.exists():
+                        found_path = resolved_path
+                    else:
+                        found_path = None
             else:
                 # Look for agent in various locations
                 search_paths = [
@@ -510,8 +515,8 @@ class RLCScheduler:
         sched_type = config.get("schedule", "daily")
         time_str = config.get("time", "09:00")
         agent_name = config.get("agent", schedule_id)
-
         agent_path = config.get("agent_path")
+
         job_func = lambda a=agent_name, p=agent_path: self.runner.run_agent(a, agent_path=p)
 
         if sched_type == "daily":

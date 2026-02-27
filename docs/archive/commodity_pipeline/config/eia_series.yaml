@@ -1,0 +1,351 @@
+# EIA API v2 Series Configuration
+# Documentation: https://www.eia.gov/opendata/documentation.php
+# Updated: 2026-01-25 with corrected API parameters
+#
+# Categories relevant to commodity trading:
+# - Petroleum (crude oil, gasoline, diesel, heating oil)
+# - Biofuels (ethanol, biodiesel)
+# - Natural Gas (Henry Hub, storage)
+
+api_base_url: "https://api.eia.gov/v2"
+
+# ============================================================================
+# PETROLEUM - Weekly Petroleum Status Report
+# ============================================================================
+petroleum:
+  # Crude Oil Stocks
+  crude_oil_stocks:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["SAE"]  # Ending Stocks
+        duoarea: ["NUS"]  # National US
+    description: "US Crude Oil Ending Stocks (thousand barrels)"
+    unit: "thousand_barrels"
+
+  crude_oil_stocks_ex_spr:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["SAX"]  # Ending Stocks Excluding SPR
+        duoarea: ["NUS"]
+    description: "US Crude Oil Stocks Excluding SPR (thousand barrels)"
+    unit: "thousand_barrels"
+
+  crude_oil_spr:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["SAS"]  # SPR Stocks
+        duoarea: ["NUS"]
+    description: "US Strategic Petroleum Reserve Stocks (thousand barrels)"
+    unit: "thousand_barrels"
+
+  crude_oil_imports:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["IM0"]  # Imports
+        duoarea: ["NUS-Z00"]  # National including foreign
+    description: "US Crude Oil Imports (thousand barrels/day)"
+    unit: "thousand_barrels_per_day"
+
+  crude_oil_production:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["FPF"]  # Field Production
+        duoarea: ["NUS"]
+    description: "US Crude Oil Production (thousand barrels/day)"
+    unit: "thousand_barrels_per_day"
+
+  # Gasoline
+  gasoline_stocks:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPM0"]
+        process: ["SAE"]  # Ending Stocks
+        duoarea: ["NUS"]
+    description: "US Motor Gasoline Ending Stocks (thousand barrels)"
+    unit: "thousand_barrels"
+
+  gasoline_days_supply:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPM0"]
+        process: ["VSD"]  # Days of Supply
+        duoarea: ["NUS"]
+    description: "US Motor Gasoline Days of Supply"
+    unit: "days"
+
+  # Distillate (Diesel/Heating Oil)
+  distillate_stocks:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPD0"]
+        process: ["SAE"]
+        duoarea: ["NUS"]
+    description: "US Distillate Fuel Oil Ending Stocks (thousand barrels)"
+    unit: "thousand_barrels"
+
+  # Refinery Operations
+  refinery_inputs:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["YIY"]  # Refinery Net Input
+        duoarea: ["NUS"]
+    description: "US Refinery Crude Oil Net Inputs (thousand barrels/day)"
+    unit: "thousand_barrels_per_day"
+
+  refinery_utilization:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        series: ["WOCLEUS2"]
+    description: "US Refinery Utilization Rate (percent)"
+    unit: "percent"
+
+# ============================================================================
+# PETROLEUM PRICES - Spot Prices
+# ============================================================================
+petroleum_prices:
+  wti_spot:
+    route: "/petroleum/pri/spt/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPCWTI"]  # WTI Cushing
+    description: "WTI Crude Oil Spot Price Cushing ($/barrel)"
+    unit: "dollars_per_barrel"
+
+  brent_spot:
+    route: "/petroleum/pri/spt/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPCBRENT"]  # Brent
+    description: "Brent Crude Oil Spot Price FOB ($/barrel)"
+    unit: "dollars_per_barrel"
+
+  rbob_gasoline:
+    route: "/petroleum/pri/spt/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPMRR"]  # RBOB Regular
+    description: "RBOB Regular Gasoline Spot Price NY Harbor ($/gallon)"
+    unit: "dollars_per_gallon"
+
+  ulsd_diesel:
+    route: "/petroleum/pri/spt/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPD2DXL0"]  # NY Harbor ULSD
+    description: "NY Harbor Ultra-Low Sulfur Diesel Spot Price ($/gallon)"
+    unit: "dollars_per_gallon"
+
+  heating_oil:
+    route: "/petroleum/pri/spt/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPD2F"]  # No. 2 Heating Oil
+    description: "NY Harbor No. 2 Heating Oil Spot Price ($/gallon)"
+    unit: "dollars_per_gallon"
+
+# ============================================================================
+# BIOFUELS - Ethanol
+# ============================================================================
+biofuels:
+  # Ethanol Production
+  ethanol_production:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPOOXE"]  # Fuel Ethanol
+        process: ["YOP"]  # Oxygenate Plant Production
+        duoarea: ["NUS"]
+    description: "US Fuel Ethanol Production (thousand barrels/day)"
+    unit: "thousand_barrels_per_day"
+
+  ethanol_stocks:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPOOXE"]
+        process: ["SAE"]  # Ending Stocks
+        duoarea: ["NUS"]
+    description: "US Fuel Ethanol Ending Stocks (thousand barrels)"
+    unit: "thousand_barrels"
+
+  ethanol_blender_input:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPOOXE"]
+        process: ["YIR"]  # Refinery and Blender Net Input
+        duoarea: ["NUS"]
+    description: "US Fuel Ethanol Refinery/Blender Input (thousand barrels/day)"
+    unit: "thousand_barrels_per_day"
+
+# ============================================================================
+# NATURAL GAS - Storage & Prices
+# ============================================================================
+natural_gas:
+  storage_working_gas:
+    route: "/natural-gas/stor/wkly/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        process: ["SWO"]  # Working Gas (Underground Storage)
+        duoarea: ["R48"]  # Lower 48 States
+    description: "US Natural Gas Working Storage Lower 48 (Bcf)"
+    unit: "billion_cubic_feet"
+
+  storage_east:
+    route: "/natural-gas/stor/wkly/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        process: ["SWO"]
+        duoarea: ["R31"]  # East Region
+    description: "East Region Natural Gas Working Storage (Bcf)"
+    unit: "billion_cubic_feet"
+
+  storage_midwest:
+    route: "/natural-gas/stor/wkly/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        process: ["SWO"]
+        duoarea: ["R32"]  # Midwest Region
+    description: "Midwest Region Natural Gas Working Storage (Bcf)"
+    unit: "billion_cubic_feet"
+
+  storage_south_central:
+    route: "/natural-gas/stor/wkly/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        process: ["SWO"]
+        duoarea: ["R33"]  # South Central Region
+    description: "South Central Region Natural Gas Working Storage (Bcf)"
+    unit: "billion_cubic_feet"
+
+  henry_hub_spot:
+    route: "/natural-gas/pri/fut/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        duoarea: ["RGC"]  # Louisiana (Henry Hub)
+    description: "Henry Hub Natural Gas Spot Price ($/MMBtu)"
+    unit: "dollars_per_mmbtu"
+
+# ============================================================================
+# REGIONAL PETROLEUM DATA (PADD Districts & Cushing)
+# ============================================================================
+regional:
+  cushing_crude_stocks:
+    route: "/petroleum/stoc/wstk/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        duoarea: ["YCUOK"]  # Cushing, Oklahoma
+    description: "Cushing, OK Crude Oil Stocks (thousand barrels)"
+    unit: "thousand_barrels"
+
+  padd1_crude_stocks:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["SAX"]  # Excluding SPR
+        duoarea: ["R10"]  # PADD 1 - East Coast
+    description: "PADD 1 (East Coast) Crude Oil Stocks (thousand barrels)"
+    unit: "thousand_barrels"
+
+  padd2_crude_stocks:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["SAX"]  # Excluding SPR
+        duoarea: ["R20"]  # PADD 2 - Midwest
+    description: "PADD 2 (Midwest) Crude Oil Stocks (thousand barrels)"
+    unit: "thousand_barrels"
+
+  padd3_crude_stocks:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["SAX"]  # Excluding SPR
+        duoarea: ["R30"]  # PADD 3 - Gulf Coast
+    description: "PADD 3 (Gulf Coast) Crude Oil Stocks (thousand barrels)"
+    unit: "thousand_barrels"
+
+  padd5_crude_stocks:
+    route: "/petroleum/sum/sndw/data"
+    params:
+      frequency: weekly
+      data: ["value"]
+      facets:
+        product: ["EPC0"]
+        process: ["SAX"]  # Excluding SPR
+        duoarea: ["R50"]  # PADD 5 - West Coast
+    description: "PADD 5 (West Coast) Crude Oil Stocks (thousand barrels)"
+    unit: "thousand_barrels"
