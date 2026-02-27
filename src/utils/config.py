@@ -50,6 +50,7 @@ class APIConfig:
     # USDA
     usda_ams_api_key: str = field(default_factory=lambda: os.getenv("USDA_AMS_API_KEY", ""))
     usda_nass_api_key: str = field(default_factory=lambda: os.getenv("USDA_NASS_API_KEY", ""))
+    usda_fas_api_key: str = field(default_factory=lambda: os.getenv("USDA_FAS_API_KEY", ""))
 
     # EIA
     eia_api_key: str = field(default_factory=lambda: os.getenv("EIA_API_KEY", ""))
