@@ -1,27 +1,33 @@
 """
-USDA WASDE (World Agricultural Supply and Demand Estimates) Collector
+USDA WASDE Collector (via FAS PSD API)
 
-Collects monthly WASDE report data from the USDA OCE CSV endpoint.
-WASDE is released around the 12th of each month at noon ET.
+Collects WASDE supply/demand balance sheet data through the FAS Production,
+Supply, and Distribution (PSD) API. PSD is the underlying database that
+WASDE reports draw from -- updated monthly at noon ET on WASDE release day.
 
-CSV URL pattern:
-    https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-YYYY-MM.csv
+API base:  https://api.fas.usda.gov
+Auth:      X-Api-Key header (register free at https://api.data.gov/signup/)
 
-CSV columns:
-    WasdeNumber, ReportDate, ReportTitle, Attribute, ReliabilityProjection,
-    Commodity, Region, MarketYear, ProjEstFlag, AnnualQuarterFlag, Value,
-    Unit, ReleaseDate, ReleaseTime, ForecastYear, ForecastMonth
+Key endpoints:
+    /api/psd/commodity/{code}/country/{cc}/year/{my}  - single country
+    /api/psd/commodity/{code}/country/all/year/{my}    - all countries
+    /api/psd/commodity/{code}/world/year/{my}          - world aggregate
+    /api/psd/commodity/{code}/dataReleaseDates          - last update dates
 
-Data source: USDA Office of the Chief Economist
-https://www.usda.gov/about-usda/general-information/staff-offices/office-chief-economist/commodity-markets/wasde-report
+Reference:
+    /api/psd/commodities          - list commodity codes
+    /api/psd/countries             - list country codes
+    /api/psd/commodityAttributes   - list attribute IDs
+    /api/psd/unitsOfMeasure        - list unit IDs
+
+See: domain_knowledge/data_dictionaries/usda_fas_psd_api_reference.json
 """
 
-import io
 import logging
-import re
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, date, timedelta
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 
 from .base_collector import (
     BaseCollector,
@@ -40,112 +46,133 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-# Base URL for monthly WASDE CSV downloads
-WASDE_CSV_BASE_URL = (
-    "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data"
-)
-
-# WASDE table number mapping from ReportTitle patterns to table IDs
-# These correspond to bronze.wasde_table_def entries
-REPORT_TITLE_TO_TABLE_ID: Dict[str, str] = {
-    "U.S. Wheat Supply and Use": "01",
-    "U.S. Coarse Grains Supply and Use": "03",
-    "U.S. Corn Supply and Use": "04",
-    "U.S. Sorghum Supply and Use": "05",
-    "U.S. Barley Supply and Use": "06",
-    "U.S. Oats Supply and Use": "07",
-    "U.S. Rice Supply and Use": "08",
-    "U.S. Oilseed Supply and Use": "09",
-    "U.S. Soybeans and Products Supply and Use": "10",
-    "World Wheat Supply and Use": "11",
-    "World Coarse Grains Supply and Use": "12",
-    "World Corn Supply and Use": "13",
-    "World Rice Supply and Use": "14",
-    "World Oilseed Supply and Use": "15",
-    "World Soybean Supply and Use": "16",
-    "U.S. Sugar Supply and Use": "17",
-    "U.S. Cotton Supply and Use": "19",
+# ============================================================================
+# PSD commodity codes -- full WASDE coverage plus biofuel-relevant oils
+# ============================================================================
+PSD_COMMODITY_CODES: Dict[str, Dict[str, str]] = {
+    # Grains
+    "corn":             {"code": "0440000", "name": "Corn",              "unit": "1000 MT"},
+    "wheat":            {"code": "0410000", "name": "Wheat",             "unit": "1000 MT"},
+    "rice":             {"code": "0422110", "name": "Rice, Milled",      "unit": "1000 MT"},
+    "barley":           {"code": "0430000", "name": "Barley",            "unit": "1000 MT"},
+    "sorghum":          {"code": "0459100", "name": "Sorghum",           "unit": "1000 MT"},
+    # Oilseeds
+    "soybeans":         {"code": "2222000", "name": "Soybeans",          "unit": "1000 MT"},
+    "rapeseed":         {"code": "1205000", "name": "Rapeseed (Canola)", "unit": "1000 MT"},
+    "sunflowerseed":    {"code": "1206000", "name": "Sunflowerseed",    "unit": "1000 MT"},
+    "peanuts":          {"code": "1202000", "name": "Peanuts",           "unit": "1000 MT"},
+    "cottonseed":       {"code": "1207200", "name": "Cottonseed",        "unit": "1000 MT"},
+    # Oilseed products
+    "soybean_meal":     {"code": "2304000", "name": "Meal, Soybean",    "unit": "1000 MT"},
+    "soybean_oil":      {"code": "1507000", "name": "Oil, Soybean",     "unit": "1000 MT"},
+    "palm_oil":         {"code": "1511000", "name": "Oil, Palm",         "unit": "1000 MT"},
+    "palm_kernel_oil":  {"code": "1513200", "name": "Oil, Palm Kernel",  "unit": "1000 MT"},
+    "rapeseed_oil":     {"code": "1514000", "name": "Oil, Rapeseed",     "unit": "1000 MT"},
+    "rapeseed_meal":    {"code": "2306400", "name": "Meal, Rapeseed",    "unit": "1000 MT"},
+    "sunflowerseed_oil":{"code": "1512000", "name": "Oil, Sunflowerseed","unit": "1000 MT"},
+    "sunflowerseed_meal":{"code":"2306300", "name": "Meal, Sunflowerseed","unit":"1000 MT"},
+    "cottonseed_oil":   {"code": "1512200", "name": "Oil, Cottonseed",   "unit": "1000 MT"},
+    "cottonseed_meal":  {"code": "2306100", "name": "Meal, Cottonseed",  "unit": "1000 MT"},
+    # Fiber
+    "cotton":           {"code": "2631000", "name": "Cotton",            "unit": "1000 480-lb Bales"},
+    # Sugar
+    "sugar":            {"code": "1701000", "name": "Sugar, Centrifugal","unit": "1000 MT"},
 }
 
-# Attribute to row_category mapping for standardization
-ATTRIBUTE_TO_CATEGORY: Dict[str, str] = {
-    "Area Planted": "area",
-    "Area Harvested": "area",
-    "Yield per Harvested Acre": "yield",
-    "Beginning Stocks": "supply",
-    "Production": "supply",
-    "Imports": "supply",
-    "Supply, Total": "supply",
-    "Total Supply": "supply",
-    "Feed and Residual": "demand",
-    "Food, Seed, and Industrial": "demand",
-    "Ethanol and by-products": "demand",
-    "Ethanol & by-products": "demand",
-    "Domestic, Total": "demand",
-    "Exports": "demand",
-    "Use, Total": "demand",
-    "Total Use": "demand",
-    "Ending Stocks": "stocks",
-    "Avg. Farm Price": "price",
-    "Farm Price": "price",
-    "Crushings": "demand",
-    "Seed": "demand",
-    "Residual": "demand",
+# Key countries tracked in WASDE analysis
+PSD_COUNTRY_CODES: Dict[str, str] = {
+    "US": "United States",
+    "BR": "Brazil",
+    "AR": "Argentina",
+    "CN": "China",
+    "EU": "European Union",
+    "RU": "Russia",
+    "UA": "Ukraine",
+    "AU": "Australia",
+    "CA": "Canada",
+    "IN": "India",
+    "ID": "Indonesia",
+    "MY": "Malaysia",
+    "TH": "Thailand",
+    "MX": "Mexico",
+    "EG": "Egypt",
+    "JP": "Japan",
+    "KR": "Korea, South",
+    "PK": "Pakistan",
+    "VN": "Vietnam",
+    "PH": "Philippines",
+    "NG": "Nigeria",
+    "ZA": "South Africa",
+    "KZ": "Kazakhstan",
+    "PY": "Paraguay",
+    "TR": "Turkey",
 }
 
-# Commodities tracked in WASDE that we care about
-WASDE_COMMODITIES = [
-    "Corn",
-    "Wheat",
-    "Soybeans",
-    "Soybean Oil",
-    "Soybean Meal",
-    "Sorghum",
-    "Barley",
-    "Oats",
-    "Rice",
-    "Cotton",
-    "Sugar (Centrifugal)",
+# Default commodity list for a standard WASDE pull
+DEFAULT_WASDE_COMMODITIES = [
+    "corn", "wheat", "soybeans", "soybean_meal", "soybean_oil",
+    "rice", "sorghum", "barley", "cotton", "sugar",
+    "palm_oil", "rapeseed", "rapeseed_oil", "sunflowerseed_oil",
 ]
+
+# Default country list for a standard WASDE pull
+DEFAULT_WASDE_COUNTRIES = [
+    "US", "BR", "AR", "CN", "EU", "RU", "UA", "AU", "CA", "IN",
+    "ID", "MY",
+]
+
+# PSD API base URL
+PSD_API_BASE = "https://api.fas.usda.gov"
 
 
 @dataclass
 class USDAWASPEConfig(CollectorConfig):
-    """USDA WASDE-specific configuration."""
+    """USDA WASDE / PSD collector configuration."""
 
     source_name: str = "USDA WASDE"
-    source_url: str = WASDE_CSV_BASE_URL
-    auth_type: AuthType = AuthType.NONE
+    source_url: str = PSD_API_BASE
+    auth_type: AuthType = AuthType.API_KEY
     frequency: DataFrequency = DataFrequency.MONTHLY
-    rate_limit_per_minute: int = 10
     timeout: int = 60
+    rate_limit_per_minute: int = 30  # conservative; registered key allows 1000/hr
 
-    # WASDE-specific settings
-    commodities: List[str] = field(default_factory=lambda: [
-        "corn", "wheat", "soybeans", "soybean_oil", "soybean_meal",
-        "cotton", "sorghum", "rice",
+    # API key from api.data.gov (free registration)
+    api_key: Optional[str] = field(
+        default_factory=lambda: os.environ.get("USDA_FAS_API_KEY", "")
+    )
+
+    # Which commodities to fetch
+    commodities: List[str] = field(default_factory=lambda: list(DEFAULT_WASDE_COMMODITIES))
+
+    # Which countries to fetch (use "all" for every country, or "world" for aggregate)
+    countries: List[str] = field(default_factory=lambda: list(DEFAULT_WASDE_COUNTRIES))
+
+    # Which marketing years to fetch
+    marketing_years: List[int] = field(default_factory=lambda: [
+        date.today().year - 1, date.today().year,
     ])
 
-    # Which regions to collect (us, world, or both)
-    regions: List[str] = field(default_factory=lambda: ["United States", "World"])
-
-    # How many months of historical data to fetch on backfill
-    backfill_months: int = 12
+    # Whether to also pull world aggregate
+    include_world: bool = True
 
 
 class USDAWASPECollector(BaseCollector):
     """
-    Collector for USDA WASDE (World Agricultural Supply and Demand Estimates).
+    Collector for WASDE data via the FAS PSD API.
 
-    Downloads the monthly WASDE CSV from USDA.gov and parses it into a
-    standardized format matching the bronze.wasde_cell schema.
+    PSD is the canonical database underlying WASDE reports. It is updated
+    on WASDE release day (typically the 12th of each month at noon ET)
+    and contains complete global S&D balance sheets for all commodities
+    covered in WASDE -- including palm oil, rapeseed, sunflowerseed, etc.
+    that are absent from the USDA OCE CSV download.
 
     Features:
-    - Downloads monthly CSV from predictable URL pattern
-    - Parses all commodity balance sheets (US and World)
-    - Maps to bronze.wasde_cell schema (release_id, table_id, row_id, etc.)
-    - Supports backfill of historical months
-    - Calculates month-over-month revisions
+    - Fetches structured JSON from PSD API (no PDF/CSV parsing)
+    - Comprehensive commodity coverage (grains + oilseeds + oils + fiber + sugar)
+    - Global country coverage (US, Brazil, Argentina, China, EU, etc.)
+    - World aggregate data
+    - Release-date detection to know when new data is available
+    - CLI for testing and ad-hoc queries
     """
 
     def __init__(self, config: USDAWASPEConfig = None):
@@ -153,438 +180,381 @@ class USDAWASPECollector(BaseCollector):
         super().__init__(config)
         self.config: USDAWASPEConfig = config
 
+        # Override the default auth header -- PSD uses X-Api-Key, not Bearer
+        if self.config.api_key:
+            self.session.headers.pop("Authorization", None)
+            self.session.headers["X-Api-Key"] = self.config.api_key
+
     def get_table_name(self) -> str:
-        return "bronze.wasde_cell"
+        return "bronze.fas_psd"
 
-    def _build_csv_url(self, year: int, month: int) -> str:
-        """Build the WASDE CSV download URL for a given year/month."""
-        return f"{WASDE_CSV_BASE_URL}-{year}-{month:02d}.csv"
+    # =========================================================================
+    # PSD API helpers
+    # =========================================================================
 
-    def _normalize_commodity(self, commodity_str: str) -> Optional[str]:
-        """Normalize WASDE commodity name to our standard codes."""
-        if not commodity_str:
+    def _psd_url(self, *path_parts: str) -> str:
+        """Build a PSD API URL from path parts."""
+        path = "/".join(str(p) for p in path_parts)
+        return f"{PSD_API_BASE}/api/psd/{path}"
+
+    def _safe_float(self, value: Any) -> Optional[float]:
+        """Safely convert a value to float."""
+        if value is None or value == "":
             return None
-        norm = commodity_str.strip().lower()
-        mappings = {
-            "corn": "corn",
-            "wheat": "wheat",
-            "soybeans": "soybeans",
-            "soybean oil": "soybean_oil",
-            "soybean meal": "soybean_meal",
-            "sorghum": "sorghum",
-            "barley": "barley",
-            "oats": "oats",
-            "rice": "rice",
-            "rice, milled": "rice",
-            "cotton": "cotton",
-            "sugar (centrifugal)": "sugar",
-            "sugar": "sugar",
-            "upland cotton": "cotton",
-        }
-        return mappings.get(norm, norm.replace(" ", "_"))
-
-    def _map_table_id(self, report_title: str) -> Optional[str]:
-        """Map a ReportTitle to a WASDE table number."""
-        if not report_title:
-            return None
-        # Exact match first
-        if report_title in REPORT_TITLE_TO_TABLE_ID:
-            return REPORT_TITLE_TO_TABLE_ID[report_title]
-        # Fuzzy match: check if any key is contained in the title
-        title_lower = report_title.lower()
-        for pattern, table_id in REPORT_TITLE_TO_TABLE_ID.items():
-            if pattern.lower() in title_lower:
-                return table_id
-        return None
-
-    def _determine_projection_type(self, proj_est_flag: str) -> str:
-        """Map ProjEstFlag to standardized projection type."""
-        if not proj_est_flag:
-            return "actual"
-        flag = str(proj_est_flag).strip().lower()
-        if "proj" in flag:
-            return "proj"
-        elif "est" in flag:
-            return "est"
-        return "actual"
-
-    def _clean_value(self, value_str: Any) -> Optional[float]:
-        """Parse a CSV value field into a numeric float."""
-        if value_str is None:
-            return None
-        val = str(value_str).strip()
-        if val in ("", "-", "--", "NA", "N/A", "nan", "None"):
-            return None
-        # Remove commas
-        val = val.replace(",", "")
         try:
-            return float(val)
+            return float(value)
         except (ValueError, TypeError):
             return None
 
-    def _make_row_id(self, attribute: str) -> str:
-        """Convert an Attribute label to a standardized row_id."""
-        if not attribute:
-            return "unknown"
-        return (
-            attribute.strip()
-            .lower()
-            .replace(",", "")
-            .replace(".", "")
-            .replace("  ", " ")
-            .replace(" ", "_")
-        )
+    def _safe_int(self, value: Any) -> Optional[int]:
+        """Safely convert a value to int."""
+        if value is None or value == "":
+            return None
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            return None
+
+    # =========================================================================
+    # Data fetching
+    # =========================================================================
 
     def fetch_data(
         self,
         start_date: date = None,
         end_date: date = None,
+        commodities: List[str] = None,
+        countries: List[str] = None,
+        marketing_years: List[int] = None,
         **kwargs,
     ) -> CollectorResult:
         """
-        Fetch WASDE data from USDA CSV endpoint.
+        Fetch PSD supply/demand data from the FAS API.
 
         Args:
-            start_date: Earliest month to fetch (default: current month)
-            end_date: Latest month to fetch (default: current month)
-            **kwargs:
-                year: Specific year to fetch
-                month: Specific month to fetch
-                backfill: If True, fetch backfill_months of history
+            start_date / end_date:  Ignored (PSD is by marketing year, not date range).
+            commodities:  List of commodity keys (default: config.commodities).
+            countries:    List of 2-letter country codes, or ["all"] or ["world"]
+                          (default: config.countries).
+            marketing_years:  List of marketing year ints (default: config.marketing_years).
 
         Returns:
-            CollectorResult with parsed WASDE records
+            CollectorResult with parsed S&D records as a DataFrame.
         """
-        if not PANDAS_AVAILABLE:
-            return CollectorResult(
-                success=False,
-                source=self.config.source_name,
-                error_message="pandas is required for WASDE CSV parsing",
+        commodities = commodities or self.config.commodities
+        countries = countries or self.config.countries
+        marketing_years = marketing_years or self.config.marketing_years
+
+        if not self.config.api_key:
+            self.logger.warning(
+                "No USDA_FAS_API_KEY set. Register free at https://api.data.gov/signup/ "
+                "and set USDA_FAS_API_KEY env var."
             )
 
-        # Determine which months to fetch
-        months_to_fetch = self._resolve_months(start_date, end_date, **kwargs)
+        all_records: List[Dict] = []
+        warnings: List[str] = []
 
-        all_records = []
-        warnings = []
-        releases_found = []
-
-        for year, month in months_to_fetch:
-            url = self._build_csv_url(year, month)
-            self.logger.info(f"Fetching WASDE CSV: {url}")
-
-            response, error = self._make_request(url, timeout=self.config.timeout)
-
-            if error:
-                warnings.append(f"{year}-{month:02d}: {error}")
+        for commodity in commodities:
+            if commodity not in PSD_COMMODITY_CODES:
+                warnings.append(f"Unknown commodity: {commodity}")
                 continue
 
-            if response.status_code == 404:
-                warnings.append(
-                    f"{year}-{month:02d}: CSV not yet available (404)"
-                )
-                continue
+            commodity_info = PSD_COMMODITY_CODES[commodity]
+            code = commodity_info["code"]
 
-            if response.status_code != 200:
-                warnings.append(
-                    f"{year}-{month:02d}: HTTP {response.status_code}"
-                )
-                continue
+            for my in marketing_years:
+                # --- per-country queries ---
+                for cc in countries:
+                    records, warn = self._fetch_commodity_country_year(
+                        commodity, code, cc, my
+                    )
+                    all_records.extend(records)
+                    if warn:
+                        warnings.append(warn)
 
-            try:
-                records, release_info = self._parse_csv(
-                    response.text, year, month
-                )
-                all_records.extend(records)
-                if release_info:
-                    releases_found.append(release_info)
-                self.logger.info(
-                    f"  Parsed {len(records)} cells from {year}-{month:02d} "
-                    f"(WASDE #{release_info.get('wasde_number', '?')})"
-                )
-            except Exception as e:
-                warnings.append(f"{year}-{month:02d}: Parse error - {e}")
-                self.logger.error(f"Parse error for {year}-{month:02d}: {e}")
+                # --- world aggregate ---
+                if self.config.include_world:
+                    records, warn = self._fetch_commodity_world_year(
+                        commodity, code, my
+                    )
+                    all_records.extend(records)
+                    if warn:
+                        warnings.append(warn)
 
         if not all_records:
             return CollectorResult(
                 success=False,
                 source=self.config.source_name,
-                error_message="No WASDE data retrieved from any month",
+                error_message="No PSD data retrieved",
                 warnings=warnings,
             )
 
         # Build DataFrame
-        df = pd.DataFrame(all_records)
+        if PANDAS_AVAILABLE:
+            df = pd.DataFrame(all_records)
+        else:
+            df = all_records
 
         return CollectorResult(
             success=True,
             source=self.config.source_name,
             records_fetched=len(all_records),
             data=df,
-            period_start=(
-                f"{months_to_fetch[0][0]}-{months_to_fetch[0][1]:02d}"
-            ),
-            period_end=(
-                f"{months_to_fetch[-1][0]}-{months_to_fetch[-1][1]:02d}"
-            ),
-            data_as_of=releases_found[-1].get("release_date")
-            if releases_found
-            else None,
+            data_as_of=date.today().isoformat(),
             warnings=warnings,
         )
 
-    def _resolve_months(
+    def _fetch_commodity_country_year(
         self,
-        start_date: date = None,
-        end_date: date = None,
-        **kwargs,
-    ) -> List[tuple]:
-        """Determine which (year, month) pairs to fetch."""
-        # Explicit year/month
-        if kwargs.get("year") and kwargs.get("month"):
-            return [(int(kwargs["year"]), int(kwargs["month"]))]
+        commodity: str,
+        code: str,
+        country_code: str,
+        marketing_year: int,
+    ) -> Tuple[List[Dict], Optional[str]]:
+        """Fetch one commodity/country/year from PSD API and parse response."""
+        if country_code.lower() == "all":
+            url = self._psd_url("commodity", code, "country", "all", "year", marketing_year)
+        else:
+            url = self._psd_url("commodity", code, "country", country_code, "year", marketing_year)
 
-        # Backfill mode
-        if kwargs.get("backfill"):
-            today = date.today()
-            months = []
-            for i in range(self.config.backfill_months):
-                d = today - timedelta(days=30 * i)
-                months.append((d.year, d.month))
-            return sorted(set(months))
+        response, error = self._make_request(url)
 
-        # Date range
-        if start_date and end_date:
-            months = []
-            current = start_date.replace(day=1)
-            end = end_date.replace(day=1)
-            while current <= end:
-                months.append((current.year, current.month))
-                # Advance to next month
-                if current.month == 12:
-                    current = current.replace(year=current.year + 1, month=1)
-                else:
-                    current = current.replace(month=current.month + 1)
-            return months
+        if error:
+            return [], f"{commodity}/{country_code}/MY{marketing_year}: {error}"
 
-        # Default: current month
-        today = date.today()
-        return [(today.year, today.month)]
+        if response.status_code == 401:
+            return [], f"{commodity}: API key invalid or missing (HTTP 401)"
 
-    def _parse_csv(
-        self, csv_text: str, year: int, month: int
-    ) -> tuple:
+        if response.status_code == 429:
+            return [], f"{commodity}: Rate limited (HTTP 429)"
+
+        if response.status_code != 200:
+            return [], f"{commodity}/{country_code}/MY{marketing_year}: HTTP {response.status_code}"
+
+        try:
+            data = response.json()
+            records = [
+                self._parse_psd_record(rec, commodity)
+                for rec in data
+                if rec is not None
+            ]
+            records = [r for r in records if r is not None]
+            return records, None
+        except Exception as e:
+            return [], f"{commodity}/{country_code}/MY{marketing_year}: parse error - {e}"
+
+    def _fetch_commodity_world_year(
+        self,
+        commodity: str,
+        code: str,
+        marketing_year: int,
+    ) -> Tuple[List[Dict], Optional[str]]:
+        """Fetch world aggregate for a commodity/year."""
+        url = self._psd_url("commodity", code, "world", "year", marketing_year)
+
+        response, error = self._make_request(url)
+
+        if error:
+            return [], f"{commodity}/world/MY{marketing_year}: {error}"
+
+        if response.status_code != 200:
+            return [], f"{commodity}/world/MY{marketing_year}: HTTP {response.status_code}"
+
+        try:
+            data = response.json()
+            records = []
+            for rec in data:
+                parsed = self._parse_psd_record(rec, commodity)
+                if parsed:
+                    parsed["country_code"] = "WD"
+                    parsed["country"] = "World"
+                    records.append(parsed)
+            return records, None
+        except Exception as e:
+            return [], f"{commodity}/world/MY{marketing_year}: parse error - {e}"
+
+    def _parse_psd_record(
+        self, record: Dict, commodity: str
+    ) -> Optional[Dict]:
         """
-        Parse WASDE CSV text into cell records matching bronze.wasde_cell schema.
+        Parse a single PSD API response record into standardised format.
 
-        Returns:
-            Tuple of (list of cell dicts, release_info dict)
+        PSD response fields (per reference doc):
+            commodityCode, countryCode, marketYear, attributeId,
+            value, unitId
         """
-        df = pd.read_csv(io.StringIO(csv_text), dtype=str)
+        try:
+            commodity_info = PSD_COMMODITY_CODES.get(commodity, {})
+            country_code = record.get("countryCode", "")
+            country_name = PSD_COUNTRY_CODES.get(country_code, country_code)
 
-        # Normalize column names (handle possible whitespace/casing variations)
-        df.columns = df.columns.str.strip()
+            return {
+                "commodity": commodity,
+                "commodity_code": record.get("commodityCode", commodity_info.get("code", "")),
+                "country_code": country_code,
+                "country": record.get("countryDescription", country_name),
+                "marketing_year": self._safe_int(record.get("marketYear")),
+                "attribute_id": self._safe_int(record.get("attributeId")),
+                "attribute_name": record.get("attributeName", ""),
+                "value": self._safe_float(record.get("value")),
+                "unit_id": self._safe_int(record.get("unitId")),
+                "unit": record.get("unitDescription", commodity_info.get("unit", "1000 MT")),
+                "month": record.get("month"),
 
-        # Extract release metadata from first row
-        release_info = {}
-        if len(df) > 0:
-            first_row = df.iloc[0]
-            release_info = {
-                "wasde_number": first_row.get("WasdeNumber", ""),
-                "report_date": first_row.get("ReportDate", ""),
-                "release_date": first_row.get("ReleaseDate", ""),
-                "release_time": first_row.get("ReleaseTime", ""),
-                "forecast_year": first_row.get("ForecastYear", ""),
-                "forecast_month": first_row.get("ForecastMonth", ""),
+                # Convenience fields matching bronze.fas_psd schema
+                "beginning_stocks": self._safe_float(record.get("beginningStocks")),
+                "production": self._safe_float(record.get("production")),
+                "imports": self._safe_float(record.get("imports")),
+                "total_supply": self._safe_float(record.get("totalSupply")),
+                "domestic_consumption": self._safe_float(record.get("domesticConsumption")),
+                "feed_dom_consumption": self._safe_float(record.get("feedDomConsumption")),
+                "fsi_consumption": self._safe_float(record.get("fsiConsumption")),
+                "crush": self._safe_float(record.get("crush")),
+                "exports": self._safe_float(record.get("exports")),
+                "ending_stocks": self._safe_float(record.get("endingStocks")),
+                "total_distribution": self._safe_float(record.get("totalDistribution")),
+                "area_harvested": self._safe_float(record.get("areaHarvested")),
+                "yield_per_hectare": self._safe_float(record.get("yieldPerHectare")),
+
+                "source": "USDA_FAS_PSD",
             }
-
-        records = []
-        for _, row in df.iterrows():
-            report_title = str(row.get("ReportTitle", "")).strip()
-            attribute = str(row.get("Attribute", "")).strip()
-            commodity = str(row.get("Commodity", "")).strip()
-            region = str(row.get("Region", "")).strip()
-            market_year = str(row.get("MarketYear", "")).strip()
-            value_text = str(row.get("Value", "")).strip()
-            unit = str(row.get("Unit", "")).strip()
-            proj_est_flag = str(row.get("ProjEstFlag", "")).strip()
-
-            # Map to table_id
-            table_id = self._map_table_id(report_title)
-
-            # Build standardized cell record
-            record = {
-                # Release identification
-                "wasde_number": int(row.get("WasdeNumber", 0) or 0),
-                "report_date_text": str(row.get("ReportDate", "")),
-                "release_date": str(row.get("ReleaseDate", "")),
-                "release_time": str(row.get("ReleaseTime", "")),
-                "forecast_year": str(row.get("ForecastYear", "")),
-                "forecast_month": str(row.get("ForecastMonth", "")),
-                # Cell location
-                "table_id": table_id or "",
-                "report_title": report_title,
-                "row_id": self._make_row_id(attribute),
-                "row_label": attribute,
-                "column_id": market_year,
-                "column_label": f"{market_year} {proj_est_flag}".strip(),
-                # Commodity/region
-                "commodity": self._normalize_commodity(commodity),
-                "commodity_raw": commodity,
-                "region": region,
-                # Marketing year context
-                "marketing_year": market_year,
-                "projection_type": self._determine_projection_type(
-                    proj_est_flag
-                ),
-                "proj_est_flag": proj_est_flag,
-                "annual_quarter_flag": str(
-                    row.get("AnnualQuarterFlag", "")
-                ).strip(),
-                # Values
-                "value_text": value_text,
-                "value_numeric": self._clean_value(value_text),
-                "value_unit_text": unit,
-                # Quality flags
-                "is_numeric": self._clean_value(value_text) is not None,
-                "reliability_projection": str(
-                    row.get("ReliabilityProjection", "")
-                ).strip(),
-                # Row classification
-                "row_category": ATTRIBUTE_TO_CATEGORY.get(attribute, "other"),
-            }
-
-            records.append(record)
-
-        return records, release_info
+        except Exception as e:
+            self.logger.warning(f"Error parsing PSD record: {e}")
+            return None
 
     def parse_response(self, response_data: Any) -> Any:
-        """Parse response - main parsing happens in _parse_csv."""
+        """Parse response -- main parsing happens in _parse_psd_record."""
         return response_data
+
+    # =========================================================================
+    # Release-date detection
+    # =========================================================================
+
+    def get_data_release_dates(self, commodity: str = "corn") -> Optional[List[str]]:
+        """
+        Check when PSD data was last updated for a commodity.
+
+        Useful for detecting fresh WASDE data availability.
+        """
+        code = PSD_COMMODITY_CODES.get(commodity, {}).get("code")
+        if not code:
+            return None
+
+        url = self._psd_url("commodity", code, "dataReleaseDates")
+        response, error = self._make_request(url)
+
+        if error or response.status_code != 200:
+            return None
+
+        try:
+            return response.json()
+        except Exception:
+            return None
 
     # =========================================================================
     # Convenience methods
     # =========================================================================
 
-    def get_latest_wasde(self) -> CollectorResult:
-        """Fetch the most recent WASDE report."""
-        today = date.today()
-        # Try current month first, fall back to previous month
-        result = self.collect(year=today.year, month=today.month)
-        if not result.success and today.day < 15:
-            # Before the 12th, current month may not be available yet
-            prev = today - timedelta(days=30)
-            result = self.collect(year=prev.year, month=prev.month)
-        return result
-
     def get_us_balance_sheet(
-        self, commodity: str, year: int = None, month: int = None
-    ) -> Optional[Dict[str, Any]]:
+        self, commodity: str, marketing_year: int = None
+    ) -> Optional[Dict]:
         """
-        Get a US commodity balance sheet from the latest WASDE.
+        Fetch US S&D balance sheet for a commodity.
 
         Args:
-            commodity: Commodity name (corn, soybeans, wheat, etc.)
-            year: Report year (default: latest)
-            month: Report month (default: latest)
+            commodity:      Commodity key (corn, soybeans, wheat, etc.)
+            marketing_year: Marketing year (default: current)
 
         Returns:
-            Dict with balance sheet rows keyed by attribute
+            Dict with S&D attributes and values.
         """
-        if year and month:
-            result = self.collect(year=year, month=month)
-        else:
-            result = self.get_latest_wasde()
-
-        if not result.success or result.data is None:
+        my = marketing_year or date.today().year
+        code = PSD_COMMODITY_CODES.get(commodity, {}).get("code")
+        if not code:
             return None
 
-        df = result.data
-        norm = self._normalize_commodity(commodity)
-
-        # Filter to US data for this commodity
-        mask = (df["commodity"] == norm) & (
-            df["region"].str.contains("United States", case=False, na=False)
-        )
-        us_data = df[mask]
-
-        if us_data.empty:
+        records, _ = self._fetch_commodity_country_year(commodity, code, "US", my)
+        if not records:
             return None
 
-        # Pivot into balance sheet format
-        balance_sheet = {}
-        for _, row in us_data.iterrows():
-            my = row["marketing_year"]
-            attr = row["row_label"]
-            if my not in balance_sheet:
-                balance_sheet[my] = {}
-            balance_sheet[my][attr] = {
-                "value": row["value_numeric"],
-                "unit": row["value_unit_text"],
-                "projection_type": row["projection_type"],
-            }
+        # Collapse into single balance sheet dict
+        bs = {"commodity": commodity, "country": "US", "marketing_year": my}
+        for rec in records:
+            for key in [
+                "beginning_stocks", "production", "imports", "total_supply",
+                "domestic_consumption", "feed_dom_consumption", "fsi_consumption",
+                "crush", "exports", "ending_stocks", "total_distribution",
+                "area_harvested", "yield_per_hectare",
+            ]:
+                if rec.get(key) is not None:
+                    bs[key] = rec[key]
+            # Also capture attribute-based fields
+            attr = rec.get("attribute_name", "")
+            val = rec.get("value")
+            if attr and val is not None:
+                bs[attr] = val
 
-        return balance_sheet
+        return bs
 
-    def get_revision_summary(
-        self,
-        current_year: int,
-        current_month: int,
-        commodity: str = None,
+    def get_global_production_ranking(
+        self, commodity: str, marketing_year: int = None, top_n: int = 10
     ) -> Optional[List[Dict]]:
         """
-        Compare current WASDE to previous month and return revisions.
+        Fetch production rankings for a commodity across all countries.
 
         Args:
-            current_year: Year of current report
-            current_month: Month of current report
-            commodity: Optional commodity filter
-
-        Returns:
-            List of revision dicts with previous_value, current_value, change
+            commodity:      Commodity key.
+            marketing_year: Marketing year (default: current).
+            top_n:          Number of top producers to return.
         """
-        # Get current and previous month
-        current = self.collect(year=current_year, month=current_month)
-
-        if current_month == 1:
-            prev_year, prev_month = current_year - 1, 12
-        else:
-            prev_year, prev_month = current_year, current_month - 1
-
-        previous = self.collect(year=prev_year, month=prev_month)
-
-        if not current.success or not previous.success:
+        my = marketing_year or date.today().year
+        code = PSD_COMMODITY_CODES.get(commodity, {}).get("code")
+        if not code:
             return None
 
-        df_curr = current.data
-        df_prev = previous.data
+        records, _ = self._fetch_commodity_country_year(commodity, code, "all", my)
+        if not records:
+            return None
 
-        if commodity:
-            norm = self._normalize_commodity(commodity)
-            df_curr = df_curr[df_curr["commodity"] == norm]
-            df_prev = df_prev[df_prev["commodity"] == norm]
+        if PANDAS_AVAILABLE:
+            df = pd.DataFrame(records)
+            # Filter to rows with production data
+            prod = df[df["production"].notna() & (df["production"] > 0)]
+            prod = prod.sort_values("production", ascending=False).head(top_n)
+            return prod[["country", "country_code", "production", "exports", "ending_stocks"]].to_dict(orient="records")
 
-        # Join on natural key: table_id + row_id + marketing_year
-        merge_keys = ["table_id", "row_id", "marketing_year", "commodity"]
-        merged = pd.merge(
-            df_curr[merge_keys + ["value_numeric", "row_label", "value_unit_text"]],
-            df_prev[merge_keys + ["value_numeric"]],
-            on=merge_keys,
-            suffixes=("_current", "_previous"),
-            how="inner",
-        )
+        # Non-pandas fallback
+        with_prod = [r for r in records if r.get("production") and r["production"] > 0]
+        with_prod.sort(key=lambda r: r["production"], reverse=True)
+        return with_prod[:top_n]
 
-        # Calculate changes
-        merged["change"] = merged["value_numeric_current"] - merged["value_numeric_previous"]
-        merged["change_pct"] = (
-            merged["change"] / merged["value_numeric_previous"].abs() * 100
-        ).round(2)
+    # =========================================================================
+    # Reference data
+    # =========================================================================
 
-        # Filter to rows that actually changed
-        changed = merged[merged["change"].abs() > 0.001]
+    def list_commodities(self) -> Optional[List[Dict]]:
+        """Fetch the full list of PSD commodity codes."""
+        url = self._psd_url("commodities")
+        response, error = self._make_request(url)
+        if error or response.status_code != 200:
+            return None
+        return response.json()
 
-        return changed.to_dict(orient="records")
+    def list_countries(self) -> Optional[List[Dict]]:
+        """Fetch the full list of PSD country codes."""
+        url = self._psd_url("countries")
+        response, error = self._make_request(url)
+        if error or response.status_code != 200:
+            return None
+        return response.json()
+
+    def list_attributes(self) -> Optional[List[Dict]]:
+        """Fetch the full list of PSD attribute codes."""
+        url = self._psd_url("commodityAttributes")
+        response, error = self._make_request(url)
+        if error or response.status_code != 200:
+            return None
+        return response.json()
 
 
 # =============================================================================
@@ -592,30 +562,24 @@ class USDAWASPECollector(BaseCollector):
 # =============================================================================
 
 def main():
-    """Command-line interface for WASDE collector."""
+    """Command-line interface for WASDE / PSD collector."""
     import argparse
     import json
 
-    parser = argparse.ArgumentParser(description="USDA WASDE Data Collector")
+    parser = argparse.ArgumentParser(description="USDA WASDE (PSD API) Collector")
 
     parser.add_argument(
         "command",
-        choices=["fetch", "latest", "balance", "revisions", "test"],
+        choices=["fetch", "balance", "ranking", "releases", "commodities", "countries", "test"],
         help="Command to execute",
     )
-    parser.add_argument("--year", "-y", type=int, help="Report year")
-    parser.add_argument("--month", "-m", type=int, help="Report month")
-    parser.add_argument(
-        "--commodity", "-c", default="corn", help="Commodity (default: corn)"
-    )
-    parser.add_argument(
-        "--backfill", action="store_true", help="Fetch historical data"
-    )
-    parser.add_argument("--output", "-o", help="Output file path")
+    parser.add_argument("--commodity", "-c", default="corn", help="Commodity key")
+    parser.add_argument("--country", default=None, help="Country code (2-letter)")
+    parser.add_argument("--year", "-y", type=int, default=None, help="Marketing year")
+    parser.add_argument("--output", "-o", help="Output file path (CSV or JSON)")
 
     args = parser.parse_args()
 
-    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -624,32 +588,48 @@ def main():
     collector = USDAWASPECollector()
 
     if args.command == "test":
-        # Test connection to WASDE CSV endpoint
         success, message = collector.test_connection()
         print(f"Connection test: {'PASS' if success else 'FAIL'} - {message}")
         return
 
-    if args.command == "latest":
-        result = collector.get_latest_wasde()
-        print(f"Success: {result.success}")
-        print(f"Records: {result.records_fetched}")
-        if result.warnings:
-            print(f"Warnings: {result.warnings}")
-        if result.success and PANDAS_AVAILABLE and hasattr(result.data, "head"):
-            print(f"\nSample data (first 10 rows):")
-            print(result.data.head(10).to_string())
+    if args.command == "commodities":
+        data = collector.list_commodities()
+        print(json.dumps(data, indent=2) if data else "Failed to fetch commodities")
+        return
+
+    if args.command == "countries":
+        data = collector.list_countries()
+        print(json.dumps(data, indent=2) if data else "Failed to fetch countries")
+        return
+
+    if args.command == "releases":
+        dates = collector.get_data_release_dates(args.commodity)
+        print(json.dumps(dates, indent=2) if dates else "Failed to fetch release dates")
+        return
+
+    if args.command == "balance":
+        bs = collector.get_us_balance_sheet(args.commodity, args.year)
+        print(json.dumps(bs, indent=2, default=str) if bs else f"No data for {args.commodity}")
+        return
+
+    if args.command == "ranking":
+        ranking = collector.get_global_production_ranking(args.commodity, args.year)
+        if ranking:
+            print(json.dumps(ranking, indent=2, default=str))
+        else:
+            print(f"No ranking data for {args.commodity}")
         return
 
     if args.command == "fetch":
-        kwargs = {}
-        if args.year:
-            kwargs["year"] = args.year
-        if args.month:
-            kwargs["month"] = args.month
-        if args.backfill:
-            kwargs["backfill"] = True
+        commodities = [args.commodity] if args.commodity else None
+        countries = [args.country] if args.country else None
+        years = [args.year] if args.year else None
 
-        result = collector.collect(**kwargs)
+        result = collector.collect(
+            commodities=commodities,
+            countries=countries,
+            marketing_years=years,
+        )
         print(f"Success: {result.success}")
         print(f"Records: {result.records_fetched}")
         if result.warnings:
@@ -657,35 +637,17 @@ def main():
 
         if args.output and result.data is not None:
             if PANDAS_AVAILABLE and hasattr(result.data, "to_csv"):
-                result.data.to_csv(args.output, index=False)
+                if args.output.endswith(".csv"):
+                    result.data.to_csv(args.output, index=False)
+                else:
+                    result.data.to_json(args.output, orient="records", indent=2)
                 print(f"Saved to: {args.output}")
         elif result.success and PANDAS_AVAILABLE and hasattr(result.data, "head"):
             print(f"\nSample data (first 10 rows):")
-            print(result.data.head(10).to_string())
-        return
-
-    if args.command == "balance":
-        bs = collector.get_us_balance_sheet(
-            args.commodity, year=args.year, month=args.month
-        )
-        if bs:
-            print(json.dumps(bs, indent=2, default=str))
-        else:
-            print(f"No balance sheet found for {args.commodity}")
-        return
-
-    if args.command == "revisions":
-        if not args.year or not args.month:
-            print("--year and --month required for revisions")
-            return
-        revisions = collector.get_revision_summary(
-            args.year, args.month, args.commodity
-        )
-        if revisions:
-            print(json.dumps(revisions, indent=2, default=str))
-        else:
-            print("No revisions found")
-        return
+            cols = ["commodity", "country_code", "marketing_year",
+                    "production", "exports", "ending_stocks"]
+            avail = [c for c in cols if c in result.data.columns]
+            print(result.data[avail].head(10).to_string())
 
 
 if __name__ == "__main__":
