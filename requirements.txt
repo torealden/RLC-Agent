@@ -27,6 +27,9 @@ python-docx>=1.0.0
 # Cloud integrations (optional)
 dropbox>=11.0.0
 
+# Configuration
+pyyaml>=6.0      # YAML config files (sensitivity, etc.)
+
 # Data processing
 openpyxl>=3.1.0  # Excel files
 pypdf>=4.0.0     # PDF parsing for RAG

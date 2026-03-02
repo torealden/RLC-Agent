@@ -1,0 +1,113 @@
+# =============================================================================
+# RLC-Agent Sensitivity Configuration
+# =============================================================================
+# Controls model routing based on data sensitivity level.
+# Sensitivity 0-1: cloud models allowed. Sensitivity 2+: local only.
+#
+# Levels:
+#   0 = public       (government data, open APIs)
+#   1 = licensed      (paid data feeds with redistribution limits)
+#   2 = internal      (internal analysis, proprietary blends)
+#   3 = proprietary   (client deliverables, consulting work)
+#   4 = restricted    (embargoed data, pre-release)
+# =============================================================================
+
+sensitivity_levels:
+  0:
+    name: public
+    description: Government and open-source data
+    cloud_allowed: true
+  1:
+    name: licensed
+    description: Paid data feeds with redistribution limits
+    cloud_allowed: true
+  2:
+    name: internal
+    description: Internal analysis and proprietary blends
+    cloud_allowed: false
+  3:
+    name: proprietary
+    description: Client deliverables and consulting work
+    cloud_allowed: false
+  4:
+    name: restricted
+    description: Embargoed or pre-release data
+    cloud_allowed: false
+
+# ---------------------------------------------------------------------------
+# Default sensitivity for each data source collector key
+# ---------------------------------------------------------------------------
+data_source_defaults:
+  # === Government / Public (0) ===
+  cftc_cot: 0
+  usda_fas_export_sales: 0
+  usda_wasde: 0
+  usda_nass_crop_progress: 0
+  usda_nass_stocks: 0
+  usda_ers_feed_grains: 0
+  usda_ers_oil_crops: 0
+  usda_ers_wheat: 0
+  eia_ethanol: 0
+  eia_petroleum: 0
+  epa_rfs: 0
+  drought_monitor: 0
+  census_trade: 0
+  conab: 0
+
+  # === Licensed / Paid (1) ===
+  cme_settlements: 1
+  mpob: 1
+  canada_cgc: 1
+  canada_statscan: 1
+  canada_statscan_stocks: 1
+  usda_ams_feedstocks: 1
+  usda_ams_ddgs: 1
+  anec: 1
+
+# ---------------------------------------------------------------------------
+# Model definitions with per-token costs
+# ---------------------------------------------------------------------------
+models:
+  # --- Anthropic (cloud) ---
+  claude-opus-4-20250514:
+    provider: anthropic
+    tier: cloud
+    cost_per_1k_in: 0.015
+    cost_per_1k_out: 0.075
+    max_tokens: 4096
+
+  claude-sonnet-4-20250514:
+    provider: anthropic
+    tier: cloud
+    cost_per_1k_in: 0.003
+    cost_per_1k_out: 0.015
+    max_tokens: 4096
+
+  claude-haiku-4-5-20251001:
+    provider: anthropic
+    tier: cloud
+    cost_per_1k_in: 0.0008
+    cost_per_1k_out: 0.004
+    max_tokens: 4096
+
+  # --- Ollama (local) ---
+  "llama3.1:70b":
+    provider: ollama
+    tier: local
+    cost_per_1k_in: 0.0
+    cost_per_1k_out: 0.0
+    max_tokens: 4096
+
+  "llama3.1:32b":
+    provider: ollama
+    tier: local
+    cost_per_1k_in: 0.0
+    cost_per_1k_out: 0.0
+    max_tokens: 4096
+
+  "llama3.1:8b":
+    provider: ollama
+    tier: local
+    cost_per_1k_in: 0.0
+    cost_per_1k_out: 0.0
+    max_tokens: 4096
