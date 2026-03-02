@@ -58,25 +58,25 @@ PSD_COMMODITY_CODES: Dict[str, Dict[str, str]] = {
     "sorghum":          {"code": "0459100", "name": "Sorghum",           "unit": "1000 MT"},
     # Oilseeds
     "soybeans":         {"code": "2222000", "name": "Soybeans",          "unit": "1000 MT"},
-    "rapeseed":         {"code": "1205000", "name": "Rapeseed (Canola)", "unit": "1000 MT"},
-    "sunflowerseed":    {"code": "1206000", "name": "Sunflowerseed",    "unit": "1000 MT"},
-    "peanuts":          {"code": "1202000", "name": "Peanuts",           "unit": "1000 MT"},
-    "cottonseed":       {"code": "1207200", "name": "Cottonseed",        "unit": "1000 MT"},
+    "rapeseed":         {"code": "2226000", "name": "Oilseed, Rapeseed", "unit": "1000 MT"},
+    "sunflowerseed":    {"code": "2224000", "name": "Oilseed, Sunflowerseed", "unit": "1000 MT"},
+    "peanuts":          {"code": "2221000", "name": "Oilseed, Peanut",  "unit": "1000 MT"},
+    "cottonseed":       {"code": "2223000", "name": "Oilseed, Cottonseed", "unit": "1000 MT"},
     # Oilseed products
-    "soybean_meal":     {"code": "2304000", "name": "Meal, Soybean",    "unit": "1000 MT"},
-    "soybean_oil":      {"code": "1507000", "name": "Oil, Soybean",     "unit": "1000 MT"},
-    "palm_oil":         {"code": "1511000", "name": "Oil, Palm",         "unit": "1000 MT"},
-    "palm_kernel_oil":  {"code": "1513200", "name": "Oil, Palm Kernel",  "unit": "1000 MT"},
-    "rapeseed_oil":     {"code": "1514000", "name": "Oil, Rapeseed",     "unit": "1000 MT"},
-    "rapeseed_meal":    {"code": "2306400", "name": "Meal, Rapeseed",    "unit": "1000 MT"},
-    "sunflowerseed_oil":{"code": "1512000", "name": "Oil, Sunflowerseed","unit": "1000 MT"},
-    "sunflowerseed_meal":{"code":"2306300", "name": "Meal, Sunflowerseed","unit":"1000 MT"},
-    "cottonseed_oil":   {"code": "1512200", "name": "Oil, Cottonseed",   "unit": "1000 MT"},
-    "cottonseed_meal":  {"code": "2306100", "name": "Meal, Cottonseed",  "unit": "1000 MT"},
+    "soybean_meal":     {"code": "0813100", "name": "Meal, Soybean",    "unit": "1000 MT"},
+    "soybean_oil":      {"code": "4232000", "name": "Oil, Soybean",     "unit": "1000 MT"},
+    "palm_oil":         {"code": "4243000", "name": "Oil, Palm",         "unit": "1000 MT"},
+    "palm_kernel_oil":  {"code": "4244000", "name": "Oil, Palm Kernel",  "unit": "1000 MT"},
+    "rapeseed_oil":     {"code": "4239100", "name": "Oil, Rapeseed",     "unit": "1000 MT"},
+    "rapeseed_meal":    {"code": "0813600", "name": "Meal, Rapeseed",    "unit": "1000 MT"},
+    "sunflowerseed_oil":{"code": "4236000", "name": "Oil, Sunflowerseed","unit": "1000 MT"},
+    "sunflowerseed_meal":{"code":"0813500", "name": "Meal, Sunflowerseed","unit":"1000 MT"},
+    "cottonseed_oil":   {"code": "4233000", "name": "Oil, Cottonseed",   "unit": "1000 MT"},
+    "cottonseed_meal":  {"code": "0813300", "name": "Meal, Cottonseed",  "unit": "1000 MT"},
     # Fiber
     "cotton":           {"code": "2631000", "name": "Cotton",            "unit": "1000 480-lb Bales"},
     # Sugar
-    "sugar":            {"code": "1701000", "name": "Sugar, Centrifugal","unit": "1000 MT"},
+    "sugar":            {"code": "0612000", "name": "Sugar, Centrifugal","unit": "1000 MT"},
 }
 
 # Key countries tracked in WASDE analysis
@@ -138,7 +138,7 @@ class USDAWASPEConfig(CollectorConfig):
 
     # API key from api.data.gov (free registration)
     api_key: Optional[str] = field(
-        default_factory=lambda: os.environ.get("USDA_FAS_API_KEY", "")
+        default_factory=lambda: os.environ.get("FAS_API_KEY", os.environ.get("USDA_FAS_API_KEY", ""))
     )
 
     # Which commodities to fetch
