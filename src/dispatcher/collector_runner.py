@@ -334,6 +334,30 @@ class CollectorRunner:
                         except Exception as e:
                             logger.debug(f"Pace calc skipped for {collector_name}: {e}")
 
+                    # Run analysis pipeline for supported collectors (best-effort)
+                    if run_result.success and run_result.is_new_data:
+                        try:
+                            if collector_name == 'usda_wasde':
+                                from src.analysis.templates.wasde_template import WASDeAnalysisTemplate
+                                from src.pipeline.report_pipeline import ReportPipeline
+                                wasde_template = WASDeAnalysisTemplate()
+                                if wasde_template.check_data_ready():
+                                    pipeline = ReportPipeline(wasde_template)
+                                    pipe_result = pipeline.run(triggered_by=collector_name)
+                                    details['pipeline'] = {
+                                        'run_id': str(pipe_result.pipeline_run_id),
+                                        'success': pipe_result.success,
+                                        'validation': pipe_result.validation_passed,
+                                    }
+                                    if pipe_result.success:
+                                        summary += " | Report generated"
+                                    else:
+                                        summary += " | Report FAILED"
+                                        if pipe_result.error_message:
+                                            details['pipeline']['error'] = pipe_result.error_message[:200]
+                        except Exception as e:
+                            logger.debug(f"Analysis pipeline skipped for {collector_name}: {e}")
+
                     self._log_event(conn, event_type, collector_name,
                                      summary, details, priority)
             except Exception as e:

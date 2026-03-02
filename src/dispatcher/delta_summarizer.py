@@ -11,6 +11,7 @@ Supported collectors:
   - usda_nass_crop_progress: G/E condition changes, YoY comparison
   - eia_ethanol: production/stocks week-over-week changes
   - nass_processing: monthly crush changes vs prior month/year
+  - usda_wasde: US corn/soy/wheat balance sheet MoM revisions
 """
 
 import logging
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 # Commodities tracked per collector
 CFTC_COMMODITIES = ['corn', 'soybeans', 'soybean_oil', 'soybean_meal', 'wheat_srw', 'wheat_hrw']
 CROP_COMMODITIES = ['corn', 'soybeans', 'wheat']
+WASDE_COMMODITIES = ['corn', 'soybeans', 'wheat']
 
 
 def compute_delta(collector_name: str, conn) -> Optional[Dict[str, Any]]:
@@ -37,6 +39,7 @@ def compute_delta(collector_name: str, conn) -> Optional[Dict[str, Any]]:
         'usda_nass_crop_progress': _delta_crop_condition,
         'eia_ethanol': _delta_eia_ethanol,
         'nass_processing': _delta_nass_processing,
+        'usda_wasde': _delta_wasde,
     }
 
     handler = handlers.get(collector_name)
@@ -507,6 +510,149 @@ def _delta_nass_processing(conn) -> Optional[Dict]:
                 commodity = key.split('_')[0]
                 sign = '+' if d['change_pct'] >= 0 else ''
                 summary_parts.append(f"{commodity} crush {sign}{d['change_pct']:.1f}% MoM")
+
+    return {
+        'notable_changes': notable,
+        'summary_parts': summary_parts,
+        'data': data,
+    }
+
+
+# ------------------------------------------------------------------
+# WASDE (USDA World Supply & Demand Estimates) Deltas
+# ------------------------------------------------------------------
+
+def _delta_wasde(conn) -> Optional[Dict]:
+    """
+    Compute month-over-month WASDE balance sheet changes for US corn,
+    soybeans, and wheat.
+
+    For each commodity:
+      - Current vs prior month ending_stocks, production, exports
+      - Stocks-to-use ratio
+      - Ending stocks % change
+      - Flags notable revisions (ending stocks > 5%, any production change)
+    """
+    cur = conn.cursor()
+
+    # Get the two most recent report_date values per commodity (US only)
+    cur.execute("""
+        WITH ranked AS (
+            SELECT commodity, marketing_year, report_date,
+                   ending_stocks, production, exports,
+                   domestic_consumption, total_supply,
+                   feed_dom_consumption, fsi_consumption,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY commodity
+                       ORDER BY report_date DESC, marketing_year DESC
+                   ) as rn
+            FROM bronze.fas_psd
+            WHERE country_code = 'US'
+              AND commodity IN ('corn', 'soybeans', 'wheat')
+              AND ending_stocks IS NOT NULL
+        )
+        SELECT
+            r1.commodity,
+            r1.marketing_year,
+            r1.report_date as latest_date,
+            r1.ending_stocks,
+            r1.production,
+            r1.exports,
+            r1.domestic_consumption,
+            r1.total_supply,
+            r1.feed_dom_consumption,
+            r1.fsi_consumption,
+            r2.report_date as prior_date,
+            r2.ending_stocks as ending_stocks_prior,
+            r2.production as production_prior,
+            r2.exports as exports_prior,
+            r2.domestic_consumption as dom_consumption_prior
+        FROM ranked r1
+        LEFT JOIN ranked r2
+            ON r1.commodity = r2.commodity AND r2.rn = 2
+        WHERE r1.rn = 1
+        ORDER BY r1.commodity
+    """)
+    rows = cur.fetchall()
+
+    if not rows:
+        return None
+
+    data = {}
+    notable = []
+    summary_parts = []
+
+    for row in rows:
+        commodity = row['commodity']
+        es = float(row['ending_stocks']) if row['ending_stocks'] is not None else None
+        es_prior = float(row['ending_stocks_prior']) if row['ending_stocks_prior'] is not None else None
+        prod = float(row['production']) if row['production'] is not None else None
+        prod_prior = float(row['production_prior']) if row['production_prior'] is not None else None
+        exp = float(row['exports']) if row['exports'] is not None else None
+        exp_prior = float(row['exports_prior']) if row['exports_prior'] is not None else None
+        dom_con = float(row['domestic_consumption']) if row['domestic_consumption'] is not None else None
+
+        if es is None:
+            continue
+
+        entry = {
+            'report_date': str(row['latest_date']),
+            'marketing_year': int(row['marketing_year']) if row['marketing_year'] is not None else None,
+            'ending_stocks': es,
+            'production': prod,
+            'exports': exp,
+            'domestic_consumption': dom_con,
+        }
+
+        # Stocks-to-use ratio
+        total_use = (dom_con or 0) + (exp or 0)
+        if total_use > 0:
+            entry['stocks_use_pct'] = round(es / total_use * 100, 1)
+
+        # Month-over-month changes
+        if es_prior is not None and es_prior != 0:
+            es_change = es - es_prior
+            es_change_pct = round(es_change / es_prior * 100, 1)
+            entry['ending_stocks_change'] = es_change
+            entry['ending_stocks_change_pct'] = es_change_pct
+
+            # Flag large ending stocks revisions (>5%)
+            if abs(es_change_pct) > 5:
+                direction = 'raised' if es_change > 0 else 'cut'
+                notable.append({
+                    'commodity': commodity,
+                    'flag': 'large_stocks_revision',
+                    'detail': f"{commodity} ending stocks {direction} {abs(es_change_pct):.1f}% to {es:,.0f}",
+                })
+
+        if prod_prior is not None:
+            entry['production_change'] = prod - prod_prior if prod is not None else None
+
+        if exp_prior is not None:
+            entry['exports_change'] = exp - exp_prior if exp is not None else None
+
+        # Flag any production revision
+        if prod is not None and prod_prior is not None and prod != prod_prior:
+            direction = 'raised' if prod > prod_prior else 'cut'
+            change = prod - prod_prior
+            notable.append({
+                'commodity': commodity,
+                'flag': 'production_revision',
+                'detail': f"{commodity} production {direction} {abs(change):,.0f} (1000 MT)",
+            })
+
+        data[commodity] = entry
+
+    # Build summary
+    if notable:
+        summary_parts = [n['detail'] for n in notable[:4]]
+    elif data:
+        parts = []
+        for c in WASDE_COMMODITIES:
+            if c in data and data[c].get('stocks_use_pct') is not None:
+                parts.append(f"{c} S/U {data[c]['stocks_use_pct']:.1f}%")
+        if parts:
+            summary_parts.append(f"WASDE: {', '.join(parts)}")
 
     return {
         'notable_changes': notable,
