@@ -53,6 +53,18 @@ class ReleaseSchedule:
     timezone: str = "America/New_York"
     lag_days: int = 0                              # Days after period end data is released
     description: str = ""
+    release_dates: Optional[Dict] = None           # {year: [month_day, ...]} for exact dates
+
+
+# Known WASDE release dates by year (from USDA OCE)
+WASDE_RELEASE_DATES: Dict[int, List[date]] = {
+    2026: [
+        date(2026, 1, 12), date(2026, 2, 10), date(2026, 3, 10),
+        date(2026, 4, 9),  date(2026, 5, 12), date(2026, 6, 11),
+        date(2026, 7, 10), date(2026, 8, 12), date(2026, 9, 11),
+        date(2026, 10, 9), date(2026, 11, 10), date(2026, 12, 10),
+    ],
+}
 
 
 @dataclass
@@ -88,6 +100,20 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         priority=2,
         commodities=['corn', 'wheat', 'soybeans', 'soy_oil', 'soy_meal',
                     'crude_oil', 'gasoline', 'diesel', 'natural_gas', 'ethanol'],
+    ),
+
+    'usda_ams_cash_prices': CollectorSchedule(
+        collector_name='usda_ams_cash_prices',
+        collector_class='AMSCashPriceCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(17, 0),  # 5:00 PM ET (after grain markets close)
+            description="USDA AMS structured cash prices (grain, livestock, inputs)"
+        ),
+        priority=3,
+        commodities=['corn', 'soybeans', 'wheat', 'sorghum', 'barley', 'oats',
+                     'ethanol', 'ddgs', 'hogs', 'cattle', 'cotton', 'sunflower',
+                     'diesel', 'fertilizer'],
     ),
 
     # -------------------------------------------------------------------------
@@ -231,9 +257,10 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_class='USDAWASPECollector',  # Dedicated WASDE CSV collector
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.MONTHLY,
-            day_of_month=12,  # Usually ~12th
+            day_of_month=12,  # Fallback if no exact date for the year
             release_time=time(12, 0),  # 12:00 PM ET
-            description="USDA World Agricultural Supply & Demand Estimates"
+            description="USDA World Agricultural Supply & Demand Estimates",
+            release_dates=WASDE_RELEASE_DATES,
         ),
         priority=1,  # Highest priority - market-moving report
         commodities=['corn', 'wheat', 'soybeans', 'soy_oil', 'soy_meal', 'cotton'],
@@ -388,6 +415,7 @@ HB_REPORT_COLLECTION_SCHEDULE = {
             'eia_ethanol',
             'drought_monitor',
             'cme_settlements',
+            'usda_ams_cash_prices',
         ],
         'description': 'Verify all weekly data collected before Tuesday report'
     },
@@ -412,7 +440,17 @@ HB_REPORT_COLLECTION_SCHEDULE = {
             DayOfWeek.THURSDAY: ['usda_fas_export_sales', 'drought_monitor', 'canada_cgc'],
             DayOfWeek.FRIDAY: ['cftc_cot', 'usda_ams_feedstocks'],
         }
-    }
+    },
+
+    # Weekly Cash Prices spreadsheet generation (Wednesday after AMS prices arrive)
+    'cash_prices_generation': {
+        'day': DayOfWeek.WEDNESDAY,
+        'time': time(18, 0),  # 6:00 PM ET — after 5 PM AMS collector
+        'actions': [
+            'generate_cash_prices',  # src/tools/generate_cash_prices.py
+        ],
+        'description': 'Generate Cash Prices spreadsheet from AMS/futures data for HB report'
+    },
 }
 
 
@@ -463,12 +501,14 @@ class ReportScheduler:
                     scheduled.append(schedule)
 
             elif release.frequency == ReleaseFrequency.MONTHLY:
-                if self._is_monthly_release_day(today, release.day_of_month):
+                if self._is_monthly_release_day(today, release.day_of_month,
+                                                release.release_dates):
                     scheduled.append(schedule)
 
             elif release.frequency == ReleaseFrequency.QUARTERLY:
                 if today.month in [1, 3, 6, 9]:  # Typical quarterly months
-                    if self._is_monthly_release_day(today, release.day_of_month):
+                    if self._is_monthly_release_day(today, release.day_of_month,
+                                                    release.release_dates):
                         scheduled.append(schedule)
 
         # Sort by priority (lower = higher priority)
@@ -588,8 +628,19 @@ class ReportScheduler:
 
         return sorted(events, key=lambda e: (e['date'], e['priority']))
 
-    def _is_monthly_release_day(self, check_date: date, day_of_month: int) -> bool:
-        """Check if date matches monthly release day"""
+    def _is_monthly_release_day(self, check_date: date, day_of_month: int,
+                                release_dates: Dict = None) -> bool:
+        """Check if date matches monthly release day.
+
+        If release_dates contains exact dates for this year, use those.
+        Otherwise fall back to day_of_month approximation.
+        """
+        # Check exact release dates first
+        if release_dates:
+            year_dates = release_dates.get(check_date.year, [])
+            if year_dates:
+                return check_date in year_dates
+
         if day_of_month is None:
             return False
 
