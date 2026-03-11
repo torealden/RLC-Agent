@@ -16,7 +16,7 @@
 Option Explicit
 
 ' Database connection settings
-Private Const DB_SERVER As String = "localhost"
+Private Const DB_SERVER As String = "rlc-commodities.c16c6wm826t7.us-east-2.rds.amazonaws.com"
 Private Const DB_PORT As String = "5432"
 Private Const DB_NAME As String = "rlc_commodities"
 Private Const DB_USER As String = "postgres"
@@ -107,7 +107,8 @@ Private Function GetConnection() As Object
                  "Port=" & DB_PORT & ";" & _
                  "Database=" & DB_NAME & ";" & _
                  "Uid=" & DB_USER & ";" & _
-                 "Pwd=" & DB_PASSWORD & ";"
+                 "Pwd=" & DB_PASSWORD & ";" & _
+                 "sslmode=require;"
 
     On Error GoTo ConnError
     conn.Open connString
@@ -162,11 +163,11 @@ Private Sub UpdateMonthlyFromDatabase(monthCount As Integer)
 
     ' Query latest months from the matrix view
     sql = "SELECT year, month, country_name, spreadsheet_row, quantity " & _
-          "FROM gold.fgis_inspections_monthly_matrix " & _
+          "FROM gold.fgis_inspections_monthly_matrix_kbu " & _
           "WHERE grain = '" & grain & "' " & _
           "  AND (year, month) IN ( " & _
           "      SELECT DISTINCT year, month " & _
-          "      FROM gold.fgis_inspections_monthly_matrix " & _
+          "      FROM gold.fgis_inspections_monthly_matrix_kbu " & _
           "      WHERE grain = '" & grain & "' " & _
           "      ORDER BY year DESC, month DESC " & _
           "      LIMIT " & monthCount & _
@@ -246,10 +247,13 @@ Private Sub UpdateMonthlyFromDatabase(monthCount As Integer)
 
             If targetRow > 0 Then
                 If Not IsProtectedRow(targetRow) Then
-                    If Not IsNull(quantity) Then
-                        If quantity > 0 Or targetRow = 217 Then
-                            ws.Cells(targetRow, colNum).Value = quantity
-                            cellsUpdated = cellsUpdated + 1
+                    ' Never overwrite formula cells (accumulator columns)
+                    If Not ws.Cells(targetRow, colNum).HasFormula Then
+                        If Not IsNull(quantity) Then
+                            If quantity > 0 Or targetRow = 217 Then
+                                ws.Cells(targetRow, colNum).Value = quantity
+                                cellsUpdated = cellsUpdated + 1
+                            End If
                         End If
                     End If
                 End If
@@ -323,11 +327,11 @@ Private Sub UpdateWeeklyFromDatabase(weekCount As Integer)
 
     ' Query latest weeks from the weekly matrix view
     sql = "SELECT week_ending, year, month, country_name, spreadsheet_row, quantity " & _
-          "FROM gold.fgis_inspections_weekly_matrix " & _
+          "FROM gold.fgis_inspections_weekly_matrix_kbu " & _
           "WHERE grain = '" & grain & "' " & _
           "  AND week_ending IN ( " & _
           "      SELECT DISTINCT week_ending " & _
-          "      FROM gold.fgis_inspections_weekly_matrix " & _
+          "      FROM gold.fgis_inspections_weekly_matrix_kbu " & _
           "      WHERE grain = '" & grain & "' " & _
           "      ORDER BY week_ending DESC " & _
           "      LIMIT " & weekCount & _
@@ -446,14 +450,18 @@ End Sub
 ' =============================================================================
 
 Private Sub ClearColumnForUpdate(ws As Worksheet, colNum As Integer)
-    ' Clear a column before populating with new data
-    ' Skips regional subtotal rows AND comparison label rows
+    ' Clear a column before populating with new data.
+    ' Skips regional subtotal rows, comparison label rows, AND formula cells
+    ' (accumulator columns use SUM formulas that must not be cleared).
 
     Dim row As Integer
 
     For row = DATA_START_ROW To DATA_END_ROW
         If Not IsProtectedRow(row) Then
-            ws.Cells(row, colNum).ClearContents
+            ' Never clear formula cells — they belong to accumulator columns
+            If Not ws.Cells(row, colNum).HasFormula Then
+                ws.Cells(row, colNum).ClearContents
+            End If
         End If
     Next row
 End Sub
@@ -513,22 +521,44 @@ Private Function IsWeeklySheet(sheetName As String) As Boolean
 End Function
 
 Private Function FindColumnForDate(ws As Worksheet, yr As Integer, mo As Integer) As Integer
-    ' Find column number for a given year/month in the header row
+    ' Find column for a given year/month in the header row (row 3).
+    '
+    ' Monthly inspections sheets have accumulator columns (B through ~AI)
+    ' with text headers like '01/02 (apostrophe-prefixed to prevent date
+    ' conversion).  Real date columns start ~AJ with Feb 1993.
+    '
+    ' We use the .PrefixCharacter property to detect apostrophe-prefixed
+    ' text cells, and VarType to reject any other text strings.
+    ' This is the same core logic as TradeUpdaterSQL.FindColumnForDate
+    ' with the accumulator text guard added.
 
     Dim col As Integer
+    Dim lastCol As Integer
     Dim cellVal As Variant
     Dim cellDate As Date
 
-    For col = 2 To ws.UsedRange.Columns.Count + 2
+    lastCol = ws.UsedRange.Columns.Count + 2
+
+    For col = 2 To lastCol
+        ' --- Skip apostrophe-prefixed text cells (accumulator headers) ---
+        If ws.Cells(HEADER_ROW, col).PrefixCharacter = "'" Then GoTo NextCol
+
+        ' --- Skip any other text strings ---
+        If VarType(ws.Cells(HEADER_ROW, col).Value) = vbString Then GoTo NextCol
+
         cellVal = ws.Cells(HEADER_ROW, col).Value
 
+        ' Skip empty cells
+        If IsEmpty(cellVal) Then GoTo NextCol
+
+        ' Standard date matching (identical to TradeUpdaterSQL)
         If IsDate(cellVal) Then
             cellDate = CDate(cellVal)
             If Year(cellDate) = yr And Month(cellDate) = mo Then
                 FindColumnForDate = col
                 Exit Function
             End If
-        ElseIf IsNumeric(cellVal) And cellVal > 30000 Then
+        ElseIf IsNumeric(cellVal) Then
             ' Excel date serial number
             On Error Resume Next
             cellDate = CDate(cellVal)
@@ -540,6 +570,8 @@ Private Function FindColumnForDate(ws As Worksheet, yr As Integer, mo As Integer
             End If
             On Error GoTo 0
         End If
+
+NextCol:
     Next col
 
     FindColumnForDate = 0

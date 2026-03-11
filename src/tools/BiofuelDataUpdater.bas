@@ -30,7 +30,7 @@
 Option Explicit
 
 ' Database connection settings
-Private Const DB_SERVER As String = "localhost"
+Private Const DB_SERVER As String = "rlc-commodities.c16c6wm826t7.us-east-2.rds.amazonaws.com"
 Private Const DB_PORT As String = "5432"
 Private Const DB_NAME As String = "rlc_commodities"
 Private Const DB_USER As String = "postgres"
@@ -111,7 +111,8 @@ Private Function GetConnection() As Object
                  "Port=" & DB_PORT & ";" & _
                  "Database=" & DB_NAME & ";" & _
                  "Uid=" & DB_USER & ";" & _
-                 "Pwd=" & DB_PASSWORD & ";"
+                 "Pwd=" & DB_PASSWORD & ";" & _
+                 "sslmode=require;"
 
     On Error GoTo ConnError
     conn.Open connString

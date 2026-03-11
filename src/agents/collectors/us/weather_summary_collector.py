@@ -38,7 +38,7 @@ class WeatherSummaryCollector(BaseCollector):
     def __init__(self, **kwargs):
         config = CollectorConfig(
             source_name='weather_daily_summary',
-            base_url='',  # Not HTTP-based
+            source_url='',  # Not HTTP-based
             frequency=DataFrequency.DAILY,
         )
         super().__init__(config)

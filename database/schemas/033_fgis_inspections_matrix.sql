@@ -213,3 +213,160 @@ SELECT * FROM mexico_comparison
 UNION ALL
 SELECT * FROM canada_comparison
 ORDER BY week_ending, spreadsheet_row;
+
+
+-- =============================================================================
+-- THOUSAND BUSHELS VIEWS — for spreadsheet import
+-- Same structure as above but quantity is in thousand bushels throughout.
+-- The VBA updater (Ctrl+G) queries these instead of the MT views.
+-- =============================================================================
+
+-- ---------------------------------------------------------------------------
+-- Monthly Matrix (Thousand Bushels)
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE VIEW gold.fgis_inspections_monthly_matrix_kbu AS
+WITH monthly_data AS (
+    SELECT
+        EXTRACT(YEAR FROM h.cert_date)::int AS year,
+        EXTRACT(MONTH FROM h.cert_date)::int AS month,
+        UPPER(h.grain::text) AS grain,
+        h.destination,
+        SUM(h.bushels_1000) AS bushels_1000
+    FROM bronze.fgis_inspections_history h
+    WHERE h.type_service IN ('IW', 'I')
+    GROUP BY 1, 2, UPPER(h.grain::text), h.destination
+),
+mapped AS (
+    SELECT
+        md.year,
+        md.month,
+        md.grain,
+        dm.standard_name AS country_name,
+        dm.spreadsheet_row,
+        FALSE AS is_regional_total,
+        md.bushels_1000 AS quantity   -- thousand bushels
+    FROM monthly_data md
+    JOIN silver.fgis_destination_mapping dm ON UPPER(md.destination) = UPPER(dm.fgis_destination)
+    WHERE dm.spreadsheet_row BETWEEN 5 AND 214
+      AND dm.is_regional_total = FALSE
+),
+world_totals AS (
+    SELECT
+        year, month, grain,
+        'WORLD TOTAL' AS country_name,
+        217 AS spreadsheet_row,
+        TRUE AS is_regional_total,
+        SUM(bushels_1000) AS quantity
+    FROM monthly_data
+    GROUP BY year, month, grain
+),
+mexico_comparison AS (
+    SELECT
+        year, month, grain,
+        'MEXICO INSPECTIONS' AS country_name,
+        224 AS spreadsheet_row,
+        FALSE AS is_regional_total,
+        SUM(bushels_1000) AS quantity
+    FROM monthly_data
+    WHERE UPPER(destination) = 'MEXICO'
+    GROUP BY year, month, grain
+),
+canada_comparison AS (
+    SELECT
+        year, month, grain,
+        'CANADA INSPECTIONS' AS country_name,
+        230 AS spreadsheet_row,
+        FALSE AS is_regional_total,
+        SUM(bushels_1000) AS quantity
+    FROM monthly_data
+    WHERE UPPER(destination) = 'CANADA'
+    GROUP BY year, month, grain
+)
+SELECT * FROM mapped
+UNION ALL
+SELECT * FROM world_totals
+UNION ALL
+SELECT * FROM mexico_comparison
+UNION ALL
+SELECT * FROM canada_comparison
+ORDER BY year, month, spreadsheet_row;
+
+
+-- ---------------------------------------------------------------------------
+-- Weekly Matrix (Thousand Bushels)
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE VIEW gold.fgis_inspections_weekly_matrix_kbu AS
+WITH weekly_data AS (
+    SELECT
+        h.cert_date + ((4 - EXTRACT(ISODOW FROM h.cert_date))::int % 7 + 7) % 7 * INTERVAL '1 day' AS week_ending,
+        UPPER(h.grain::text) AS grain,
+        h.destination,
+        SUM(h.bushels_1000) AS bushels_1000
+    FROM bronze.fgis_inspections_history h
+    WHERE h.type_service IN ('IW', 'I')
+    GROUP BY 1, UPPER(h.grain::text), h.destination
+),
+mapped AS (
+    SELECT
+        wd.week_ending,
+        EXTRACT(YEAR FROM wd.week_ending)::int AS year,
+        EXTRACT(MONTH FROM wd.week_ending)::int AS month,
+        wd.grain,
+        dm.standard_name AS country_name,
+        dm.spreadsheet_row,
+        FALSE AS is_regional_total,
+        wd.bushels_1000 AS quantity   -- thousand bushels
+    FROM weekly_data wd
+    JOIN silver.fgis_destination_mapping dm ON UPPER(wd.destination) = UPPER(dm.fgis_destination)
+    WHERE dm.spreadsheet_row BETWEEN 5 AND 214
+      AND dm.is_regional_total = FALSE
+),
+world_totals AS (
+    SELECT
+        week_ending,
+        EXTRACT(YEAR FROM week_ending)::int AS year,
+        EXTRACT(MONTH FROM week_ending)::int AS month,
+        grain,
+        'WORLD TOTAL' AS country_name,
+        217 AS spreadsheet_row,
+        TRUE AS is_regional_total,
+        SUM(bushels_1000) AS quantity
+    FROM weekly_data
+    GROUP BY week_ending, grain
+),
+mexico_comparison AS (
+    SELECT
+        week_ending,
+        EXTRACT(YEAR FROM week_ending)::int AS year,
+        EXTRACT(MONTH FROM week_ending)::int AS month,
+        grain,
+        'MEXICO INSPECTIONS' AS country_name,
+        224 AS spreadsheet_row,
+        FALSE AS is_regional_total,
+        SUM(bushels_1000) AS quantity
+    FROM weekly_data
+    WHERE UPPER(destination) = 'MEXICO'
+    GROUP BY week_ending, grain
+),
+canada_comparison AS (
+    SELECT
+        week_ending,
+        EXTRACT(YEAR FROM week_ending)::int AS year,
+        EXTRACT(MONTH FROM week_ending)::int AS month,
+        grain,
+        'CANADA INSPECTIONS' AS country_name,
+        230 AS spreadsheet_row,
+        FALSE AS is_regional_total,
+        SUM(bushels_1000) AS quantity
+    FROM weekly_data
+    WHERE UPPER(destination) = 'CANADA'
+    GROUP BY week_ending, grain
+)
+SELECT * FROM mapped
+UNION ALL
+SELECT * FROM world_totals
+UNION ALL
+SELECT * FROM mexico_comparison
+UNION ALL
+SELECT * FROM canada_comparison
+ORDER BY week_ending, spreadsheet_row;
