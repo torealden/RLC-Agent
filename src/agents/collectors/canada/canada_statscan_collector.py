@@ -2,23 +2,28 @@
 Statistics Canada Agricultural Data Collector
 
 Collects agricultural statistics from Statistics Canada:
-- Field Crop Reporting Series
-- Production estimates
+- Field Crop Reporting Series (area, yield, production by province)
+- Quarterly grain stocks
 - Farm product prices
-- Trade statistics
-- Crushing and crush data
 
 Data source: https://www150.statcan.gc.ca/n1/en/type/data
-API: https://www.statcan.gc.ca/en/developers/wds
+Method: CSV bulk download (ZIP) from StatsCan open data portal.
 
-Free - No authentication required for most data
+The WDS REST API (getDataFromCubePidCoordAndLatestNPeriods) requires
+valid per-table coordinate strings that vary by dimension count. The
+CSV bulk download is more reliable — each table is a single ZIP file
+containing a UTF-8 CSV with standardised columns.
+
+Free - No authentication required.
 """
 
+import csv
+import io
 import logging
-import re
+import zipfile
 from dataclasses import dataclass, field
-from datetime import datetime, date, timedelta
-from typing import Dict, List, Optional, Any, Tuple
+from datetime import datetime, date
+from typing import Dict, List, Optional, Any
 
 from .base_collector import (
     BaseCollector,
@@ -27,6 +32,8 @@ from .base_collector import (
     DataFrequency,
     AuthType
 )
+
+from src.services.database.db_config import get_connection as get_db_connection
 
 try:
     import pandas as pd
@@ -37,119 +44,150 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-# Statistics Canada Table IDs for agricultural data
+# ============================================================================
+# Table definitions
+# ============================================================================
+
+# Statistics Canada Table IDs for agricultural data.
+# The numeric product ID is the table code with dashes removed.
 STATSCAN_TABLES = {
-    # Field Crops
-    'field_crop_areas': {
+    'field_crop_production': {
+        'product_id': '32100359',
         'table_id': '32-10-0359-01',
         'name': 'Estimated areas, yield, production, average farm price and total farm value',
         'frequency': 'annual',
-        'commodities': ['wheat', 'canola', 'barley', 'oats', 'corn', 'soybeans', 'flaxseed'],
-    },
-    'crop_production': {
-        'table_id': '32-10-0002-01',
-        'name': 'Stocks of Canadian grain',
-        'frequency': 'quarterly',
-        'commodities': ['wheat', 'canola', 'barley', 'oats', 'corn'],
+        # Column that holds the commodity/crop name
+        'commodity_col': 'Type of crop',
+        # Other dimension columns that become the "attribute"
+        'attribute_cols': ['Harvest disposition'],
     },
     'grain_stocks': {
-        'table_id': '32-10-0002-01',
-        'name': 'Stocks of Canadian grain',
+        'product_id': '32100007',
+        'table_id': '32-10-0007-01',
+        'name': 'Stocks of principal field crops at December 31',
         'frequency': 'quarterly',
+        'commodity_col': 'Type of crop',
+        'attribute_cols': ['Type of stock'],
         'release_months': [3, 6, 9, 12],
-        'commodities': ['wheat', 'canola', 'barley', 'oats'],
     },
-    # Oilseed crushing
-    'canola_crush': {
-        'table_id': '32-10-0054-01',
-        'name': 'Supply and disposition of crude vegetable oils',
-        'frequency': 'monthly',
-        'commodities': ['canola oil', 'soybean oil'],
-    },
-    'oilseed_processing': {
-        'table_id': '32-10-0055-01',
-        'name': 'Production and stocks of margarine',
-        'frequency': 'monthly',
-    },
-    # Trade
-    'exports_monthly': {
-        'table_id': '12-10-0119-01',
-        'name': 'International merchandise trade by commodity',
-        'frequency': 'monthly',
-    },
-    'imports_monthly': {
-        'table_id': '12-10-0121-01',
-        'name': 'International merchandise trade by commodity',
-        'frequency': 'monthly',
-    },
-    # Farm prices
     'farm_prices': {
+        'product_id': '32100077',
         'table_id': '32-10-0077-01',
         'name': 'Farm product prices, crops and livestock',
         'frequency': 'monthly',
-        'commodities': ['wheat', 'canola', 'barley', 'oats'],
-    },
-    # Livestock
-    'cattle_inventory': {
-        'table_id': '32-10-0130-01',
-        'name': 'Cattle and calves',
-        'frequency': 'semi-annual',
-    },
-    'hog_inventory': {
-        'table_id': '32-10-0131-01',
-        'name': 'Hogs',
-        'frequency': 'quarterly',
+        # Farm prices has a combined dimension; commodity extracted by keyword match
+        'commodity_col': None,
+        'attribute_cols': ['Farm products'],
     },
 }
 
 
-# HS codes for Canadian agricultural exports
-CANADA_HS_CODES = {
-    'wheat_durum': '100110',
-    'wheat_other': '100190',
-    'barley': '1003',
-    'oats': '1004',
-    'corn': '1005',
-    'canola_seed': '120510',
-    'soybeans': '1201',
-    'flaxseed': '1204',
-    'canola_oil': '151411',
-    'soybean_oil': '1507',
-    'canola_meal': '230649',
+# Normalise StatsCan crop names to our standard commodity names.
+# Keys are LOWERCASE versions of the "Type of crop" / "Farm products" column.
+CROP_NAME_MAP = {
+    # -- Type of crop (production + stocks tables) --
+    'wheat, all': 'wheat',
+    'wheat': 'wheat',
+    'all wheat': 'wheat',
+    'wheat, spring': 'wheat_spring',
+    'spring wheat': 'wheat_spring',
+    'wheat, durum': 'wheat_durum',
+    'durum wheat': 'wheat_durum',
+    'wheat, winter': 'wheat_winter',
+    'winter wheat': 'wheat_winter',
+    'canola (rapeseed)': 'canola',
+    'canola': 'canola',
+    'barley': 'barley',
+    'oats': 'oats',
+    'corn for grain': 'corn',
+    'corn': 'corn',
+    'soybeans': 'soybeans',
+    'flaxseed': 'flaxseed',
+    'lentils': 'lentils',
+    'dry peas': 'peas',
+    'peas, dry': 'peas',
+    'rye, all': 'rye',
+    'rye': 'rye',
+    'sunflower seed': 'sunflower',
+    'mustard seed': 'mustard',
 }
 
+# Keywords used to extract commodity from the "Farm products" column
+# in the farm_prices table where the column is a descriptive phrase.
+FARM_PRICE_COMMODITY_KEYWORDS = [
+    ('wheat', 'wheat'),
+    ('canola', 'canola'),
+    ('barley', 'barley'),
+    ('oats', 'oats'),
+    ('corn', 'corn'),
+    ('soybeans', 'soybeans'),
+    ('soybean', 'soybeans'),
+    ('flaxseed', 'flaxseed'),
+    ('rye', 'rye'),
+    ('lentils', 'lentils'),
+    ('peas', 'peas'),
+]
+
+
+# Provinces we care about (skip territories and aggregates except Canada)
+PROVINCE_MAP = {
+    'Canada': 'CA',
+    'Prince Edward Island': 'PE',
+    'Nova Scotia': 'NS',
+    'New Brunswick': 'NB',
+    'Quebec': 'QC',
+    'Ontario': 'ON',
+    'Manitoba': 'MB',
+    'Saskatchewan': 'SK',
+    'Alberta': 'AB',
+    'British Columbia': 'BC',
+}
+
+
+# ============================================================================
+# Config
+# ============================================================================
 
 @dataclass
 class StatsCanConfig(CollectorConfig):
     """Statistics Canada configuration"""
     source_name: str = "Statistics Canada"
     source_url: str = "https://www150.statcan.gc.ca"
-    api_url: str = "https://www150.statcan.gc.ca/t1/wds/rest"
     auth_type: AuthType = AuthType.NONE
     frequency: DataFrequency = DataFrequency.MONTHLY
 
-    # Tables to fetch
+    # CSV bulk download base URL
+    csv_base_url: str = "https://www150.statcan.gc.ca/n1/tbl/csv"
+
+    # Tables to fetch (keys into STATSCAN_TABLES)
     tables: List[str] = field(default_factory=lambda: [
-        'field_crop_areas', 'grain_stocks', 'canola_crush', 'farm_prices'
+        'field_crop_production', 'grain_stocks', 'farm_prices'
     ])
 
+    # Only keep records from this year onward (avoids loading 100+ years)
+    min_year: int = 2015
+
     # Request settings
-    timeout: int = 60
+    timeout: int = 120  # ZIPs can be several MB
     retry_attempts: int = 3
 
+
+# ============================================================================
+# Collector
+# ============================================================================
 
 class StatsCanCollector(BaseCollector):
     """
     Collector for Statistics Canada agricultural data.
 
-    Uses Statistics Canada Web Data Service (WDS) API.
+    Downloads CSV bulk files from the StatsCan open data portal, parses
+    them, filters to recent years and relevant commodities, and saves
+    to bronze.canada_statscan.
 
     Provides:
-    - Field crop production estimates
+    - Field crop production estimates (area, yield, production by province)
     - Quarterly grain stocks
-    - Oilseed crushing statistics
-    - Farm prices
-    - Trade data
+    - Farm product prices
     """
 
     def __init__(self, config: StatsCanConfig = None):
@@ -160,10 +198,29 @@ class StatsCanCollector(BaseCollector):
     def get_table_name(self) -> str:
         return "canada_statscan"
 
-    def _get_api_url(self, endpoint: str) -> str:
-        """Build API URL"""
-        return f"{self.config.api_url}/{endpoint}"
+    # ------------------------------------------------------------------
+    # collect() override — saves to bronze after fetch
+    # ------------------------------------------------------------------
+    def collect(self, start_date=None, end_date=None, use_cache=True, **kwargs):
+        """Override collect to save results to bronze after fetching."""
+        result = super().collect(start_date, end_date, use_cache, **kwargs)
+        if result.success and result.data is not None and not getattr(result, 'from_cache', False):
+            try:
+                records = (
+                    result.data.to_dict('records')
+                    if hasattr(result.data, 'to_dict')
+                    else result.data
+                )
+                if records:
+                    saved = self.save_to_bronze(records)
+                    result.records_fetched = saved
+            except Exception as e:
+                self.logger.error(f"Bronze save failed (data still returned): {e}")
+        return result
 
+    # ------------------------------------------------------------------
+    # fetch_data — main entry point
+    # ------------------------------------------------------------------
     def fetch_data(
         self,
         start_date: date = None,
@@ -172,54 +229,60 @@ class StatsCanCollector(BaseCollector):
         **kwargs
     ) -> CollectorResult:
         """
-        Fetch data from Statistics Canada.
+        Fetch data from Statistics Canada via CSV bulk download.
 
         Args:
-            tables: List of table names to fetch
-            start_date: Start date for data
-            end_date: End date for data
+            start_date: Earliest ref_date to keep (default: min_year-01-01)
+            end_date: Latest ref_date to keep (default: today)
+            tables: List of table keys (default: config.tables)
 
         Returns:
-            CollectorResult with agricultural data
+            CollectorResult with parsed records
         """
         tables = tables or self.config.tables
         end_date = end_date or date.today()
-        start_date = start_date or date(end_date.year - 2, 1, 1)
+        start_date = start_date or date(self.config.min_year, 1, 1)
 
         all_records = []
         warnings = []
 
-        for table_name in tables:
-            if table_name not in STATSCAN_TABLES:
-                warnings.append(f"Unknown table: {table_name}")
+        for table_key in tables:
+            if table_key not in STATSCAN_TABLES:
+                warnings.append(f"Unknown table key: {table_key}")
                 continue
 
-            table_info = STATSCAN_TABLES[table_name]
-            self.logger.info(f"Fetching StatsCan {table_info['name']}")
+            table_info = STATSCAN_TABLES[table_key]
+            self.logger.info(
+                f"Downloading StatsCan {table_key} ({table_info['product_id']}): "
+                f"{table_info['name']}"
+            )
 
             try:
-                records = self._fetch_table_data(
-                    table_name, table_info, start_date, end_date
+                records = self._download_and_parse_csv(
+                    table_key, table_info, start_date, end_date
                 )
                 all_records.extend(records)
-                self.logger.info(f"Retrieved {len(records)} records from {table_name}")
-
+                self.logger.info(
+                    f"Parsed {len(records)} records from {table_key}"
+                )
             except Exception as e:
-                warnings.append(f"{table_name}: {e}")
-                self.logger.error(f"Error fetching {table_name}: {e}", exc_info=True)
+                warnings.append(f"{table_key}: {e}")
+                self.logger.error(
+                    f"Error fetching {table_key}: {e}", exc_info=True
+                )
 
         if not all_records:
             return CollectorResult(
                 success=False,
                 source=self.config.source_name,
-                error_message="No data retrieved",
+                error_message="No data retrieved from any table",
                 warnings=warnings
             )
 
-        # Convert to DataFrame
+        # Build DataFrame
         if PANDAS_AVAILABLE:
             df = pd.DataFrame(all_records)
-            df = df.sort_values(['table_name', 'ref_date'])
+            df = df.sort_values(['table_key', 'ref_date']).reset_index(drop=True)
         else:
             df = all_records
 
@@ -233,147 +296,240 @@ class StatsCanCollector(BaseCollector):
             warnings=warnings
         )
 
-    def _fetch_table_data(
+    # ------------------------------------------------------------------
+    # CSV download and parse
+    # ------------------------------------------------------------------
+    def _download_and_parse_csv(
         self,
-        table_name: str,
+        table_key: str,
         table_info: Dict,
         start_date: date,
         end_date: date
     ) -> List[Dict]:
-        """Fetch data for a specific Statistics Canada table"""
+        """
+        Download a StatsCan bulk CSV ZIP, extract, and parse to records.
+
+        URL pattern:
+            https://www150.statcan.gc.ca/n1/tbl/csv/{product_id}-eng.zip
+
+        Each ZIP contains:
+            {product_id}.csv          — data rows
+            {product_id}_MetaData.csv — dimension metadata (ignored here)
+
+        CSV standard columns:
+            REF_DATE, GEO, DGUID, [dimension cols...], UOM, UOM_ID,
+            SCALAR_FACTOR, SCALAR_ID, VECTOR, COORDINATE, VALUE,
+            STATUS, SYMBOL, TERMINATED, DECIMALS
+        """
+        product_id = table_info['product_id']
+        download_url = f"{self.config.csv_base_url}/{product_id}-eng.zip"
+
+        response, error = self._make_request(
+            download_url,
+            timeout=self.config.timeout
+        )
+
+        if error:
+            raise RuntimeError(f"Download failed for {product_id}: {error}")
+
+        if response.status_code != 200:
+            raise RuntimeError(
+                f"HTTP {response.status_code} downloading {product_id}"
+            )
+
+        content_type = response.headers.get('content-type', '')
+        if 'zip' not in content_type and 'octet' not in content_type:
+            raise RuntimeError(
+                f"Unexpected content-type for {product_id}: {content_type}"
+            )
+
+        # Extract and parse ZIP
+        try:
+            zf = zipfile.ZipFile(io.BytesIO(response.content))
+        except zipfile.BadZipFile:
+            raise RuntimeError(f"Invalid ZIP file for {product_id}")
+
+        # Find the data CSV (not the MetaData file)
+        data_files = [
+            n for n in zf.namelist()
+            if n.endswith('.csv') and 'MetaData' not in n
+        ]
+        if not data_files:
+            raise RuntimeError(f"No data CSV found in ZIP for {product_id}")
+
         records = []
-        table_id = table_info['table_id']
-
-        # Statistics Canada WDS API endpoints
-        # Get cube metadata first
-        metadata_url = self._get_api_url(f"getCubeMetadata")
-
-        metadata_response, error = self._make_request(
-            metadata_url,
-            method='POST',
-            json_data=[{"productId": table_id}]
-        )
-
-        if error:
-            self.logger.warning(f"Metadata request failed: {error}")
-            # Try direct data fetch anyway
-
-        # Fetch data vectors
-        # Use getDataFromCubePidCoordAndLatestNPeriods for recent data
-        data_url = self._get_api_url("getDataFromCubePidCoordAndLatestNPeriods")
-
-        # Calculate number of periods based on frequency
-        frequency = table_info.get('frequency', 'monthly')
-        if frequency == 'monthly':
-            n_periods = (end_date.year - start_date.year) * 12 + (end_date.month - start_date.month)
-        elif frequency == 'quarterly':
-            n_periods = (end_date.year - start_date.year) * 4 + 4
-        elif frequency == 'annual':
-            n_periods = end_date.year - start_date.year + 1
-        else:
-            n_periods = 24  # Default
-
-        n_periods = min(n_periods, 120)  # Limit to 120 periods
-
-        # StatsCan requires specific coordinate format
-        request_data = [{
-            "productId": table_id,
-            "coordinate": "1.1.0.0.0.0.0.0.0.0",  # Default coordinate
-            "latestN": n_periods
-        }]
-
-        data_response, error = self._make_request(
-            data_url,
-            method='POST',
-            json_data=request_data
-        )
-
-        if error:
-            # Try alternative endpoint
-            return self._fetch_table_csv(table_id, table_name, start_date, end_date)
-
-        if data_response.status_code == 200:
-            try:
-                data = data_response.json()
-                records = self._parse_wds_response(data, table_name, table_info)
-            except Exception as e:
-                self.logger.warning(f"Error parsing WDS response: {e}")
-                # Fallback to CSV download
-                return self._fetch_table_csv(table_id, table_name, start_date, end_date)
-        else:
-            return self._fetch_table_csv(table_id, table_name, start_date, end_date)
+        with zf.open(data_files[0]) as f:
+            reader = csv.DictReader(
+                io.TextIOWrapper(f, encoding='utf-8-sig')
+            )
+            for row in reader:
+                parsed = self._parse_csv_row(
+                    row, table_key, table_info, start_date, end_date
+                )
+                if parsed is not None:
+                    records.append(parsed)
 
         return records
 
-    def _fetch_table_csv(
+    def _parse_csv_row(
         self,
-        table_id: str,
-        table_name: str,
+        row: Dict[str, str],
+        table_key: str,
+        table_info: Dict,
         start_date: date,
         end_date: date
-    ) -> List[Dict]:
-        """Fetch table data via CSV download (fallback)"""
-        records = []
+    ) -> Optional[Dict]:
+        """
+        Parse a single CSV row into a normalised record.
 
-        # Statistics Canada CSV download URL
-        csv_url = f"https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid={table_id.replace('-', '')}"
+        Returns None if the row should be skipped (wrong date range,
+        no value, terminated series, etc.).
+        """
+        # Skip terminated series
+        if row.get('TERMINATED', '').strip():
+            return None
 
-        self.logger.info(f"Attempting CSV fetch for {table_id}")
+        # Parse value
+        raw_value = row.get('VALUE', '').strip()
+        if not raw_value:
+            return None
+        try:
+            value = float(raw_value)
+        except (ValueError, TypeError):
+            return None
 
-        # Note: Direct CSV downloads require specific formatting
-        # For production, you may need to use their download form
+        # Parse ref_date and filter
+        ref_date_str = row.get('REF_DATE', '').strip()
+        if not ref_date_str:
+            return None
 
-        # Alternative: Use the bulk download endpoint
-        download_url = f"https://www150.statcan.gc.ca/n1/en/tbl/csv/{table_id.replace('-', '')}-eng.zip"
+        ref_date = self._parse_ref_date(ref_date_str)
+        if ref_date is None:
+            return None
+        if ref_date < start_date or ref_date > end_date:
+            return None
 
-        response, error = self._make_request(download_url)
+        # Geography filter — only keep known provinces/Canada
+        geo = row.get('GEO', '').strip()
+        province_code = PROVINCE_MAP.get(geo)
+        if province_code is None:
+            # Check if it's a sub-aggregate we don't want
+            # (e.g. "Maritime provinces", "Prairie provinces")
+            return None
 
-        if error or response.status_code != 200:
-            self.logger.info(f"CSV download not available for {table_id}")
-            return records
+        # Extract commodity name
+        commodity_col = table_info.get('commodity_col')
+        commodity = None
+        if commodity_col and commodity_col in row:
+            # Dedicated commodity column (e.g. "Type of crop")
+            commodity_raw = row[commodity_col].strip().lower()
+            commodity = CROP_NAME_MAP.get(commodity_raw, commodity_raw)
+        else:
+            # No dedicated column — extract commodity by keyword matching
+            # from the first attribute column (e.g. farm_prices "Farm products")
+            for attr_col in table_info.get('attribute_cols', []):
+                text = row.get(attr_col, '').strip().lower()
+                if text:
+                    for keyword, norm_name in FARM_PRICE_COMMODITY_KEYWORDS:
+                        if keyword in text:
+                            commodity = norm_name
+                            break
+                if commodity:
+                    break
 
-        # If we got a zip file, we'd need to extract and parse
-        # For now, return empty and note limitation
-        self.logger.info(f"CSV data available at: {download_url}")
+        # Build the attribute string from attribute columns
+        # (e.g. "Harvested area (hectares)" or "Farm and commercial, total")
+        attribute_parts = []
+        for attr_col in table_info.get('attribute_cols', []):
+            val = row.get(attr_col, '').strip()
+            if val:
+                attribute_parts.append(val)
+        attribute = ' | '.join(attribute_parts) if attribute_parts else None
 
-        return records
+        # Scalar factor (e.g. "thousands" means value is in 000s)
+        scalar_factor = row.get('SCALAR_FACTOR', '').strip().lower()
 
-    def _parse_wds_response(
-        self,
-        data: Any,
-        table_name: str,
-        table_info: Dict
-    ) -> List[Dict]:
-        """Parse Statistics Canada WDS API response"""
-        records = []
+        # Unit of measure
+        uom = row.get('UOM', '').strip()
 
-        if not isinstance(data, list):
-            return records
+        return {
+            'table_key': table_key,
+            'product_id': table_info['product_id'],
+            'ref_date': ref_date.isoformat(),
+            'ref_date_raw': ref_date_str,
+            'geo': geo,
+            'province_code': province_code,
+            'commodity': commodity,
+            'attribute': attribute,
+            'uom': uom,
+            'scalar_factor': scalar_factor,
+            'value': value,
+            'vector': row.get('VECTOR', '').strip(),
+            'coordinate': row.get('COORDINATE', '').strip(),
+            'status': row.get('STATUS', '').strip(),
+            'decimals': int(row.get('DECIMALS', '0') or '0'),
+            'source': 'STATSCAN',
+        }
 
-        for item in data:
-            if item.get('status') != 'SUCCESS':
+    @staticmethod
+    def _parse_ref_date(ref_date_str: str) -> Optional[date]:
+        """
+        Parse StatsCan REF_DATE values.
+
+        Formats observed:
+            '2024'       -> 2024-01-01  (annual)
+            '2024-03'    -> 2024-03-01  (monthly/quarterly)
+            '2024-03-15' -> 2024-03-15  (daily, rare)
+        """
+        ref_date_str = ref_date_str.strip()
+        for fmt in ('%Y-%m-%d', '%Y-%m', '%Y'):
+            try:
+                return datetime.strptime(ref_date_str, fmt).date()
+            except ValueError:
                 continue
+        return None
 
-            vector_data = item.get('object', {})
-            vector_data_points = vector_data.get('vectorDataPoint', [])
+    # ------------------------------------------------------------------
+    # save_to_bronze
+    # ------------------------------------------------------------------
+    def save_to_bronze(self, records: list) -> int:
+        """Upsert records to bronze.canada_statscan."""
+        if not records:
+            return 0
 
-            for point in vector_data_points:
-                ref_date = point.get('refPer', '')
-                value = point.get('value')
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            count = 0
+            for rec in records:
+                cur.execute("""
+                    INSERT INTO bronze.canada_statscan
+                        (table_key, product_id, ref_date, ref_date_raw,
+                         geo, province_code, commodity, attribute,
+                         uom, scalar_factor, value, vector, coordinate,
+                         status, decimals, source, collected_at)
+                    VALUES
+                        (%(table_key)s, %(product_id)s, %(ref_date)s,
+                         %(ref_date_raw)s, %(geo)s, %(province_code)s,
+                         %(commodity)s, %(attribute)s, %(uom)s,
+                         %(scalar_factor)s, %(value)s, %(vector)s,
+                         %(coordinate)s, %(status)s, %(decimals)s,
+                         %(source)s, NOW())
+                    ON CONFLICT (product_id, vector, ref_date)
+                    DO UPDATE SET
+                        value = EXCLUDED.value,
+                        status = EXCLUDED.status,
+                        collected_at = NOW()
+                """, rec)
+                count += 1
+            conn.commit()
+            self.logger.info(
+                f"Saved {count} records to bronze.canada_statscan"
+            )
+            return count
 
-                if value is not None:
-                    records.append({
-                        'table_name': table_name,
-                        'table_id': table_info['table_id'],
-                        'ref_date': ref_date,
-                        'value': float(value) if value else None,
-                        'scalar_factor': point.get('scalarFactorCode'),
-                        'decimals': point.get('decimals'),
-                        'source': 'STATSCAN',
-                    })
-
-        return records
-
+    # ------------------------------------------------------------------
+    # parse_response (required by BaseCollector ABC)
+    # ------------------------------------------------------------------
     def parse_response(self, response_data: Any) -> Any:
         return response_data
 
@@ -381,73 +537,67 @@ class StatsCanCollector(BaseCollector):
     # CONVENIENCE METHODS
     # =========================================================================
 
-    def get_grain_stocks(self, commodity: str = 'wheat') -> Optional[Any]:
+    def get_grain_stocks(self, commodity: str = None) -> Optional[Any]:
         """
         Get Canadian grain stocks data.
 
         Args:
-            commodity: 'wheat', 'canola', 'barley', 'oats'
+            commodity: Optional filter: 'wheat', 'canola', 'barley', 'oats'
 
         Returns:
             DataFrame with stocks data
         """
-        result = self.collect(tables=['grain_stocks'])
+        result = self.collect(tables=['grain_stocks'], use_cache=False)
 
         if not result.success or result.data is None:
             return None
 
-        if PANDAS_AVAILABLE and hasattr(result.data, 'query'):
-            # Filter for commodity if possible
-            return result.data
+        if commodity and PANDAS_AVAILABLE and hasattr(result.data, 'query'):
+            return result.data.query(f"commodity == '{commodity}'")
 
         return result.data
-
-    def get_canola_crush(self) -> Optional[Any]:
-        """
-        Get canola crushing statistics.
-
-        Returns:
-            DataFrame with crush data
-        """
-        result = self.collect(tables=['canola_crush'])
-        return result.data if result.success else None
 
     def get_crop_production(self, year: int = None) -> Optional[Any]:
         """
         Get crop production estimates.
 
         Args:
-            year: Year for estimates (default: current)
+            year: Year for estimates (default: last 3 years)
 
         Returns:
             DataFrame with production data
         """
         year = year or date.today().year
-
         result = self.collect(
-            tables=['field_crop_areas'],
-            start_date=date(year, 1, 1),
-            end_date=date(year, 12, 31)
+            tables=['field_crop_production'],
+            start_date=date(year - 2, 1, 1),
+            end_date=date(year, 12, 31),
+            use_cache=False
         )
-
         return result.data if result.success else None
 
-    def get_farm_prices(self, commodity: str = 'canola') -> Optional[Any]:
+    def get_farm_prices(self, commodity: str = None) -> Optional[Any]:
         """
         Get farm product prices.
 
         Args:
-            commodity: Commodity name
+            commodity: Optional filter commodity name
 
         Returns:
             DataFrame with price data
         """
-        result = self.collect(tables=['farm_prices'])
-        return result.data if result.success else None
+        result = self.collect(tables=['farm_prices'], use_cache=False)
+        if not result.success or result.data is None:
+            return None
+
+        if commodity and PANDAS_AVAILABLE and hasattr(result.data, 'query'):
+            return result.data.query(f"commodity == '{commodity}'")
+
+        return result.data
 
 
 # =============================================================================
-# CANOLA COUNCIL COLLECTOR
+# CANOLA COUNCIL COLLECTOR (unchanged — kept for reference)
 # =============================================================================
 
 @dataclass
@@ -585,19 +735,26 @@ def main():
     import argparse
     import json
 
-    parser = argparse.ArgumentParser(description='Statistics Canada Agricultural Data Collector')
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s %(name)s %(levelname)s %(message)s'
+    )
+
+    parser = argparse.ArgumentParser(
+        description='Statistics Canada Agricultural Data Collector'
+    )
 
     parser.add_argument(
         'command',
-        choices=['fetch', 'stocks', 'crush', 'production', 'test'],
+        choices=['fetch', 'stocks', 'production', 'prices', 'test'],
         help='Command to execute'
     )
 
     parser.add_argument(
         '--tables',
         nargs='+',
-        default=['grain_stocks', 'canola_crush'],
-        help='Tables to fetch'
+        default=None,
+        help='Tables to fetch (default: all configured)'
     )
 
     parser.add_argument(
@@ -609,6 +766,12 @@ def main():
     parser.add_argument(
         '--output', '-o',
         help='Output file'
+    )
+
+    parser.add_argument(
+        '--no-save',
+        action='store_true',
+        help='Skip saving to bronze (fetch only)'
     )
 
     args = parser.parse_args()
@@ -627,15 +790,8 @@ def main():
                 print(data.to_string())
             else:
                 print(json.dumps(data, indent=2, default=str))
-        return
-
-    if args.command == 'crush':
-        data = collector.get_canola_crush()
-        if data is not None:
-            if PANDAS_AVAILABLE and hasattr(data, 'to_string'):
-                print(data.to_string())
-            else:
-                print(json.dumps(data, indent=2, default=str))
+        else:
+            print("No data returned")
         return
 
     if args.command == 'production':
@@ -645,10 +801,26 @@ def main():
                 print(data.to_string())
             else:
                 print(json.dumps(data, indent=2, default=str))
+        else:
+            print("No data returned")
+        return
+
+    if args.command == 'prices':
+        data = collector.get_farm_prices()
+        if data is not None:
+            if PANDAS_AVAILABLE and hasattr(data, 'to_string'):
+                print(data.to_string())
+            else:
+                print(json.dumps(data, indent=2, default=str))
+        else:
+            print("No data returned")
         return
 
     if args.command == 'fetch':
-        result = collector.collect(tables=args.tables)
+        result = collector.collect(
+            tables=args.tables,
+            use_cache=False
+        )
 
         print(f"Success: {result.success}")
         print(f"Records: {result.records_fetched}")
@@ -662,7 +834,10 @@ def main():
             else:
                 with open(args.output, 'w') as f:
                     if PANDAS_AVAILABLE and hasattr(result.data, 'to_dict'):
-                        json.dump(result.data.to_dict('records'), f, indent=2, default=str)
+                        json.dump(
+                            result.data.to_dict('records'), f,
+                            indent=2, default=str
+                        )
                     else:
                         json.dump(result.data, f, indent=2, default=str)
             print(f"Saved to: {args.output}")

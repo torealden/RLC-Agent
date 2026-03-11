@@ -37,6 +37,8 @@ from .base_collector import (
     AuthType,
 )
 
+from src.services.database.db_config import get_connection as get_db_connection
+
 try:
     import pandas as pd
     PANDAS_AVAILABLE = True
@@ -186,7 +188,164 @@ class USDAWASPECollector(BaseCollector):
             self.session.headers["X-Api-Key"] = self.config.api_key
 
     def get_table_name(self) -> str:
-        return "bronze.fas_psd"
+        return "fas_psd"
+
+    # =========================================================================
+    # Bronze persistence
+    # =========================================================================
+
+    # Attribute ID -> bronze.fas_psd column name (mirrors backfill_fas_psd.py)
+    ATTR_MAP = {
+        1:   "area_planted",
+        4:   "area_harvested",
+        7:   "crush",
+        20:  "beginning_stocks",
+        28:  "production",
+        57:  "imports",
+        81:  "ty_imports",
+        86:  "total_supply",
+        88:  "exports",
+        113: "ty_exports",
+        125: "domestic_consumption",
+        130: "feed_dom_consumption",
+        176: "ending_stocks",
+        178: "total_distribution",
+        184: "yield",
+        192: "fsi_consumption",
+    }
+
+    BALANCE_COLS = [
+        "area_planted", "area_harvested", "yield",
+        "beginning_stocks", "production", "imports", "total_supply",
+        "feed_dom_consumption", "fsi_consumption", "crush",
+        "domestic_consumption", "exports", "total_distribution",
+        "ending_stocks", "ty_imports", "ty_exports",
+    ]
+
+    def collect(self, start_date=None, end_date=None, use_cache=True, **kwargs):
+        """Override collect to pivot and save results to bronze after fetching."""
+        result = super().collect(start_date, end_date, use_cache, **kwargs)
+        if result.success and result.data is not None and not getattr(result, 'from_cache', False):
+            try:
+                records = result.data.to_dict('records') if hasattr(result.data, 'to_dict') else result.data
+                if records:
+                    saved = self.save_to_bronze(records)
+                    result.records_fetched = saved
+            except Exception as e:
+                self.logger.error(f"Bronze save failed (data still returned): {e}")
+        return result
+
+    def save_to_bronze(self, records: list) -> int:
+        """Pivot attribute-level records and upsert to bronze.fas_psd."""
+        if not records:
+            return 0
+
+        # Group by (commodity, commodity_code, country_code, marketing_year, month)
+        groups = {}
+        report_date = date.today()
+
+        for rec in records:
+            attr_id = rec.get("attribute_id")
+            if attr_id is None:
+                continue
+
+            col = self.ATTR_MAP.get(attr_id)
+            if col is None:
+                continue
+
+            cc = rec.get("country_code", "")
+            my = rec.get("marketing_year")
+            month = rec.get("month")
+            if my is None:
+                continue
+
+            key = (rec.get("commodity", ""), rec.get("commodity_code", ""),
+                   cc, rec.get("country", ""), my, month)
+
+            if key not in groups:
+                groups[key] = {
+                    "commodity": key[0],
+                    "commodity_code": key[1],
+                    "country_code": key[2],
+                    "country": key[3],
+                    "marketing_year": key[4],
+                    "calendar_year": None,
+                    "month": key[5],
+                    "report_date": report_date,
+                    "unit": rec.get("unit", "1000 MT"),
+                }
+                for c in self.BALANCE_COLS:
+                    groups[key][c] = None
+
+            val = rec.get("value")
+            if val is not None:
+                try:
+                    groups[key][col] = float(val)
+                except (ValueError, TypeError):
+                    pass
+
+        rows = list(groups.values())
+        if not rows:
+            self.logger.warning("No pivoted rows to insert")
+            return 0
+
+        insert_sql = """
+            INSERT INTO bronze.fas_psd (
+                commodity, commodity_code, country, country_code,
+                marketing_year, calendar_year, month, report_date,
+                area_planted, area_harvested, yield,
+                beginning_stocks, production, imports, total_supply,
+                feed_dom_consumption, fsi_consumption, crush,
+                domestic_consumption, exports, total_distribution,
+                ending_stocks, ty_imports, ty_exports,
+                unit
+            ) VALUES (
+                %(commodity)s, %(commodity_code)s, %(country)s, %(country_code)s,
+                %(marketing_year)s, %(calendar_year)s, %(month)s, %(report_date)s,
+                %(area_planted)s, %(area_harvested)s, %(yield)s,
+                %(beginning_stocks)s, %(production)s, %(imports)s, %(total_supply)s,
+                %(feed_dom_consumption)s, %(fsi_consumption)s, %(crush)s,
+                %(domestic_consumption)s, %(exports)s, %(total_distribution)s,
+                %(ending_stocks)s, %(ty_imports)s, %(ty_exports)s,
+                %(unit)s
+            )
+            ON CONFLICT (commodity_code, country_code, marketing_year, month, report_date)
+            DO UPDATE SET
+                production = EXCLUDED.production,
+                beginning_stocks = EXCLUDED.beginning_stocks,
+                imports = EXCLUDED.imports,
+                total_supply = EXCLUDED.total_supply,
+                domestic_consumption = EXCLUDED.domestic_consumption,
+                feed_dom_consumption = EXCLUDED.feed_dom_consumption,
+                fsi_consumption = EXCLUDED.fsi_consumption,
+                crush = EXCLUDED.crush,
+                exports = EXCLUDED.exports,
+                ending_stocks = EXCLUDED.ending_stocks,
+                total_distribution = EXCLUDED.total_distribution,
+                area_planted = EXCLUDED.area_planted,
+                area_harvested = EXCLUDED.area_harvested,
+                yield = EXCLUDED.yield,
+                ty_imports = EXCLUDED.ty_imports,
+                ty_exports = EXCLUDED.ty_exports,
+                collected_at = NOW()
+        """
+
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            count = 0
+            for row in rows:
+                try:
+                    cur.execute(insert_sql, row)
+                    count += 1
+                except Exception as e:
+                    conn.rollback()
+                    self.logger.warning(
+                        f"Row insert error ({row.get('commodity')}/{row.get('country_code')}/"
+                        f"MY{row.get('marketing_year')}): {e}"
+                    )
+            conn.commit()
+            self.logger.info(f"Saved {count} pivoted rows to bronze.fas_psd")
+            return count
 
     # =========================================================================
     # PSD API helpers

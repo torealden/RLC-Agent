@@ -66,6 +66,16 @@ WASDE_RELEASE_DATES: Dict[int, List[date]] = {
     ],
 }
 
+# Known Census FT-900 release dates by year (from Census Bureau schedule)
+CENSUS_RELEASE_DATES: Dict[int, List[date]] = {
+    2026: [
+        date(2026, 1, 7),  date(2026, 2, 5),  date(2026, 3, 12),
+        date(2026, 4, 2),  date(2026, 5, 6),  date(2026, 6, 4),
+        date(2026, 7, 2),  date(2026, 8, 5),  date(2026, 9, 3),
+        date(2026, 10, 7), date(2026, 11, 5), date(2026, 12, 3),
+    ],
+}
+
 
 @dataclass
 class CollectorSchedule:
@@ -89,6 +99,19 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
     # -------------------------------------------------------------------------
     # DAILY RELEASES
     # -------------------------------------------------------------------------
+    'yfinance_futures': CollectorSchedule(
+        collector_name='yfinance_futures',
+        collector_class='YFinanceDailyCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(17, 15),  # 5:15 PM ET (after CME settlements)
+            description="Yahoo Finance daily futures prices (backup/extended contracts)"
+        ),
+        priority=3,
+        commodities=['corn', 'wheat', 'soybeans', 'soy_oil', 'soy_meal',
+                    'crude_oil', 'gasoline', 'diesel', 'natural_gas', 'ethanol'],
+    ),
+
     'cme_settlements': CollectorSchedule(
         collector_name='cme_settlements',
         collector_class='CMESettlementsCollector',
@@ -114,6 +137,32 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['corn', 'soybeans', 'wheat', 'sorghum', 'barley', 'oats',
                      'ethanol', 'ddgs', 'hogs', 'cattle', 'cotton', 'sunflower',
                      'diesel', 'fertilizer'],
+    ),
+
+    'yield_forecast': CollectorSchedule(
+        collector_name='yield_forecast',
+        collector_class='YieldForecastCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.WEEKLY,
+            day_of_week=DayOfWeek.TUESDAY,
+            release_time=time(7, 0),  # 7:00 AM ET — after NASS crop progress on Monday
+            description="Weekly yield model ensemble forecast (growing season only, weeks 18-38)"
+        ),
+        priority=3,
+        commodities=['corn', 'soybeans', 'wheat', 'cotton'],
+        dependencies=['usda_nass_crop_progress'],  # Needs updated crop conditions
+    ),
+
+    'weather_daily_summary': CollectorSchedule(
+        collector_name='weather_daily_summary',
+        collector_class='WeatherSummaryCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(6, 30),  # 6:30 AM ET — before market open
+            description="Daily weather intelligence summary (Gmail fetch + LLM synthesis + email)"
+        ),
+        priority=3,
+        commodities=['corn', 'soybeans', 'wheat', 'cotton'],
     ),
 
     # -------------------------------------------------------------------------
@@ -298,10 +347,11 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_class='CensusTradeCollector',
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.MONTHLY,
-            day_of_month=-5,  # ~5th from end (about 6 week lag)
+            day_of_month=7,  # Fallback ~7th if no exact date
             release_time=time(10, 0),
             lag_days=45,
-            description="US Census International Trade Monthly (6-week lag)"
+            description="US Census International Trade Monthly (FT-900, ~6 week lag)",
+            release_dates=CENSUS_RELEASE_DATES,
         ),
         priority=3,
         commodities=['all'],
@@ -317,6 +367,7 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
             description="EPA RFS RIN Generation Monthly Data"
         ),
         priority=3,
+        enabled=False,  # Disabled — EPA files require manual download for now
         commodities=['ethanol', 'biodiesel', 'renewable_diesel'],
     ),
 
@@ -368,7 +419,9 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_name='usda_ers_feed_grains',
         collector_class='FeedGrainsCollector',
         release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.ON_DEMAND,
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=20,
+            release_time=time(9, 0),
             description="USDA ERS Feed Grains Database (updated periodically)"
         ),
         priority=5,
@@ -379,7 +432,9 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_name='usda_ers_oil_crops',
         collector_class='OilCropsCollector',
         release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.ON_DEMAND,
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=20,
+            release_time=time(9, 30),
             description="USDA ERS Oil Crops Yearbook (updated periodically)"
         ),
         priority=5,
@@ -390,11 +445,116 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_name='usda_ers_wheat',
         collector_class='WheatDataCollector',
         release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.ON_DEMAND,
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=20,
+            release_time=time(10, 0),
             description="USDA ERS Wheat Data (updated periodically)"
         ),
         priority=5,
         commodities=['wheat'],
+    ),
+
+    # -------------------------------------------------------------------------
+    # WEEKLY RELEASES - FGIS EXPORT INSPECTIONS
+    # -------------------------------------------------------------------------
+    'fgis_inspections': CollectorSchedule(
+        collector_name='fgis_inspections',
+        collector_class='FGISInspectionsCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.WEEKLY,
+            day_of_week=DayOfWeek.MONDAY,
+            release_time=time(11, 0),  # 11:00 AM ET
+            description="FGIS weekly grain export inspections (SODA API)"
+        ),
+        priority=3,
+        commodities=['corn', 'soybeans', 'wheat', 'sorghum', 'barley'],
+    ),
+
+    # -------------------------------------------------------------------------
+    # MONTHLY RELEASES - SOUTH AMERICA TRADE
+    # -------------------------------------------------------------------------
+    'brazil_comexstat': CollectorSchedule(
+        collector_name='brazil_comexstat',
+        collector_class='ComexStatCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=5,  # First week of month
+            release_time=time(12, 0),
+            lag_days=30,
+            description="ComexStat Brazil monthly trade data (MDIC)"
+        ),
+        priority=4,
+        commodities=['soybeans', 'corn', 'wheat', 'soybean_oil', 'soybean_meal'],
+    ),
+
+    'argentina_indec': CollectorSchedule(
+        collector_name='argentina_indec',
+        collector_class='INDECCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=20,  # ~3rd week, 6-8 week lag
+            release_time=time(12, 0),
+            lag_days=60,
+            description="INDEC Argentina monthly trade data (ICA database)"
+        ),
+        priority=4,
+        commodities=['soybeans', 'corn', 'wheat', 'soybean_oil', 'soybean_meal',
+                     'sunflower_oil', 'sunflower_meal'],
+    ),
+
+    # -------------------------------------------------------------------------
+    # MONTHLY - SOUTH AMERICA & GLOBAL
+    # -------------------------------------------------------------------------
+    'brazil_ibge_sidra': CollectorSchedule(
+        collector_name='brazil_ibge_sidra',
+        collector_class='IBGESIDRACollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=15,
+            release_time=time(11, 0),
+            description="IBGE SIDRA Brazil annual production (PAM)"
+        ),
+        priority=5,
+        commodities=['soybeans', 'corn', 'wheat', 'rice', 'cotton', 'sorghum'],
+    ),
+
+    'argentina_magyp': CollectorSchedule(
+        collector_name='argentina_magyp',
+        collector_class='MAGyPCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=10,
+            release_time=time(11, 30),
+            description="MAGyP Argentina production estimates"
+        ),
+        priority=5,
+        commodities=['soybeans', 'corn', 'wheat'],
+    ),
+
+    'brazil_imea': CollectorSchedule(
+        collector_name='brazil_imea',
+        collector_class='IMEACollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=8,
+            release_time=time(12, 0),
+            description="IMEA Mato Grosso crop reports"
+        ),
+        priority=5,
+        commodities=['soybeans', 'corn', 'cotton'],
+    ),
+
+    'faostat': CollectorSchedule(
+        collector_name='faostat',
+        collector_class='FAOSTATCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=1,
+            release_time=time(6, 0),
+            description="FAOSTAT global production data (monthly retry)"
+        ),
+        priority=5,
+        commodities=['soybeans', 'corn', 'wheat', 'rice', 'palm_oil', 'sugar'],
     ),
 }
 

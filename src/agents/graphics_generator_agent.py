@@ -662,6 +662,128 @@ class GraphicsGeneratorAgent:
 # CLI INTERFACE
 # =============================================================================
 
+    def generate_report_charts(self, report_type: str,
+                               commodities: List[str] = None) -> List[str]:
+        """
+        Generate a set of charts for a report type.
+
+        Args:
+            report_type: 'wasde', 'crop_progress', 'ethanol', 'positioning', 'weekly'
+            commodities: Optional commodity filter
+
+        Returns:
+            List of file paths to generated charts
+        """
+        commodities = commodities or ['corn', 'soybeans', 'wheat']
+        paths = []
+
+        if report_type == 'wasde':
+            # Balance sheet bar charts for each commodity
+            for comm in commodities:
+                path = self._generate_balance_sheet_bars(comm)
+                if path:
+                    paths.append(path)
+
+            # CFTC positioning
+            path = self.generate_cftc_positioning()
+            if path:
+                paths.append(path)
+
+        elif report_type == 'crop_progress':
+            for comm in commodities:
+                path = self.generate_crop_condition_chart(comm)
+                if path:
+                    paths.append(path)
+
+        elif report_type == 'ethanol':
+            path = self.generate_ethanol_dashboard()
+            if path:
+                paths.append(path)
+
+        elif report_type == 'positioning':
+            path = self.generate_cftc_positioning()
+            if path:
+                paths.append(path)
+
+        elif report_type == 'weekly':
+            # Full suite for weekly report
+            path = self.generate_cftc_positioning()
+            if path:
+                paths.append(path)
+            path = self.generate_ethanol_dashboard()
+            if path:
+                paths.append(path)
+            for comm in ['corn', 'soybeans']:
+                path = self.generate_crop_condition_chart(comm)
+                if path:
+                    paths.append(path)
+
+        logger.info(f"Generated {len(paths)} charts for {report_type} report")
+        return paths
+
+    def _generate_balance_sheet_bars(self, commodity: str) -> Optional[str]:
+        """Generate a balance sheet bar chart comparing last 3 marketing years."""
+        if not MATPLOTLIB_AVAILABLE:
+            return None
+
+        sql = """
+            SELECT marketing_year, production, domestic_consumption,
+                   exports, ending_stocks
+            FROM bronze.fas_psd
+            WHERE commodity = %s AND country_code = 'US'
+              AND ending_stocks IS NOT NULL
+            ORDER BY marketing_year DESC
+            LIMIT 3
+        """
+        df = self._query_to_dataframe(sql, (commodity,))
+        if df is None or df.empty:
+            return None
+
+        df = df.sort_values('marketing_year')
+
+        self._setup_style(ChartConfig(title='', chart_type='bar', data_source=''))
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        x = range(len(df))
+        width = 0.2
+
+        categories = [
+            ('production', 'Production', self.COLORS['accent']),
+            ('domestic_consumption', 'Domestic Use', self.COLORS['primary']),
+            ('exports', 'Exports', self.COLORS['secondary']),
+            ('ending_stocks', 'Ending Stocks', self.COLORS['warning']),
+        ]
+
+        for i, (col, label, color) in enumerate(categories):
+            if col in df.columns:
+                vals = df[col].fillna(0)
+                ax.bar([xi + width * i for xi in x], vals,
+                       width=width, label=label, color=color, alpha=0.85)
+
+        my_labels = [f"{int(y)}/{int(y)+1-2000}" for y in df['marketing_year']]
+        ax.set_xticks([xi + width * 1.5 for xi in x])
+        ax.set_xticklabels(my_labels)
+
+        ax.set_title(f'US {commodity.title()} Balance Sheet (1000 MT)',
+                     fontweight='bold', pad=15)
+        ax.set_ylabel('1000 MT')
+        ax.legend(loc='upper left')
+        ax.grid(True, alpha=0.3, axis='y')
+
+        fig.text(0.99, 0.01,
+                 f'Generated: {datetime.now().strftime("%Y-%m-%d")} | RLC Analytics',
+                 ha='right', va='bottom', fontsize=8, color='gray')
+
+        plt.tight_layout()
+
+        filename = f"balance_sheet_{commodity}_{datetime.now().strftime('%Y%m%d')}.png"
+        filepath = CHARTS_DIR / filename
+        fig.savefig(filepath, dpi=150, bbox_inches='tight')
+        plt.close(fig)
+
+        return str(filepath)
+
+
 def main():
     """Command-line interface for graphics generator."""
     import argparse

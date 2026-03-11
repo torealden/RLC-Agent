@@ -32,34 +32,104 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-# Common agricultural HS codes
+# Common agricultural HS codes (4-digit for convenience methods only)
 AG_HS_CODES = {
-    # Chapter 10 - Cereals
     'wheat': '1001',
     'corn': '1005',
     'barley': '1003',
     'oats': '1004',
     'sorghum': '1007',
-
-    # Chapter 12 - Oilseeds
     'soybeans': '1201',
     'canola': '1205',
     'sunflower': '1206',
-
-    # Chapter 15 - Fats and Oils
     'soybean_oil': '1507',
     'palm_oil': '1511',
     'sunflower_oil': '1512',
     'canola_oil': '1514',
     'coconut_oil': '1513',
-
-    # Chapter 23 - Residues
     'soybean_meal': '2304',
     'canola_meal': '2306',
-
-    # Chapter 38 - Miscellaneous (Biodiesel)
     'biodiesel': '382600',
 }
+
+
+def _load_hs_codes_from_db() -> List[str]:
+    """Load 10-digit HS codes from silver.trade_commodity_reference."""
+    try:
+        from src.services.database.db_config import get_connection
+        with get_connection() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT DISTINCT hs_code_10 FROM silver.trade_commodity_reference "
+                "WHERE is_active = true ORDER BY hs_code_10"
+            )
+            return [row['hs_code_10'] for row in cur.fetchall()]
+    except Exception as e:
+        logger.warning(f"Could not load HS codes from DB, using defaults: {e}")
+        return []
+
+
+# 10-digit HS codes matching silver.trade_commodity_reference.
+# These are the codes the Census API actually returns and that the
+# gold view pipeline (trade_export_mapped) joins on.
+DEFAULT_HS_CODES_10 = [
+    # Wheat
+    '1001110000', '1001190000', '1001910000', '1001992015', '1001992055',
+    # Barley
+    '1003100000',
+    # Corn
+    '1005100010', '1005902020', '1005902030', '1005902035', '1005904065',
+    # Rice
+    '1006100000', '1006400000',
+    # Sorghum
+    '1007100000', '1007900000',
+    # Soybeans
+    '1201100000', '1201900005', '1201900095',
+    # Peanuts
+    '1202410000',
+    # Flaxseed
+    '1204000000',
+    # Canola
+    '1205100000', '1205900000',
+    # Sunflower seed
+    '1206000020', '1206000031', '1206000061', '1206000069', '1206000090',
+    # Cottonseed
+    '1207210000', '1207290000',
+    # Soy flour
+    '1208100000',
+    # Soybean oil (1507904040 = HTS/imports, 1507904050 = Schedule B/exports)
+    '1507100000', '1507904020', '1507904040', '1507904050',
+    # Palm oil
+    '1511100000', '1511900000',
+    # Sunflower oil
+    '1512110020', '1512190020',
+    # Cottonseed oil
+    '1512210000', '1512290020', '1512290040',
+    # Palm kernel oil
+    '1513290000',
+    # Canola oil
+    '1514110000', '1514190000',
+    # Linseed oil
+    '1515110000', '1515190000',
+    # Corn oil
+    '1515290040',
+    # Other veg oil
+    '1515906000',
+    # Soybean meal / hulls
+    '2302500000', '2304000000',
+    # Corn gluten
+    '2303100010', '2303100020',
+    # DDGS
+    '2303300000',
+    # Canola meal
+    '2306410000', '2306490000',
+    # Cottonseed meal
+    '2306100000',
+    # Sunflower meal
+    '2306300000',
+    # Cotton
+    '5201001090', '5201002030', '5201009000',
+]
 
 
 @dataclass
@@ -75,10 +145,9 @@ class CensusTradeConfig(CollectorConfig):
         default_factory=lambda: os.environ.get('CENSUS_API_KEY')
     )
 
-    # Default HS codes to fetch
-    hs_codes: List[str] = field(default_factory=lambda: [
-        '1001', '1005', '1201', '1507', '2304'  # wheat, corn, soybeans, soy oil, soy meal
-    ])
+    # 10-digit HS codes — loaded from silver.trade_commodity_reference at
+    # init, falling back to DEFAULT_HS_CODES_10 if DB unavailable.
+    hs_codes: List[str] = field(default_factory=lambda: _load_hs_codes_from_db() or DEFAULT_HS_CODES_10)
 
 
 class CensusTradeCollector(BaseCollector):
@@ -201,7 +270,7 @@ class CensusTradeCollector(BaseCollector):
         else:
             commodity_field = 'E_COMMODITY'
             value_field = 'ALL_VAL_MO'
-            qty_field = 'QY1_MO'
+            qty_field = 'QTY_1_MO'  # Census exports use QTY_1_MO (not QY1_MO)
 
         all_records = []
 
@@ -274,6 +343,55 @@ class CensusTradeCollector(BaseCollector):
 
     def parse_response(self, response_data: Any) -> Any:
         return response_data
+
+    def save_to_bronze(self, records: List[Dict]) -> int:
+        """Upsert trade records into bronze.census_trade."""
+        if not records:
+            return 0
+
+        from src.services.database.db_config import get_connection as get_db_connection
+
+        count = 0
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            for rec in records:
+                try:
+                    cur.execute("""
+                        INSERT INTO bronze.census_trade
+                            (year, month, flow, hs_code, country_code, country_name,
+                             value_usd, quantity, source, collected_at)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+                        ON CONFLICT (year, month, flow, hs_code, country_code)
+                        DO UPDATE SET
+                            country_name = EXCLUDED.country_name,
+                            value_usd = EXCLUDED.value_usd,
+                            quantity = EXCLUDED.quantity,
+                            collected_at = NOW()
+                    """, (
+                        rec['year'], rec['month'], rec['flow'],
+                        rec['hs_code'], rec['country_code'], rec['country_name'],
+                        rec.get('value_usd'), rec.get('quantity'),
+                        rec.get('source', 'CENSUS_TRADE'),
+                    ))
+                    count += 1
+                except Exception as e:
+                    self.logger.error(f"Error saving record: {e}")
+                    conn.rollback()
+            conn.commit()
+        self.logger.info(f"Saved {count} records to bronze.census_trade")
+        return count
+
+    def collect(self, **kwargs) -> CollectorResult:
+        """Fetch data and save to bronze."""
+        result = self.fetch_data(**kwargs)
+        if result.success and result.data is not None:
+            if PANDAS_AVAILABLE and hasattr(result.data, 'to_dict'):
+                records = result.data.to_dict('records')
+            else:
+                records = result.data
+            saved = self.save_to_bronze(records)
+            self.logger.info(f"Collected and saved {saved} census trade records")
+        return result
 
     # =========================================================================
     # CONVENIENCE METHODS

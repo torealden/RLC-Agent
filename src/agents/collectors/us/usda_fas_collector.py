@@ -12,6 +12,7 @@ Data sources:
 """
 
 import logging
+import urllib3
 from dataclasses import dataclass, field
 from datetime import datetime, date, timedelta
 from typing import Dict, List, Optional, Any
@@ -23,6 +24,11 @@ from .base_collector import (
     DataFrequency,
     AuthType
 )
+
+# Suppress InsecureRequestWarning — the USDA FAS server at apps.fas.usda.gov
+# has an expired SSL certificate as of March 2026.  We must use verify=False
+# until USDA renews it; this suppresses the per-request warning noise.
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 try:
     import pandas as pd
@@ -113,6 +119,18 @@ class USDATFASCollector(BaseCollector):
         config = config or USDATFASConfig()
         super().__init__(config)
         self.config: USDATFASConfig = config
+
+    def _create_session(self):
+        """Create HTTP session with SSL verification disabled.
+
+        Override: apps.fas.usda.gov has an expired SSL certificate as of
+        March 2026.  Disable verify so requests don't raise
+        SSLCertVerificationError.  Remove this override once USDA renews
+        the certificate.
+        """
+        session = super()._create_session()
+        session.verify = False
+        return session
 
     def get_table_name(self) -> str:
         return "export_sales"

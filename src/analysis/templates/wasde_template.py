@@ -88,21 +88,34 @@ class WASDeAnalysisTemplate(BaseAnalysisTemplate):
         with self._get_connection() as conn:
             cur = conn.cursor()
 
-            # US balance sheets: two most recent report_date per commodity
+            # US balance sheets: two most recent report_date per commodity+MY
+            # Partition by commodity AND marketing_year so we compare the
+            # same MY across two report dates (true MoM WASDE revision).
             cur.execute("""
-                WITH ranked AS (
-                    SELECT commodity, marketing_year, report_date,
-                           production, total_supply, beginning_stocks,
-                           imports, domestic_consumption, feed_dom_consumption,
-                           fsi_consumption, exports, ending_stocks, crush,
-                           ROW_NUMBER() OVER (
-                               PARTITION BY commodity
-                               ORDER BY report_date DESC, marketing_year DESC
-                           ) as rn
+                WITH latest_my AS (
+                    SELECT commodity,
+                           MAX(marketing_year) as marketing_year
                     FROM bronze.fas_psd
                     WHERE country_code = 'US'
                       AND commodity IN ('corn', 'soybeans', 'wheat')
                       AND ending_stocks IS NOT NULL
+                    GROUP BY commodity
+                ),
+                ranked AS (
+                    SELECT f.commodity, f.marketing_year, f.report_date,
+                           f.production, f.total_supply, f.beginning_stocks,
+                           f.imports, f.domestic_consumption, f.feed_dom_consumption,
+                           f.fsi_consumption, f.exports, f.ending_stocks, f.crush,
+                           ROW_NUMBER() OVER (
+                               PARTITION BY f.commodity, f.marketing_year
+                               ORDER BY f.report_date DESC
+                           ) as rn
+                    FROM bronze.fas_psd f
+                    JOIN latest_my lm
+                      ON f.commodity = lm.commodity
+                     AND f.marketing_year = lm.marketing_year
+                    WHERE f.country_code = 'US'
+                      AND f.ending_stocks IS NOT NULL
                 )
                 SELECT r1.commodity, r1.marketing_year, r1.rn,
                        r1.report_date, r1.production, r1.total_supply,
@@ -143,20 +156,31 @@ class WASDeAnalysisTemplate(BaseAnalysisTemplate):
                 if rn == 2 and prior_date is None:
                     prior_date = str(row['report_date'])
 
-            # Global S&D: Brazil, Argentina, China (two most recent)
+            # Global S&D: Brazil, Argentina, China — same MY, two report dates
             cur.execute("""
-                WITH ranked AS (
-                    SELECT commodity, country_code, marketing_year, report_date,
-                           production, exports, ending_stocks,
-                           domestic_consumption,
-                           ROW_NUMBER() OVER (
-                               PARTITION BY commodity, country_code
-                               ORDER BY report_date DESC, marketing_year DESC
-                           ) as rn
+                WITH latest_my AS (
+                    SELECT commodity, country_code,
+                           MAX(marketing_year) as marketing_year
                     FROM bronze.fas_psd
                     WHERE country_code IN ('BR', 'AR', 'CH')
                       AND commodity IN ('corn', 'soybeans', 'wheat')
                       AND ending_stocks IS NOT NULL
+                    GROUP BY commodity, country_code
+                ),
+                ranked AS (
+                    SELECT f.commodity, f.country_code, f.marketing_year,
+                           f.report_date, f.production, f.exports,
+                           f.ending_stocks, f.domestic_consumption,
+                           ROW_NUMBER() OVER (
+                               PARTITION BY f.commodity, f.country_code, f.marketing_year
+                               ORDER BY f.report_date DESC
+                           ) as rn
+                    FROM bronze.fas_psd f
+                    JOIN latest_my lm
+                      ON f.commodity = lm.commodity
+                     AND f.country_code = lm.country_code
+                     AND f.marketing_year = lm.marketing_year
+                    WHERE f.ending_stocks IS NOT NULL
                 )
                 SELECT commodity, country_code, rn, report_date,
                        production, exports, ending_stocks, domestic_consumption
@@ -214,6 +238,10 @@ class WASDeAnalysisTemplate(BaseAnalysisTemplate):
             'delta_summary': self._build_delta_summary(us),
             'global_context': self._build_global_context(data.get('global_sd', {})),
             'is_august_wasde': 'Yes' if is_august else 'No',
+            'chart_specs': [
+                {'type': 'balance_sheet_bars', 'commodities': ['corn', 'soybeans', 'wheat']},
+                {'type': 'cftc_positioning'},
+            ],
         }
 
     # ------------------------------------------------------------------

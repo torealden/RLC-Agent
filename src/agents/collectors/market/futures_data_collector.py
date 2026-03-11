@@ -52,7 +52,7 @@ class FuturesDataConfig(CollectorConfig):
 
     commodities: List[str] = field(default_factory=lambda: [
         'corn', 'wheat_srw', 'wheat_hrw', 'soybeans', 'soybean_meal', 'soybean_oil',
-        'crude_oil', 'natural_gas', 'ethanol'
+        'crude_oil', 'natural_gas', 'ethanol', 'palm_oil'
     ])
 
 

@@ -334,6 +334,16 @@ class CollectorRunner:
                         except Exception as e:
                             logger.debug(f"Pace calc skipped for {collector_name}: {e}")
 
+                    # Record auto-actuals for forecast tracker (best-effort)
+                    if run_result.success and run_result.is_new_data:
+                        try:
+                            from src.services.forecast.auto_actuals import run_auto_actuals
+                            n_actuals = run_auto_actuals(collector_name)
+                            if n_actuals > 0:
+                                details['auto_actuals'] = n_actuals
+                        except Exception as e:
+                            logger.debug(f"Auto-actuals skipped for {collector_name}: {e}")
+
                     # Run analysis pipeline for supported collectors (best-effort)
                     if run_result.success and run_result.is_new_data:
                         try:

@@ -10,6 +10,7 @@ Usage:
     python -m src.dispatcher status         # Show data freshness
     python -m src.dispatcher list           # List registered collectors
     python -m src.dispatcher schedule       # Show weekly schedule
+    python -m src.dispatcher backfill       # Backfill historical data
 """
 
 import argparse
@@ -23,6 +24,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+# Load environment variables so collectors have API keys
+from dotenv import load_dotenv
+load_dotenv(PROJECT_ROOT / ".env")
+
 
 def setup_logging(level: str = "INFO"):
     logging.basicConfig(
@@ -34,18 +39,24 @@ def setup_logging(level: str = "INFO"):
 
 def cmd_start(args):
     """Start the dispatcher daemon."""
+    import os
     from src.dispatcher.dispatcher import Dispatcher
+
+    # Write PID file so watchdog can find us
+    pid_file = PROJECT_ROOT / 'scripts' / 'deployment' / 'dispatcher.pid'
+    pid_file.write_text(str(os.getpid()))
 
     dispatcher = Dispatcher()
     dispatcher.start()
 
-    print(f"\nDispatcher running. Press Ctrl+C to stop.\n")
+    print(f"\nDispatcher running (PID {os.getpid()}). Press Ctrl+C to stop.\n")
     print(dispatcher.get_schedule_summary())
 
     # Handle graceful shutdown
     def shutdown(sig, frame):
         print("\nShutting down...")
         dispatcher.stop()
+        pid_file.unlink(missing_ok=True)
         sys.exit(0)
 
     signal.signal(signal.SIGINT, shutdown)
@@ -57,6 +68,7 @@ def cmd_start(args):
             time.sleep(60)
     except (KeyboardInterrupt, SystemExit):
         dispatcher.stop()
+        pid_file.unlink(missing_ok=True)
 
 
 def cmd_run(args):
@@ -192,6 +204,25 @@ def cmd_schedule(args):
     print(dispatcher.get_schedule_summary())
 
 
+def cmd_backfill(args):
+    """Run historical data backfill."""
+    from src.dispatcher.backfill import BackfillRunner
+
+    # Parse tier list
+    tiers = None
+    if args.tier:
+        tiers = [int(t.strip()) for t in args.tier.split(',')]
+
+    runner = BackfillRunner(delay_override=args.delay)
+    runner.run(
+        tiers=tiers,
+        collectors=args.collectors,
+        since_days=args.since,
+        resume=args.resume,
+        dry_run=args.dry_run,
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='RLC-Agent Dispatcher — Automated Data Collection',
@@ -225,6 +256,21 @@ def main():
     # schedule
     subparsers.add_parser('schedule', help='Show weekly schedule')
 
+    # backfill
+    bf_parser = subparsers.add_parser('backfill', help='Backfill historical data')
+    bf_parser.add_argument('--tier', type=str, default=None,
+                           help='Tier(s) to run: 1, 2, 3, or comma-separated (e.g., 1,2)')
+    bf_parser.add_argument('--collectors', nargs='+', default=None,
+                           help='Specific collector(s) to backfill')
+    bf_parser.add_argument('--since', type=int, default=None,
+                           help='Disaster recovery: backfill last N days only')
+    bf_parser.add_argument('--resume', action='store_true',
+                           help='Resume interrupted backfill (skip completed tasks)')
+    bf_parser.add_argument('--dry-run', action='store_true',
+                           help='Show plan without executing')
+    bf_parser.add_argument('--delay', type=int, default=None,
+                           help='Override inter-chunk delay (seconds)')
+
     args = parser.parse_args()
 
     if not args.command:
@@ -240,6 +286,7 @@ def main():
         'status': cmd_status,
         'list': cmd_list,
         'schedule': cmd_schedule,
+        'backfill': cmd_backfill,
     }
 
     commands[args.command](args)

@@ -28,6 +28,8 @@ from .base_collector import (
     AuthType
 )
 
+from src.services.database.db_config import get_connection as get_db_connection
+
 try:
     import pandas as pd
     PANDAS_AVAILABLE = True
@@ -136,6 +138,20 @@ class MAGyPCollector(BaseCollector):
 
     def get_table_name(self) -> str:
         return "magyp_argentina"
+
+    def collect(self, start_date=None, end_date=None, use_cache=True, **kwargs):
+        """Override collect to save results to bronze after fetching."""
+        result = super().collect(start_date, end_date, use_cache, **kwargs)
+        if result.success and result.data is not None and not getattr(result, 'from_cache', False):
+            try:
+                records = result.data.to_dict('records') if hasattr(result.data, 'to_dict') else result.data
+                if records:
+                    data_type = kwargs.get('data_type', 'stocks')
+                    saved = self.save_to_bronze(records, data_type=data_type)
+                    result.records_fetched = saved
+            except Exception as e:
+                self.logger.error(f"Bronze save failed (data still returned): {e}")
+        return result
 
     def fetch_data(
         self,
@@ -568,6 +584,62 @@ class MAGyPCollector(BaseCollector):
     def parse_response(self, response_data: Any) -> Any:
         """Parse API response"""
         return response_data
+
+    def save_to_bronze(self, records: list, data_type: str = 'stocks') -> int:
+        """Upsert records to bronze.magyp_argentina."""
+        if not records:
+            return 0
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            count = 0
+            for rec in records:
+                dt = rec.get('data_type', data_type)
+                cur.execute("""
+                    INSERT INTO bronze.magyp_argentina
+                        (commodity, country, data_type, crop_year, report_date,
+                         province, production_tonnes, planted_area_ha,
+                         harvested_area_ha, yield_kg_ha, stocks_tonnes,
+                         production_mmt, area_mha, estimate_type,
+                         source, note, collected_at)
+                    VALUES
+                        (%(commodity)s, %(country)s, %(data_type)s, %(crop_year)s,
+                         %(report_date)s, %(province)s, %(production_tonnes)s,
+                         %(planted_area_ha)s, %(harvested_area_ha)s,
+                         %(yield_kg_ha)s, %(stocks_tonnes)s,
+                         %(production_mmt)s, %(area_mha)s,
+                         %(estimate_type)s, %(source)s, %(note)s, NOW())
+                    ON CONFLICT (commodity, data_type, crop_year, report_date, province)
+                    DO UPDATE SET
+                        production_tonnes = EXCLUDED.production_tonnes,
+                        planted_area_ha = EXCLUDED.planted_area_ha,
+                        harvested_area_ha = EXCLUDED.harvested_area_ha,
+                        yield_kg_ha = EXCLUDED.yield_kg_ha,
+                        stocks_tonnes = EXCLUDED.stocks_tonnes,
+                        production_mmt = EXCLUDED.production_mmt,
+                        area_mha = EXCLUDED.area_mha,
+                        collected_at = NOW()
+                """, {
+                    'commodity': rec.get('commodity', ''),
+                    'country': rec.get('country', 'AR'),
+                    'data_type': dt,
+                    'crop_year': rec.get('crop_year', ''),
+                    'report_date': rec.get('date', rec.get('report_date', '')),
+                    'province': rec.get('province', ''),
+                    'production_tonnes': rec.get('production_tonnes'),
+                    'planted_area_ha': rec.get('planted_area_ha'),
+                    'harvested_area_ha': rec.get('harvested_area_ha'),
+                    'yield_kg_ha': rec.get('yield_kg_ha'),
+                    'stocks_tonnes': rec.get('stocks_tonnes'),
+                    'production_mmt': rec.get('production_mmt'),
+                    'area_mha': rec.get('area_mha'),
+                    'estimate_type': rec.get('estimate_type', ''),
+                    'source': rec.get('source', 'MAGyP'),
+                    'note': rec.get('note', ''),
+                })
+                count += 1
+            conn.commit()
+            self.logger.info(f"Saved {count} records to bronze.magyp_argentina")
+            return count
 
     # =========================================================================
     # CONVENIENCE METHODS

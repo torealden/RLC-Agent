@@ -24,6 +24,24 @@ logger = logging.getLogger(__name__)
 # Only the module path and class name are stored — actual imports are lazy.
 
 COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
+    # === Daily Futures ===
+    'yfinance_futures': {
+        'module': 'src.agents.collectors.market.yfinance_daily_collector',
+        'class': 'YFinanceDailyCollector',
+    },
+    'futures_overnight': {
+        'module': 'src.agents.collectors.market.futures_data_collector',
+        'class': 'FuturesDataCollector',
+    },
+    'futures_us_session': {
+        'module': 'src.agents.collectors.market.futures_data_collector',
+        'class': 'FuturesDataCollector',
+    },
+    'futures_settlement': {
+        'module': 'src.agents.collectors.market.futures_data_collector',
+        'class': 'FuturesDataCollector',
+    },
+
     # === CORE 5 (Phase 1 priority) ===
     'cftc_cot': {
         'module': 'src.agents.collectors.us.cftc_cot_collector',
@@ -36,6 +54,8 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
     'usda_wasde': {
         'module': 'src.agents.collectors.us.usda_wasde_collector',
         'class': 'USDAWASPECollector',
+        # NOTE: WASDE data comes via FAS PSD API — this collector
+        # is a dedicated PSD puller. Class name typo is original.
     },
     'cme_settlements': {
         'module': 'src.agents.collectors.market.cme_settlements_collector',
@@ -114,7 +134,33 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'class': 'WheatDataCollector',
     },
 
-    # === South America (not yet in RELEASE_SCHEDULES but available) ===
+    # === Cash Prices (AMS structured) ===
+    'usda_ams_cash_prices': {
+        'module': 'src.agents.collectors.us.ams_cash_price_collector',
+        'class': 'AMSCashPriceCollector',
+    },
+
+    # === South America — Tier 2 (newly wired) ===
+    'argentina_magyp': {
+        'module': 'src.agents.collectors.south_america.magyp_collector',
+        'class': 'MAGyPCollector',
+    },
+    'brazil_ibge_sidra': {
+        'module': 'src.agents.collectors.south_america.ibge_sidra_collector',
+        'class': 'IBGESIDRACollector',
+    },
+    'brazil_imea': {
+        'module': 'src.agents.collectors.south_america.imea_collector',
+        'class': 'IMEACollector',
+    },
+
+    # === Global — Tier 2 (newly wired) ===
+    'faostat': {
+        'module': 'src.agents.collectors.global.faostat_collector',
+        'class': 'FAOSTATCollector',
+    },
+
+    # === South America (existing) ===
     'conab': {
         'module': 'src.agents.collectors.south_america.conab_collector',
         'class': 'CONABCollector',
@@ -122,6 +168,32 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
     'anec': {
         'module': 'src.agents.collectors.south_america.anec_collector',
         'class': 'ANECCollector',
+    },
+
+    # === Yield Model ===
+    'yield_forecast': {
+        'module': 'src.agents.collectors.us.yield_forecast_collector',
+        'class': 'YieldForecastCollector',
+    },
+
+    # === Weather Intelligence ===
+    'weather_daily_summary': {
+        'module': 'src.agents.collectors.us.weather_summary_collector',
+        'class': 'WeatherSummaryCollector',
+    },
+
+    # === Tier 1 New Collectors ===
+    'fgis_inspections': {
+        'module': 'src.agents.collectors.us.fgis_inspections_collector',
+        'class': 'FGISInspectionsCollector',
+    },
+    'brazil_comexstat': {
+        'module': 'src.agents.collectors.south_america.comexstat_collector',
+        'class': 'ComexStatCollector',
+    },
+    'argentina_indec': {
+        'module': 'src.agents.collectors.south_america.indec_collector',
+        'class': 'INDECCollector',
     },
 }
 

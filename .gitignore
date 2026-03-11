@@ -93,3 +93,10 @@ OBS_recordings/
 *.tmp
 *.bak
 *.log
+
+# Runtime PID files
+*.pid
+
+# Word temp files
+~$*.docx
+~$*.xlsx

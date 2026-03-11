@@ -115,15 +115,13 @@ class ReportPipeline:
             logger.info("Pipeline %s stage 2: LLM call", run_id)
             self._stage_llm(result, prompt_context)
 
-            # Stage 3: Chart generation (stub)
-            logger.info("Pipeline %s stage 3: charts (stub)", run_id)
-            # Phase 2.5: chart_paths = generate_charts(...)
-            result.chart_paths = []
+            # Stage 3: Chart generation
+            logger.info("Pipeline %s stage 3: charts", run_id)
+            result.chart_paths = self._stage_charts(prompt_context)
 
-            # Stage 4: .docx assembly (stub)
-            logger.info("Pipeline %s stage 4: docx (stub)", run_id)
-            # Phase 2.5: docx_path = assemble_docx(...)
-            result.docx_path = None
+            # Stage 4: Document assembly & publish
+            logger.info("Pipeline %s stage 4: publish", run_id)
+            self._stage_publish(result)
 
             # Stage 5: Validate narrative
             logger.info("Pipeline %s stage 5: validation", run_id)
@@ -285,6 +283,58 @@ class ReportPipeline:
                             result.pipeline_run_id)
         except Exception as e:
             logger.error("Failed to log report_generated event: %s", e)
+
+    # ------------------------------------------------------------------
+    # Stage 3: Charts
+    # ------------------------------------------------------------------
+
+    def _stage_charts(self, prompt_context: Dict) -> List[str]:
+        """Generate charts for the report using the graphics generator."""
+        try:
+            from src.agents.graphics_generator_agent import GraphicsGeneratorAgent
+            agent = GraphicsGeneratorAgent()
+            return agent.generate_report_charts(self.template.report_type)
+        except ImportError:
+            logger.debug("Graphics generator not available, skipping charts")
+            return []
+        except Exception as e:
+            logger.debug(f"Chart generation skipped: {e}")
+            return []
+
+    # ------------------------------------------------------------------
+    # Stage 4: Publish
+    # ------------------------------------------------------------------
+
+    def _stage_publish(self, result: 'PipelineResult'):
+        """Assemble report and save to file (default channel)."""
+        try:
+            if not result.llm_narrative:
+                return
+
+            from src.agents.publishing.publisher import Publisher, Report
+
+            report = Report(
+                title=f"{self.template.report_type.upper()} Analysis — "
+                      f"{result.started_at.strftime('%B %Y')}",
+                report_type=self.template.report_type,
+                narrative=result.llm_narrative,
+                charts=result.chart_paths,
+                metadata={
+                    'triggered_by': result.triggered_by,
+                    'pipeline_run_id': str(result.pipeline_run_id),
+                    'template_id': result.template_id,
+                },
+            )
+
+            publisher = Publisher()
+            pub_result = publisher.publish(report, channels=['file'])
+
+            if pub_result.file_paths:
+                result.docx_path = pub_result.file_paths[0]
+                logger.info("Report published to: %s", pub_result.file_paths)
+
+        except Exception as e:
+            logger.debug(f"Publish stage skipped: {e}")
 
     # ------------------------------------------------------------------
     # Helpers

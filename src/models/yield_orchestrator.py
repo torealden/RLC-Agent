@@ -154,7 +154,14 @@ class YieldOrchestrator:
             self.model.save_predictions(all_predictions, run_id=run_id)
             logger.info(f"Saved {len(all_predictions)} predictions to gold.yield_forecast")
 
-        # Step 5: Check for significant changes
+        # Step 5: Record to forecast tracker
+        forecast_count = self._record_to_forecast_tracker(
+            all_predictions, year, week, run_id
+        )
+        if forecast_count > 0:
+            logger.info(f"Recorded {forecast_count} forecasts to tracker")
+
+        # Step 6: Check for significant changes
         alerts = self._check_alerts(all_predictions)
         if alerts:
             logger.info(f"ALERTS ({len(alerts)}):")
@@ -722,6 +729,59 @@ class YieldOrchestrator:
         finally:
             cur.close()
             conn.close()
+
+    def _record_to_forecast_tracker(self, predictions, year: int,
+                                      week: int, run_id: str) -> int:
+        """Record yield predictions into the forecast tracker for accuracy tracking."""
+        try:
+            from src.services.forecast.tracker import ForecastTracker, Forecast
+            tracker = ForecastTracker()
+            count = 0
+
+            # Compute national averages per crop (ensemble only)
+            crop_avgs = {}
+            for p in predictions:
+                if not hasattr(p, 'model_type') or p.model_type != 'ensemble':
+                    # If no model_type attr, include all predictions
+                    pass
+                key = getattr(p, 'commodity', 'unknown')
+                if key not in crop_avgs:
+                    crop_avgs[key] = []
+                crop_avgs[key].append(p.yield_forecast)
+
+            forecast_date = date.today().isoformat()
+            target_date = f"{year}-09-01"  # Growing season target
+
+            for crop, yields in crop_avgs.items():
+                if not yields:
+                    continue
+                avg_yield = round(float(np.mean(yields)), 1)
+                forecast = Forecast(
+                    forecast_id=None,
+                    forecast_date=forecast_date,
+                    target_date=target_date,
+                    commodity=crop.lower().replace('_all', ''),
+                    country='US',
+                    forecast_type='yield',
+                    value=avg_yield,
+                    unit='bu/acre',
+                    marketing_year=f"{year}/{str(year+1)[-2:]}",
+                    notes=f"Week {week} ensemble, run_id={run_id}",
+                    source='model_yield_ensemble',
+                )
+                try:
+                    tracker.record_forecast(forecast)
+                    count += 1
+                except Exception as e:
+                    logger.debug(f"Forecast tracker skip {crop}: {e}")
+
+            return count
+        except ImportError:
+            logger.debug("Forecast tracker not available")
+            return 0
+        except Exception as e:
+            logger.debug(f"Forecast tracker failed: {e}")
+            return 0
 
     def _check_alerts(self, predictions) -> list:
         """Check for significant week-over-week changes."""

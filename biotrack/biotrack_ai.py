@@ -1031,7 +1031,7 @@ cameras_df = pd.read_sql("""
     SELECT name, location, railroad, source_type
     FROM cameras WHERE active = 1
 """, conn)
-st.dataframe(cameras_df, use_container_width=True)
+st.dataframe(cameras_df, width="stretch")
 
 # Recent detections
 st.subheader("Recent Detections")
@@ -1043,7 +1043,7 @@ detections_df = pd.read_sql("""
     ORDER BY f.timestamp DESC
     LIMIT 100
 """, conn)
-st.dataframe(detections_df, use_container_width=True)
+st.dataframe(detections_df, width="stretch")
 
 conn.close()
 '''

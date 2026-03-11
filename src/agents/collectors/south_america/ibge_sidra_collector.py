@@ -26,6 +26,8 @@ from .base_collector import (
     AuthType
 )
 
+from src.services.database.db_config import get_connection as get_db_connection
+
 try:
     import pandas as pd
     PANDAS_AVAILABLE = True
@@ -37,9 +39,10 @@ logger = logging.getLogger(__name__)
 
 # SIDRA table codes for agricultural data
 SIDRA_TABLES = {
-    # PAM - Produção Agrícola Municipal (Annual)
+    # PAM - Produção Agrícola Municipal (Annual) - Table 1612
     'pam_temp_crops': {
-        'table': 5457,
+        'table': 1612,
+        'classification': 'c81',   # Produto das lavouras temporárias
         'description': 'Temporary crops - area, production, yield',
         'frequency': 'annual',
         'variables': {
@@ -50,36 +53,27 @@ SIDRA_TABLES = {
             '215': 'value_1000_brl',
         }
     },
-    'pam_perm_crops': {
-        'table': 1613,
-        'description': 'Permanent crops - area, production, yield',
-        'frequency': 'annual',
-    },
     # LSPA - Levantamento Sistemático (Monthly estimates)
-    'lspa_area': {
+    'lspa': {
         'table': 6588,
-        'description': 'Monthly crop area estimates',
-        'frequency': 'monthly',
-    },
-    'lspa_production': {
-        'table': 6588,
+        'classification': 'c782',
         'description': 'Monthly production estimates',
         'frequency': 'monthly',
     },
 }
 
-# IBGE product codes for commodities
+# IBGE product codes for c81 classification (PAM table 1612)
 IBGE_PRODUCT_CODES = {
-    'soybeans': '39',
-    'corn': '633',  # Milho (em grão)
-    'wheat': '695',
-    'rice': '117',
-    'cotton': '52',  # Algodão herbáceo (em caroço)
-    'sorghum': '40',
-    'barley': '59',
-    'beans': '83',  # Feijão (em grão)
-    'sugarcane': '151',
-    'coffee': '124',
+    'soybeans': '2713',    # Soja (em grão)
+    'corn': '2711',        # Milho (em grão)
+    'wheat': '2716',       # Trigo (em grão)
+    'rice': '2692',        # Arroz (em casca)
+    'cotton': '2689',      # Algodão herbáceo (em caroço)
+    'sorghum': '2714',     # Sorgo (em grão)
+    'barley': '2699',      # Cevada (em grão)
+    'beans': '2702',       # Feijão (em grão)
+    'sugarcane': '2696',   # Cana-de-açúcar
+    'oats': '2693',        # Aveia (em grão)
 }
 
 # Brazilian state codes
@@ -138,6 +132,19 @@ class IBGESIDRACollector(BaseCollector):
     def get_table_name(self) -> str:
         return "ibge_sidra"
 
+    def collect(self, start_date=None, end_date=None, use_cache=True, **kwargs):
+        """Override collect to save results to bronze after fetching."""
+        result = super().collect(start_date, end_date, use_cache, **kwargs)
+        if result.success and result.data is not None and not getattr(result, 'from_cache', False):
+            try:
+                records = result.data.to_dict('records') if hasattr(result.data, 'to_dict') else result.data
+                if records:
+                    saved = self.save_to_bronze(records)
+                    result.records_fetched = saved
+            except Exception as e:
+                self.logger.error(f"Bronze save failed (data still returned): {e}")
+        return result
+
     def fetch_data(
         self,
         start_date: date = None,
@@ -195,16 +202,16 @@ class IBGESIDRACollector(BaseCollector):
         """
         Fetch PAM (Municipal Agricultural Production) data.
 
-        API format: /t/{table}/n{geo_level}/{geo_codes}/v/{variables}/p/{periods}/c{class}/{items}
+        Uses table 1612 with c81 classification (lavouras temporárias).
+        API format: /t/{table}/n{geo_level}/{geo_codes}/v/{variables}/p/{periods}/c81/{items}
 
-        Example:
-        /t/5457/n3/all/v/214/p/2020,2021,2022/c782/39
+        SIDRA response dimensions for table 1612:
+          D1 = State, D2 = Variable, D3 = Year, D4 = Product
         """
         all_records = []
         warnings = []
 
-        # Table 5457 - Temporary crops
-        table = 5457
+        table = 1612
 
         # Variable codes
         var_codes = {
@@ -222,7 +229,7 @@ class IBGESIDRACollector(BaseCollector):
             if state in BR_STATE_CODES:
                 geo_codes.append(str(BR_STATE_CODES[state]))
 
-        # Build product codes
+        # Build product codes (c81 classification)
         product_codes = []
         for commodity in commodities:
             if commodity in IBGE_PRODUCT_CODES:
@@ -241,16 +248,14 @@ class IBGESIDRACollector(BaseCollector):
         # Build years list
         years = ','.join(str(y) for y in range(start_year, end_year + 1))
 
-        # Build API URL
-        # /t/{table}/n{level}/{codes}/v/{var}/p/{periods}/c{class}/{items}
-        # n3 = state level, c782 = products
+        # /t/1612/n3/{states}/v/{var}/p/{years}/c81/{products}
         url = (
             f"{self.config.api_base}"
             f"/t/{table}"
             f"/n3/{','.join(geo_codes)}"
             f"/v/{var_code}"
             f"/p/{years}"
-            f"/c782/{','.join(product_codes)}"
+            f"/c81/{','.join(product_codes)}"
         )
 
         response, error = self._make_request(url)
@@ -274,10 +279,8 @@ class IBGESIDRACollector(BaseCollector):
         try:
             data = response.json()
 
-            # SIDRA returns array of records
-            # First record is header with metadata
+            # SIDRA returns array; first element is header metadata
             if isinstance(data, list) and len(data) > 1:
-                # Skip header row
                 for record in data[1:]:
                     parsed = self._parse_sidra_record(record, variable)
                     if parsed:
@@ -393,39 +396,49 @@ class IBGESIDRACollector(BaseCollector):
         )
 
     def _parse_sidra_record(self, record: Dict, variable: str) -> Optional[Dict]:
-        """Parse SIDRA API response record"""
-        try:
-            # SIDRA returns dict with various fields
-            # Common fields: NC (level), NN (name), D1C/D1N (dimension 1), V (value)
+        """
+        Parse SIDRA API response record.
 
-            # Extract state
+        Table 1612 dimensions:
+          D1C/D1N = State (Unidade da Federação)
+          D2C/D2N = Variable (e.g. 214 = Quantidade produzida)
+          D3C/D3N = Year (Ano)
+          D4C/D4N = Product (Produto das lavouras temporárias)
+          V = Value
+          MN = Unit of measure
+        """
+        try:
+            value = record.get('V', '')
+            # Skip records with no data
+            if value in ('', '-', '...', None):
+                return None
+
+            # D1 = State
             state_code = record.get('D1C', '')
             state_name = record.get('D1N', '')
 
-            # Extract product
-            product_code = record.get('D3C', record.get('D2C', ''))
-            product_name = record.get('D3N', record.get('D2N', ''))
+            # D3 = Year
+            year_str = record.get('D3C', '')
 
-            # Extract year/period
-            period = record.get('D2C', record.get('D4C', ''))
-            period_name = record.get('D2N', record.get('D4N', ''))
+            # D4 = Product
+            product_code = record.get('D4C', '')
+            product_name = record.get('D4N', '')
 
-            # Extract value
-            value = record.get('V', '')
-
-            # Reverse lookup commodity name
+            # Reverse lookup commodity name from c81 codes
             commodity = None
             for name, code in IBGE_PRODUCT_CODES.items():
                 if code == product_code:
                     commodity = name
                     break
 
-            # Reverse lookup state code
+            # Reverse lookup state abbreviation
             state = None
             for abbr, code in BR_STATE_CODES.items():
                 if str(code) == state_code:
                     state = abbr
                     break
+
+            unit = record.get('MN', '')
 
             return {
                 'commodity': commodity or product_name,
@@ -433,11 +446,12 @@ class IBGESIDRACollector(BaseCollector):
                 'product_name': product_name,
                 'state': state or state_code,
                 'state_name': state_name,
-                'year': period[:4] if len(period) >= 4 else period,
-                'period': period,
-                'period_name': period_name,
+                'year': year_str[:4] if len(year_str) >= 4 else year_str,
+                'period': year_str,
+                'period_name': record.get('D3N', ''),
                 'variable': variable,
                 'value': self._safe_float(value),
+                'unit': unit,
                 'source': 'IBGE_SIDRA',
                 'collected_at': datetime.now().isoformat()
             }
@@ -457,6 +471,50 @@ class IBGESIDRACollector(BaseCollector):
     def parse_response(self, response_data: Any) -> Any:
         """Parse API response"""
         return response_data
+
+    def save_to_bronze(self, records: list) -> int:
+        """Upsert records to bronze.ibge_sidra."""
+        if not records:
+            return 0
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            count = 0
+            for rec in records:
+                year_val = rec.get('year', '')
+                try:
+                    year_int = int(str(year_val)[:4]) if year_val else None
+                except (ValueError, TypeError):
+                    year_int = None
+                cur.execute("""
+                    INSERT INTO bronze.ibge_sidra
+                        (commodity, product_code, product_name,
+                         state, state_name, year, period, period_name,
+                         variable, value, source, collected_at)
+                    VALUES
+                        (%(commodity)s, %(product_code)s, %(product_name)s,
+                         %(state)s, %(state_name)s, %(year)s, %(period)s, %(period_name)s,
+                         %(variable)s, %(value)s, %(source)s, NOW())
+                    ON CONFLICT (commodity, state, period, variable)
+                    DO UPDATE SET
+                        value = EXCLUDED.value,
+                        collected_at = NOW()
+                """, {
+                    'commodity': rec.get('commodity', ''),
+                    'product_code': rec.get('product_code', ''),
+                    'product_name': rec.get('product_name', ''),
+                    'state': rec.get('state', ''),
+                    'state_name': rec.get('state_name', ''),
+                    'year': year_int,
+                    'period': rec.get('period', ''),
+                    'period_name': rec.get('period_name', ''),
+                    'variable': rec.get('variable', ''),
+                    'value': rec.get('value'),
+                    'source': rec.get('source', 'IBGE_SIDRA'),
+                })
+                count += 1
+            conn.commit()
+            self.logger.info(f"Saved {count} records to bronze.ibge_sidra")
+            return count
 
     # =========================================================================
     # CONVENIENCE METHODS

@@ -652,6 +652,289 @@ def get_kg_relationships(node_key: str, edge_type: str = None,
 
 
 # ============================================================================
+# REPORT GENERATION TOOLS
+# ============================================================================
+
+def generate_report(report_type: str, commodity: str = None,
+                    country: str = 'US', include_kg: bool = True) -> str:
+    """
+    Generate an analytical report using the template pipeline.
+
+    Supported report_type values:
+        - 'wasde'           Full WASDE analysis with balance sheets and KG context
+        - 'crop_progress'   Current crop conditions vs 5-year averages
+        - 'ethanol'         Ethanol production, stocks, and margin analysis
+        - 'positioning'     CFTC managed money positioning summary
+
+    Args:
+        report_type: Type of report to generate
+        commodity: Optional commodity filter (e.g. 'corn', 'soybeans')
+        country: Country code (default 'US')
+        include_kg: Whether to include Knowledge Graph analyst context
+
+    Returns:
+        JSON with report sections, data tables, and optional KG context
+    """
+    try:
+        if report_type == 'wasde':
+            return _generate_wasde_report(commodity, country, include_kg)
+        elif report_type == 'crop_progress':
+            return _generate_crop_progress_report(commodity)
+        elif report_type == 'ethanol':
+            return _generate_ethanol_report()
+        elif report_type == 'positioning':
+            return _generate_positioning_report(commodity)
+        else:
+            return json.dumps({
+                "error": f"Unknown report_type: {report_type}",
+                "supported": ["wasde", "crop_progress", "ethanol", "positioning"]
+            })
+    except Exception as e:
+        return json.dumps({"error": str(e)}, default=json_serializer)
+
+
+def _generate_wasde_report(commodity: str = None, country: str = 'US',
+                           include_kg: bool = True) -> str:
+    """Generate WASDE balance sheet analysis using the analysis template."""
+    try:
+        from src.analysis.templates.wasde_template import WASDeAnalysisTemplate
+        template = WASDeAnalysisTemplate()
+
+        if not template.check_data_ready():
+            return json.dumps({"error": "WASDE data not ready — no recent report data in bronze.fas_psd"})
+
+        context = template.build_prompt_context()
+        analysis = context.get('analysis', {})
+
+        # Build result
+        result = {
+            "report_type": "wasde",
+            "report_date": analysis.get('report_date'),
+            "marketing_year": analysis.get('marketing_year'),
+            "balance_sheet_table": analysis.get('balance_sheet_table'),
+            "delta_summary": analysis.get('delta_summary'),
+            "global_context": analysis.get('global_context'),
+            "is_august_wasde": analysis.get('is_august_wasde', False),
+        }
+
+        if include_kg:
+            kg_context = context.get('kg_context', {})
+            kg_summary = {}
+            for node_key, enriched in kg_context.items():
+                node = enriched.get('node', {})
+                contexts = enriched.get('contexts', [])
+                kg_summary[node_key] = {
+                    'label': node.get('label', node_key),
+                    'top_contexts': [
+                        {'type': c.get('context_type'), 'value': c.get('context_value')}
+                        for c in contexts[:3]
+                    ]
+                }
+            result['kg_context'] = kg_summary
+
+        return json.dumps(result, indent=2, default=json_serializer)
+
+    except Exception as e:
+        return json.dumps({"error": f"WASDE report generation failed: {e}"}, default=json_serializer)
+
+
+def _generate_crop_progress_report(commodity: str = None) -> str:
+    """Generate crop conditions report from NASS data."""
+    commodities = [commodity] if commodity else ['corn', 'soybeans', 'wheat']
+    sections = {}
+
+    for comm in commodities:
+        # Current condition
+        condition_sql = """
+            SELECT state, week_ending, excellent, good, fair, poor, very_poor,
+                   (COALESCE(excellent, 0) + COALESCE(good, 0)) as good_excellent
+            FROM bronze.nass_crop_condition
+            WHERE commodity = %s
+            ORDER BY week_ending DESC, state
+            LIMIT 50
+        """
+        result = execute_query(condition_sql, (comm,), limit=50)
+
+        # 5-year average from silver
+        avg_sql = """
+            SELECT commodity, week_ending, ge_pct
+            FROM silver.nass_crop_condition_ge
+            WHERE commodity = %s
+            ORDER BY week_ending DESC
+            LIMIT 5
+        """
+        avg_result = execute_query(avg_sql, (comm,), limit=5)
+
+        sections[comm] = {
+            'current_condition': result.get('rows', []),
+            'historical_ge': avg_result.get('rows', []),
+        }
+
+    return json.dumps({
+        "report_type": "crop_progress",
+        "commodities": sections,
+    }, indent=2, default=json_serializer)
+
+
+def _generate_ethanol_report() -> str:
+    """Generate ethanol production and stocks summary."""
+    production_sql = """
+        SELECT period, value, series_id
+        FROM bronze.eia_ethanol
+        WHERE series_id IN (
+            'PET.W_EPOOXE_YOP_NUS_MBBLD.W',
+            'PET.W_EPOOXE_SAE_NUS_MBBL.W'
+        )
+        ORDER BY period DESC
+        LIMIT 20
+    """
+    result = execute_query(production_sql, limit=20)
+
+    return json.dumps({
+        "report_type": "ethanol",
+        "weekly_data": result.get('rows', []),
+    }, indent=2, default=json_serializer)
+
+
+def _generate_positioning_report(commodity: str = None) -> str:
+    """Generate CFTC managed money positioning report."""
+    if commodity:
+        sql = """
+            SELECT * FROM gold.cftc_sentiment
+            WHERE commodity ILIKE %s
+        """
+        result = execute_query(sql, (f'%{commodity}%',), limit=20)
+    else:
+        sql = "SELECT * FROM gold.cftc_sentiment"
+        result = execute_query(sql, limit=20)
+
+    return json.dumps({
+        "report_type": "positioning",
+        "sentiment": result.get('rows', []),
+    }, indent=2, default=json_serializer)
+
+
+def get_forecast_accuracy(commodity: str = None, forecast_type: str = None,
+                          period: str = '12_months') -> str:
+    """
+    Get forecast accuracy metrics from the forecast tracker.
+
+    Args:
+        commodity: Filter by commodity (e.g. 'corn', 'soybeans')
+        forecast_type: Filter by type (e.g. 'yield', 'production', 'ending_stocks')
+        period: Lookback period ('12_months', '6_months', 'all')
+
+    Returns:
+        JSON with accuracy metrics (MAPE, directional accuracy, bias)
+    """
+    conditions = ["1=1"]
+    params = []
+
+    if commodity:
+        conditions.append("f.commodity = %s")
+        params.append(commodity.lower())
+    if forecast_type:
+        conditions.append("f.forecast_type = %s")
+        params.append(forecast_type)
+
+    interval = {'12_months': '12 months', '6_months': '6 months'}.get(period)
+    if interval:
+        conditions.append(f"f.target_date >= CURRENT_DATE - INTERVAL '{interval}'")
+
+    where = " AND ".join(conditions)
+
+    sql = f"""
+        SELECT
+            f.commodity,
+            f.forecast_type,
+            COUNT(*) as n_forecasts,
+            ROUND(AVG(p.absolute_percentage_error)::numeric, 2) as mape,
+            ROUND(AVG(CASE WHEN p.direction_correct = 1 THEN 100.0 ELSE 0.0 END)::numeric, 1)
+                as directional_accuracy,
+            ROUND(AVG(p.percentage_error)::numeric, 2) as mean_bias_pct
+        FROM core.forecast_actual_pairs p
+        JOIN core.forecasts f ON p.forecast_id = f.forecast_id
+        WHERE {where}
+        GROUP BY f.commodity, f.forecast_type
+        ORDER BY COUNT(*) DESC
+    """
+    result = execute_query(sql, tuple(params) if params else None, limit=50)
+
+    if 'error' in result:
+        return json.dumps(result, default=json_serializer)
+
+    return json.dumps({
+        "period": period,
+        "commodity_filter": commodity,
+        "type_filter": forecast_type,
+        "accuracy": result.get('rows', []),
+    }, indent=2, default=json_serializer)
+
+
+def record_forecast(commodity: str, forecast_type: str, value: float,
+                    target_date: str, marketing_year: str = None,
+                    unit: str = None, source: str = 'user',
+                    notes: str = None, country: str = 'US') -> str:
+    """
+    Record a new forecast for accuracy tracking.
+
+    Args:
+        commodity: e.g. 'corn', 'soybeans'
+        forecast_type: e.g. 'yield', 'production', 'ending_stocks', 'price'
+        value: Forecasted value
+        target_date: What period is being forecast (YYYY-MM-DD)
+        marketing_year: e.g. '2025/26' (optional)
+        unit: e.g. 'bu/acre', 'MMT', 'USD/bu'
+        source: Who made the forecast (default 'user')
+        notes: Optional notes
+        country: Country code (default 'US')
+
+    Returns:
+        JSON with recorded forecast ID
+    """
+    from datetime import date as date_type
+
+    forecast_date = date_type.today().isoformat()
+    forecast_id = "_".join([
+        forecast_date, target_date, commodity.lower(), country, forecast_type, source
+    ]).replace("/", "-").replace(" ", "_")
+
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO core.forecasts
+                (forecast_id, forecast_date, target_date, commodity, country,
+                 forecast_type, value, unit, marketing_year, source, notes)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (forecast_id) DO UPDATE SET
+                value = EXCLUDED.value,
+                notes = EXCLUDED.notes,
+                created_at = NOW()
+            RETURNING id, forecast_id
+        """, (
+            forecast_id, forecast_date, target_date, commodity.lower(),
+            country, forecast_type, value, unit, marketing_year, source, notes
+        ))
+        row = cur.fetchone()
+        conn.commit()
+        conn.close()
+
+        return json.dumps({
+            "success": True,
+            "id": row[0],
+            "forecast_id": row[1],
+            "commodity": commodity,
+            "forecast_type": forecast_type,
+            "value": value,
+            "target_date": target_date,
+        }, indent=2, default=json_serializer)
+
+    except Exception as e:
+        return json.dumps({"error": str(e)}, default=json_serializer)
+
+
+# ============================================================================
 # MCP SERVER SETUP
 # ============================================================================
 
@@ -812,6 +1095,56 @@ if MCP_AVAILABLE:
                     "required": ["collector_name"]
                 }
             ),
+            # --- Report Generation Tools ---
+            Tool(
+                name="generate_report",
+                description="Generate an analytical report. Types: 'wasde' (S&D balance sheet analysis), 'crop_progress' (crop conditions vs 5-yr avg), 'ethanol' (production/stocks), 'positioning' (CFTC managed money). Returns structured data with optional Knowledge Graph analyst context.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "report_type": {
+                            "type": "string",
+                            "description": "Report type: wasde, crop_progress, ethanol, positioning",
+                            "enum": ["wasde", "crop_progress", "ethanol", "positioning"]
+                        },
+                        "commodity": {"type": "string", "description": "Optional commodity filter (corn, soybeans, wheat)"},
+                        "country": {"type": "string", "description": "Country code (default US)", "default": "US"},
+                        "include_kg": {"type": "boolean", "description": "Include Knowledge Graph analyst context", "default": True}
+                    },
+                    "required": ["report_type"]
+                }
+            ),
+            Tool(
+                name="get_forecast_accuracy",
+                description="Get forecast accuracy metrics from the tracking system. Shows MAPE, directional accuracy, and bias for recorded forecasts vs actuals.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "commodity": {"type": "string", "description": "Filter by commodity"},
+                        "forecast_type": {"type": "string", "description": "Filter by type: yield, production, ending_stocks, price, exports, crush"},
+                        "period": {"type": "string", "description": "Lookback: 12_months, 6_months, or all", "default": "12_months"}
+                    }
+                }
+            ),
+            Tool(
+                name="record_forecast",
+                description="Record a new forecast for accuracy tracking. The system will match it to actual values when they arrive.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "commodity": {"type": "string", "description": "e.g. corn, soybeans, wheat"},
+                        "forecast_type": {"type": "string", "description": "yield, production, ending_stocks, price, exports, crush"},
+                        "value": {"type": "number", "description": "The forecasted value"},
+                        "target_date": {"type": "string", "description": "Target date (YYYY-MM-DD)"},
+                        "marketing_year": {"type": "string", "description": "e.g. 2025/26"},
+                        "unit": {"type": "string", "description": "e.g. bu/acre, MMT, USD/bu"},
+                        "source": {"type": "string", "description": "Who made it (default: user)", "default": "user"},
+                        "notes": {"type": "string", "description": "Optional notes"},
+                        "country": {"type": "string", "description": "Country code (default US)", "default": "US"}
+                    },
+                    "required": ["commodity", "forecast_type", "value", "target_date"]
+                }
+            ),
             # --- Knowledge Graph Tools ---
             Tool(
                 name="search_knowledge_graph",
@@ -907,6 +1240,32 @@ if MCP_AVAILABLE:
                 result = get_collection_history(
                     arguments["collector_name"],
                     arguments.get("last_n", 10)
+                )
+            # Report Generation Tools
+            elif name == "generate_report":
+                result = generate_report(
+                    arguments["report_type"],
+                    arguments.get("commodity"),
+                    arguments.get("country", "US"),
+                    arguments.get("include_kg", True)
+                )
+            elif name == "get_forecast_accuracy":
+                result = get_forecast_accuracy(
+                    arguments.get("commodity"),
+                    arguments.get("forecast_type"),
+                    arguments.get("period", "12_months")
+                )
+            elif name == "record_forecast":
+                result = record_forecast(
+                    arguments["commodity"],
+                    arguments["forecast_type"],
+                    arguments["value"],
+                    arguments["target_date"],
+                    arguments.get("marketing_year"),
+                    arguments.get("unit"),
+                    arguments.get("source", "user"),
+                    arguments.get("notes"),
+                    arguments.get("country", "US")
                 )
             # Knowledge Graph Tools
             elif name == "search_knowledge_graph":

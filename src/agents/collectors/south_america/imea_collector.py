@@ -30,6 +30,8 @@ from .base_collector import (
     AuthType
 )
 
+from src.services.database.db_config import get_connection as get_db_connection
+
 try:
     import pandas as pd
     PANDAS_AVAILABLE = True
@@ -135,6 +137,20 @@ class IMEACollector(BaseCollector):
 
     def get_table_name(self) -> str:
         return "imea_mato_grosso"
+
+    def collect(self, start_date=None, end_date=None, use_cache=True, **kwargs):
+        """Override collect to save results to bronze after fetching."""
+        result = super().collect(start_date, end_date, use_cache, **kwargs)
+        if result.success and result.data is not None and not getattr(result, 'from_cache', False):
+            try:
+                records = result.data.to_dict('records') if hasattr(result.data, 'to_dict') else result.data
+                if records:
+                    data_type = kwargs.get('data_type', 'progress')
+                    saved = self.save_to_bronze(records, data_type=data_type)
+                    result.records_fetched = saved
+            except Exception as e:
+                self.logger.error(f"Bronze save failed (data still returned): {e}")
+        return result
 
     def fetch_data(
         self,
@@ -707,6 +723,72 @@ class IMEACollector(BaseCollector):
     def parse_response(self, response_data: Any) -> Any:
         """Parse API response"""
         return response_data
+
+    def save_to_bronze(self, records: list, data_type: str = 'progress') -> int:
+        """Upsert records to bronze.imea_mato_grosso."""
+        if not records:
+            return 0
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            count = 0
+            for rec in records:
+                dt = rec.get('data_type', data_type)
+                # Build a detail_key from distinguishing fields
+                detail_key = rec.get('detail_key', '')
+                if not detail_key:
+                    parts = [
+                        rec.get('region', ''),
+                        rec.get('location', ''),
+                        rec.get('cost_type', ''),
+                        rec.get('report_type', ''),
+                        rec.get('estimate_type', ''),
+                    ]
+                    detail_key = '|'.join(p for p in parts if p) or 'default'
+
+                # Pick numeric value from various possible fields
+                value_num = None
+                for vk in ['value_numeric', 'value', 'price_brl', 'price',
+                           'production_mmt', 'planted_area_mha', 'yield_sc_ha',
+                           'coe_brl_ha', 'cot_brl_ha', 'ct_brl_ha', 'area', 'production']:
+                    if vk in rec and rec[vk] is not None:
+                        try:
+                            value_num = float(rec[vk])
+                        except (ValueError, TypeError):
+                            pass
+                        break
+
+                cur.execute("""
+                    INSERT INTO bronze.imea_mato_grosso
+                        (commodity, data_type, crop_year, report_date,
+                         region, detail_key, value_numeric, value_text,
+                         unit, source, note, collected_at)
+                    VALUES
+                        (%(commodity)s, %(data_type)s, %(crop_year)s, %(report_date)s,
+                         %(region)s, %(detail_key)s, %(value_numeric)s, %(value_text)s,
+                         %(unit)s, %(source)s, %(note)s, NOW())
+                    ON CONFLICT (commodity, data_type, crop_year, detail_key)
+                    DO UPDATE SET
+                        value_numeric = EXCLUDED.value_numeric,
+                        value_text = EXCLUDED.value_text,
+                        report_date = EXCLUDED.report_date,
+                        collected_at = NOW()
+                """, {
+                    'commodity': rec.get('commodity', ''),
+                    'data_type': dt,
+                    'crop_year': rec.get('crop_year', ''),
+                    'report_date': None,  # IMEA rarely has structured dates
+                    'region': rec.get('region', ''),
+                    'detail_key': detail_key,
+                    'value_numeric': value_num,
+                    'value_text': rec.get('title', rec.get('value_text', '')),
+                    'unit': rec.get('unit', ''),
+                    'source': rec.get('source', 'IMEA'),
+                    'note': rec.get('note', ''),
+                })
+                count += 1
+            conn.commit()
+            self.logger.info(f"Saved {count} records to bronze.imea_mato_grosso")
+            return count
 
     # =========================================================================
     # CONVENIENCE METHODS

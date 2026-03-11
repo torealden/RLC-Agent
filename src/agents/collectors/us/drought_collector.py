@@ -5,10 +5,17 @@ Collects drought condition data from the US Drought Monitor.
 Updated every Thursday for conditions as of Tuesday.
 
 Data source: https://droughtmonitor.unl.edu/
+API docs: https://droughtmonitor.unl.edu/DmData/DataDownload/WebServiceInfo.aspx
 
 No API key required - public data download.
+
+IMPORTANT: The USDM API requires two-digit FIPS codes for state-level
+queries (e.g., '19' for Iowa), NOT state abbreviations. The response
+is CSV format (not JSON).
 """
 
+import csv
+import io
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, date, timedelta
@@ -21,6 +28,8 @@ from .base_collector import (
     DataFrequency,
     AuthType
 )
+
+from src.services.database.db_config import get_connection as get_db_connection
 
 try:
     import pandas as pd
@@ -40,6 +49,24 @@ DROUGHT_CATEGORIES = {
     'D3': {'code': 3, 'description': 'Extreme Drought', 'color': '#E60000'},
     'D4': {'code': 4, 'description': 'Exceptional Drought', 'color': '#730000'},
 }
+
+# State abbreviation -> two-digit FIPS code mapping
+# The USDM API requires FIPS codes, not abbreviations
+STATE_FIPS = {
+    'AL': '01', 'AK': '02', 'AZ': '04', 'AR': '05', 'CA': '06',
+    'CO': '08', 'CT': '09', 'DE': '10', 'FL': '12', 'GA': '13',
+    'HI': '15', 'ID': '16', 'IL': '17', 'IN': '18', 'IA': '19',
+    'KS': '20', 'KY': '21', 'LA': '22', 'ME': '23', 'MD': '24',
+    'MA': '25', 'MI': '26', 'MN': '27', 'MS': '28', 'MO': '29',
+    'MT': '30', 'NE': '31', 'NV': '32', 'NH': '33', 'NJ': '34',
+    'NM': '35', 'NY': '36', 'NC': '37', 'ND': '38', 'OH': '39',
+    'OK': '40', 'OR': '41', 'PA': '42', 'RI': '44', 'SC': '45',
+    'SD': '46', 'TN': '47', 'TX': '48', 'UT': '49', 'VT': '50',
+    'VA': '51', 'WA': '53', 'WV': '54', 'WI': '55', 'WY': '56',
+}
+
+# Reverse mapping for response parsing
+FIPS_STATE = {v: k for k, v in STATE_FIPS.items()}
 
 # Key agricultural states
 AG_STATES = [
@@ -65,7 +92,6 @@ AG_STATES = [
 class DroughtConfig(CollectorConfig):
     """Drought Monitor specific configuration"""
     source_name: str = "US Drought Monitor"
-    # Updated to new API endpoint (2024+)
     source_url: str = "https://usdmdataservices.unl.edu/api"
     auth_type: AuthType = AuthType.NONE
     frequency: DataFrequency = DataFrequency.WEEKLY
@@ -73,8 +99,8 @@ class DroughtConfig(CollectorConfig):
     # States to track
     states: List[str] = field(default_factory=lambda: AG_STATES)
 
-    # New REST API endpoints (2024+)
-    # See: https://droughtmonitor.unl.edu/DmData/DataDownload/WebServiceInfo.aspx
+    # REST API endpoints
+    # Docs: https://droughtmonitor.unl.edu/DmData/DataDownload/WebServiceInfo.aspx
     state_stats_endpoint: str = "/StateStatistics/GetDroughtSeverityStatisticsByAreaPercent"
     us_stats_endpoint: str = "/USStatistics/GetDroughtSeverityStatisticsByAreaPercent"
     county_stats_endpoint: str = "/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent"
@@ -85,10 +111,13 @@ class DroughtCollector(BaseCollector):
     Collector for US Drought Monitor data.
 
     Provides:
-    - State-level drought statistics
-    - Percentage of area in each drought category
+    - State-level drought statistics (% area in each category)
+    - Percentage of area in each drought category (D0-D4)
     - Weekly comparisons
     - Agricultural impact assessment
+
+    The USDM API returns CSV data and requires state FIPS codes
+    (not abbreviations) for the aoi parameter.
     """
 
     def __init__(self, config: DroughtConfig = None):
@@ -98,6 +127,10 @@ class DroughtCollector(BaseCollector):
 
     def get_table_name(self) -> str:
         return "drought_conditions"
+
+    def _state_to_fips(self, state_abbr: str) -> Optional[str]:
+        """Convert state abbreviation to two-digit FIPS code."""
+        return STATE_FIPS.get(state_abbr.upper())
 
     def fetch_data(
         self,
@@ -113,7 +146,7 @@ class DroughtCollector(BaseCollector):
         Args:
             start_date: Start date for data range
             end_date: End date (default: today)
-            states: List of state codes to fetch
+            states: List of state abbreviation codes to fetch
             area_type: 'state', 'county', or 'national'
 
         Returns:
@@ -126,35 +159,48 @@ class DroughtCollector(BaseCollector):
         all_records = []
         warnings = []
 
-        # Request JSON format from the API
-        headers = {'Accept': 'application/json'}
-
-        # New API requires fetching each state separately for state-level data
-        states_to_fetch = states if area_type == 'state' else [None]
-
-        for state in states_to_fetch:
-            current_states = [state] if state else states
-
-            url = self._build_download_url(
-                start_date, end_date, current_states, area_type
-            )
-
-            response, error = self._make_request(url, timeout=60, headers=headers)
+        if area_type == 'national':
+            # Single request for national data
+            url = self._build_download_url(start_date, end_date, None, 'national')
+            response, error = self._make_request(url, timeout=60)
 
             if error:
-                warnings.append(f"{state or 'US'}: {error}")
-                continue
+                warnings.append(f"US national: {error}")
+            elif response.status_code != 200:
+                warnings.append(f"US national: HTTP {response.status_code}")
+            else:
+                try:
+                    records = self._parse_csv_response(response.text)
+                    all_records.extend(records)
+                except Exception as e:
+                    warnings.append(f"US national: Parse error - {e}")
+        else:
+            # Fetch each state separately (API requires per-state requests)
+            for state in states:
+                fips = self._state_to_fips(state)
+                if not fips:
+                    warnings.append(f"{state}: Unknown state, no FIPS code")
+                    continue
 
-            if response.status_code != 200:
-                warnings.append(f"{state or 'US'}: HTTP {response.status_code}")
-                continue
+                url = self._build_download_url(
+                    start_date, end_date, fips, area_type
+                )
 
-            # Parse response
-            try:
-                records = self._parse_csv_response(response.text, current_states)
-                all_records.extend(records)
-            except Exception as e:
-                warnings.append(f"{state or 'US'}: Parse error - {e}")
+                response, error = self._make_request(url, timeout=60)
+
+                if error:
+                    warnings.append(f"{state}: {error}")
+                    continue
+
+                if response.status_code != 200:
+                    warnings.append(f"{state}: HTTP {response.status_code}")
+                    continue
+
+                try:
+                    records = self._parse_csv_response(response.text)
+                    all_records.extend(records)
+                except Exception as e:
+                    warnings.append(f"{state}: Parse error - {e}")
 
         if not all_records:
             return CollectorResult(
@@ -186,30 +232,35 @@ class DroughtCollector(BaseCollector):
         self,
         start_date: date,
         end_date: date,
-        states: List[str],
+        aoi: Optional[str],
         area_type: str
     ) -> str:
-        """Build download URL for drought data using new REST API (2024+)"""
-        # Use the new usdmdataservices.unl.edu API
-        # Docs: https://droughtmonitor.unl.edu/DmData/DataDownload/WebServiceInfo.aspx
+        """Build download URL for drought data.
 
+        Args:
+            start_date: Start of date range
+            end_date: End of date range
+            aoi: Area of interest - FIPS code for states, 'us' for national
+            area_type: 'state', 'county', or 'national'
+
+        Returns:
+            Full API URL with query parameters
+        """
         base_url = self.config.source_url
 
-        # Select endpoint based on area type
-        if area_type == 'national' or not states or states == ['US']:
+        if area_type == 'national':
             endpoint = self.config.us_stats_endpoint
-            aoi = 'us'
+            aoi_param = 'us'
         elif area_type == 'county':
             endpoint = self.config.county_stats_endpoint
-            aoi = states[0] if states else 'IA'
+            aoi_param = aoi or '19'
         else:
-            # State-level data - fetch each state separately
             endpoint = self.config.state_stats_endpoint
-            aoi = states[0] if states else 'IA'
+            aoi_param = aoi or '19'
 
-        # statisticsType=2 returns area percent (1 returns absolute area)
+        # statisticsType=2 returns area percent (1 returns absolute area sq mi)
         params = {
-            'aoi': aoi,
+            'aoi': aoi_param,
             'startdate': start_date.strftime('%m/%d/%Y'),
             'enddate': end_date.strftime('%m/%d/%Y'),
             'statisticsType': '2',
@@ -218,105 +269,67 @@ class DroughtCollector(BaseCollector):
         param_str = '&'.join(f"{k}={v}" for k, v in params.items())
         return f"{base_url}{endpoint}?{param_str}"
 
-    def _parse_csv_response(
-        self,
-        content: str,
-        states: List[str]
-    ) -> List[Dict]:
-        """Parse JSON/CSV response from Drought Monitor API"""
+    def _parse_csv_response(self, content: str) -> List[Dict]:
+        """Parse CSV response from Drought Monitor API.
+
+        The API returns CSV with columns:
+        MapDate, StateAbbreviation (or AreaOfInterest for US),
+        None, D0, D1, D2, D3, D4, ValidStart, ValidEnd, StatisticFormatID
+
+        Values are percentages when statisticsType=2.
+        """
         records = []
 
-        try:
-            import json
-            data = json.loads(content)
+        if not content or not content.strip():
+            return records
 
-            for item in data:
-                # Handle different API response field names
-                state = (item.get('StateAbbreviation') or
-                        item.get('State') or
-                        item.get('state') or
-                        item.get('Name', ''))
+        reader = csv.DictReader(io.StringIO(content))
 
-                if states and state not in states and state.upper() not in [s.upper() for s in states]:
-                    continue
+        for row in reader:
+            # Get state abbreviation - field name varies by endpoint
+            state = (row.get('StateAbbreviation') or
+                     row.get('AreaOfInterest') or
+                     row.get('CountyName') or '')
 
-                # New API uses 'MapDate' or 'ValidStart'/'ValidEnd'
-                report_date = (item.get('MapDate') or
-                              item.get('ValidStart') or
-                              item.get('releaseDate') or
-                              item.get('date'))
+            # For national data, AreaOfInterest = "CONUS"
+            if state == 'CONUS':
+                state = 'US'
 
-                record = {
-                    'date': report_date,
-                    'state': state.upper() if state else '',
-                    'fips': item.get('FIPS') or item.get('fips'),
+            # Parse date from MapDate (format: YYYYMMDD)
+            map_date_str = row.get('MapDate', '')
+            if map_date_str:
+                try:
+                    report_date = datetime.strptime(str(map_date_str), '%Y%m%d').strftime('%Y-%m-%d')
+                except ValueError:
+                    report_date = map_date_str
+            else:
+                report_date = row.get('ValidStart', '')
 
-                    # Percentage of area in each drought category
-                    # New API may use different field names
-                    'none_pct': self._safe_float(item.get('None') or item.get('NONE')),
-                    'd0_pct': self._safe_float(item.get('D0')),
-                    'd1_pct': self._safe_float(item.get('D1')),
-                    'd2_pct': self._safe_float(item.get('D2')),
-                    'd3_pct': self._safe_float(item.get('D3')),
-                    'd4_pct': self._safe_float(item.get('D4')),
+            # Parse drought percentages
+            # CSV column 'None' is the non-drought percentage
+            none_pct = self._safe_float(row.get('None'))
+            d0 = self._safe_float(row.get('D0')) or 0
+            d1 = self._safe_float(row.get('D1')) or 0
+            d2 = self._safe_float(row.get('D2')) or 0
+            d3 = self._safe_float(row.get('D3')) or 0
+            d4 = self._safe_float(row.get('D4')) or 0
 
-                    # Aggregated metrics
-                    'drought_pct': None,  # Will calculate
-                    'severe_drought_pct': None,  # D2+D3+D4
-
-                    'source': 'USDM',
-                }
-
-                # Calculate aggregates
-                d0 = record['d0_pct'] or 0
-                d1 = record['d1_pct'] or 0
-                d2 = record['d2_pct'] or 0
-                d3 = record['d3_pct'] or 0
-                d4 = record['d4_pct'] or 0
-
-                record['drought_pct'] = d0 + d1 + d2 + d3 + d4
-                record['severe_drought_pct'] = d2 + d3 + d4
-
-                records.append(record)
-
-        except (json.JSONDecodeError, TypeError):
-            # Try parsing as CSV (fallback)
-            lines = content.strip().split('\n')
-            if len(lines) < 2:
-                return records
-
-            headers = [h.strip() for h in lines[0].split(',')]
-
-            for line in lines[1:]:
-                values = [v.strip() for v in line.split(',')]
-                if len(values) != len(headers):
-                    continue
-
-                row = dict(zip(headers, values))
-                state = row.get('StateAbbreviation') or row.get('State', '')
-
-                if states and state not in states:
-                    continue
-
-                d0 = self._safe_float(row.get('D0'))
-                d1 = self._safe_float(row.get('D1'))
-                d2 = self._safe_float(row.get('D2'))
-                d3 = self._safe_float(row.get('D3'))
-                d4 = self._safe_float(row.get('D4'))
-
-                record = {
-                    'date': row.get('MapDate', row.get('Date')),
-                    'state': state.upper() if state else '',
-                    'd0_pct': d0,
-                    'd1_pct': d1,
-                    'd2_pct': d2,
-                    'd3_pct': d3,
-                    'd4_pct': d4,
-                    'drought_pct': (d0 or 0) + (d1 or 0) + (d2 or 0) + (d3 or 0) + (d4 or 0),
-                    'severe_drought_pct': (d2 or 0) + (d3 or 0) + (d4 or 0),
-                    'source': 'USDM',
-                }
-                records.append(record)
+            record = {
+                'date': report_date,
+                'state': state.upper().strip() if state else '',
+                'valid_start': row.get('ValidStart', ''),
+                'valid_end': row.get('ValidEnd', ''),
+                'none_pct': none_pct,
+                'd0_pct': d0,
+                'd1_pct': d1,
+                'd2_pct': d2,
+                'd3_pct': d3,
+                'd4_pct': d4,
+                'drought_pct': round(d0 + d1 + d2 + d3 + d4, 2),
+                'severe_drought_pct': round(d2 + d3 + d4, 2),
+                'source': 'USDM',
+            }
+            records.append(record)
 
         return records
 
@@ -332,6 +345,44 @@ class DroughtCollector(BaseCollector):
     def parse_response(self, response_data: Any) -> Any:
         """Parse response data"""
         return response_data
+
+    def save_to_bronze(self, records: list) -> int:
+        """Upsert drought records to bronze.drought_conditions."""
+        if not records:
+            return 0
+
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            count = 0
+            for rec in records:
+                cur.execute("""
+                    INSERT INTO bronze.drought_conditions
+                        (map_date, state, valid_start, valid_end,
+                         none_pct, d0_pct, d1_pct, d2_pct, d3_pct, d4_pct,
+                         drought_pct, severe_drought_pct,
+                         source, collected_at)
+                    VALUES
+                        (%(date)s, %(state)s, %(valid_start)s, %(valid_end)s,
+                         %(none_pct)s, %(d0_pct)s, %(d1_pct)s, %(d2_pct)s,
+                         %(d3_pct)s, %(d4_pct)s,
+                         %(drought_pct)s, %(severe_drought_pct)s,
+                         %(source)s, NOW())
+                    ON CONFLICT (map_date, state)
+                    DO UPDATE SET
+                        none_pct = EXCLUDED.none_pct,
+                        d0_pct = EXCLUDED.d0_pct,
+                        d1_pct = EXCLUDED.d1_pct,
+                        d2_pct = EXCLUDED.d2_pct,
+                        d3_pct = EXCLUDED.d3_pct,
+                        d4_pct = EXCLUDED.d4_pct,
+                        drought_pct = EXCLUDED.drought_pct,
+                        severe_drought_pct = EXCLUDED.severe_drought_pct,
+                        collected_at = NOW()
+                """, rec)
+                count += 1
+            conn.commit()
+            self.logger.info(f"Saved {count} records to bronze.drought_conditions")
+            return count
 
     # =========================================================================
     # CONVENIENCE METHODS
@@ -365,7 +416,7 @@ class DroughtCollector(BaseCollector):
                 'states_included': corn_states,
                 'avg_drought_pct': latest['drought_pct'].mean(),
                 'avg_severe_drought_pct': latest['severe_drought_pct'].mean(),
-                'states_with_severe': (latest['severe_drought_pct'] > 10).sum(),
+                'states_with_severe': int((latest['severe_drought_pct'] > 10).sum()),
                 'by_state': latest[['state', 'drought_pct', 'severe_drought_pct']].to_dict('records'),
             }
 
@@ -441,8 +492,8 @@ def main():
 
     parser.add_argument(
         'command',
-        choices=['fetch', 'corn_belt', 'wheat_belt', 'test'],
-        help='Command to execute'
+        choices=['fetch', 'corn_belt', 'wheat_belt', 'test', 'save'],
+        help='Command to execute (save = fetch + save_to_bronze)'
     )
 
     parser.add_argument(
@@ -466,13 +517,27 @@ def main():
 
     args = parser.parse_args()
 
+    logging.basicConfig(level=logging.INFO)
+
     # Create collector
     config = DroughtConfig(states=args.states or AG_STATES)
     collector = DroughtCollector(config)
 
     if args.command == 'test':
-        success, message = collector.test_connection()
-        print(f"Connection test: {'PASS' if success else 'FAIL'} - {message}")
+        # Test with a simple single-state fetch
+        test_result = collector.collect(
+            start_date=date.today() - timedelta(days=14),
+            end_date=date.today(),
+            states=['IA'],
+            use_cache=False
+        )
+        if test_result.success:
+            print(f"Connection test: PASS - {test_result.records_fetched} records")
+        else:
+            print(f"Connection test: FAIL - {test_result.error_message}")
+            if test_result.warnings:
+                for w in test_result.warnings:
+                    print(f"  Warning: {w}")
         return
 
     if args.command == 'corn_belt':
@@ -491,14 +556,15 @@ def main():
             print("Failed to get Wheat Belt drought data")
         return
 
-    if args.command == 'fetch':
+    if args.command in ('fetch', 'save'):
         end_date = date.today()
         start_date = end_date - timedelta(weeks=args.weeks)
 
         result = collector.collect(
             start_date=start_date,
             end_date=end_date,
-            states=args.states
+            states=args.states,
+            use_cache=False
         )
 
         print(f"Success: {result.success}")
@@ -506,6 +572,22 @@ def main():
 
         if result.error_message:
             print(f"Error: {result.error_message}")
+        if result.warnings:
+            for w in result.warnings:
+                print(f"  Warning: {w}")
+
+        # Save to database if requested
+        if args.command == 'save' and result.success and result.data is not None:
+            if PANDAS_AVAILABLE and hasattr(result.data, 'to_dict'):
+                records = result.data.to_dict('records')
+                # Convert Timestamp back to string for DB insert
+                for r in records:
+                    if hasattr(r.get('date'), 'strftime'):
+                        r['date'] = r['date'].strftime('%Y-%m-%d')
+            else:
+                records = result.data
+            saved = collector.save_to_bronze(records)
+            print(f"Saved to bronze: {saved} records")
 
         if args.output and result.data is not None:
             if args.output.endswith('.csv') and PANDAS_AVAILABLE:

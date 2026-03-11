@@ -31,6 +31,8 @@ from .base_collector import (
     AuthType
 )
 
+from src.services.database.db_config import get_connection as get_db_connection
+
 try:
     import pandas as pd
     PANDAS_AVAILABLE = True
@@ -116,7 +118,7 @@ class FAOSTATConfig(CollectorConfig):
 
     # API endpoints
     api_base: str = "https://fenixservices.fao.org/faostat/api/v1"
-    bulk_download_base: str = "https://fenixservices.fao.org/faostat/static/bulkdownloads"
+    bulk_download_base: str = "https://bulks-faostat.fao.org/production"
 
     # Target countries (South America focus)
     countries: List[str] = field(default_factory=lambda: [
@@ -157,6 +159,19 @@ class FAOSTATCollector(BaseCollector):
 
     def get_table_name(self) -> str:
         return "faostat_data"
+
+    def collect(self, start_date=None, end_date=None, use_cache=True, **kwargs):
+        """Override collect to save results to bronze after fetching."""
+        result = super().collect(start_date, end_date, use_cache, **kwargs)
+        if result.success and result.data is not None and not getattr(result, 'from_cache', False):
+            try:
+                records = result.data.to_dict('records') if hasattr(result.data, 'to_dict') else result.data
+                if records:
+                    saved = self.save_to_bronze(records)
+                    result.records_fetched = saved
+            except Exception as e:
+                self.logger.error(f"Bronze save failed (data still returned): {e}")
+        return result
 
     def fetch_data(
         self,
@@ -717,6 +732,50 @@ class FAOSTATCollector(BaseCollector):
     def parse_response(self, response_data: Any) -> Any:
         """Parse API response"""
         return response_data
+
+    def save_to_bronze(self, records: list) -> int:
+        """Upsert records to bronze.faostat_data."""
+        if not records:
+            return 0
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            count = 0
+            for rec in records:
+                cur.execute("""
+                    INSERT INTO bronze.faostat_data
+                        (country, country_name, commodity, commodity_name,
+                         domain, element, year, value, unit, flag,
+                         flow, measure, partner, source, collected_at)
+                    VALUES
+                        (%(country)s, %(country_name)s, %(commodity)s, %(commodity_name)s,
+                         %(domain)s, %(element)s, %(year)s, %(value)s, %(unit)s, %(flag)s,
+                         %(flow)s, %(measure)s, %(partner)s, %(source)s, NOW())
+                    ON CONFLICT (country, commodity, domain, element, year)
+                    DO UPDATE SET
+                        value = EXCLUDED.value,
+                        unit = EXCLUDED.unit,
+                        flag = EXCLUDED.flag,
+                        collected_at = NOW()
+                """, {
+                    'country': rec.get('country', ''),
+                    'country_name': rec.get('country_name', ''),
+                    'commodity': rec.get('commodity', ''),
+                    'commodity_name': rec.get('commodity_name', ''),
+                    'domain': rec.get('domain', ''),
+                    'element': rec.get('element', ''),
+                    'year': rec.get('year'),
+                    'value': rec.get('value'),
+                    'unit': rec.get('unit', ''),
+                    'flag': rec.get('flag', ''),
+                    'flow': rec.get('flow'),
+                    'measure': rec.get('measure'),
+                    'partner': rec.get('partner'),
+                    'source': rec.get('source', 'FAOSTAT'),
+                })
+                count += 1
+            conn.commit()
+            self.logger.info(f"Saved {count} records to bronze.faostat_data")
+            return count
 
     # =========================================================================
     # CONVENIENCE METHODS

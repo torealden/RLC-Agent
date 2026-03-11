@@ -159,6 +159,136 @@ class Dispatcher:
         )
         logger.debug("Registered daily overdue check at 08:00 ET (Mon-Fri)")
 
+        # Register failure alert check every 2 hours (Mon-Fri, 7 AM - 9 PM)
+        self.scheduler.add_job(
+            func=self._check_failure_alerts,
+            trigger=CronTrigger(
+                day_of_week='mon-fri',
+                hour='7,9,11,13,15,17,19,21',
+                minute=15,
+            ),
+            id='_failure_alert_check',
+            name='Collector Failure Alert Check',
+            replace_existing=True,
+        )
+        logger.debug("Registered failure alert check every 2h (Mon-Fri)")
+
+    def _check_failure_alerts(self):
+        """
+        Check for collectors with 3+ consecutive failures and send email alert.
+
+        Queries event_log for recent collection_error events, groups by source,
+        and alerts if any collector has failed 3+ times in a row without a
+        success in between. Deduplicates: only alerts once per collector per day.
+        """
+        logger.info("Running failure alert check...")
+
+        try:
+            from src.services.database.db_config import get_connection
+            import json as _json
+
+            with get_connection() as conn:
+                cursor = conn.cursor()
+
+                # Find collectors with 3+ consecutive failures (no success in between)
+                cursor.execute("""
+                    WITH recent_events AS (
+                        SELECT source, event_type, event_time,
+                               ROW_NUMBER() OVER (PARTITION BY source ORDER BY event_time DESC) AS rn
+                        FROM core.event_log
+                        WHERE event_type IN ('collection_success', 'collection_error')
+                          AND event_time > NOW() - INTERVAL '7 days'
+                    ),
+                    streaks AS (
+                        SELECT source,
+                               COUNT(*) FILTER (WHERE event_type = 'collection_error') AS consecutive_failures
+                        FROM recent_events
+                        WHERE rn <= (
+                            SELECT COALESCE(MIN(rn2.rn) - 1, 10)
+                            FROM recent_events rn2
+                            WHERE rn2.source = recent_events.source
+                              AND rn2.event_type = 'collection_success'
+                        )
+                        GROUP BY source
+                    )
+                    SELECT source, consecutive_failures
+                    FROM streaks
+                    WHERE consecutive_failures >= 3
+                    ORDER BY consecutive_failures DESC
+                """)
+                failing = cursor.fetchall()
+
+                if not failing:
+                    logger.info("No collectors with 3+ consecutive failures")
+                    return
+
+                # Check which ones we've already alerted today
+                alert_needed = []
+                for row in failing:
+                    collector = row['source']
+                    cursor.execute("""
+                        SELECT COUNT(*) AS cnt FROM core.event_log
+                        WHERE event_type = 'failure_alert'
+                          AND source = %s
+                          AND event_time::date = CURRENT_DATE
+                    """, (collector,))
+                    if cursor.fetchone()['cnt'] == 0:
+                        alert_needed.append({
+                            'collector': collector,
+                            'failures': row['consecutive_failures'],
+                        })
+
+                if not alert_needed:
+                    logger.info("All failure alerts already sent today")
+                    return
+
+                # Build alert message
+                lines = ["RLC-Agent Collector Failure Alert\n"]
+                lines.append(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M ET')}\n")
+                for item in alert_needed:
+                    lines.append(
+                        f"  - {item['collector']}: {item['failures']} consecutive failures"
+                    )
+                alert_text = '\n'.join(lines)
+
+                # Log the alert events
+                for item in alert_needed:
+                    cursor.execute(
+                        "SELECT core.log_event(%s, %s, %s, %s, %s)",
+                        ('failure_alert', item['collector'],
+                         f"{item['collector']} has failed {item['failures']} times in a row",
+                         _json.dumps(item, default=str), 1)
+                    )
+                conn.commit()
+
+                logger.warning(f"Failure alert: {len(alert_needed)} collectors failing")
+
+                # Send email (best effort)
+                try:
+                    from dotenv import load_dotenv
+                    load_dotenv()
+                    from src.agents.publishing.channels.email_channel import send_email
+
+                    html_body = "<h2>RLC-Agent Collector Failure Alert</h2><ul>"
+                    for item in alert_needed:
+                        html_body += (
+                            f"<li><b>{item['collector']}</b>: "
+                            f"{item['failures']} consecutive failures</li>"
+                        )
+                    html_body += "</ul><p>Check the ops dashboard or event log for details.</p>"
+
+                    send_email(
+                        subject=f"[RLC Alert] {len(alert_needed)} collector(s) failing",
+                        html_body=html_body,
+                        text_body=alert_text,
+                    )
+                    logger.info("Failure alert email sent")
+                except Exception as e:
+                    logger.warning(f"Could not send failure alert email: {e}")
+
+        except Exception as e:
+            logger.error(f"Failure alert check failed: {e}", exc_info=True)
+
     def _check_overdue_data(self):
         """
         Check for overdue data collectors and log alerts to event_log.
@@ -261,6 +391,22 @@ class Dispatcher:
             )
 
         elif release.frequency == ReleaseFrequency.MONTHLY:
+            # Use exact release dates if available for this year.
+            # Fire on all possible days (the job function guards against
+            # non-release days via _is_release_day check).
+            if release.release_dates:
+                from datetime import date as _date
+                year = _date.today().year
+                year_dates = release.release_dates.get(year, [])
+                if year_dates:
+                    possible_days = sorted(set(d.day for d in year_dates))
+                    day_str = ','.join(str(d) for d in possible_days)
+                    return CronTrigger(
+                        day=day_str,
+                        hour=hour,
+                        minute=minute,
+                    )
+
             day = release.day_of_month or 15
             if day < 0:
                 # APScheduler doesn't support negative days directly;
@@ -290,7 +436,25 @@ class Dispatcher:
         retry_delay_minutes: int = 15,
         commodities: List[str] = None,
     ):
-        """Called by APScheduler — runs a collector with retry."""
+        """Called by APScheduler — runs a collector with retry.
+
+        For collectors with exact release_dates, verify today is actually
+        a release day (the CronTrigger fires on all possible days in the
+        range, so we need to guard here).
+        """
+        from datetime import date as _date
+
+        schedule = RELEASE_SCHEDULES.get(schedule_key)
+        if schedule and schedule.release_schedule.release_dates:
+            today = _date.today()
+            year_dates = schedule.release_schedule.release_dates.get(today.year, [])
+            if year_dates and today not in year_dates:
+                logger.debug(
+                    f"Skipping {schedule_key}: {today} is not a release day "
+                    f"(next: {min((d for d in year_dates if d >= today), default='?')})"
+                )
+                return
+
         logger.info(f"Scheduler firing: {schedule_key}")
         self.runner.run_with_retry(
             collector_name=schedule_key,

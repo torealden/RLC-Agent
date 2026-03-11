@@ -75,6 +75,11 @@ IBKR_FUTURES_CONTRACTS = {
 
     # Ethanol
     'ethanol': {'symbol': 'EH', 'exchange': 'CBOT', 'currency': 'USD', 'multiplier': 29000},
+
+    # Palm Oil - Bursa Malaysia (not available via yfinance)
+    # TWS symbol is FCPO.MY on BURSAMY; stored as FCPO in our database
+    'palm_oil': {'symbol': 'FCPO.MY', 'exchange': 'BURSAMY', 'currency': 'MYR', 'multiplier': 25,
+                 'db_symbol': 'FCPO'},
 }
 
 
@@ -105,7 +110,7 @@ class IBKRConfig(CollectorConfig):
 
     commodities: List[str] = field(default_factory=lambda: [
         'corn', 'wheat_srw', 'wheat_hrw', 'soybeans', 'soybean_meal', 'soybean_oil',
-        'crude_oil', 'natural_gas', 'ethanol'
+        'crude_oil', 'natural_gas', 'ethanol', 'palm_oil'
     ])
 
 
@@ -125,6 +130,12 @@ class IBKRCollector(BaseCollector):
         self.config: IBKRConfig = config
         self.base_url = f"https://{config.gateway_host}:{config.gateway_port}/v1/api"
         self.authenticated = False
+
+        # Client Portal Gateway uses a self-signed certificate
+        self.session.verify = False
+        # Suppress urllib3 InsecureRequestWarning for localhost
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     def get_table_name(self) -> str:
         return "ibkr_futures_prices"
