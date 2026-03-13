@@ -56,7 +56,7 @@ class WeatherSummaryCollector(BaseCollector):
         return self._agent
 
     def get_table_name(self) -> str:
-        return 'bronze.weather_email_extract'
+        return 'bronze.weather_daily_brief'
 
     def parse_response(self, response_data):
         """The agent already returns structured data."""
@@ -126,13 +126,13 @@ class WeatherSummaryCollector(BaseCollector):
             )
 
     def _save_to_bronze(self, brief: str, agent_result: dict):
-        """Save the weather intelligence brief to bronze.weather_email_extract."""
+        """Save the weather intelligence brief to bronze.weather_daily_brief."""
         try:
             from src.services.database.db_config import get_connection
             with get_connection() as conn:
                 cur = conn.cursor()
                 cur.execute("""
-                    INSERT INTO bronze.weather_email_extract
+                    INSERT INTO bronze.weather_daily_brief
                         (extract_date, brief_text, emails_processed,
                          summary_sent, source, created_at)
                     VALUES (%s, %s, %s, %s, %s, NOW())
@@ -149,7 +149,7 @@ class WeatherSummaryCollector(BaseCollector):
                     'weather_intelligence_agent',
                 ))
                 conn.commit()
-                logger.info("Saved weather brief to bronze.weather_email_extract")
+                logger.info("Saved weather brief to bronze.weather_daily_brief")
         except Exception as e:
             # Non-fatal: the email still went out even if DB save fails
             logger.warning(f"Failed to save weather brief to bronze: {e}")
