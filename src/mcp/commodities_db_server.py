@@ -70,14 +70,21 @@ def load_env():
 
 
 def get_connection():
-    """Get database connection."""
+    """Get database connection.
+
+    Uses the same RLC_PG_* env vars as the rest of the system (collectors,
+    dispatcher, etc.) so that the MCP server reads from the same database
+    that collectors write to.  Falls back to DB_HOST/DB_PORT for backwards
+    compatibility.
+    """
     load_env()
     return psycopg2.connect(
-        host=os.environ.get('DB_HOST', 'localhost'),
-        port=os.environ.get('DB_PORT', '5432'),
-        dbname=os.environ.get('DB_NAME', 'rlc_commodities'),
-        user=os.environ.get('DB_USER', 'postgres'),
-        password=os.environ.get('DB_PASSWORD', '')
+        host=os.environ.get('RLC_PG_HOST', os.environ.get('DB_HOST', 'localhost')),
+        port=os.environ.get('RLC_PG_PORT', os.environ.get('DB_PORT', '5432')),
+        dbname=os.environ.get('RLC_PG_DATABASE', os.environ.get('DB_NAME', 'rlc_commodities')),
+        user=os.environ.get('RLC_PG_USER', os.environ.get('DB_USER', 'postgres')),
+        password=os.environ.get('RLC_PG_PASSWORD', os.environ.get('DB_PASSWORD', '')),
+        sslmode=os.environ.get('RLC_PG_SSLMODE', 'prefer'),
     )
 
 

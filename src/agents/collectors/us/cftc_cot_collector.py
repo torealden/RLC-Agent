@@ -433,6 +433,95 @@ class CFTCCOTCollector(BaseCollector):
             self.logger.warning(f"Error parsing record: {e}")
             return None
 
+    def collect(
+        self,
+        start_date: date = None,
+        end_date: date = None,
+        use_cache: bool = False,
+        **kwargs,
+    ) -> CollectorResult:
+        """
+        Fetch COT data from CFTC and save to bronze.
+
+        Overrides base collect() to add database persistence.
+        Cache is disabled by default since we always want the latest
+        CFTC release.
+        """
+        result = self.fetch_data(start_date=start_date, end_date=end_date, **kwargs)
+
+        if not result.success or result.data is None:
+            return result
+
+        # Convert DataFrame to list of dicts
+        if PANDAS_AVAILABLE and hasattr(result.data, 'to_dict'):
+            records = result.data.to_dict('records')
+            # Timestamp -> string for DB insert
+            for rec in records:
+                if hasattr(rec.get('report_date'), 'strftime'):
+                    rec['report_date'] = rec['report_date'].strftime('%Y-%m-%d')
+        else:
+            records = result.data
+
+        saved = self.save_to_bronze(records)
+        result.records_fetched = saved
+        return result
+
+    def save_to_bronze(self, records: list) -> int:
+        """Upsert COT records to bronze.cftc_cot."""
+        if not records:
+            return 0
+
+        from src.services.database.db_config import get_connection
+
+        with get_connection() as conn:
+            cur = conn.cursor()
+            count = 0
+            for rec in records:
+                cur.execute("""
+                    INSERT INTO bronze.cftc_cot
+                        (report_date, as_of_date, commodity, exchange,
+                         contract_code, mm_long, mm_short, mm_spread,
+                         mm_net, mm_net_change, prod_long, prod_short,
+                         prod_net, swap_long, swap_short, swap_spread,
+                         swap_net, other_long, other_short, nonrept_long,
+                         nonrept_short, open_interest, report_type, source,
+                         collected_at)
+                    VALUES
+                        (%(report_date)s, %(as_of_date)s, %(commodity)s,
+                         %(exchange)s, %(contract_code)s, %(mm_long)s,
+                         %(mm_short)s, %(mm_spread)s, %(mm_net)s,
+                         %(mm_net_change)s, %(prod_long)s, %(prod_short)s,
+                         %(prod_net)s, %(swap_long)s, %(swap_short)s,
+                         %(swap_spread)s, %(swap_net)s, %(other_long)s,
+                         %(other_short)s, %(nonrept_long)s,
+                         %(nonrept_short)s, %(open_interest)s,
+                         %(report_type)s, %(source)s, NOW())
+                    ON CONFLICT (report_date, commodity, report_type)
+                    DO UPDATE SET
+                        mm_long = EXCLUDED.mm_long,
+                        mm_short = EXCLUDED.mm_short,
+                        mm_spread = EXCLUDED.mm_spread,
+                        mm_net = EXCLUDED.mm_net,
+                        mm_net_change = EXCLUDED.mm_net_change,
+                        prod_long = EXCLUDED.prod_long,
+                        prod_short = EXCLUDED.prod_short,
+                        prod_net = EXCLUDED.prod_net,
+                        swap_long = EXCLUDED.swap_long,
+                        swap_short = EXCLUDED.swap_short,
+                        swap_spread = EXCLUDED.swap_spread,
+                        swap_net = EXCLUDED.swap_net,
+                        other_long = EXCLUDED.other_long,
+                        other_short = EXCLUDED.other_short,
+                        nonrept_long = EXCLUDED.nonrept_long,
+                        nonrept_short = EXCLUDED.nonrept_short,
+                        open_interest = EXCLUDED.open_interest,
+                        collected_at = NOW()
+                """, rec)
+                count += 1
+            conn.commit()
+            self.logger.info(f"Saved {count} records to bronze.cftc_cot")
+            return count
+
     def _safe_int(self, value: Any) -> Optional[int]:
         """Safely convert value to int"""
         if value is None or value == '':

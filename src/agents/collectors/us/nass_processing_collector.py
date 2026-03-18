@@ -93,9 +93,10 @@ FATS_OILS_COMMODITIES = {
     },
 }
 
-# Soy crush data — soybeans crushed, meal production/stocks
-# These are part of the NASS Fats & Oils report but use different commodity_desc
-SOY_CRUSH_COMMODITIES = {
+# Crush, cake/meal, millfeed data — uses different commodity_desc than oil
+# Part of the NASS Fats & Oils report but keyed by seed commodity
+CRUSH_MEAL_COMMODITIES = {
+    # Soybeans
     'soybeans_crushed': {
         'commodity_desc': 'SOYBEANS',
         'class_desc': 'ALL CLASSES',
@@ -121,7 +122,42 @@ SOY_CRUSH_COMMODITIES = {
         'class_desc': 'SOYBEAN',
         'statisticcat_desc': 'STOCKS',
     },
+    # Canola
+    'canola_crushed': {
+        'commodity_desc': 'CANOLA',
+        'class_desc': 'ALL CLASSES',
+        'statisticcat_desc': 'CRUSHED',
+    },
+    'canola_meal_production': {
+        'commodity_desc': 'CAKE & MEAL',
+        'class_desc': 'CANOLA',
+        'statisticcat_desc': 'PRODUCTION',
+    },
+    'canola_meal_stocks': {
+        'commodity_desc': 'CAKE & MEAL',
+        'class_desc': 'CANOLA',
+        'statisticcat_desc': 'STOCKS',
+    },
+    # Cottonseed (commodity_desc=COTTON, class_desc=COTTONSEED for crush)
+    'cottonseed_crushed': {
+        'commodity_desc': 'COTTON',
+        'class_desc': 'COTTONSEED',
+        'statisticcat_desc': 'CRUSHED',
+    },
+    'cottonseed_meal_production': {
+        'commodity_desc': 'CAKE & MEAL',
+        'class_desc': 'COTTONSEED',
+        'statisticcat_desc': 'PRODUCTION',
+    },
+    'cottonseed_meal_stocks': {
+        'commodity_desc': 'CAKE & MEAL',
+        'class_desc': 'COTTONSEED',
+        'statisticcat_desc': 'STOCKS',
+    },
 }
+
+# Backward compatibility alias
+SOY_CRUSH_COMMODITIES = {k: v for k, v in CRUSH_MEAL_COMMODITIES.items() if k.startswith('soybean')}
 
 # Grain Crushings commodities
 # NASS uses statisticcat_desc='USAGE' and the type is in short_desc
@@ -367,8 +403,8 @@ class NASSProcessingCollector:
         year = year or datetime.now().year
         all_records = []
 
-        # 1. Soybeans crushed
-        for comm_key, config in SOY_CRUSH_COMMODITIES.items():
+        # 1. All crush/meal commodities (soybeans, canola, cottonseed)
+        for comm_key, config in CRUSH_MEAL_COMMODITIES.items():
             params = {
                 'commodity_desc': config['commodity_desc'],
                 'statisticcat_desc': config['statisticcat_desc'],
@@ -1038,8 +1074,19 @@ class NASSProcessingCollector:
 
         if commodity_desc == 'SOYBEANS':
             return 'soybeans'
-        if commodity_desc in ('OIL', 'CAKE & MEAL', 'MILLFEED') and 'SOYBEAN' in class_desc:
-            return 'soybeans'
+        if commodity_desc == 'CANOLA':
+            return 'canola'
+        if commodity_desc == 'COTTONSEED':
+            return 'cottonseed'
+        if commodity_desc == 'COTTON' and 'COTTONSEED' in class_desc:
+            return 'cottonseed'
+        if commodity_desc in ('OIL', 'CAKE & MEAL', 'MILLFEED'):
+            if 'SOYBEAN' in class_desc:
+                return 'soybeans'
+            if 'CANOLA' in class_desc:
+                return 'canola'
+            if 'COTTONSEED' in class_desc:
+                return 'cottonseed'
 
         # Fall back to commodity key
         comm = row.get('commodity', '').lower()
@@ -1070,11 +1117,11 @@ class NASSProcessingCollector:
         short_desc = row.get('short_desc', '').upper()
         commodity_desc = row.get('commodity_desc', '').upper()
 
-        # Soybeans crushed
-        if commodity_desc == 'SOYBEANS' and stat_cat == 'CRUSHED':
+        # Seeds crushed (soybeans, canola, cottonseed)
+        if commodity_desc in ('SOYBEANS', 'CANOLA', 'COTTONSEED') and stat_cat == 'CRUSHED':
             return 'crush'
 
-        # Soybean meal production/stocks
+        # Cake & meal production/stocks (all oilseeds)
         if commodity_desc == 'CAKE & MEAL':
             if stat_cat == 'PRODUCTION':
                 if 'ANIMAL FEED' in short_desc:

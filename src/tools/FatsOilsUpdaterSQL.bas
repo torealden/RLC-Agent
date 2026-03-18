@@ -281,16 +281,18 @@ Private Sub UpdateFromDatabase(commodity As String, monthCount As Integer)
     Application.StatusBar = "Fetching " & commodity & " data..."
     DoEvents
 
-    ' Build query using the generic view
+    ' Build query using the generic view (exclude NULLs to avoid writing "D" placeholders)
     If monthCount > 0 Then
         sql = "SELECT " & _
               "    year, month, header_pattern, display_value " & _
               "FROM gold.fats_oils_crush_matrix " & _
               "WHERE commodity = '" & commodity & "' " & _
+              "AND display_value IS NOT NULL " & _
               "AND (year, month) IN ( " & _
               "    SELECT DISTINCT year, month " & _
               "    FROM gold.fats_oils_crush_matrix " & _
               "    WHERE commodity = '" & commodity & "' " & _
+              "    AND display_value IS NOT NULL " & _
               "    ORDER BY year DESC, month DESC " & _
               "    LIMIT " & monthCount & _
               ") " & _
@@ -300,6 +302,7 @@ Private Sub UpdateFromDatabase(commodity As String, monthCount As Integer)
               "    year, month, header_pattern, display_value " & _
               "FROM gold.fats_oils_crush_matrix " & _
               "WHERE commodity = '" & commodity & "' " & _
+              "AND display_value IS NOT NULL " & _
               "ORDER BY year, month, header_pattern"
     End If
 
@@ -351,11 +354,8 @@ Private Sub UpdateFromDatabase(commodity As String, monthCount As Integer)
             targetRow = FindRowForDate(ws, yr, mo)
 
             If targetRow > 0 Then
-                If Not IsNull(displayValue) Then
+                If Not IsNull(displayValue) And displayValue <> "" Then
                     ws.Cells(targetRow, targetCol).Value = CDbl(displayValue)
-                    cellsUpdated = cellsUpdated + 1
-                Else
-                    ws.Cells(targetRow, targetCol).Value = "D"
                     cellsUpdated = cellsUpdated + 1
                 End If
             Else

@@ -56,7 +56,37 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.services.database.db_config import get_connection
 
+# Load .env for API keys
+try:
+    from dotenv import load_dotenv
+    load_dotenv(PROJECT_ROOT / ".env")
+except ImportError:
+    pass
+
 logger = logging.getLogger("backfill_fas_psd")
+
+# ---------------------------------------------------------------------------
+# RDS connection
+# ---------------------------------------------------------------------------
+
+RDS_HOST = "rlc-commodities.c16c6wm826t7.us-east-2.rds.amazonaws.com"
+RDS_PORT = "5432"
+RDS_DATABASE = "rlc_commodities"
+RDS_USER = "postgres"
+RDS_PASSWORD = "SoupBoss1"
+
+
+def get_rds_connection():
+    """Get a raw psycopg2 connection to the RDS database (caller must close)."""
+    import psycopg2
+    return psycopg2.connect(
+        host=RDS_HOST,
+        port=RDS_PORT,
+        database=RDS_DATABASE,
+        user=RDS_USER,
+        password=RDS_PASSWORD,
+        sslmode="require",
+    )
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -372,8 +402,29 @@ INSERT_SQL = """
 """
 
 
+def _insert_to_conn(conn, rows: List[dict]) -> int:
+    """Insert rows using an already-open connection. Returns count inserted."""
+    cursor = conn.cursor()
+    inserted = 0
+    for row in rows:
+        try:
+            cursor.execute(INSERT_SQL, row)
+            if hasattr(cursor, "statusmessage") and cursor.statusmessage == "INSERT 0 1":
+                inserted += 1
+            elif hasattr(cursor, "rowcount") and cursor.rowcount > 0:
+                inserted += 1
+        except Exception as e:
+            logger.warning("Row insert error (%s/%s/MY%s): %s",
+                           row.get("commodity"), row.get("country_code"),
+                           row.get("marketing_year"), e)
+            conn.rollback()
+    conn.commit()
+    return inserted
+
+
 def insert_rows(rows: List[dict], tracker: ProgressTracker, dry_run: bool = False) -> int:
-    """Insert pivoted rows into bronze.fas_psd. Returns count of rows inserted."""
+    """Insert pivoted rows into bronze.fas_psd on BOTH localhost and RDS.
+    Returns count of rows inserted on localhost."""
     if not rows:
         return 0
 
@@ -382,27 +433,32 @@ def insert_rows(rows: List[dict], tracker: ProgressTracker, dry_run: bool = Fals
         return 0
 
     inserted = 0
+
+    # --- Localhost ---
     try:
         with get_connection() as conn:
-            cursor = conn.cursor()
-            for row in rows:
-                try:
-                    cursor.execute(INSERT_SQL, row)
-                    # statusmessage is "INSERT 0 1" on success, "INSERT 0 0" on conflict skip
-                    if hasattr(cursor, "statusmessage") and cursor.statusmessage == "INSERT 0 1":
-                        inserted += 1
-                    elif hasattr(cursor, "rowcount") and cursor.rowcount > 0:
-                        inserted += 1
-                except Exception as e:
-                    logger.warning("Row insert error (%s/%s/MY%s): %s",
-                                   row.get("commodity"), row.get("country_code"),
-                                   row.get("marketing_year"), e)
-                    conn.rollback()
-                    tracker.add_error()
+            inserted = _insert_to_conn(conn, rows)
     except Exception as e:
-        logger.error("Database connection error: %s", e)
+        logger.error("Localhost DB error: %s", e)
         tracker.add_error()
-        return 0
+
+    # --- RDS ---
+    rds_inserted = 0
+    rds_conn = None
+    try:
+        rds_conn = get_rds_connection()
+        rds_inserted = _insert_to_conn(rds_conn, rows)
+    except Exception as e:
+        logger.warning("RDS insert error (non-fatal): %s", e)
+    finally:
+        if rds_conn:
+            try:
+                rds_conn.close()
+            except Exception:
+                pass
+
+    if rds_inserted > 0 and rds_inserted != inserted:
+        logger.info("  RDS inserted %d rows (localhost: %d)", rds_inserted, inserted)
 
     tracker.add_rows(inserted)
     return inserted

@@ -12,12 +12,16 @@ Usage:
     dispatcher.run_todays_collectors()      # Run all scheduled for today
 """
 
+import json
 import logging
+import os
 from datetime import datetime, date
+from pathlib import Path
 from typing import Dict, List, Optional, Any
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 
 from src.schedulers.master_scheduler import (
     RELEASE_SCHEDULES,
@@ -29,6 +33,8 @@ from src.dispatcher.collector_registry import CollectorRegistry
 from src.dispatcher.collector_runner import CollectorRunner, CollectorRunResult
 
 logger = logging.getLogger(__name__)
+
+HEARTBEAT_FILE = Path(__file__).resolve().parent.parent.parent / 'scripts' / 'deployment' / 'dispatcher_heartbeat.json'
 
 # APScheduler day-of-week mapping
 DOW_MAP = {
@@ -74,6 +80,7 @@ class Dispatcher:
         self._register_all_jobs()
         self.scheduler.start()
         self._running = True
+        self._write_heartbeat()  # Immediate heartbeat on startup
 
         jobs = self.scheduler.get_jobs()
         logger.info(f"Dispatcher started with {len(jobs)} scheduled jobs")
@@ -104,6 +111,7 @@ class Dispatcher:
         logger.info("Stopping dispatcher...")
         self.scheduler.shutdown(wait=True)
         self._running = False
+        HEARTBEAT_FILE.unlink(missing_ok=True)
         logger.info("Dispatcher stopped")
 
     def _register_all_jobs(self):
@@ -172,6 +180,30 @@ class Dispatcher:
             replace_existing=True,
         )
         logger.debug("Registered failure alert check every 2h (Mon-Fri)")
+
+        # Register heartbeat every 5 minutes so the watchdog can detect a zombie
+        self.scheduler.add_job(
+            func=self._write_heartbeat,
+            trigger=IntervalTrigger(minutes=5),
+            id='_heartbeat',
+            name='Dispatcher Heartbeat',
+            replace_existing=True,
+        )
+        logger.debug("Registered heartbeat (every 5 min)")
+
+    def _write_heartbeat(self):
+        """Write a heartbeat timestamp so the watchdog can detect a zombie dispatcher."""
+        try:
+            jobs = self.scheduler.get_jobs()
+            payload = {
+                'timestamp': datetime.now().isoformat(),
+                'pid': os.getpid(),
+                'job_count': len(jobs),
+                'running': self._running,
+            }
+            HEARTBEAT_FILE.write_text(json.dumps(payload))
+        except Exception as e:
+            logger.warning(f"Failed to write heartbeat: {e}")
 
     def _check_failure_alerts(self):
         """

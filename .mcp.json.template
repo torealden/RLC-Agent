@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "commodities-db": {
+      "command": "REPLACE_WITH_YOUR_PYTHON_PATH",
+      "args": [
+        "REPLACE_WITH_PROJECT_PATH\\src\\mcp\\commodities_db_server.py"
+      ],
+      "env": {
+        "RLC_PG_HOST": "rlc-commodities.c16c6wm826t7.us-east-2.rds.amazonaws.com",
+        "RLC_PG_PORT": "5432",
+        "RLC_PG_DATABASE": "rlc_commodities",
+        "RLC_PG_USER": "postgres",
+        "RLC_PG_PASSWORD": "SoupBoss1",
+        "RLC_PG_SSLMODE": "require"
+      }
+    }
+  }
+}
