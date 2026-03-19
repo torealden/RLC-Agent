@@ -37,8 +37,8 @@ except ImportError:
 
 from src.tools.hb_cash_price_extract import extract_hb_prices
 
-TEMPLATE_PATH = PROJECT_ROOT / 'data' / 'raw' / 'Cash Prices - 03062025.xlsx'
-OUTPUT_DIR = PROJECT_ROOT / 'data' / 'reports'
+TEMPLATE_PATH = PROJECT_ROOT / 'templates' / 'Cash Prices - template.xlsx'
+OUTPUT_DIR = PROJECT_ROOT / 'output' / 'reports'
 
 # Rows containing price data (D/E/F columns to clear and fill)
 PRICE_ROW_MIN = 5
