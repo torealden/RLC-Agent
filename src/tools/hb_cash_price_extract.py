@@ -49,15 +49,16 @@ HB_SPREADSHEET_PATH = PROJECT_ROOT / 'data' / 'hb_cash_price.xlsx'
 
 
 def get_connection():
-    """Get database connection."""
+    """Get database connection (uses RLC_PG_* env vars, falls back to DB_*)."""
     if not PSYCOPG2_AVAILABLE:
         raise ImportError("psycopg2 required")
     return psycopg2.connect(
-        host=os.environ.get('DB_HOST', 'localhost'),
-        port=os.environ.get('DB_PORT', 5432),
-        database=os.environ.get('DB_NAME', 'rlc_commodities'),
-        user=os.environ.get('DB_USER', 'postgres'),
-        password=os.environ.get('DB_PASSWORD'),
+        host=os.environ.get('RLC_PG_HOST', os.environ.get('DB_HOST', 'localhost')),
+        port=os.environ.get('RLC_PG_PORT', os.environ.get('DB_PORT', 5432)),
+        database=os.environ.get('RLC_PG_DATABASE', os.environ.get('DB_NAME', 'rlc_commodities')),
+        user=os.environ.get('RLC_PG_USER', os.environ.get('DB_USER', 'postgres')),
+        password=os.environ.get('RLC_PG_PASSWORD', os.environ.get('DB_PASSWORD')),
+        sslmode=os.environ.get('RLC_PG_SSLMODE', 'prefer'),
     )
 
 

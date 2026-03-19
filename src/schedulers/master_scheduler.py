@@ -556,6 +556,59 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         priority=5,
         commodities=['soybeans', 'corn', 'wheat', 'rice', 'palm_oil', 'sugar'],
     ),
+
+    # === EPA ECHO Facility Intelligence (monthly) ===
+    'epa_echo_oilseed': CollectorSchedule(
+        collector_name='epa_echo_oilseed',
+        collector_class='EPAEchoOilseedCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=1,
+            release_time=time(4, 0),
+            description="EPA ECHO soybean/oilseed processing facility data"
+        ),
+        priority=5,
+        commodities=['soybeans', 'canola', 'sunflower', 'cottonseed'],
+    ),
+
+    'epa_echo_ethanol': CollectorSchedule(
+        collector_name='epa_echo_ethanol',
+        collector_class='EPAEchoEthanolCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=1,
+            release_time=time(4, 30),
+            description="EPA ECHO ethanol production facility data"
+        ),
+        priority=5,
+        commodities=['corn', 'sorghum'],
+    ),
+
+    'epa_echo_biodiesel': CollectorSchedule(
+        collector_name='epa_echo_biodiesel',
+        collector_class='EPAEchoBiodieselCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=1,
+            release_time=time(5, 0),
+            description="EPA ECHO biodiesel/renewable diesel facility data"
+        ),
+        priority=5,
+        commodities=['soybean_oil', 'canola_oil', 'tallow'],
+    ),
+
+    'epa_echo_milling': CollectorSchedule(
+        collector_name='epa_echo_milling',
+        collector_class='EPAEchoMillingCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=1,
+            release_time=time(5, 30),
+            description="EPA ECHO wheat/flour milling facility data"
+        ),
+        priority=5,
+        commodities=['wheat'],
+    ),
 }
 
 

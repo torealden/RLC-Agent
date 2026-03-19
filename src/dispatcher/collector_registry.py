@@ -195,6 +195,24 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.south_america.indec_collector',
         'class': 'INDECCollector',
     },
+
+    # === EPA ECHO Facility Intelligence ===
+    'epa_echo_oilseed': {
+        'module': 'src.agents.collectors.us.epa_echo_facility_collector',
+        'class': 'EPAEchoOilseedCollector',
+    },
+    'epa_echo_ethanol': {
+        'module': 'src.agents.collectors.us.epa_echo_facility_collector',
+        'class': 'EPAEchoEthanolCollector',
+    },
+    'epa_echo_biodiesel': {
+        'module': 'src.agents.collectors.us.epa_echo_facility_collector',
+        'class': 'EPAEchoBiodieselCollector',
+    },
+    'epa_echo_milling': {
+        'module': 'src.agents.collectors.us.epa_echo_facility_collector',
+        'class': 'EPAEchoMillingCollector',
+    },
 }
 
 
