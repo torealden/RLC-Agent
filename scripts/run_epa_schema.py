@@ -27,11 +27,12 @@ def run_schema():
 
     # Connect to database
     conn = psycopg2.connect(
-        host=os.environ.get('DB_HOST', 'localhost'),
-        port=int(os.environ.get('DB_PORT', '5432')),
-        database=os.environ.get('DB_NAME', 'rlc_commodities'),
-        user=os.environ.get('DB_USER', 'postgres'),
-        password=os.environ.get('DB_PASSWORD', '')
+        host=os.environ.get('RLC_PG_HOST', os.environ.get('DB_HOST', 'localhost')),
+        port=int(os.environ.get('RLC_PG_PORT', os.environ.get('DB_PORT', '5432'))),
+        database=os.environ.get('RLC_PG_DATABASE', os.environ.get('DB_NAME', 'rlc_commodities')),
+        user=os.environ.get('RLC_PG_USER', os.environ.get('DB_USER', 'postgres')),
+        password=os.environ.get('RLC_PG_PASSWORD', os.environ.get('DB_PASSWORD', '')),
+        sslmode=os.environ.get('RLC_PG_SSLMODE', 'prefer'),
     )
 
     cursor = conn.cursor()

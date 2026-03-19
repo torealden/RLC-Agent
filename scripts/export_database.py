@@ -54,11 +54,12 @@ def get_connection():
         sys.exit(1)
 
     return psycopg2.connect(
-        host=os.environ.get('DB_HOST', 'localhost'),
-        port=os.environ.get('DB_PORT', 5432),
-        database=os.environ.get('DB_NAME', 'rlc_commodities'),
-        user=os.environ.get('DB_USER', 'postgres'),
-        password=password
+        host=os.environ.get('RLC_PG_HOST', os.environ.get('DB_HOST', 'localhost')),
+        port=os.environ.get('RLC_PG_PORT', os.environ.get('DB_PORT', 5432)),
+        database=os.environ.get('RLC_PG_DATABASE', os.environ.get('DB_NAME', 'rlc_commodities')),
+        user=os.environ.get('RLC_PG_USER', os.environ.get('DB_USER', 'postgres')),
+        password=password,
+        sslmode=os.environ.get('RLC_PG_SSLMODE', 'prefer'),
     )
 
 

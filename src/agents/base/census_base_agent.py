@@ -202,11 +202,12 @@ class CensusBaseAgent(ABC):
         self.started_at = datetime.now()
 
         # Database config
-        self.db_host = db_host or os.environ.get('DB_HOST', 'localhost')
-        self.db_port = db_port or int(os.environ.get('DB_PORT', '5432'))
-        self.db_name = db_name or os.environ.get('DB_NAME', 'rlc_commodities')
-        self.db_user = db_user or os.environ.get('DB_USER', 'postgres')
-        self.db_password = db_password or os.environ.get('DB_PASSWORD', '')
+        self.db_host = db_host or os.environ.get('RLC_PG_HOST', os.environ.get('DB_HOST', 'localhost'))
+        self.db_port = db_port or int(os.environ.get('RLC_PG_PORT', os.environ.get('DB_PORT', '5432')))
+        self.db_name = db_name or os.environ.get('RLC_PG_DATABASE', os.environ.get('DB_NAME', 'rlc_commodities'))
+        self.db_user = db_user or os.environ.get('RLC_PG_USER', os.environ.get('DB_USER', 'postgres'))
+        self.db_password = db_password or os.environ.get('RLC_PG_PASSWORD', os.environ.get('DB_PASSWORD', ''))
+        self.db_sslmode = os.environ.get('RLC_PG_SSLMODE', 'prefer')
 
         # Connection (lazy loaded)
         self._conn = None
@@ -396,7 +397,8 @@ class CensusBaseAgent(ABC):
                 port=self.db_port,
                 database=self.db_name,
                 user=self.db_user,
-                password=self.db_password
+                password=self.db_password,
+                sslmode=self.db_sslmode,
             )
         return self._conn
 

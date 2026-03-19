@@ -294,11 +294,12 @@ class CensusTradeConfig:
     request_timeout: int = 60     # Timeout per request in seconds
 
     # Database
-    db_host: str = field(default_factory=lambda: os.environ.get('DB_HOST', 'localhost'))
-    db_port: int = field(default_factory=lambda: int(os.environ.get('DB_PORT', '5432')))
-    db_name: str = field(default_factory=lambda: os.environ.get('DB_NAME', 'rlc_commodities'))
-    db_user: str = field(default_factory=lambda: os.environ.get('DB_USER', 'postgres'))
-    db_password: str = field(default_factory=lambda: os.environ.get('DB_PASSWORD', ''))
+    db_host: str = field(default_factory=lambda: os.environ.get('RLC_PG_HOST', os.environ.get('DB_HOST', 'localhost')))
+    db_port: int = field(default_factory=lambda: int(os.environ.get('RLC_PG_PORT', os.environ.get('DB_PORT', '5432'))))
+    db_name: str = field(default_factory=lambda: os.environ.get('RLC_PG_DATABASE', os.environ.get('DB_NAME', 'rlc_commodities')))
+    db_user: str = field(default_factory=lambda: os.environ.get('RLC_PG_USER', os.environ.get('DB_USER', 'postgres')))
+    db_password: str = field(default_factory=lambda: os.environ.get('RLC_PG_PASSWORD', os.environ.get('DB_PASSWORD', '')))
+    db_sslmode: str = field(default_factory=lambda: os.environ.get('RLC_PG_SSLMODE', 'prefer'))
 
 
 class CensusTradeCollectorV2:
@@ -684,7 +685,8 @@ class CensusTradeCollectorV2:
                 port=self.config.db_port,
                 database=self.config.db_name,
                 user=self.config.db_user,
-                password=self.config.db_password
+                password=self.config.db_password,
+                sslmode=self.config.db_sslmode,
             )
             close_conn = True
 

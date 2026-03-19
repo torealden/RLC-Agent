@@ -519,16 +519,17 @@ def get_database_url() -> str:
     if database_url:
         return database_url
 
-    db_host = os.getenv('DB_HOST', 'localhost')
-    db_port = os.getenv('DB_PORT', '5432')
-    db_name = os.getenv('DB_NAME', 'rlc_commodities')
-    db_user = os.getenv('DB_USER', 'postgres')
-    db_password = os.getenv('DB_PASSWORD', '')
+    db_host = os.getenv('RLC_PG_HOST', os.getenv('DB_HOST', 'localhost'))
+    db_port = os.getenv('RLC_PG_PORT', os.getenv('DB_PORT', '5432'))
+    db_name = os.getenv('RLC_PG_DATABASE', os.getenv('DB_NAME', 'rlc_commodities'))
+    db_user = os.getenv('RLC_PG_USER', os.getenv('DB_USER', 'postgres'))
+    db_password = os.getenv('RLC_PG_PASSWORD', os.getenv('DB_PASSWORD', ''))
+    db_sslmode = os.getenv('RLC_PG_SSLMODE', 'prefer')
 
     if db_password:
-        return f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+        return f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?sslmode={db_sslmode}"
     else:
-        return f"postgresql://{db_user}@{db_host}:{db_port}/{db_name}"
+        return f"postgresql://{db_user}@{db_host}:{db_port}/{db_name}?sslmode={db_sslmode}"
 
 
 def save_to_database(records: List[Dict], connection_string: str = None) -> int:

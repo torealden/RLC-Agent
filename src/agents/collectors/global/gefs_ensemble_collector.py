@@ -338,11 +338,12 @@ class GEFSCollector(GFSCollector):
                 load_dotenv(PROJECT_ROOT / '.env')
 
                 conn = psycopg2.connect(
-                    host=os.environ.get('DB_HOST', 'localhost'),
-                    port=os.environ.get('DB_PORT', 5432),
-                    database=os.environ.get('DB_NAME', 'rlc_commodities'),
-                    user=os.environ.get('DB_USER', 'postgres'),
-                    password=os.environ.get('DB_PASSWORD', '')
+                    host=os.environ.get('RLC_PG_HOST', os.environ.get('DB_HOST', 'localhost')),
+                    port=os.environ.get('RLC_PG_PORT', os.environ.get('DB_PORT', 5432)),
+                    database=os.environ.get('RLC_PG_DATABASE', os.environ.get('DB_NAME', 'rlc_commodities')),
+                    user=os.environ.get('RLC_PG_USER', os.environ.get('DB_USER', 'postgres')),
+                    password=os.environ.get('RLC_PG_PASSWORD', os.environ.get('DB_PASSWORD', '')),
+                    sslmode=os.environ.get('RLC_PG_SSLMODE', 'prefer'),
                 )
                 should_close = True
             except Exception as e:

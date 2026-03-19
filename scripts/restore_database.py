@@ -39,11 +39,12 @@ def get_connection(database='rlc_commodities'):
     load_dotenv(PROJECT_ROOT / '.env')
 
     return psycopg2.connect(
-        host=os.environ.get('DB_HOST', 'localhost'),
-        port=os.environ.get('DB_PORT', 5432),
+        host=os.environ.get('RLC_PG_HOST', os.environ.get('DB_HOST', 'localhost')),
+        port=os.environ.get('RLC_PG_PORT', os.environ.get('DB_PORT', 5432)),
         database=database,
-        user=os.environ.get('DB_USER', 'postgres'),
-        password=os.environ.get('DB_PASSWORD')
+        user=os.environ.get('RLC_PG_USER', os.environ.get('DB_USER', 'postgres')),
+        password=os.environ.get('RLC_PG_PASSWORD', os.environ.get('DB_PASSWORD')),
+        sslmode=os.environ.get('RLC_PG_SSLMODE', 'prefer'),
     )
 
 

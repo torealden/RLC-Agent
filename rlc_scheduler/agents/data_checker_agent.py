@@ -90,11 +90,12 @@ class BaseChecker(ABC):
     def __init__(self):
         """Initialize the checker."""
         self.db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': int(os.getenv('DB_PORT', 5432)),
-            'database': os.getenv('DB_NAME', 'rlc_commodities'),
-            'user': os.getenv('DB_USER', 'postgres'),
-            'password': os.getenv('DB_PASSWORD', '')
+            'host': os.getenv('RLC_PG_HOST', os.getenv('DB_HOST', 'localhost')),
+            'port': int(os.getenv('RLC_PG_PORT', os.getenv('DB_PORT', '5432'))),
+            'database': os.getenv('RLC_PG_DATABASE', os.getenv('DB_NAME', 'rlc_commodities')),
+            'user': os.getenv('RLC_PG_USER', os.getenv('DB_USER', 'postgres')),
+            'password': os.getenv('RLC_PG_PASSWORD', os.getenv('DB_PASSWORD', '')),
+            'sslmode': os.getenv('RLC_PG_SSLMODE', 'prefer')
         }
         self.session = requests.Session()
 
