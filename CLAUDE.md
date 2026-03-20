@@ -9,7 +9,7 @@ RLC-Agent is an agricultural commodity data collection, analysis, and reporting 
 
 ## Database Architecture
 
-**Connection:** PostgreSQL database `rlc_commodities` on `localhost:5432`, user: `postgres`
+**Connection:** PostgreSQL database `rlc_commodities` on cloud RDS (configured via `RLC_PG_HOST` in `.env`)
 
 ### Bronze Layer (31 Tables) - Raw Ingested Data
 
@@ -465,6 +465,50 @@ GROUP BY state ORDER BY state;
 | Weather Graphics | `data/weather_graphics/` |
 | Generated Graphics | `data/generated_graphics/` |
 | Documentation | `docs/DATA_SOURCES_PUNCHLIST.md` |
+| **User Guide** | `docs/user_guide/` |
+| **Operations Dashboard** | `dashboards/ops/app.py` |
+
+---
+
+## User Guide & Onboarding
+
+**Location:** `docs/user_guide/`
+
+A comprehensive 6-part guide for new users (e.g., Felipe):
+
+| Document | Content |
+|----------|---------|
+| `01_GETTING_STARTED.md` | Installation, configuration, verification |
+| `02_UNDERSTANDING_DATA.md` | Data sources, medallion architecture, schema |
+| `03_DAILY_OPERATIONS.md` | Dashboard, monitoring, troubleshooting |
+| `04_POWER_BI.md` | Database connection, tables, dashboard building |
+| `05_ADDING_DATA_SOURCES.md` | Creating collectors, schema updates, Gold views |
+| `06_LLM_INTEGRATION.md` | Natural language queries, report generation |
+| `APPENDIX_A_FILE_LIST.md` | Files to send new users (credentials, .env) |
+| `APPENDIX_B_API_KEYS.md` | API key registration instructions |
+| `APPENDIX_C_DATABASE_REFERENCE.md` | Quick SQL reference |
+| `APPENDIX_D_TROUBLESHOOTING.md` | Common issues and solutions |
+| `APPENDIX_E_GRAPHICS.md` | Specifications for generating diagrams |
+
+### Onboarding New Users
+
+**Files to send (not in Git):**
+1. `.env` (root) — Database connection and API keys
+2. `dashboards/ops/.env` — Dashboard database config
+3. `credentials.json` (optional) — Google OAuth for Gmail/Calendar
+
+**Verification script:** `python scripts/verify_setup.py`
+
+### Operations Dashboard
+
+**Launch:** `streamlit run dashboards/ops/app.py` or `scripts/launch_data_dashboard.bat`
+
+The dashboard auto-loads `.env` from `dashboards/ops/` via python-dotenv. Shows:
+- Health score (0-100)
+- Data freshness by source
+- Active alerts
+- Recent failures
+- Collection trends (30 days)
 
 ---
 
