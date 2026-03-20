@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(python:*)",
+      "Bash(wmic process:*)",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(del:*)",
+      "Bash(dir:*)",
+      "Bash(powershell:*)",
+      "WebSearch",
+      "WebFetch(domain:www.nass.usda.gov)",
+      "Bash(done)",
+      "Bash(find:*)",
+      "Bash(unzip:*)",
+      "Bash(pip install:*)",
+      "Bash(psql:*)",
+      "Bash(findstr:*)",
+      "Bash(git status:*)",
+      "Bash(timeout 30 bash:*)",
+      "Bash(where:*)",
+      "Bash(set:*)",
+      "Bash(export PGPASSWORD=postgres)",
+      "Bash(export PGPASSWORD=\"\")",
+      "Bash(PGPASSWORD=postgres psql:*)",
+      "Bash(PGPASSWORD=SoupBoss1 psql:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "notion"
+  ]
+}
