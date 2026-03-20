@@ -49,6 +49,9 @@ notion-client>=2.0.0
 # Local embeddings (for RAG)
 sentence-transformers>=2.2.0  # Optional - for enhanced RAG
 
+# Dashboards
+streamlit>=1.30.0
+
 # Development
 pytest>=7.0.0
 pytest-asyncio>=0.21.0

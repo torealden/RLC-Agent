@@ -6,7 +6,11 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from contextlib import contextmanager
 import os
+from pathlib import Path
 
+# Auto-load .env file from this directory
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).parent / ".env")
 
 _PG_HOST = os.getenv("RLC_PG_HOST", "localhost")
 _PG_PORT = os.getenv("RLC_PG_PORT", "5432")

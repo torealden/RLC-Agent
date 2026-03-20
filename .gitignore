@@ -1,25 +1,21 @@
-# Python bytecode
+# Environment files (contain credentials)
+.env
+*.env
+!.env.example
+
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.pyc
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
 
 # Virtual environments
 venv/
 .venv/
 env/
-
-# Credentials and secrets
-.env
-credentials.env
-config/credentials.env
-*.tmp.*
-
-# MCP configuration (may contain API keys)
-.mcp.json
-
-# Claude Code local settings
-.claude/
 
 # IDE
 .idea/
@@ -27,76 +23,20 @@ config/credentials.env
 *.swp
 *.swo
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
-# Distribution / packaging
-dist/
-build/
-*.egg-info/
-
-# Local data files
-*.db
-*.sqlite
-data/
-usda_data/
+# Logs
+*.log
 logs/
 
-# Jupyter
-.ipynb_checkpoints/
+# Local data
+*.sqlite
+*.db
 
-# Database exports and dumps
-database/exports/
-*.dump
-*.sql.gz
-
-# EPA ECHO raw data and output
-collectors/epa_echo/raw/
-collectors/epa_echo/output/
-
-# Large binary files - GIS/imagery
-*.tif
-*.tiff
-*.kmz
-
-# Large binary files - archives
-*.zip
-*.tar.gz
-*.7z
-
-# Large binary files - pickled data
-*.pkl
-*.pickle
-
-# PowerBI files (too large for git)
-*.pbix
-*.pbit
-
-# Video/media recordings
-OBS_recordings/
-*.mkv
-*.prproj
-*.prin
-
-# Model artifacts (large binaries)
-*.h5
-*.hdf5
-*.onnx
-*.pt
-*.pth
-
-# Archive folder (root only)
-/archive/
-
-# Temporary and cache files
-*.tmp
-*.bak
-*.log
-
-# Runtime PID files
-*.pid
-
-# Word temp files
-~$*.docx
-~$*.xlsx
+# Credentials (never commit these)
+credentials.json
+token.json
+*.pem
+*.key
