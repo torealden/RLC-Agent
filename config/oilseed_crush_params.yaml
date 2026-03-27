@@ -1,0 +1,141 @@
+# ============================================================================
+# Oilseed Crush Parameters
+# ============================================================================
+# Seeds reference.oilseed_crush_params. Extraction rates are starting values;
+# the model recalculates 5-year seasonal averages from NASS monthly data
+# when available.
+#
+# Price source formats:
+#   futures:SYMBOL         - Monthly avg settlement from silver.futures_price
+#   ams:COMMODITY          - USDA AMS cash price from silver.cash_price
+#   ratio:SYMBOL:FACTOR    - Factor × futures settlement
+#   differential:SYMBOL:ADJ - Futures + adjustment (cents/lb for oil, $/ton for meal)
+#   fixed:VALUE            - Hardcoded fallback
+# ============================================================================
+
+oilseeds:
+  # Price unit notes:
+  #   ZL (soy oil):  CBOT quotes in cents/lb   → use directly as oil_price_cents_lb
+  #   ZM (soy meal): CBOT quotes in $/ton      → use directly as meal_price_per_ton
+  #   ZS (soybeans): CBOT quotes in cents/bu   → divide by 100 for $/bu
+  # seed_price_divisor converts raw settlement to $/seed_unit
+
+  soybeans:
+    oilseed_name: "Soybeans"
+    oil_yield_pct: 18.5        # ~11.1 lbs oil per 60 lb bushel
+    meal_yield_pct: 79.5       # ~47.7 lbs meal per bushel
+    hull_yield_pct: 2.0
+    processing_cost_per_unit: 0.55  # $/bushel
+    seed_unit: bushel
+    seed_lbs_per_unit: 60
+    oil_price_source: "futures:ZL"
+    meal_price_source: "futures:ZM"
+    seed_price_source: "futures:ZS"
+    seed_price_divisor: 100    # CBOT ZS is in cents/bu, divide by 100 for $/bu
+    my_start_month: 9
+    has_nass_monthly: true
+    nass_source: "NASS_FATS_OILS"
+    nass_attribute: "oil_production_crude"
+    capacity_annual_thou_tons: 62000
+
+  canola:
+    oilseed_name: "Canola (Rapeseed)"
+    oil_yield_pct: 42.0
+    meal_yield_pct: 56.0
+    hull_yield_pct: 0
+    processing_cost_per_unit: 0.50  # $/bushel (50 lb)
+    seed_unit: bushel
+    seed_lbs_per_unit: 50
+    oil_price_source: "differential:ZL:3.0"    # canola oil ~3 cents/lb premium to soy oil
+    meal_price_source: "ratio:ZM:0.82"         # canola meal ~82% of soy meal value
+    seed_price_source: "ams:canola"             # AMS cash or ICE canola
+    my_start_month: 10
+    has_nass_monthly: true
+    nass_source: "NASS_FATS_OILS"
+    nass_attribute: "oil_production_crude"
+    capacity_annual_thou_tons: 4500
+
+  cottonseed:
+    oilseed_name: "Cottonseed"
+    oil_yield_pct: 16.0
+    meal_yield_pct: 45.0
+    hull_yield_pct: 26.0
+    processing_cost_per_unit: 18.0  # $/short ton
+    seed_unit: short_ton
+    seed_lbs_per_unit: 2000
+    oil_price_source: "differential:ZL:-2.0"   # cottonseed oil ~2 cents/lb discount to soy
+    meal_price_source: "ratio:ZM:0.70"         # cottonseed meal ~70% of soy meal value
+    seed_price_source: "ams:cottonseed"
+    my_start_month: 8
+    has_nass_monthly: true
+    nass_source: "NASS_FATS_OILS"
+    nass_attribute: "oil_production_crude"
+    capacity_annual_thou_tons: 3500
+
+  sunflower:
+    oilseed_name: "Sunflower Seed"
+    oil_yield_pct: 40.0
+    meal_yield_pct: 45.0
+    hull_yield_pct: 12.0
+    processing_cost_per_unit: 20.0  # $/short ton
+    seed_unit: short_ton
+    seed_lbs_per_unit: 2000
+    oil_price_source: "differential:ZL:8.0"    # sunflower oil ~8 cents/lb premium to soy
+    meal_price_source: "ratio:ZM:0.55"         # sunflower meal ~55% of soy meal (lower protein)
+    seed_price_source: "ams:sunflower_seed"
+    my_start_month: 10
+    has_nass_monthly: true
+    nass_source: "NASS_FATS_OILS"
+    nass_attribute: "oil_production_crude"
+    capacity_annual_thou_tons: 1500
+
+  peanut:
+    oilseed_name: "Peanuts"
+    oil_yield_pct: 42.0
+    meal_yield_pct: 52.0
+    hull_yield_pct: 4.0
+    processing_cost_per_unit: 22.0  # $/short ton
+    seed_unit: short_ton
+    seed_lbs_per_unit: 2000
+    oil_price_source: "differential:ZL:15.0"   # peanut oil significant premium
+    meal_price_source: "ratio:ZM:0.65"
+    seed_price_source: "ams:peanuts"
+    my_start_month: 8
+    has_nass_monthly: true
+    nass_source: "NASS_PEANUT"
+    nass_attribute: "peanuts_crushed"
+    capacity_annual_thou_tons: 800
+
+  flaxseed:
+    oilseed_name: "Flaxseed (Linseed)"
+    oil_yield_pct: 35.0
+    meal_yield_pct: 60.0
+    hull_yield_pct: 3.0
+    processing_cost_per_unit: 0.45  # $/bushel (56 lb)
+    seed_unit: bushel
+    seed_lbs_per_unit: 56
+    oil_price_source: "differential:ZL:15.0"   # linseed oil significant premium (industrial)
+    meal_price_source: "ratio:ZM:0.70"
+    seed_price_source: "ams:flaxseed"
+    my_start_month: 9
+    has_nass_monthly: false
+    usda_annual_crush: 8.5         # million bushels
+    usda_annual_unit: "mil_bu"
+    capacity_annual_thou_tons: 400
+
+  safflower:
+    oilseed_name: "Safflower"
+    oil_yield_pct: 32.0
+    meal_yield_pct: 50.0
+    hull_yield_pct: 15.0
+    processing_cost_per_unit: 25.0  # $/short ton
+    seed_unit: short_ton
+    seed_lbs_per_unit: 2000
+    oil_price_source: "differential:ZL:25.0"   # safflower oil high premium (specialty)
+    meal_price_source: "ratio:ZM:0.60"
+    seed_price_source: "ams:safflower"
+    my_start_month: 9
+    has_nass_monthly: false
+    usda_annual_crush: 80          # thousand short tons
+    usda_annual_unit: "thou_tons"
+    capacity_annual_thou_tons: 200

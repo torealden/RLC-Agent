@@ -1,0 +1,869 @@
+# ============================================================================
+# Country Reconciliation — Trade Country Reference INSERT Generator
+# ============================================================================
+# Generates SQL INSERT statements for silver.trade_country_reference by having
+# the local LLM reconcile country names across Census Bureau, USDA FAS PSD,
+# and CONAB/Brazil naming conventions.
+#
+# The existing 014_trade_reference_tables.sql has basic country data but is
+# missing FAS/PSD alternative names and ISO codes. This job produces a
+# comprehensive replacement with all cross-references populated.
+#
+# Run:  python scripts/ollama/task_runner.py scripts/ollama/jobs/country_reconciliation.yaml
+# Test: python scripts/ollama/task_runner.py scripts/ollama/jobs/country_reconciliation.yaml --dry-run
+# Single region: python scripts/ollama/task_runner.py scripts/ollama/jobs/country_reconciliation.yaml --task 3
+# ============================================================================
+
+model: "qwen3-coder:30b"
+temperature: 0.1
+
+system_prompt: |
+  You generate PostgreSQL INSERT statements for country reference data.
+  Output ONLY valid SQL — no markdown, no commentary, no explanations, no code fences.
+  Use your knowledge of international naming conventions.
+  When uncertain about a country name variant, include a SQL comment on that line.
+
+  IMPORTANT RULES:
+  - Census Bureau uses ALL CAPS country names (e.g., "KOREA, SOUTH", "CONGO (KINSHASA)")
+  - FAS PSD uses Title Case with commas (e.g., "Korea, Republic of", "Congo, Democratic Republic of")
+  - CONAB/Brazil uses Portuguese names (e.g., "Coreia do Sul", "Congo")
+  - ISO codes must be standard ISO 3166-1 alpha-2 and alpha-3
+  - Leave spreadsheet_row as NULL
+  - Use the exact column order shown in the template
+  - Every INSERT must use ON CONFLICT to be safely re-runnable
+
+tasks:
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 1: EU-27 Member States
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_01_eu27
+    output_file: sql/country_ref_01_eu27.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code (can be NULL if unknown)
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS) - primary key for matching
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name (Title Case)
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2 (e.g., DE, FR)
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3 (e.g., DEU, FRA)
+          region VARCHAR(50) NOT NULL,         -- Regional grouping
+          region_sort_order INT NOT NULL,      -- Order of regions
+          country_sort_order INT NOT NULL,     -- Order within region (alphabetical)
+          spreadsheet_row INT,                 -- NULL for now
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Here are 3 example rows showing the exact format:
+
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('EU27', 'EUROPEAN UNION-27', NULL, NULL, NULL, 'EU27', 1, 0, NULL, TRUE, TRUE, 'Regional total'),
+      ('4280', 'GERMANY', 'Germany', 'DE', 'DEU', 'EU27', 1, 11, NULL, FALSE, TRUE, NULL),
+      ('4271', 'FRANCE', 'France', 'FR', 'FRA', 'EU27', 1, 10, NULL, FALSE, TRUE, NULL)
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for ALL 27 EU member states plus the EU-27 regional total row.
+      Region = 'EU27', region_sort_order = 1.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      The 27 EU members are: Austria, Belgium, Bulgaria, Croatia, Cyprus, Czech Republic,
+      Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy, Latvia,
+      Lithuania, Luxembourg, Malta, Netherlands, Poland, Portugal, Romania, Slovakia,
+      Slovenia, Spain, Sweden.
+
+      For country_name_alt (FAS PSD name), most EU countries use the same English name.
+      Use Census Bureau codes where known (e.g., Austria=4031, Belgium=4211, Denmark=4091,
+      Finland=4011, France=4271, Germany=4280, Greece=4841, Hungary=4371, Ireland=4190,
+      Italy=4759, Netherlands=4210, Poland=4550, Portugal=4710, Romania=4880, Spain=4700,
+      Sweden=4010). For others, leave country_code as NULL with a comment.
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["EUROPEAN UNION-27", "GERMANY", "FRANCE", "POLAND", "SWEDEN", "EU27", "iso2_code", "iso3_code"]
+      must_not_contain: ["```", "Here is", "Note:"]
+      min_length: 1500
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 2: Other Europe (non-EU)
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_02_other_europe
+    output_file: sql/country_ref_02_other_europe.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Example format:
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('4120', 'UNITED KINGDOM', 'United Kingdom', 'GB', 'GBR', 'EUROPE_OTHER', 2, 12, NULL, FALSE, TRUE, NULL)
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for Other Europe (non-EU European countries).
+      Region = 'EUROPE_OTHER', region_sort_order = 2.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      Include these countries:
+      - Regional total row (country_name = 'OTHER EUROPE TOTAL', is_regional_total = TRUE)
+      - Albania (Census code: 4217)
+      - Andorra (Census code: 4231)
+      - Bosnia and Herzegovina (Census: 4227, FAS name: "Bosnia and Herzegovina")
+      - Iceland (Census: 4032)
+      - Kosovo (Census: 4785)
+      - Montenegro (Census: 4787)
+      - North Macedonia (Census: 4789, FAS name: "North Macedonia")
+      - Norway (Census: 4030)
+      - Serbia (Census: 4783)
+      - Switzerland (Census: 4419)
+      - Turkey (Census: 4890, FAS name: "Turkey")
+      - United Kingdom (Census: 4120, post-Brexit but grouped here)
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["EUROPE_OTHER", "UNITED KINGDOM", "TURKEY", "NORWAY", "SERBIA", "iso2_code"]
+      must_not_contain: ["```", "Here is", "Note:"]
+      min_length: 800
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 3: Former Soviet Union (FSU)
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_03_fsu
+    output_file: sql/country_ref_03_fsu.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Example format:
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('4621', 'RUSSIA', 'Russia', 'RU', 'RUS', 'FSU', 3, 8, NULL, FALSE, TRUE, NULL)
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for all Former Soviet Union countries.
+      Region = 'FSU', region_sort_order = 3.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      Include these countries:
+      - Regional total row (country_name = 'FSU TOTAL', is_regional_total = TRUE)
+      - Armenia (Census: 4631)
+      - Azerbaijan (Census: 4633)
+      - Belarus (Census: 4622, FAS name: "Belarus")
+      - Georgia (Census: 4635)
+      - Kazakhstan (Census: 4637, FAS name: "Kazakhstan" — major wheat exporter)
+      - Kyrgyzstan (Census: 4639)
+      - Moldova (Census: 4641)
+      - Russia (Census: 4621, FAS name: "Russia" — #1 wheat exporter)
+      - Tajikistan (Census: 4643)
+      - Turkmenistan (Census: 4645)
+      - Ukraine (Census: 4623, FAS name: "Ukraine" — major corn/wheat exporter)
+      - Uzbekistan (Census: 4647)
+
+      Important FAS PSD country codes for this region:
+      - Russia = 'RS' in FAS PSD
+      - Ukraine = 'UP' in FAS PSD
+      - Kazakhstan = 'KZ' in FAS PSD
+
+      Include these FAS codes in the notes column where relevant.
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["FSU", "RUSSIA", "UKRAINE", "KAZAKHSTAN", "BELARUS", "iso2_code"]
+      must_not_contain: ["```", "Here is", "Note:"]
+      min_length: 800
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 4: East Asia
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_04_east_asia
+    output_file: sql/country_ref_04_east_asia.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Example format — note the tricky Census vs FAS name differences:
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('5700', 'CHINA', 'China', 'CN', 'CHN', 'EAST_ASIA', 4, 2, NULL, FALSE, TRUE, 'FAS PSD code: CH'),
+      ('5800', 'KOREA, SOUTH', 'Korea, Republic of', 'KR', 'KOR', 'EAST_ASIA', 4, 5, NULL, FALSE, TRUE, 'Census uses "KOREA, SOUTH"; FAS uses "Korea, Republic of"'),
+      ('5830', 'TAIWAN', 'Taiwan', 'TW', 'TWN', 'EAST_ASIA', 4, 7, NULL, FALSE, TRUE, 'FAS PSD code: TW')
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for East Asia.
+      Region = 'EAST_ASIA', region_sort_order = 4.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      Include these countries:
+      - Regional total row (country_name = 'EAST ASIA TOTAL', is_regional_total = TRUE)
+      - China (Census: 5700, FAS PSD code: CH — #1 soybean importer)
+      - Hong Kong (Census: 5820)
+      - Japan (Census: 5880, FAS PSD code: JA — major corn/wheat importer)
+      - Korea, North (Census: 5790, FAS name: "Korea, Dem. People's Rep. of")
+      - Korea, South (Census: 5800, FAS name: "Korea, Republic of" — major corn importer)
+      - Macau (Census: 5460)
+      - Mongolia (Census: 5760)
+      - Taiwan (Census: 5830, FAS PSD code: TW)
+
+      Pay special attention to name discrepancies between Census and FAS for the Koreas.
+      Include FAS PSD country codes in notes where relevant.
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["EAST_ASIA", "CHINA", "KOREA, SOUTH", "JAPAN", "TAIWAN", "iso2_code"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 600
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 5: Southeast Asia
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_05_southeast_asia
+    output_file: sql/country_ref_05_southeast_asia.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Example format:
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('5600', 'INDONESIA', 'Indonesia', 'ID', 'IDN', 'SOUTHEAST_ASIA', 5, 3, NULL, FALSE, TRUE, 'FAS PSD code: ID. #1 palm oil producer')
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for Southeast Asia.
+      Region = 'SOUTHEAST_ASIA', region_sort_order = 5.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      Include these countries:
+      - Regional total row (country_name = 'SOUTHEAST ASIA TOTAL', is_regional_total = TRUE)
+      - Brunei (Census: 5550)
+      - Cambodia (Census: 5560, FAS name: "Cambodia")
+      - Indonesia (Census: 5600, FAS PSD code: ID — #1 palm oil producer)
+      - Laos (Census: 5570, Census name: "LAOS", FAS name: "Laos")
+      - Malaysia (Census: 5580, FAS PSD code: MY — #2 palm oil producer)
+      - Myanmar (Census: 5510, Census name: "MYANMAR", FAS name: "Burma" — FAS still uses Burma!)
+      - Philippines (Census: 5660, FAS PSD code: RP)
+      - Singapore (Census: 5590)
+      - Thailand (Census: 5520, FAS PSD code: TH — major rice exporter)
+      - Timor-Leste (Census: 5200, FAS name: "Timor-Leste")
+      - Vietnam (Census: 5500, FAS PSD code: VM — major rice exporter)
+
+      IMPORTANT: FAS PSD still calls Myanmar "Burma". Put this in country_name_alt.
+      Include FAS PSD country codes in notes where relevant.
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["SOUTHEAST_ASIA", "INDONESIA", "MALAYSIA", "VIETNAM", "THAILAND", "PHILIPPINES", "iso2_code"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 700
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 6: South Asia & Oceania
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_06_south_asia_oceania
+    output_file: sql/country_ref_06_south_asia_oceania.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Example format:
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('5330', 'INDIA', 'India', 'IN', 'IND', 'SOUTH_ASIA_OCEANIA', 6, 4, NULL, FALSE, TRUE, 'FAS PSD code: IN. Major wheat producer, soybean meal exporter')
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for South Asia & Oceania.
+      Region = 'SOUTH_ASIA_OCEANIA', region_sort_order = 6.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      Include these countries:
+      - Regional total row (country_name = 'SOUTH ASIA & OCEANIA TOTAL', is_regional_total = TRUE)
+      - Afghanistan (Census: 5310)
+      - Australia (Census: 6021, FAS PSD code: AS — major wheat exporter)
+      - Bangladesh (Census: 5380, FAS PSD code: BG)
+      - Fiji (Census: 6110)
+      - India (Census: 5330, FAS PSD code: IN — major wheat, soybean meal)
+      - Maldives (Census: 5360)
+      - Nepal (Census: 5350)
+      - New Zealand (Census: 6141, FAS PSD code: NZ)
+      - Pakistan (Census: 5340, FAS PSD code: PK — major wheat importer)
+      - Papua New Guinea (Census: 6030)
+      - Sri Lanka (Census: 5370)
+
+      Include FAS PSD country codes in notes where relevant.
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["SOUTH_ASIA_OCEANIA", "INDIA", "AUSTRALIA", "PAKISTAN", "NEW ZEALAND", "iso2_code"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 600
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 7: Middle East & North Africa (MENA)
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_07_mena
+    output_file: sql/country_ref_07_mena.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Example format:
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('7290', 'EGYPT', 'Egypt', 'EG', 'EGY', 'MENA', 7, 4, NULL, FALSE, TRUE, 'FAS PSD code: EG. Major wheat importer')
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for the Middle East & North Africa (MENA) region.
+      Region = 'MENA', region_sort_order = 7.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      Include these countries:
+      - Regional total row (country_name = 'MENA TOTAL', is_regional_total = TRUE)
+      - Algeria (Census: 7210, FAS PSD code: AG)
+      - Bahrain (Census: 5150)
+      - Egypt (Census: 7290, FAS PSD code: EG — #1 wheat importer globally)
+      - Iran (Census: 5070, FAS name: "Iran")
+      - Iraq (Census: 5050, FAS PSD code: IZ)
+      - Israel (Census: 5030)
+      - Jordan (Census: 5020)
+      - Kuwait (Census: 5130)
+      - Lebanon (Census: 5040)
+      - Libya (Census: 7250)
+      - Morocco (Census: 7140, FAS PSD code: MO — major wheat importer)
+      - Oman (Census: 5140)
+      - Qatar (Census: 5170)
+      - Saudi Arabia (Census: 5110, FAS PSD code: SA — major barley importer)
+      - Syria (Census: 5010)
+      - Tunisia (Census: 7230, FAS PSD code: TS)
+      - United Arab Emirates (Census: 5180)
+      - Yemen (Census: 5190)
+
+      Include FAS PSD country codes in notes where relevant.
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["MENA", "EGYPT", "SAUDI ARABIA", "IRAN", "MOROCCO", "ALGERIA", "iso2_code"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 1000
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 8: Sub-Saharan Africa
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_08_sub_saharan_africa
+    output_file: sql/country_ref_08_sub_saharan_africa.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Example format — note the tricky Census name variations:
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('7540', 'CONGO (KINSHASA)', 'Congo, Democratic Republic of', 'CD', 'COD', 'SUB_SAHARAN_AFRICA', 8, 8, NULL, FALSE, TRUE, 'Census: CONGO (KINSHASA), FAS: Congo, Democratic Republic of'),
+      ('7530', 'CONGO (BRAZZAVILLE)', 'Congo, Republic of', 'CG', 'COG', 'SUB_SAHARAN_AFRICA', 8, 7, NULL, FALSE, TRUE, 'Census: CONGO (BRAZZAVILLE), FAS: Congo, Republic of'),
+      ('7680', 'COTE D IVOIRE', 'Cote d''Ivoire', 'CI', 'CIV', 'SUB_SAHARAN_AFRICA', 8, 9, NULL, FALSE, TRUE, 'Census omits apostrophe. FAS uses Cote d''Ivoire')
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for Sub-Saharan Africa.
+      Region = 'SUB_SAHARAN_AFRICA', region_sort_order = 8.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      Include these countries (this is a large region):
+      - Regional total row (country_name = 'SUB-SAHARAN AFRICA TOTAL', is_regional_total = TRUE)
+      - Angola (Census: 7620)
+      - Benin (Census: 7670)
+      - Botswana (Census: 7640)
+      - Burkina Faso (Census: 7450)
+      - Burundi (Census: 7560)
+      - Cameroon (Census: 7490)
+      - Cape Verde (Census: 7460)
+      - Central African Republic (Census: 7510)
+      - Chad (Census: 7520)
+      - Comoros (Census: 7810)
+      - Congo (Brazzaville) (Census: 7530, FAS: "Congo, Republic of")
+      - Congo (Kinshasa) (Census: 7540, FAS: "Congo, Democratic Republic of")
+      - Cote d'Ivoire (Census: 7680, Census name: "COTE D IVOIRE" — no apostrophe!)
+      - Djibouti (Census: 7820)
+      - Equatorial Guinea (Census: 7480)
+      - Eritrea (Census: 7848)
+      - Eswatini (Census: 7658, FAS name: "Eswatini", formerly Swaziland)
+      - Ethiopia (Census: 7840)
+      - Gabon (Census: 7500)
+      - Gambia (Census: 7420, FAS name: "Gambia, The")
+      - Ghana (Census: 7690)
+      - Guinea (Census: 7430)
+      - Guinea-Bissau (Census: 7440)
+      - Kenya (Census: 7850)
+      - Lesotho (Census: 7650)
+      - Liberia (Census: 7550)
+      - Madagascar (Census: 7830)
+      - Malawi (Census: 7570)
+      - Mali (Census: 7470)
+      - Mauritania (Census: 7410)
+      - Mauritius (Census: 7860)
+      - Mozambique (Census: 7580)
+      - Namibia (Census: 7660)
+      - Niger (Census: 7240)
+      - Nigeria (Census: 7700, FAS PSD code: NI — major sorghum producer)
+      - Reunion (Census: 7870, FAS name: "Reunion")
+      - Rwanda (Census: 7560)
+      - Sao Tome and Principe (Census: 7710)
+      - Senegal (Census: 7400)
+      - Seychelles (Census: 7880)
+      - Sierra Leone (Census: 7460)
+      - Somalia (Census: 7890)
+      - South Africa (Census: 7910, FAS PSD code: SF — major corn producer)
+      - South Sudan (Census: 7329)
+      - Sudan (Census: 7320)
+      - Tanzania (Census: 7900)
+      - Togo (Census: 7720)
+      - Uganda (Census: 7920)
+      - Zambia (Census: 7610)
+      - Zimbabwe (Census: 7600)
+
+      IMPORTANT name discrepancies to handle:
+      - Census: "COTE D IVOIRE" (no apostrophe) vs FAS: "Cote d'Ivoire"
+      - Census: "CONGO (KINSHASA)" vs FAS: "Congo, Democratic Republic of"
+      - Census: "CONGO (BRAZZAVILLE)" vs FAS: "Congo, Republic of"
+      - Census: "ESWATINI" vs historical "Swaziland"
+      - FAS: "Gambia, The" (with "The")
+
+      Escape single quotes in SQL strings by doubling them (e.g., ''Ivoire).
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["SUB_SAHARAN_AFRICA", "NIGERIA", "SOUTH AFRICA", "KENYA", "ETHIOPIA", "CONGO", "iso2_code"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 2000
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 9: Central & South America
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_09_south_america
+    output_file: sql/country_ref_09_south_america.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Example format:
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('3510', 'BRAZIL', 'Brazil', 'BR', 'BRA', 'SOUTH_AMERICA', 9, 3, NULL, FALSE, TRUE, 'FAS PSD code: BR. #1 soy exporter. CONAB name: Brasil'),
+      ('3570', 'ARGENTINA', 'Argentina', 'AR', 'ARG', 'SOUTH_AMERICA', 9, 1, NULL, FALSE, TRUE, 'FAS PSD code: AR. Major soy/corn exporter')
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for Central & South America (mainland countries + Mexico).
+      Region = 'SOUTH_AMERICA', region_sort_order = 9.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      Include these countries:
+      - Regional total row (country_name = 'CENTRAL & SOUTH AMERICA TOTAL', is_regional_total = TRUE)
+      - Argentina (Census: 3570, FAS PSD code: AR — major soy/corn exporter)
+      - Belize (Census: 2050)
+      - Bolivia (Census: 3510)
+      - Brazil (Census: 3510, FAS PSD code: BR — #1 soy exporter)
+      - Chile (Census: 3370)
+      - Colombia (Census: 3010)
+      - Costa Rica (Census: 2230)
+      - Ecuador (Census: 3310)
+      - El Salvador (Census: 2110)
+      - French Guiana (Census: 3220)
+      - Guatemala (Census: 2150)
+      - Guyana (Census: 3130)
+      - Honduras (Census: 2170)
+      - Mexico (Census: 2010, FAS PSD code: MX — major corn importer)
+      - Nicaragua (Census: 2190)
+      - Panama (Census: 2270)
+      - Paraguay (Census: 3350, FAS PSD code: PY — major soy exporter)
+      - Peru (Census: 3330)
+      - Suriname (Census: 3150)
+      - Uruguay (Census: 3530, FAS PSD code: UY)
+      - Venezuela (Census: 3070)
+
+      IMPORTANT: Mexico is included here (not Caribbean) because it is the largest
+      ag trade partner in the Western Hemisphere. Include FAS PSD codes in notes.
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["SOUTH_AMERICA", "BRAZIL", "ARGENTINA", "MEXICO", "PARAGUAY", "COLOMBIA", "iso2_code"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 1200
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 10: Caribbean & North America (excl. US, Mexico)
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_10_caribbean
+    output_file: sql/country_ref_10_caribbean.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Example format:
+      INSERT INTO silver.trade_country_reference
+      (country_code, country_name, country_name_alt, iso2_code, iso3_code, region, region_sort_order, country_sort_order, spreadsheet_row, is_regional_total, is_active, notes)
+      VALUES
+      ('2010', 'CANADA', 'Canada', 'CA', 'CAN', 'CARIBBEAN_NA', 10, 5, NULL, FALSE, TRUE, 'FAS PSD code: CA. Major wheat, canola exporter')
+      ON CONFLICT (country_name, region) DO UPDATE SET
+          country_name_alt = EXCLUDED.country_name_alt,
+          iso2_code = EXCLUDED.iso2_code,
+          iso3_code = EXCLUDED.iso3_code,
+          updated_at = NOW();
+
+      Generate INSERT statements for the Caribbean & North America region.
+      Region = 'CARIBBEAN_NA', region_sort_order = 10.
+      Assign country_sort_order alphabetically starting at 1 (regional total row gets 0).
+
+      Include these countries:
+      - Regional total row (country_name = 'CARIBBEAN & N. AMERICA TOTAL', is_regional_total = TRUE)
+      - Anguilla (Census: 2770)
+      - Antigua and Barbuda (Census: 2590)
+      - Aruba (Census: 2771)
+      - Bahamas (Census: 2400)
+      - Barbados (Census: 2780)
+      - Bermuda (Census: 2430)
+      - Bonaire (Census: 3515)
+      - British Virgin Islands (Census: 2721)
+      - Canada (Census: 2010, FAS PSD code: CA — major wheat, canola, rapeseed)
+      - Cayman Islands (Census: 2450)
+      - Cuba (Census: 2481)
+      - Curacao (Census: 2773)
+      - Dominica (Census: 2480)
+      - Dominican Republic (Census: 2470)
+      - Grenada (Census: 2790)
+      - Guadeloupe (Census: 2750)
+      - Haiti (Census: 2460)
+      - Jamaica (Census: 2500)
+      - Martinique (Census: 2760)
+      - Montserrat (Census: 2775)
+      - St Kitts and Nevis (Census: 2610, FAS name: "Saint Kitts and Nevis")
+      - St Lucia (Census: 2795, FAS name: "Saint Lucia")
+      - St Vincent and Grenadines (Census: 2600, FAS name: "Saint Vincent and the Grenadines")
+      - Trinidad and Tobago (Census: 2800)
+      - Turks and Caicos (Census: 2455, FAS name: "Turks and Caicos Islands")
+      - Virgin Islands US (Census: 2720, FAS name: "Virgin Islands, U.S.")
+
+      IMPORTANT Census vs FAS name discrepancies:
+      - Census: "ST KITTS AND NEVIS" vs FAS: "Saint Kitts and Nevis"
+      - Census: "ST LUCIA" vs FAS: "Saint Lucia"
+      - Census: "ST VINCENT AND GRENADINES" vs FAS: "Saint Vincent and the Grenadines"
+      - Census: "TURKS AND CAICOS" vs FAS: "Turks and Caicos Islands"
+      - Census: "VIRGIN ISLANDS US" vs FAS: "Virgin Islands, U.S."
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["CARIBBEAN_NA", "CANADA", "JAMAICA", "TRINIDAD", "DOMINICAN REPUBLIC", "iso2_code"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 1200
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 11: World Total + Special Aggregates
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: region_11_world_totals
+    output_file: sql/country_ref_11_world_totals.sql
+    prompt: |
+      Here is the schema for silver.trade_country_reference:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),           -- Census Bureau country code
+          country_name VARCHAR(100) NOT NULL,  -- Census Bureau name (ALL CAPS)
+          country_name_alt VARCHAR(100),       -- USDA FAS PSD alternative name
+          iso2_code VARCHAR(2),                -- ISO 3166-1 alpha-2
+          iso3_code VARCHAR(3),                -- ISO 3166-1 alpha-3
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Generate INSERT statements for the World Total row and any special aggregate rows.
+      These are summary/aggregate rows, not individual countries.
+
+      Include:
+      1. WORLD TOTAL (region = 'WORLD', region_sort_order = 11, country_sort_order = 0, is_regional_total = TRUE)
+         country_name = 'WORLD TOTAL', notes = 'Sum of all regional totals'
+
+      2. UNKNOWN / UNIDENTIFIED (region = 'WORLD', region_sort_order = 11, country_sort_order = 1)
+         country_name = 'UNKNOWN', notes = 'Catch-all for unmatched country names in Census data'
+         is_active = TRUE
+
+      3. EUROPEAN UNION AGGREGATE (region = 'WORLD', region_sort_order = 11, country_sort_order = 2)
+         country_name = 'EUROPEAN UNION', country_name_alt = 'European Union', notes = 'FAS PSD uses E4 for EU aggregate'
+         is_regional_total = TRUE
+
+      Use ON CONFLICT for idempotency.
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["WORLD TOTAL", "UNKNOWN", "EUROPEAN UNION", "ON CONFLICT"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 300
+
+  # ════════════════════════════════════════════════════════════════════
+  # TASK 12: ALTER TABLE to add iso2_code, iso3_code columns
+  # ════════════════════════════════════════════════════════════════════
+
+  - name: schema_migration
+    output_file: sql/country_ref_00_migration.sql
+    prompt: |
+      The existing silver.trade_country_reference table has these columns:
+
+      CREATE TABLE silver.trade_country_reference (
+          id SERIAL PRIMARY KEY,
+          country_code VARCHAR(10),
+          country_name VARCHAR(100) NOT NULL,
+          country_name_alt VARCHAR(100),
+          region VARCHAR(50) NOT NULL,
+          region_sort_order INT NOT NULL,
+          country_sort_order INT NOT NULL,
+          spreadsheet_row INT,
+          is_regional_total BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          notes TEXT,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW(),
+          UNIQUE (country_name, region)
+      );
+
+      Generate an ALTER TABLE migration to add the following columns
+      (if they do not already exist):
+      - iso2_code VARCHAR(2) — ISO 3166-1 alpha-2 code
+      - iso3_code VARCHAR(3) — ISO 3166-1 alpha-3 code
+
+      Also create indexes on these new columns.
+
+      Use IF NOT EXISTS or DO $$ ... $$ blocks so the migration is safely re-runnable.
+      Add COMMENT ON COLUMN statements for documentation.
+
+      Output ONLY SQL.
+    validation:
+      must_contain: ["ALTER TABLE", "iso2_code", "iso3_code", "silver.trade_country_reference"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 200

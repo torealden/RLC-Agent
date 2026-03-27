@@ -76,7 +76,7 @@ st.sidebar.caption("Intelligence Dashboard")
 
 page = st.sidebar.radio(
     "Navigate",
-    ["Overview", "US Balance Sheets", "CFTC Positioning",
+    ["Overview", "Global Oilseeds S&D", "US Balance Sheets", "CFTC Positioning",
      "Export Analysis", "Crush & Processing",
      "MPOB Palm Oil", "Weather"],
     index=0,
@@ -852,8 +852,11 @@ def page_weather():
 # ═══════════════════════════════════════════════════════════════════════════════
 # ROUTING
 # ═══════════════════════════════════════════════════════════════════════════════
+from global_oilseeds import page_global_oilseeds
+
 pages = {
     "Overview": page_overview,
+    "Global Oilseeds S&D": lambda: page_global_oilseeds(query),
     "US Balance Sheets": page_balance_sheets,
     "CFTC Positioning": page_cftc,
     "Export Analysis": page_exports,

@@ -1,7 +1,7 @@
 ' =============================================================================
-' TradeUpdaterSQL - Pure VBA with PostgreSQL Connection
+' BiofuelFeedstockTradeUpdater - Pure VBA with PostgreSQL Connection
 ' =============================================================================
-' Connects directly to PostgreSQL database to update trade data.
+' Connects directly to PostgreSQL database to update biofuel feedstock trade data.
 ' No Python required. No closing/reopening workbook.
 '
 ' Requirements:
@@ -37,32 +37,32 @@ Private Const REGIONAL_ROWS As String = "4,33,47,61,108,165,216"
 ' MAIN UPDATE FUNCTIONS
 ' =============================================================================
 
-Public Sub UpdateTradeData()
+Public Sub UpdateFeedstockData()
     ' Quick update - latest 3 months of available data
-    ' Keyboard shortcut: Ctrl+I
+    ' Keyboard shortcut: Ctrl+F
 
     Dim result As VbMsgBoxResult
     result = MsgBox("Update " & ActiveSheet.Name & " with the latest 3 months of available data?", _
-                    vbYesNo + vbQuestion, "Trade Updater")
+                    vbYesNo + vbQuestion, "Feedstock Trade Updater")
 
     If result = vbYes Then
         UpdateFromDatabase 3
     End If
 End Sub
 
-Public Sub UpdateTradeDataCustom()
+Public Sub UpdateFeedstockDataCustom()
     ' Custom update with user-specified months
-    ' Keyboard shortcut: Ctrl+Shift+I
+    ' Keyboard shortcut: Ctrl+Shift+F
 
     Dim monthCount As String
     monthCount = InputBox("How many months of data to update?" & vbCrLf & vbCrLf & _
                           "Enter a number (e.g., 6 for last 6 months)", _
-                          "Trade Updater", "3")
+                          "Feedstock Trade Updater", "3")
 
     If monthCount = "" Then Exit Sub
 
     If Not IsNumeric(monthCount) Then
-        MsgBox "Please enter a valid number.", vbExclamation, "Trade Updater"
+        MsgBox "Please enter a valid number.", vbExclamation, "Feedstock Trade Updater"
         Exit Sub
     End If
 
@@ -136,7 +136,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     GetCommodityAndFlow ws.Name, commodity, flow
 
     If commodity = "UNKNOWN" Then
-        MsgBox "Could not determine commodity from sheet name: " & ws.Name, vbExclamation, "Trade Updater"
+        MsgBox "Could not determine commodity from sheet name: " & ws.Name, vbExclamation, "Feedstock Trade Updater"
         conn.Close
         Application.StatusBar = False
         Application.Cursor = xlDefault
@@ -211,7 +211,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
         Application.Cursor = xlDefault
         MsgBox "No data found for " & commodity & " " & flow & "." & vbCrLf & vbCrLf & _
                "The data may not have been collected yet, or there may be " & _
-               "no trade activity for this commodity/flow.", vbInformation, "Trade Updater"
+               "no trade activity for this commodity/flow.", vbInformation, "Feedstock Trade Updater"
         Exit Sub
     End If
 
@@ -278,14 +278,14 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     MsgBox "Update complete!" & vbCrLf & vbCrLf & _
            "Columns cleared: " & columnsCleared & vbCrLf & _
            "Cells updated: " & cellsUpdated & vbCrLf & _
-           "Countries not found: " & countriesNotFound, vbInformation, "Trade Updater"
+           "Countries not found: " & countriesNotFound, vbInformation, "Feedstock Trade Updater"
 
     Exit Sub
 
 QueryError:
     Application.StatusBar = False
     Application.Cursor = xlDefault
-    MsgBox "Query error:" & vbCrLf & vbCrLf & Err.Description, vbCritical, "Trade Updater"
+    MsgBox "Query error:" & vbCrLf & vbCrLf & Err.Description, vbCritical, "Feedstock Trade Updater"
     If Not conn Is Nothing Then conn.Close
 End Sub
 
@@ -356,50 +356,21 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         flow = "exports"
     End If
 
-    ' Determine commodity (some depend on flow)
-    If InStr(sheetLower, "soybean") > 0 And InStr(sheetLower, "meal") > 0 Then
-        commodity = "SOYBEAN_MEAL"
-    ElseIf InStr(sheetLower, "soybean") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "SOYBEAN_OIL"
-    ElseIf InStr(sheetLower, "soybean") > 0 Or InStr(sheetLower, "soy ") > 0 Then
-        commodity = "SOYBEANS"
-    ElseIf InStr(sheetLower, "corn") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "CORN_OIL"
-    ElseIf InStr(sheetLower, "corn") > 0 Or InStr(sheetLower, "maize") > 0 Then
-        commodity = "CORN"
-    ElseIf InStr(sheetLower, "wheat") > 0 Then
-        commodity = "WHEAT"
-    ElseIf InStr(sheetLower, "ddgs") > 0 Then
-        commodity = "DDGS"
-    ElseIf InStr(sheetLower, "canola") > 0 And InStr(sheetLower, "meal") > 0 Then
-        commodity = "CANOLA_MEAL"
-    ElseIf InStr(sheetLower, "canola") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "CANOLA_OIL"
-    ElseIf (InStr(sheetLower, "canola") > 0 Or InStr(sheetLower, "rapeseed") > 0) Then
-        ' Canola seed - both exports and imports use CANOLA commodity group
-        commodity = "CANOLA"
-    ElseIf InStr(sheetLower, "sunflower") > 0 And InStr(sheetLower, "meal") > 0 Then
-        commodity = "SUNFLOWER_MEAL"
-    ElseIf InStr(sheetLower, "sunflower") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "SUNFLOWER_OIL"
-    ElseIf InStr(sheetLower, "sunflower") > 0 Then
-        commodity = "SUNFLOWER"
-    ElseIf InStr(sheetLower, "palm") > 0 And InStr(sheetLower, "kernel") > 0 Then
-        commodity = "PALM_KERNEL_OIL"
-    ElseIf InStr(sheetLower, "palm") > 0 Then
-        commodity = "PALM_OIL"
-    ElseIf InStr(sheetLower, "cottonseed") > 0 And InStr(sheetLower, "meal") > 0 Then
-        commodity = "COTTONSEED_MEAL"
-    ElseIf InStr(sheetLower, "cottonseed") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "COTTONSEED_OIL"
-    ElseIf InStr(sheetLower, "cottonseed") > 0 Then
-        commodity = "COTTONSEED"
-    ElseIf (InStr(sheetLower, "linseed") > 0 Or InStr(sheetLower, "flax") > 0) And InStr(sheetLower, "meal") > 0 Then
-        commodity = "LINSEED_MEAL"
-    ElseIf (InStr(sheetLower, "linseed") > 0 Or InStr(sheetLower, "flax") > 0) And InStr(sheetLower, "oil") > 0 Then
-        commodity = "LINSEED_OIL"
-    ElseIf InStr(sheetLower, "flax") > 0 Or InStr(sheetLower, "linseed") > 0 Then
-        commodity = "FLAXSEED"
+    ' Determine commodity
+    If InStr(sheetLower, "tallow") > 0 Then
+        commodity = "TALLOW"
+    ElseIf InStr(sheetLower, "used cooking") > 0 Or InStr(sheetLower, "uco") > 0 Then
+        commodity = "UCO"
+    ElseIf InStr(sheetLower, "yellow grease") > 0 Then
+        commodity = "YELLOW_GREASE"
+    ElseIf InStr(sheetLower, "choice white") > 0 Or InStr(sheetLower, "cwg") > 0 Then
+        commodity = "CHOICE_WHITE_GREASE"
+    ElseIf InStr(sheetLower, "lard") > 0 Then
+        commodity = "LARD"
+    ElseIf InStr(sheetLower, "poultry") > 0 And InStr(sheetLower, "fat") > 0 Then
+        commodity = "POULTRY_FAT"
+    ElseIf InStr(sheetLower, "grease") > 0 Then
+        commodity = "YELLOW_GREASE"
     Else
         commodity = "UNKNOWN"
     End If
@@ -462,18 +433,18 @@ End Function
 ' KEYBOARD SHORTCUTS
 ' =============================================================================
 
-Public Sub AssignKeyboardShortcuts()
-    ' Assign Ctrl+I and Ctrl+Shift+I shortcuts
+Public Sub AssignFeedstockShortcuts()
+    ' Assign Ctrl+F and Ctrl+Shift+F shortcuts
 
-    Application.OnKey "^i", "UpdateTradeData"
-    Application.OnKey "^+i", "UpdateTradeDataCustom"
+    Application.OnKey "^f", "UpdateFeedstockData"
+    Application.OnKey "^+f", "UpdateFeedstockDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
-           "Ctrl+I = Quick update (latest 3 months)" & vbCrLf & _
-           "Ctrl+Shift+I = Custom month count", vbInformation, "Trade Updater"
+           "Ctrl+F = Quick update (latest 3 months)" & vbCrLf & _
+           "Ctrl+Shift+F = Custom month count", vbInformation, "Feedstock Trade Updater"
 End Sub
 
-Public Sub RemoveKeyboardShortcuts()
-    Application.OnKey "^i"
-    Application.OnKey "^+i"
+Public Sub RemoveFeedstockShortcuts()
+    Application.OnKey "^f"
+    Application.OnKey "^+f"
 End Sub

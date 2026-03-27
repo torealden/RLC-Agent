@@ -87,8 +87,8 @@ DEFAULT_HS_CODES_10 = [
     '1201100000', '1201900005', '1201900095',
     # Peanuts
     '1202410000',
-    # Flaxseed
-    '1204000000',
+    # Flaxseed (exports use 1204000000; imports use specific HTS codes)
+    '1204000000', '1204000010', '1204000025', '1204000035', '1204000055', '1204000075',
     # Canola
     '1205100000', '1205900000',
     # Sunflower seed
@@ -109,8 +109,8 @@ DEFAULT_HS_CODES_10 = [
     '1513290000',
     # Canola oil
     '1514110000', '1514190000',
-    # Linseed oil
-    '1515110000', '1515190000',
+    # Linseed oil + inedible linseed oil preparations
+    '1515110000', '1515190000', '1518002000',
     # Corn oil
     '1515290040',
     # Other veg oil
@@ -127,6 +127,8 @@ DEFAULT_HS_CODES_10 = [
     '2306100000',
     # Sunflower meal
     '2306300000',
+    # Linseed meal + flaxseed screenings
+    '2306200000', '2308009300',
     # Cotton
     '5201001090', '5201002030', '5201009000',
 ]

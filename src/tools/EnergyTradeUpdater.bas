@@ -1,7 +1,7 @@
 ' =============================================================================
-' TradeUpdaterSQL - Pure VBA with PostgreSQL Connection
+' EnergyTradeUpdater - Pure VBA with PostgreSQL Connection
 ' =============================================================================
-' Connects directly to PostgreSQL database to update trade data.
+' Connects directly to PostgreSQL database to update energy trade data.
 ' No Python required. No closing/reopening workbook.
 '
 ' Requirements:
@@ -37,32 +37,32 @@ Private Const REGIONAL_ROWS As String = "4,33,47,61,108,165,216"
 ' MAIN UPDATE FUNCTIONS
 ' =============================================================================
 
-Public Sub UpdateTradeData()
+Public Sub UpdateEnergyData()
     ' Quick update - latest 3 months of available data
-    ' Keyboard shortcut: Ctrl+I
+    ' Keyboard shortcut: Ctrl+Y
 
     Dim result As VbMsgBoxResult
     result = MsgBox("Update " & ActiveSheet.Name & " with the latest 3 months of available data?", _
-                    vbYesNo + vbQuestion, "Trade Updater")
+                    vbYesNo + vbQuestion, "Energy Trade Updater")
 
     If result = vbYes Then
         UpdateFromDatabase 3
     End If
 End Sub
 
-Public Sub UpdateTradeDataCustom()
+Public Sub UpdateEnergyDataCustom()
     ' Custom update with user-specified months
-    ' Keyboard shortcut: Ctrl+Shift+I
+    ' Keyboard shortcut: Ctrl+Shift+Y
 
     Dim monthCount As String
     monthCount = InputBox("How many months of data to update?" & vbCrLf & vbCrLf & _
                           "Enter a number (e.g., 6 for last 6 months)", _
-                          "Trade Updater", "3")
+                          "Energy Trade Updater", "3")
 
     If monthCount = "" Then Exit Sub
 
     If Not IsNumeric(monthCount) Then
-        MsgBox "Please enter a valid number.", vbExclamation, "Trade Updater"
+        MsgBox "Please enter a valid number.", vbExclamation, "Energy Trade Updater"
         Exit Sub
     End If
 
@@ -136,7 +136,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     GetCommodityAndFlow ws.Name, commodity, flow
 
     If commodity = "UNKNOWN" Then
-        MsgBox "Could not determine commodity from sheet name: " & ws.Name, vbExclamation, "Trade Updater"
+        MsgBox "Could not determine commodity from sheet name: " & ws.Name, vbExclamation, "Energy Trade Updater"
         conn.Close
         Application.StatusBar = False
         Application.Cursor = xlDefault
@@ -211,7 +211,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
         Application.Cursor = xlDefault
         MsgBox "No data found for " & commodity & " " & flow & "." & vbCrLf & vbCrLf & _
                "The data may not have been collected yet, or there may be " & _
-               "no trade activity for this commodity/flow.", vbInformation, "Trade Updater"
+               "no trade activity for this commodity/flow.", vbInformation, "Energy Trade Updater"
         Exit Sub
     End If
 
@@ -278,14 +278,14 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     MsgBox "Update complete!" & vbCrLf & vbCrLf & _
            "Columns cleared: " & columnsCleared & vbCrLf & _
            "Cells updated: " & cellsUpdated & vbCrLf & _
-           "Countries not found: " & countriesNotFound, vbInformation, "Trade Updater"
+           "Countries not found: " & countriesNotFound, vbInformation, "Energy Trade Updater"
 
     Exit Sub
 
 QueryError:
     Application.StatusBar = False
     Application.Cursor = xlDefault
-    MsgBox "Query error:" & vbCrLf & vbCrLf & Err.Description, vbCritical, "Trade Updater"
+    MsgBox "Query error:" & vbCrLf & vbCrLf & Err.Description, vbCritical, "Energy Trade Updater"
     If Not conn Is Nothing Then conn.Close
 End Sub
 
@@ -356,50 +356,15 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         flow = "exports"
     End If
 
-    ' Determine commodity (some depend on flow)
-    If InStr(sheetLower, "soybean") > 0 And InStr(sheetLower, "meal") > 0 Then
-        commodity = "SOYBEAN_MEAL"
-    ElseIf InStr(sheetLower, "soybean") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "SOYBEAN_OIL"
-    ElseIf InStr(sheetLower, "soybean") > 0 Or InStr(sheetLower, "soy ") > 0 Then
-        commodity = "SOYBEANS"
-    ElseIf InStr(sheetLower, "corn") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "CORN_OIL"
-    ElseIf InStr(sheetLower, "corn") > 0 Or InStr(sheetLower, "maize") > 0 Then
-        commodity = "CORN"
-    ElseIf InStr(sheetLower, "wheat") > 0 Then
-        commodity = "WHEAT"
-    ElseIf InStr(sheetLower, "ddgs") > 0 Then
-        commodity = "DDGS"
-    ElseIf InStr(sheetLower, "canola") > 0 And InStr(sheetLower, "meal") > 0 Then
-        commodity = "CANOLA_MEAL"
-    ElseIf InStr(sheetLower, "canola") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "CANOLA_OIL"
-    ElseIf (InStr(sheetLower, "canola") > 0 Or InStr(sheetLower, "rapeseed") > 0) Then
-        ' Canola seed - both exports and imports use CANOLA commodity group
-        commodity = "CANOLA"
-    ElseIf InStr(sheetLower, "sunflower") > 0 And InStr(sheetLower, "meal") > 0 Then
-        commodity = "SUNFLOWER_MEAL"
-    ElseIf InStr(sheetLower, "sunflower") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "SUNFLOWER_OIL"
-    ElseIf InStr(sheetLower, "sunflower") > 0 Then
-        commodity = "SUNFLOWER"
-    ElseIf InStr(sheetLower, "palm") > 0 And InStr(sheetLower, "kernel") > 0 Then
-        commodity = "PALM_KERNEL_OIL"
-    ElseIf InStr(sheetLower, "palm") > 0 Then
-        commodity = "PALM_OIL"
-    ElseIf InStr(sheetLower, "cottonseed") > 0 And InStr(sheetLower, "meal") > 0 Then
-        commodity = "COTTONSEED_MEAL"
-    ElseIf InStr(sheetLower, "cottonseed") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "COTTONSEED_OIL"
-    ElseIf InStr(sheetLower, "cottonseed") > 0 Then
-        commodity = "COTTONSEED"
-    ElseIf (InStr(sheetLower, "linseed") > 0 Or InStr(sheetLower, "flax") > 0) And InStr(sheetLower, "meal") > 0 Then
-        commodity = "LINSEED_MEAL"
-    ElseIf (InStr(sheetLower, "linseed") > 0 Or InStr(sheetLower, "flax") > 0) And InStr(sheetLower, "oil") > 0 Then
-        commodity = "LINSEED_OIL"
-    ElseIf InStr(sheetLower, "flax") > 0 Or InStr(sheetLower, "linseed") > 0 Then
-        commodity = "FLAXSEED"
+    ' Determine commodity
+    If InStr(sheetLower, "renewable diesel") > 0 Or InStr(sheetLower, "rd") > 0 Then
+        commodity = "RENEWABLE_DIESEL"
+    ElseIf InStr(sheetLower, "biodiesel") > 0 Or InStr(sheetLower, "fame") > 0 Then
+        commodity = "BIODIESEL"
+    ElseIf InStr(sheetLower, "ethanol") > 0 Then
+        commodity = "ETHANOL"
+    ElseIf InStr(sheetLower, "methanol") > 0 Then
+        commodity = "METHANOL"
     Else
         commodity = "UNKNOWN"
     End If
@@ -462,18 +427,18 @@ End Function
 ' KEYBOARD SHORTCUTS
 ' =============================================================================
 
-Public Sub AssignKeyboardShortcuts()
-    ' Assign Ctrl+I and Ctrl+Shift+I shortcuts
+Public Sub AssignEnergyShortcuts()
+    ' Assign Ctrl+Y and Ctrl+Shift+Y shortcuts
 
-    Application.OnKey "^i", "UpdateTradeData"
-    Application.OnKey "^+i", "UpdateTradeDataCustom"
+    Application.OnKey "^y", "UpdateEnergyData"
+    Application.OnKey "^+y", "UpdateEnergyDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
-           "Ctrl+I = Quick update (latest 3 months)" & vbCrLf & _
-           "Ctrl+Shift+I = Custom month count", vbInformation, "Trade Updater"
+           "Ctrl+Y = Quick update (latest 3 months)" & vbCrLf & _
+           "Ctrl+Shift+Y = Custom month count", vbInformation, "Energy Trade Updater"
 End Sub
 
-Public Sub RemoveKeyboardShortcuts()
-    Application.OnKey "^i"
-    Application.OnKey "^+i"
+Public Sub RemoveEnergyShortcuts()
+    Application.OnKey "^y"
+    Application.OnKey "^+y"
 End Sub

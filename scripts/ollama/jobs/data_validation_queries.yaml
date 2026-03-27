@@ -1,0 +1,299 @@
+# ============================================================================
+# Data Validation Query Generator
+# ============================================================================
+# Generates standalone SQL validation queries that check data quality across
+# the RLC database medallion architecture (Bronze / Silver / Gold).
+#
+# Run:  python scripts/ollama/task_runner.py scripts/ollama/jobs/data_validation_queries.yaml
+# Test: python scripts/ollama/task_runner.py scripts/ollama/jobs/data_validation_queries.yaml --dry-run
+# ============================================================================
+
+model: "qwen3-coder:30b"
+temperature: 0.1
+
+system_prompt: |
+  You generate PostgreSQL validation queries. Output ONLY SQL with comments. No markdown, no explanations outside of SQL comments.
+
+tasks:
+
+  # ── 1. Bronze Table Completeness ─────────────────────────────────
+  - name: bronze_completeness
+    output_file: validation/bronze_completeness.sql
+    prompt: |
+      Generate a single PostgreSQL query (using UNION ALL) that produces a data-quality
+      completeness report for each of the six major bronze tables listed below.
+
+      For EACH table the output should show in one result set:
+        - table_name          (text literal, e.g. 'bronze.fas_psd')
+        - total_rows          (COUNT(*))
+        - min_date / max_date (the date range — use the date column listed below)
+        - null_pct_key1       (percentage of NULLs in the first key column listed)
+        - null_pct_key2       (percentage of NULLs in the second key column listed)
+        - distinct_cat1       (COUNT(DISTINCT) of the first categorical column listed)
+        - distinct_cat2       (COUNT(DISTINCT) of the second categorical column listed)
+
+      Tables and their schemas:
+
+      1. bronze.fas_psd
+         Columns: commodity, country_code, country, marketing_year, report_date,
+                  area_harvested, yield, beginning_stocks, production, imports,
+                  total_supply, domestic_consumption, feed_dom_consumption,
+                  fsi_consumption, crush, exports, total_distribution, ending_stocks, unit
+         Date column: report_date
+         Key columns to NULL-check: production, ending_stocks
+         Categorical columns: commodity, country_code
+
+      2. bronze.census_trade
+         Columns: id, year, month, flow, hs_code, country_code, country_name,
+                  value_usd, quantity, source, collected_at
+         Date column: collected_at  (also compute date range from year/month)
+         Key columns to NULL-check: value_usd, quantity
+         Categorical columns: flow, hs_code
+
+      3. bronze.cftc_cot
+         Columns: commodity, report_date, mm_long, mm_short, mm_net
+                  (and others — focus on these)
+         Date column: report_date
+         Key columns to NULL-check: mm_long, mm_short
+         Categorical columns: commodity (use commodity for both cat1 and cat2 = 'N/A')
+
+      4. bronze.eia_raw_ingestion
+         Columns: series_id, period, value
+         Date column: period
+         Key columns to NULL-check: value, series_id
+         Categorical columns: series_id (use series_id for cat1, cat2 = 'N/A')
+
+      5. bronze.conab_production
+         Columns: crop_year, state, commodity, area_planted, production, yield
+         Date column: (no date — use NULL for min/max date)
+         Key columns to NULL-check: production, area_planted
+         Categorical columns: commodity, state
+
+      6. bronze.weather_observations
+         Columns: station_id, observation_time, temp, precip
+         Date column: observation_time
+         Key columns to NULL-check: temp, precip
+         Categorical columns: station_id (use station_id for cat1, cat2 = 'N/A')
+
+      Use ROUND(... * 100.0 / NULLIF(COUNT(*), 0), 2) for null percentages.
+      Alias all columns clearly. Add a SQL comment header explaining the query purpose.
+      The query must be runnable standalone.
+    validation:
+      must_contain: ["SELECT", "bronze.fas_psd", "bronze.census_trade", "bronze.cftc_cot", "bronze.eia_raw_ingestion", "bronze.conab_production", "bronze.weather_observations", "UNION ALL"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 500
+
+  # ── 2. Monthly Gap Detection (Census Trade) ─────────────────────
+  - name: trade_monthly_gaps
+    output_file: validation/trade_monthly_gaps.sql
+    prompt: |
+      Generate a PostgreSQL query that detects months with zero records in
+      bronze.census_trade for each HS code.
+
+      Schema for bronze.census_trade:
+        id, year, month, flow, hs_code, country_code, country_name,
+        value_usd, quantity, source, collected_at
+
+      Requirements:
+      1. Use generate_series to create a calendar of all year/month combinations
+         from 2013 to 2026 (inclusive).
+      2. Cross join the calendar with the distinct hs_code values found in the table.
+      3. LEFT JOIN against bronze.census_trade grouped by year, month, hs_code.
+      4. Output columns: hs_code, cal_year, cal_month, record_count
+      5. Filter the final result to show ONLY rows where record_count = 0 (the gaps).
+      6. Order by hs_code, cal_year, cal_month.
+      7. Add a SQL comment header explaining the query purpose.
+
+      The query must be runnable standalone.
+    validation:
+      must_contain: ["SELECT", "bronze.census_trade", "generate_series"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 200
+
+  # ── 3. CFTC Weekly Gap Detection ────────────────────────────────
+  - name: cftc_weekly_gaps
+    output_file: validation/cftc_weekly_gaps.sql
+    prompt: |
+      Generate a PostgreSQL query that finds missing Fridays in the CFTC COT data.
+
+      Schema for bronze.cftc_cot:
+        commodity, report_date, mm_long, mm_short, mm_net
+        (report_date is a DATE column; reports are released every Friday)
+
+      Requirements:
+      1. Use generate_series to produce every Friday from the earliest report_date
+         in the table to the most recent report_date.
+         Hint: use generate_series(min_date, max_date, '7 days'::interval) where
+         min_date is the first Friday found in the data.
+      2. For each commodity in the table, cross join against the Friday series.
+      3. LEFT JOIN the actual data on commodity and report_date.
+      4. Show only Fridays that have no matching report for that commodity.
+      5. Output columns: commodity, expected_friday, is_missing (boolean TRUE)
+      6. Order by commodity, expected_friday.
+      7. Add a SQL comment header explaining the query purpose.
+
+      The query must be runnable standalone.
+    validation:
+      must_contain: ["SELECT", "bronze.cftc_cot", "generate_series"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 200
+
+  # ── 4. Cross-Table Consistency (Orphaned HS Codes) ──────────────
+  - name: orphaned_hs_codes
+    output_file: validation/orphaned_hs_codes.sql
+    prompt: |
+      Generate a PostgreSQL query that finds orphaned HS codes — codes that exist
+      in bronze.census_trade but have no matching entry in
+      silver.trade_commodity_reference.
+
+      Schema for bronze.census_trade:
+        id, year, month, flow, hs_code, country_code, country_name,
+        value_usd, quantity, source, collected_at
+
+      Schema for silver.trade_commodity_reference:
+        hs_code_10, hs_code_6, commodity_group, commodity_name, flow_type,
+        source_unit, display_unit, conversion_factor, is_active
+
+      Requirements:
+      1. Find distinct hs_code values in bronze.census_trade.
+      2. LEFT JOIN to silver.trade_commodity_reference on hs_code = hs_code_10.
+      3. Filter where the reference table match is NULL (orphaned codes).
+      4. Also show how many rows in bronze.census_trade use each orphaned code,
+         and the distinct flow values for context.
+      5. Output columns: hs_code, trade_row_count, flows, reference_match (should be NULL)
+      6. Order by trade_row_count DESC.
+      7. Add a SQL comment header explaining the query purpose.
+
+      The query must be runnable standalone.
+    validation:
+      must_contain: ["SELECT", "bronze.census_trade", "silver.trade_commodity_reference"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 200
+
+  # ── 5. Duplicate Detection (Census Trade) ───────────────────────
+  - name: trade_duplicates
+    output_file: validation/trade_duplicates.sql
+    prompt: |
+      Generate a PostgreSQL query that finds duplicate records in bronze.census_trade.
+
+      Schema for bronze.census_trade:
+        id, year, month, flow, hs_code, country_code, country_name,
+        value_usd, quantity, source, collected_at
+
+      A duplicate is defined as two or more rows with the same combination of:
+        year, month, flow, hs_code, country_code
+
+      Requirements:
+      1. Group by year, month, flow, hs_code, country_code.
+      2. Use HAVING COUNT(*) > 1 to find duplicates.
+      3. Show the duplicate count, plus the MIN and MAX of value_usd and quantity
+         for each duplicate group (to see if the values differ).
+      4. Output columns: year, month, flow, hs_code, country_code, duplicate_count,
+         min_value_usd, max_value_usd, min_quantity, max_quantity
+      5. Order by duplicate_count DESC, year DESC, month DESC.
+      6. Add a SQL comment header explaining the query purpose.
+
+      The query must be runnable standalone.
+    validation:
+      must_contain: ["SELECT", "bronze.census_trade", "HAVING", "COUNT"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 200
+
+  # ── 6. Outlier Detection (Census Trade) ─────────────────────────
+  - name: trade_outliers
+    output_file: validation/trade_outliers.sql
+    prompt: |
+      Generate a PostgreSQL query that finds statistical outliers in
+      bronze.census_trade monthly quantities.
+
+      Schema for bronze.census_trade:
+        id, year, month, flow, hs_code, country_code, country_name,
+        value_usd, quantity, source, collected_at
+
+      Requirements:
+      1. For each hs_code/flow combination, compute the mean and standard deviation
+         of the quantity column (aggregated by year, month, hs_code, flow — sum
+         quantity across all countries for each month).
+      2. Use a CTE or subquery to compute the per-group (hs_code, flow) statistics
+         (AVG and STDDEV) across all monthly totals.
+      3. Flag any month where the total quantity is more than 3 standard deviations
+         from the mean for that hs_code/flow group.
+      4. Output columns: hs_code, flow, year, month, monthly_quantity,
+         group_mean, group_stddev, z_score
+      5. Only show rows where ABS(z_score) > 3.
+      6. Order by ABS(z_score) DESC.
+      7. Exclude groups with fewer than 6 months of data (not enough for meaningful stats).
+      8. Add a SQL comment header explaining the query purpose.
+
+      The query must be runnable standalone.
+    validation:
+      must_contain: ["SELECT", "bronze.census_trade", "STDDEV", "AVG"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 300
+
+  # ── 7. FAS PSD Coverage ─────────────────────────────────────────
+  - name: fas_psd_coverage
+    output_file: validation/fas_psd_coverage.sql
+    prompt: |
+      Generate a PostgreSQL query that shows the coverage of data in bronze.fas_psd
+      by commodity and country.
+
+      Schema for bronze.fas_psd:
+        commodity, country_code, country, marketing_year, report_date,
+        area_harvested, yield, beginning_stocks, production, imports,
+        total_supply, domestic_consumption, feed_dom_consumption,
+        fsi_consumption, crush, exports, total_distribution, ending_stocks, unit
+
+      Requirements:
+      1. Group by commodity, country_code, country.
+      2. For each group show:
+         - total_rows: COUNT(*)
+         - min_marketing_year, max_marketing_year: range of marketing years
+         - year_count: COUNT(DISTINCT marketing_year) — how many distinct years
+         - min_report_date, max_report_date: range of report dates
+         - has_production: whether any row has production > 0 (BOOL_OR)
+         - has_exports: whether any row has exports > 0 (BOOL_OR)
+         - has_crush: whether any row has crush > 0 (BOOL_OR)
+      3. Order by commodity, total_rows DESC.
+      4. Add a SQL comment header explaining the query purpose.
+
+      This helps identify what commodity/country data we have and what is missing.
+      The query must be runnable standalone.
+    validation:
+      must_contain: ["SELECT", "bronze.fas_psd", "commodity", "country_code", "marketing_year"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 200
+
+  # ── 8. Silver-Gold Flow Consistency ─────────────────────────────
+  - name: silver_gold_flow
+    output_file: validation/silver_gold_flow.sql
+    prompt: |
+      Generate a PostgreSQL query that checks whether all active commodity_groups
+      defined in silver.trade_commodity_reference are flowing through to the
+      gold.trade_export_matrix view.
+
+      Schema for silver.trade_commodity_reference:
+        hs_code_10, hs_code_6, commodity_group, commodity_name, flow_type,
+        source_unit, display_unit, conversion_factor, is_active
+
+      Assume gold.trade_export_matrix has at least a commodity_group column
+      (or similar grouping column).
+
+      Requirements:
+      1. Get distinct active commodity_group values from silver.trade_commodity_reference
+         (WHERE is_active = TRUE).
+      2. Get distinct commodity_group values from gold.trade_export_matrix.
+      3. Use a LEFT JOIN or EXCEPT to find commodity_groups that are in the
+         silver reference but NOT in the gold view.
+      4. Also show the reverse: commodity_groups in gold that are NOT in the
+         silver reference (unexpected groups).
+      5. Output two result sets (two SELECT statements):
+         - First: "missing_from_gold" — groups defined in silver but absent from gold
+         - Second: "unexpected_in_gold" — groups in gold but not defined in silver
+      6. Add a SQL comment header explaining the query purpose.
+
+      The query must be runnable standalone.
+    validation:
+      must_contain: ["SELECT", "silver.trade_commodity_reference", "gold.trade_export_matrix"]
+      must_not_contain: ["```", "Here is"]
+      min_length: 200

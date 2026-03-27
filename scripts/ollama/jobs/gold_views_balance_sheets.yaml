@@ -1,0 +1,413 @@
+# ============================================================================
+# Gold View Factory — FAS Balance Sheet Views
+# ============================================================================
+# Creates gold.fas_us_*_balance_sheet views for commodities that exist in
+# bronze.fas_psd but don't yet have gold views.
+#
+# Run:  python scripts/ollama/task_runner.py scripts/ollama/jobs/gold_views_balance_sheets.yaml
+# Test: python scripts/ollama/task_runner.py scripts/ollama/jobs/gold_views_balance_sheets.yaml --dry-run
+# ============================================================================
+
+model: "qwen3-coder:30b"
+temperature: 0.05  # Very low — we want deterministic template replication
+
+system_prompt: |
+  You are a SQL assistant. You generate PostgreSQL views by following templates exactly.
+  Rules:
+  - Output ONLY the SQL. No explanations, no markdown, no commentary.
+  - Do not invent column names. Use only columns from the template.
+  - Preserve the exact formatting and style of the template.
+  - The only things you change are: view name, commodity filter, and demand columns as instructed.
+
+tasks:
+  # ── Oilseeds that use "crush" in demand ──────────────────────────
+
+  - name: fas_us_canola_balance_sheet
+    output_file: views/fas_us_canola_balance_sheet.sql
+    prompt: |
+      Here is a PostgreSQL view for US soybeans:
+
+      DROP VIEW IF EXISTS gold.fas_us_soybeans_balance_sheet;
+      CREATE VIEW gold.fas_us_soybeans_balance_sheet AS
+      SELECT
+          marketing_year,
+          report_date,
+          'USDA PSD' AS source,
+          area_harvested,
+          yield,
+          beginning_stocks,
+          production,
+          imports,
+          total_supply,
+          crush,
+          fsi_consumption,
+          domestic_consumption,
+          exports,
+          total_distribution,
+          ending_stocks,
+          CASE WHEN total_distribution > 0
+               THEN ROUND((ending_stocks / total_distribution * 100)::numeric, 1)
+               ELSE NULL
+          END AS stocks_use_pct,
+          unit
+      FROM bronze.fas_psd
+      WHERE commodity = 'soybeans'
+        AND country_code = 'US'
+      ORDER BY marketing_year DESC, report_date DESC;
+
+      Create the identical view for canola (rapeseed). Changes:
+      - View name: gold.fas_us_canola_balance_sheet
+      - commodity filter: 'rapeseed'  (USDA PSD uses 'rapeseed' not 'canola')
+      - Keep "crush" in the demand section (canola is an oilseed)
+      Output only SQL.
+    validation:
+      must_contain: ["fas_us_canola_balance_sheet", "rapeseed", "crush"]
+      must_not_contain: ["```", "Here is", "Note:"]
+
+  - name: fas_us_sunflower_balance_sheet
+    output_file: views/fas_us_sunflower_balance_sheet.sql
+    prompt: |
+      Here is a PostgreSQL view for US soybeans:
+
+      DROP VIEW IF EXISTS gold.fas_us_soybeans_balance_sheet;
+      CREATE VIEW gold.fas_us_soybeans_balance_sheet AS
+      SELECT
+          marketing_year,
+          report_date,
+          'USDA PSD' AS source,
+          area_harvested,
+          yield,
+          beginning_stocks,
+          production,
+          imports,
+          total_supply,
+          crush,
+          fsi_consumption,
+          domestic_consumption,
+          exports,
+          total_distribution,
+          ending_stocks,
+          CASE WHEN total_distribution > 0
+               THEN ROUND((ending_stocks / total_distribution * 100)::numeric, 1)
+               ELSE NULL
+          END AS stocks_use_pct,
+          unit
+      FROM bronze.fas_psd
+      WHERE commodity = 'soybeans'
+        AND country_code = 'US'
+      ORDER BY marketing_year DESC, report_date DESC;
+
+      Create the identical view for sunflower seed. Changes:
+      - View name: gold.fas_us_sunflower_balance_sheet
+      - commodity filter: 'sunflower_seed'
+      - Keep "crush" in the demand section (sunflower is an oilseed)
+      Output only SQL.
+    validation:
+      must_contain: ["fas_us_sunflower_balance_sheet", "sunflower_seed", "crush"]
+      must_not_contain: ["```", "Here is"]
+
+  - name: fas_us_peanut_balance_sheet
+    output_file: views/fas_us_peanut_balance_sheet.sql
+    prompt: |
+      Here is a PostgreSQL view for US soybeans:
+
+      DROP VIEW IF EXISTS gold.fas_us_soybeans_balance_sheet;
+      CREATE VIEW gold.fas_us_soybeans_balance_sheet AS
+      SELECT
+          marketing_year,
+          report_date,
+          'USDA PSD' AS source,
+          area_harvested,
+          yield,
+          beginning_stocks,
+          production,
+          imports,
+          total_supply,
+          crush,
+          fsi_consumption,
+          domestic_consumption,
+          exports,
+          total_distribution,
+          ending_stocks,
+          CASE WHEN total_distribution > 0
+               THEN ROUND((ending_stocks / total_distribution * 100)::numeric, 1)
+               ELSE NULL
+          END AS stocks_use_pct,
+          unit
+      FROM bronze.fas_psd
+      WHERE commodity = 'soybeans'
+        AND country_code = 'US'
+      ORDER BY marketing_year DESC, report_date DESC;
+
+      Create the identical view for peanuts. Changes:
+      - View name: gold.fas_us_peanut_balance_sheet
+      - commodity filter: 'peanuts'
+      - Keep "crush" in the demand section (peanuts are an oilseed)
+      Output only SQL.
+    validation:
+      must_contain: ["fas_us_peanut_balance_sheet", "peanuts", "crush"]
+      must_not_contain: ["```", "Here is"]
+
+  # ── Grains that use "feed_dom_consumption" instead of "crush" ────
+
+  - name: fas_us_barley_balance_sheet
+    output_file: views/fas_us_barley_balance_sheet.sql
+    prompt: |
+      Here is a PostgreSQL view for US corn:
+
+      DROP VIEW IF EXISTS gold.fas_us_corn_balance_sheet;
+      CREATE VIEW gold.fas_us_corn_balance_sheet AS
+      SELECT
+          marketing_year,
+          report_date,
+          'USDA PSD' AS source,
+          area_harvested,
+          yield,
+          beginning_stocks,
+          production,
+          imports,
+          total_supply,
+          feed_dom_consumption,
+          fsi_consumption,
+          domestic_consumption,
+          exports,
+          total_distribution,
+          ending_stocks,
+          CASE WHEN total_distribution > 0
+               THEN ROUND((ending_stocks / total_distribution * 100)::numeric, 1)
+               ELSE NULL
+          END AS stocks_use_pct,
+          unit
+      FROM bronze.fas_psd
+      WHERE commodity = 'corn'
+        AND country_code = 'US'
+      ORDER BY marketing_year DESC, report_date DESC;
+
+      Create the identical view for barley. Changes:
+      - View name: gold.fas_us_barley_balance_sheet
+      - commodity filter: 'barley'
+      - Keep "feed_dom_consumption" (barley is a feed grain)
+      Output only SQL.
+    validation:
+      must_contain: ["fas_us_barley_balance_sheet", "barley", "feed_dom_consumption"]
+      must_not_contain: ["```", "Here is"]
+
+  - name: fas_us_sorghum_balance_sheet
+    output_file: views/fas_us_sorghum_balance_sheet.sql
+    prompt: |
+      Here is a PostgreSQL view for US corn:
+
+      DROP VIEW IF EXISTS gold.fas_us_corn_balance_sheet;
+      CREATE VIEW gold.fas_us_corn_balance_sheet AS
+      SELECT
+          marketing_year,
+          report_date,
+          'USDA PSD' AS source,
+          area_harvested,
+          yield,
+          beginning_stocks,
+          production,
+          imports,
+          total_supply,
+          feed_dom_consumption,
+          fsi_consumption,
+          domestic_consumption,
+          exports,
+          total_distribution,
+          ending_stocks,
+          CASE WHEN total_distribution > 0
+               THEN ROUND((ending_stocks / total_distribution * 100)::numeric, 1)
+               ELSE NULL
+          END AS stocks_use_pct,
+          unit
+      FROM bronze.fas_psd
+      WHERE commodity = 'corn'
+        AND country_code = 'US'
+      ORDER BY marketing_year DESC, report_date DESC;
+
+      Create the identical view for sorghum. Changes:
+      - View name: gold.fas_us_sorghum_balance_sheet
+      - commodity filter: 'sorghum'
+      - Keep "feed_dom_consumption" (sorghum is a feed grain)
+      Output only SQL.
+    validation:
+      must_contain: ["fas_us_sorghum_balance_sheet", "sorghum", "feed_dom_consumption"]
+      must_not_contain: ["```", "Here is"]
+
+  - name: fas_us_rice_balance_sheet
+    output_file: views/fas_us_rice_balance_sheet.sql
+    prompt: |
+      Here is a PostgreSQL view for US corn:
+
+      DROP VIEW IF EXISTS gold.fas_us_corn_balance_sheet;
+      CREATE VIEW gold.fas_us_corn_balance_sheet AS
+      SELECT
+          marketing_year,
+          report_date,
+          'USDA PSD' AS source,
+          area_harvested,
+          yield,
+          beginning_stocks,
+          production,
+          imports,
+          total_supply,
+          feed_dom_consumption,
+          fsi_consumption,
+          domestic_consumption,
+          exports,
+          total_distribution,
+          ending_stocks,
+          CASE WHEN total_distribution > 0
+               THEN ROUND((ending_stocks / total_distribution * 100)::numeric, 1)
+               ELSE NULL
+          END AS stocks_use_pct,
+          unit
+      FROM bronze.fas_psd
+      WHERE commodity = 'corn'
+        AND country_code = 'US'
+      ORDER BY marketing_year DESC, report_date DESC;
+
+      Create the identical view for rice (milled). Changes:
+      - View name: gold.fas_us_rice_balance_sheet
+      - commodity filter: 'rice_milled'
+      - Keep "feed_dom_consumption" (rice uses the same demand structure)
+      Output only SQL.
+    validation:
+      must_contain: ["fas_us_rice_balance_sheet", "rice_milled", "feed_dom_consumption"]
+      must_not_contain: ["```", "Here is"]
+
+  # ── Cotton (uses "crush" field but means ginning/processing) ─────
+
+  - name: fas_us_cotton_balance_sheet
+    output_file: views/fas_us_cotton_balance_sheet.sql
+    prompt: |
+      Here is a PostgreSQL view for US corn:
+
+      DROP VIEW IF EXISTS gold.fas_us_corn_balance_sheet;
+      CREATE VIEW gold.fas_us_corn_balance_sheet AS
+      SELECT
+          marketing_year,
+          report_date,
+          'USDA PSD' AS source,
+          area_harvested,
+          yield,
+          beginning_stocks,
+          production,
+          imports,
+          total_supply,
+          feed_dom_consumption,
+          fsi_consumption,
+          domestic_consumption,
+          exports,
+          total_distribution,
+          ending_stocks,
+          CASE WHEN total_distribution > 0
+               THEN ROUND((ending_stocks / total_distribution * 100)::numeric, 1)
+               ELSE NULL
+          END AS stocks_use_pct,
+          unit
+      FROM bronze.fas_psd
+      WHERE commodity = 'corn'
+        AND country_code = 'US'
+      ORDER BY marketing_year DESC, report_date DESC;
+
+      Create the identical view for cotton. Changes:
+      - View name: gold.fas_us_cotton_balance_sheet
+      - commodity filter: 'cotton'
+      - Replace "feed_dom_consumption" with "domestic_consumption" only (cotton does not have a feed component; just keep domestic_consumption, fsi_consumption, exports)
+      Output only SQL.
+    validation:
+      must_contain: ["fas_us_cotton_balance_sheet", "cotton"]
+      must_not_contain: ["```", "Here is"]
+
+  # ── Palm Oil (no US production, import-driven) ──────────────────
+
+  - name: fas_us_palm_oil_balance_sheet
+    output_file: views/fas_us_palm_oil_balance_sheet.sql
+    prompt: |
+      Here is a PostgreSQL view for US soybeans:
+
+      DROP VIEW IF EXISTS gold.fas_us_soybeans_balance_sheet;
+      CREATE VIEW gold.fas_us_soybeans_balance_sheet AS
+      SELECT
+          marketing_year,
+          report_date,
+          'USDA PSD' AS source,
+          area_harvested,
+          yield,
+          beginning_stocks,
+          production,
+          imports,
+          total_supply,
+          crush,
+          fsi_consumption,
+          domestic_consumption,
+          exports,
+          total_distribution,
+          ending_stocks,
+          CASE WHEN total_distribution > 0
+               THEN ROUND((ending_stocks / total_distribution * 100)::numeric, 1)
+               ELSE NULL
+          END AS stocks_use_pct,
+          unit
+      FROM bronze.fas_psd
+      WHERE commodity = 'soybeans'
+        AND country_code = 'US'
+      ORDER BY marketing_year DESC, report_date DESC;
+
+      Create the identical view for palm oil. Changes:
+      - View name: gold.fas_us_palm_oil_balance_sheet
+      - commodity filter: 'palm_oil'
+      - Remove area_harvested and yield (US does not produce palm oil)
+      - Remove crush (palm oil is already a processed product)
+      - Keep: beginning_stocks, production, imports, total_supply, fsi_consumption, domestic_consumption, exports, total_distribution, ending_stocks, stocks_use_pct
+      Output only SQL.
+    validation:
+      must_contain: ["fas_us_palm_oil_balance_sheet", "palm_oil"]
+      must_not_contain: ["```", "Here is", "area_harvested", "yield", "crush"]
+
+  # ── Global views (major exporters) ──────────────────────────────
+
+  - name: fas_world_soybeans_balance_sheet
+    output_file: views/fas_world_soybeans_balance_sheet.sql
+    prompt: |
+      Here is a PostgreSQL view for US soybeans:
+
+      DROP VIEW IF EXISTS gold.fas_us_soybeans_balance_sheet;
+      CREATE VIEW gold.fas_us_soybeans_balance_sheet AS
+      SELECT
+          marketing_year,
+          report_date,
+          'USDA PSD' AS source,
+          area_harvested,
+          yield,
+          beginning_stocks,
+          production,
+          imports,
+          total_supply,
+          crush,
+          fsi_consumption,
+          domestic_consumption,
+          exports,
+          total_distribution,
+          ending_stocks,
+          CASE WHEN total_distribution > 0
+               THEN ROUND((ending_stocks / total_distribution * 100)::numeric, 1)
+               ELSE NULL
+          END AS stocks_use_pct,
+          unit
+      FROM bronze.fas_psd
+      WHERE commodity = 'soybeans'
+        AND country_code = 'US'
+      ORDER BY marketing_year DESC, report_date DESC;
+
+      Create a GLOBAL version that shows all major countries side by side. Changes:
+      - View name: gold.fas_world_soybeans_balance_sheet
+      - Remove the country_code = 'US' filter
+      - Add country_code and country columns to the SELECT (they exist in bronze.fas_psd)
+      - Keep all other columns the same
+      - ORDER BY marketing_year DESC, country, report_date DESC
+      Output only SQL.
+    validation:
+      must_contain: ["fas_world_soybeans_balance_sheet", "country_code", "country"]
+      must_not_contain: ["```", "Here is", "country_code = 'US'"]

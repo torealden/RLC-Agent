@@ -1,0 +1,404 @@
+# ============================================================================
+# HS Code Reference — silver.trade_commodity_reference INSERT Generator
+# ============================================================================
+# Parses the HS code concordance file and generates SQL INSERT statements
+# for silver.trade_commodity_reference to fill gaps in commodity coverage.
+#
+# Source: domain_knowledge/data_dictionaries/hs_codes_interactive_concordance_2025.csv
+# Pattern: database/migrations/006_add_all_trade_hs_codes.sql
+#
+# Run:  python scripts/ollama/task_runner.py scripts/ollama/jobs/hs_code_reference.yaml
+# Test: python scripts/ollama/task_runner.py scripts/ollama/jobs/hs_code_reference.yaml --dry-run
+# ============================================================================
+
+model: "qwen3-coder:30b"
+temperature: 0.05
+
+system_prompt: "You generate PostgreSQL INSERT statements. Output ONLY SQL. No explanations."
+
+tasks:
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 1. ANIMAL FATS & GREASES (HS 1501-1506, 1516.10, 1518)
+  # ════════════════════════════════════════════════════════════════════════════
+  - name: animal_fats_greases
+    output_file: sql/animal_fats_greases.sql
+    prompt: |
+      You are generating PostgreSQL INSERT statements for silver.trade_commodity_reference.
+
+      Here is the EXACT pattern from an existing migration (follow this format precisely):
+
+      INSERT INTO silver.trade_commodity_reference
+      (hs_code_10, hs_code_6, commodity_group, commodity_name, flow_type, source_unit, display_unit, conversion_factor, is_active, notes)
+      VALUES
+      ('1501100000', '150110', 'ANIMAL_FATS', 'Lard', 'EXPORTS', 'KG', '1,000 Pounds', 0.0000022046, true, 'KG to thousand lbs'),
+      ('1501100000', '150110', 'ANIMAL_FATS', 'Lard', 'IMPORTS', 'KG', '1,000 Pounds', 0.0000022046, true, 'KG to thousand lbs')
+      ON CONFLICT (hs_code_10, flow_type) DO UPDATE SET
+          commodity_name = EXCLUDED.commodity_name,
+          conversion_factor = EXCLUDED.conversion_factor;
+
+      Rules:
+      - Each HS code gets TWO rows: one for EXPORTS and one for IMPORTS
+      - commodity_group = 'ANIMAL_FATS' for all rows
+      - source_unit = 'KG' (all are measured in KG)
+      - display_unit = '1,000 Pounds', conversion_factor = 0.0000022046 (KG to thousand lbs)
+      - is_active = true
+      - hs_code_6 = first 6 digits of hs_code_10
+      - Use a single INSERT ... VALUES block with ON CONFLICT at the end
+      - Use a descriptive but concise commodity_name derived from the description
+
+      Here are the actual rows from the concordance CSV to process.
+      Format: hs_code_10, description_long, description_short, unit1
+
+      1501100000,LARD,LARD,KG
+      1501200040,CHOICE WHITE GREASE,CHOICE WHITE GREASE,KG
+      1501200060,YELLOW GREASE,YELLOW GREASE,KG
+      1501200080,"OTHER PIG FAT, RENDERED, WHETHER OR NOT PRESSED OR SOLVENT-EXTRACTED, NESOI","OTHER PIG FAT, RENDERED, NESOI",KG
+      1501900000,"POULTRY FAT, RENDERED, WHETHER OR NOT PRESSED OR SOLVENT-EXTRACTED, NESOI","POULTRY FAT, RENDERED, NESOI",KG
+      1502100020,"TALLOW, EDIBLE","TALLOW, EDIBLE",KG
+      1502100040,"TALLOW, INEDIBLE","TALLOW, INEDIBLE",KG
+      1502900000,"FATS OF BOVINE ANIMALS, SHEEP OR GOATS, EXCEPT TALLOW, RAW OR RENDERED","FATS OF BOVINE/SHEEP/GOAT EX TALLOW",KG
+      1503000000,"LARD STEARIN, LARD OIL, OLEOSTEARIN, OLEO-OIL AND TALLOW OIL","LARD STEARIN/LARD OIL/OLEOSTEARIN/TALLOW OIL",KG
+      1504102000,"COD LIVER OIL AND ITS FRACTIONS","COD LIVER OIL & FRACTIONS",KG
+      1504104000,"FISH-LIVER OILS, EXCEPT COD, AND THEIR FRACTIONS","FISH-LIVER OILS & FRACTIONS EX COD",KG
+      1504202000,"COD FATS AND OILS AND ITS FRACTIONS, EXCEPT LIVER OIL","COD FATS & OILS EX LIVER OIL",KG
+      1504204000,"HERRING FATS AND OILS AND ITS FRACTIONS EXCEPT LIVER OIL","HERRING FATS & OILS EX LIVER OIL",KG
+      1504206020,"MENHADEN FATS AND OILS AND THEIR FRACTIONS","MENHADEN FATS & OILS",KG
+      1504206040,"FATS AND OILS AND THEIR FRACTIONS, OF FISH, OTHER THAN LIVER OILS, NESOI","FISH FATS & OILS NESOI",KG
+      1504300000,"FATS AND OILS AND THEIR FRACTION OF MARINE MAMMALS","MARINE MAMMAL FATS & OILS",KG
+      1505001000,"WOOL GREASE, CRUDE","WOOL GREASE, CRUDE",KG
+      1505009000,"WOOL GREASE, EXCEPT CRUDE, AND FATTY SUBSTANCES DERIVED THEREFROM (INCLUDING LANOLIN)","WOOL GREASE EX CRUDE/LANOLIN",KG
+      1506000000,"ANIMAL FATS AND OILS AND THEIR FRACTIONS, NESOI","ANIMAL FATS & OILS NESOI",KG
+      1516100000,"ANIMAL FATS AND OILS, HYDROGENATED, INTERESTERIFIED, REESTERIFIED OR ELAIDINIZED","ANIMAL FATS/OILS HYDROGENATED",KG
+      1518004000,"ANIMAL AND VEGETABLE FATS AND OILS, CHEMICALLY MODIFIED EXCL 1516","ANIMAL & VEG FATS/OILS CHEMICALLY MODIFIED",KG
+
+      Generate a single INSERT statement block for ALL these HS codes (both EXPORTS and IMPORTS for each).
+    validation:
+      must_contain: ["INSERT", "ANIMAL_FATS", "tallow", "grease", "ON CONFLICT"]
+      must_not_contain: ["```", "Here is", "Note:"]
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 2. VEGETABLE OIL PRODUCTS (HS 1516.20, 1517, 1518)
+  # ════════════════════════════════════════════════════════════════════════════
+  - name: vegetable_oil_products
+    output_file: sql/vegetable_oil_products.sql
+    prompt: |
+      You are generating PostgreSQL INSERT statements for silver.trade_commodity_reference.
+
+      Here is the EXACT pattern from an existing migration (follow this format precisely):
+
+      INSERT INTO silver.trade_commodity_reference
+      (hs_code_10, hs_code_6, commodity_group, commodity_name, flow_type, source_unit, display_unit, conversion_factor, is_active, notes)
+      VALUES
+      ('1515906000', '151590', 'OTHER_VEG_OIL', 'Other vegetable oils NESOI', 'EXPORTS', 'KG', '1,000 Pounds', 0.0000022046, true, 'KG to thousand lbs'),
+      ('1515906000', '151590', 'OTHER_VEG_OIL', 'Other vegetable oils NESOI', 'IMPORTS', 'KG', '1,000 Pounds', 0.0000022046, true, 'KG to thousand lbs')
+      ON CONFLICT (hs_code_10, flow_type) DO UPDATE SET
+          commodity_name = EXCLUDED.commodity_name,
+          conversion_factor = EXCLUDED.conversion_factor;
+
+      Rules:
+      - Each HS code gets TWO rows: one for EXPORTS and one for IMPORTS
+      - commodity_group = 'VEG_OIL_PRODUCTS' for all rows
+      - source_unit = 'KG' (all are measured in KG)
+      - display_unit = '1,000 Pounds', conversion_factor = 0.0000022046 (KG to thousand lbs)
+      - is_active = true
+      - hs_code_6 = first 6 digits of hs_code_10
+      - Use a single INSERT ... VALUES block with ON CONFLICT at the end
+      - Use a descriptive but concise commodity_name derived from the description
+
+      Here are the actual rows from the concordance CSV to process.
+      Format: hs_code_10, description_long, description_short, unit1
+
+      1516201000,"RAPESEED OIL, HYDROGENATED/INTERESTERIFIED/REESTERIFIED/ELAIDINIZED","RAPESEED OIL HYDROGENATED",KG
+      1516209100,"VEGETABLE FATS AND OILS EXCEPT RAPESEED, HYDROGENATED","VEG FATS & OILS NESOI HYDROGENATED",KG
+      1517100000,"MARGARINE, EXCLUDING LIQUID MARGARINE","MARGARINE, EXCL LIQUID",KG
+      1517901020,"SALAD AND COOKING OILS, ARTIFICIAL MIXTURES, CONTAINING 5% OR MORE OF SOYBEAN OIL","SALAD/COOKING OILS MXTRS 5%+ SOYBEAN OIL",KG
+      1517901040,"BAKING OR FRYING FATS, ARTIFICIAL MIXTURES WHOLLY OF VEGETABLE OILS, 5%+ SOYBEAN OIL","BAKING/FRYING FATS ALL VEG OIL 5%+ SOYBEAN",KG
+      1517901060,"BAKING OR FRYING FATS, ARTIFICIAL MIXTURES, 5%+ SOYBEAN OIL, NESOI","BAKING/FRYING FATS MXTRS 5%+ SOYBEAN OIL NESOI",KG
+      1517901080,"ARTIFICIAL MIXTURES OF PRODUCTS IN 1501-1515, 5%+ SOYBEAN OIL, NESOI","EDIBLE FATS/OILS MXTRS 5%+ SOYBEAN OIL NESOI",KG
+      1517902020,"SALAD AND COOKING OILS, ARTIFICIAL MIXTURES, LESS THAN 5% SOYBEAN OIL","SALAD/COOKING OILS MXTRS LT 5% SOYBEAN OIL",KG
+      1517902040,"BAKING OR FRYING FATS, WHOLLY VEGETABLE OILS, LT 5% SOYBEAN OIL","BAKING/FRYING FATS ALL VEG OIL LT 5% SOYBEAN",KG
+      1517902060,"BAKING OR FRYING FATS, ARTIFICIAL MIXTURES, LT 5% SOYBEAN OIL, NESOI","BAKING/FRYING FATS MXTRS LT 5% SOYBEAN OIL NESOI",KG
+      1517902080,"ARTIFICIAL MIXTURES OF PRODUCTS IN 1501-1515, LT 5% SOYBEAN OIL, NESOI","EDIBLE FATS/OILS MXTRS LT 5% SOYBEAN OIL NESOI",KG
+      1517909015,"SALAD AND COOKING OIL, PARTIALLY HYDROGENATED, NESOI","SALAD/COOKING OIL PARTIALLY HYDROGENATED NESOI",KG
+      1517909025,"SOYBEAN OIL, WHOLLY HYDROGENATED, NESOI","SOYBEAN OIL WHOLLY HYDROGENATED NESOI",KG
+      1517909085,"COTTONSEED OIL, WHOLLY HYDROGENATED, NESOI","COTTONSEED OIL WHOLLY HYDROGENATED NESOI",KG
+      1517909090,"EDIBLE ANIMAL OR VEGETABLE FATS OR OILS OR FRACTIONS, NESOI","EDIBLE ANIMAL/VEG FATS/OILS NESOI",KG
+      1518002000,"INEDIBLE MIXTURES OR PREPARATIONS OF LINSEED OR FLAXSEED OIL, NESOI","INEDIBLE MXTRS LINSEED/FLAXSEED OIL NESOI",KG
+
+      Generate a single INSERT statement block for ALL these HS codes (both EXPORTS and IMPORTS for each).
+    validation:
+      must_contain: ["INSERT", "VEG_OIL_PRODUCTS", "MARGARINE", "ON CONFLICT"]
+      must_not_contain: ["```", "Here is", "Note:"]
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 3. PROTEIN MEALS & FEED INGREDIENTS (HS 2301-2309)
+  # ════════════════════════════════════════════════════════════════════════════
+  - name: protein_meals_feed
+    output_file: sql/protein_meals_feed.sql
+    prompt: |
+      You are generating PostgreSQL INSERT statements for silver.trade_commodity_reference.
+
+      Here is the EXACT pattern from an existing migration (follow this format precisely):
+
+      INSERT INTO silver.trade_commodity_reference
+      (hs_code_10, hs_code_6, commodity_group, commodity_name, flow_type, source_unit, display_unit, conversion_factor, is_active, notes)
+      VALUES
+      ('2303100010', '230310', 'CORN_GLUTEN', 'Corn gluten feed', 'EXPORTS', 'KG', 'Short Tons', 0.0000011023, true, 'KG to short tons'),
+      ('2303100010', '230310', 'CORN_GLUTEN', 'Corn gluten feed', 'IMPORTS', 'KG', 'Short Tons', 0.0000011023, true, 'KG to short tons')
+      ON CONFLICT (hs_code_10, flow_type) DO UPDATE SET
+          commodity_name = EXCLUDED.commodity_name,
+          conversion_factor = EXCLUDED.conversion_factor;
+
+      Rules:
+      - Each HS code gets TWO rows: one for EXPORTS and one for IMPORTS
+      - commodity_group: use the groups indicated below for each batch of codes
+      - is_active = true
+      - hs_code_6 = first 6 digits of hs_code_10
+      - Use a single INSERT ... VALUES block with ON CONFLICT at the end
+      - IMPORTANT UNIT HANDLING: Some concordance rows use unit 'T' (metric tons) and some use 'KG'.
+        * If source unit is T: source_unit='T', display_unit='Short Tons', conversion_factor=1.1023 (MT to short tons), notes='MT to short tons'
+        * If source unit is KG: source_unit='KG', display_unit='Short Tons', conversion_factor=0.0000011023 (KG to short tons), notes='KG to short tons'
+      - Use a descriptive but concise commodity_name
+
+      Here are the actual rows from the concordance CSV to process.
+      Format: hs_code_10, description, abbreviation, unit1
+
+      --- MEAT_MEAL group ---
+      2301100000,"FLOURS, MEALS AND PELLETS, OF MEAT OR MEAT OFFAL, UNFIT FOR HUMAN CONSUMPTION; GREAVES",T
+      --- FISH_MEAL group ---
+      2301200010,"HERRING MEAL; PILCHARD MEAL, UNFIT FOR HUMAN CONSUMPTION",T
+      2301200090,"FLOURS, MEALS AND PELLETS, OF FISH OR CRUSTACEANS, NESOI",T
+      --- MILL_FEEDS group ---
+      2302100000,"BRAN, SHARPS AND OTHER RESIDUES, DERIVED FROM CORN (MAIZE)",T
+      2302300010,"BRAN, SHORTS AND MIDDLINGS OF WHEAT",T
+      2302300090,"OTHER RESIDUES NESOI, DERIVED FROM WHEAT",T
+      2302400105,"BRAN, SHARPS AND OTHER RESIDUES DERIVED FROM RICE",T
+      2302400110,"RESIDUES OF OTHER SINGLE CEREAL GRAINS, CHOPPED/CRUSHED/GROUND",T
+      2302400120,"PELLETIZED SCREENINGS (CLEARINGS) OF CEREAL GRAINS NESOI",T
+      2302400190,"BRAN, SHARPS AND OTHER RESIDUES, DERIVED FROM CEREALS, NESOI",T
+      2302500000,"BRAN, SHARPS AND OTHER RESIDUES, DERIVED FROM LEGUMINOUS PLANTS",T
+      --- STARCH_RESIDUE group ---
+      2303100040,"RESIDUES OF STARCH MANUFACTURE AND SIMILAR RESIDUES, NESOI",T
+      --- BEET_PULP group ---
+      2303200020,"BEET-PULP, DRIED, WHETHER OR NOT IN PELLETS",T
+      2303200040,"BEET-PULP NESOI, BAGASSE AND OTHER WASTE OF SUGAR MANUFACTURE",T
+      --- DISTILLERS_GRAINS group ---
+      2303300000,"BREWING OR DISTILLING DREGS AND WASTE",T
+      --- LINSEED_MEAL group ---
+      2306200000,"LINSEED OILCAKE AND OTHER SOLID RESIDUES",KG
+      --- COCONUT_MEAL group ---
+      2306500000,"COCONUT OR COPRA OILCAKE AND OTHER SOLID RESIDUES",KG
+      --- CORN_GERM_MEAL group ---
+      2306900120,"CORN (MAIZE) GERM OILCAKE AND OTHER SOLID RESIDUES",KG
+      --- HEMP_MEAL group ---
+      2306900130,"HEMP SEED OILCAKE AND OTHER SOLID RESIDUES",KG
+      --- OTHER_OILCAKE group ---
+      2306900150,"VEGETABLE OILCAKE AND OTHER SOLID RESIDUES, NESOI",KG
+      --- VEG_WASTE_FEED group ---
+      2308001000,"ACORNS AND HORSE-CHESTNUTS USED IN ANIMAL FEED",KG
+      2308009300,"SCREENINGS, SCALPINGS, CHAFF OR SCOURINGS OF FLAXSEED (LINSEED)",KG
+      2308009820,"CITRUS PULP PELLETS USED IN ANIMAL FEED",T
+      2308009890,"VEGETABLE MATERIALS WASTE RESIDUE AND BYPRODUCTS, NESOI",KG
+      --- PREPARED_FEED group ---
+      2309100010,"DOG AND CAT FOOD, RETAIL, AIRTIGHT CONTAINERS",KG
+      2309100090,"DOG AND CAT FOOD, RETAIL, NESOI",KG
+      2309901020,"POULTRY FEEDS, PREPARED",T
+      2309901030,"DAIRY CATTLE FEED, PREPARED",T
+      2309901032,"OTHER CATTLE FEED NESOI, PREPARED",T
+      2309901035,"SWINE FEED, PREPARED",T
+      2309901045,"OTHER LIVESTOCK FEED NESOI, PREPARED",T
+      2309901050,"MIXED FEEDS OR MIXED FEED INGREDIENTS, NESOI",T
+      2309909500,"PREPARATIONS USED IN ANIMAL FEEDINGS, NESOI",KG
+
+      Generate a single INSERT statement block for ALL these HS codes (both EXPORTS and IMPORTS for each).
+      Use the commodity_group indicated for each section above.
+    validation:
+      must_contain: ["INSERT", "FISH_MEAL", "MILL_FEEDS", "BEET_PULP", "DISTILLERS_GRAINS", "ON CONFLICT"]
+      must_not_contain: ["```", "Here is", "Note:"]
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 4. DAIRY FATS (HS 0401-0406) — Key codes only, not all 254 cheese variants
+  # ════════════════════════════════════════════════════════════════════════════
+  - name: dairy_fats
+    output_file: sql/dairy_fats.sql
+    prompt: |
+      You are generating PostgreSQL INSERT statements for silver.trade_commodity_reference.
+
+      Here is the EXACT pattern from an existing migration (follow this format precisely):
+
+      INSERT INTO silver.trade_commodity_reference
+      (hs_code_10, hs_code_6, commodity_group, commodity_name, flow_type, source_unit, display_unit, conversion_factor, is_active, notes)
+      VALUES
+      ('0405100500', '040510', 'DAIRY', 'Butter', 'EXPORTS', 'KG', '1,000 Pounds', 0.0000022046, true, 'KG to thousand lbs'),
+      ('0405100500', '040510', 'DAIRY', 'Butter', 'IMPORTS', 'KG', '1,000 Pounds', 0.0000022046, true, 'KG to thousand lbs')
+      ON CONFLICT (hs_code_10, flow_type) DO UPDATE SET
+          commodity_name = EXCLUDED.commodity_name,
+          conversion_factor = EXCLUDED.conversion_factor;
+
+      Rules:
+      - Each HS code gets TWO rows: one for EXPORTS and one for IMPORTS
+      - commodity_group = 'DAIRY' for all rows
+      - is_active = true
+      - hs_code_6 = first 6 digits of hs_code_10
+      - Use a single INSERT ... VALUES block with ON CONFLICT at the end
+      - UNIT HANDLING:
+        * If source unit is KG: source_unit='KG', display_unit='1,000 Pounds', conversion_factor=0.0000022046, notes='KG to thousand lbs'
+        * If source unit is L: source_unit='L', display_unit='1,000 Gallons', conversion_factor=0.000000264172, notes='L to thousand gallons'
+      - Use a descriptive but concise commodity_name
+
+      Here are the KEY HS codes from the concordance CSV to process (representative codes, not all tariff-rate quota variants).
+      Format: hs_code_10, description, unit1
+
+      --- MILK & CREAM (fluid) ---
+      0401100000,"MILK AND CREAM, NOT CONCENTRATED, FAT NOT EXCEEDING 1%",L
+      0401202000,"MILK AND CREAM, NOT CONCENTRATED, FAT 1%-6%, WITHIN QUOTA",L
+      0401502500,"MILK AND CREAM, NOT CONCENTRATED, FAT 10%-45%, NESOI",L
+      --- MILK POWDER ---
+      0402101000,"MILK/CREAM POWDER, FAT NOT EXCEEDING 1.5%",KG
+      0402215000,"MILK/CREAM, CONCENTRATED, POWDER, FAT 3%-35%, NESOI",KG
+      0402219000,"MILK/CREAM, CONCENTRATED, POWDER, FAT OVER 35%, NESOI",KG
+      0402295000,"MILK/CREAM, CONCENTRATED, SWEETENED, POWDER, NESOI",KG
+      0402999000,"MILK AND CREAM, CONCENTRATED, SWEETENED, NESOI",KG
+      --- YOGURT ---
+      0403209000,"YOGURT, NESOI",KG
+      --- WHEY ---
+      0404100500,"WHEY PROTEIN CONCENTRATES",KG
+      0404102000,"WHEY, FLUID",L
+      0404109000,"WHEY, DRIED, NESOI",KG
+      0404901000,"MILK PROTEIN CONCENTRATES, NESOI",KG
+      --- BUTTER ---
+      0405100500,"BUTTER, DESCRIBED IN GENERAL NOTE 15",KG
+      0405101000,"BUTTER, DESCRIBED IN ADDITIONAL US NOTE 6",KG
+      0405102000,"BUTTER, NESOI",KG
+      0405204000,"BUTTER SUBSTITUTES, NESOI",KG
+      --- BUTTER OIL / ANHYDROUS MILK FAT ---
+      0405900520,"ANHYDROUS MILK FAT, DESCRIBED IN GENERAL NOTE 15",KG
+      0405901020,"ANHYDROUS MILK FAT, DESCRIBED IN ADDITIONAL US NOTE 14",KG
+      0405902020,"ANHYDROUS MILK FAT, NESOI",KG
+      0405902040,"FATS AND OILS DERIVED FROM MILK, NESOI",KG
+      --- CHEESE (aggregated codes only) ---
+      0406109500,"FRESH CHEESE/WHEY CHEESE/CURD, NESOI",KG
+      0406201000,"CHEESE, ROQUEFORT, GRATED/POWDERED",KG
+      0406203300,"CHEESE, CHEDDAR, GRATED/POWDERED, NESOI",KG
+      0406900100,"CHEESE, NESOI, DESCRIBED IN GENERAL NOTE 15",KG
+
+      Generate a single INSERT statement block for ALL these HS codes (both EXPORTS and IMPORTS for each).
+    validation:
+      must_contain: ["INSERT", "DAIRY", "Butter", "Whey", "ON CONFLICT"]
+      must_not_contain: ["```", "Here is", "Note:"]
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 5. SUGAR & SWEETENERS (HS 1701-1703)
+  # ════════════════════════════════════════════════════════════════════════════
+  - name: sugar_sweeteners
+    output_file: sql/sugar_sweeteners.sql
+    prompt: |
+      You are generating PostgreSQL INSERT statements for silver.trade_commodity_reference.
+
+      Here is the EXACT pattern from an existing migration (follow this format precisely):
+
+      INSERT INTO silver.trade_commodity_reference
+      (hs_code_10, hs_code_6, commodity_group, commodity_name, flow_type, source_unit, display_unit, conversion_factor, is_active, notes)
+      VALUES
+      ('1701125000', '170112', 'SUGAR', 'Beet sugar, raw', 'EXPORTS', 'KG', 'Short Tons', 0.0000011023, true, 'KG to short tons'),
+      ('1701125000', '170112', 'SUGAR', 'Beet sugar, raw', 'IMPORTS', 'KG', 'Short Tons', 0.0000011023, true, 'KG to short tons')
+      ON CONFLICT (hs_code_10, flow_type) DO UPDATE SET
+          commodity_name = EXCLUDED.commodity_name,
+          conversion_factor = EXCLUDED.conversion_factor;
+
+      Rules:
+      - Each HS code gets TWO rows: one for EXPORTS and one for IMPORTS
+      - commodity_group: 'SUGAR' for raw/refined sugar (1701), 'SWEETENERS' for glucose/fructose/lactose (1702), 'MOLASSES' for molasses (1703)
+      - is_active = true
+      - hs_code_6 = first 6 digits of hs_code_10
+      - Use a single INSERT ... VALUES block with ON CONFLICT at the end
+      - UNIT HANDLING:
+        * If source unit is KG: source_unit='KG', display_unit='Short Tons', conversion_factor=0.0000011023, notes='KG to short tons'
+        * If source unit is L: source_unit='L', display_unit='1,000 Gallons', conversion_factor=0.000000264172, notes='L to thousand gallons'
+      - Use a descriptive but concise commodity_name
+      - We only need representative HS codes, not every tariff-rate quota variant
+
+      Here are the KEY HS codes from the concordance CSV to process.
+      Format: hs_code_10, description, unit1
+
+      --- RAW SUGAR (commodity_group = 'SUGAR') ---
+      1701125000,"BEET SUGAR, RAW, NO ADDED FLAVOR/COLOR, NESOI",KG
+      1701135000,"CANE SUGAR RAW (SUBHEADING NOTE 2), NO FLAVOR/COLOR, NESOI",KG
+      1701145000,"CANE SUGAR RAW, NO ADDED FLAVORING/COLORING, NESOI",KG
+      --- REFINED SUGAR (commodity_group = 'SUGAR') ---
+      1701913000,"CANE/BEET SUGAR REFINED, CONTAINING ADDED COLORING BUT NO FLAVORING, NESOI",KG
+      1701918000,"CANE/BEET SUGAR REFINED, CONTAINING ADDED FLAVORING OR COLORING, NESOI",KG
+      1701995050,"CANE/BEET SUGARS AND CHEMICALLY PURE SUCROSE, SOLID, NESOI",KG
+      --- LACTOSE (commodity_group = 'SWEETENERS') ---
+      1702110000,"LACTOSE AND LACTOSE SYRUP, 99%+ LACTOSE BY WEIGHT",KG
+      1702190000,"LACTOSE IN SOLID FORM AND LACTOSE SYRUP, NESOI",KG
+      --- MAPLE (commodity_group = 'SWEETENERS') ---
+      1702204010,"MAPLE SUGAR, NESOI",KG
+      1702204070,"MAPLE SYRUP, NOT ORGANIC, NESOI",KG
+      --- GLUCOSE (commodity_group = 'SWEETENERS') ---
+      1702304085,"GLUCOSE IN SOLID FORM, LT 20% FRUCTOSE, NESOI",KG
+      1702404000,"GLUCOSE/GLUCOSE SYRUP, 20%-50% FRUCTOSE, NESOI",KG
+      --- FRUCTOSE (commodity_group = 'SWEETENERS') ---
+      1702500000,"CHEMICALLY PURE FRUCTOSE IN SOLID FORM",KG
+      --- MOLASSES (commodity_group = 'MOLASSES') ---
+      1703103000,"CANE MOLASSES FOR COMMERCIAL EXTRACTION OF SUGAR/EDIBLE",L
+      1703105000,"CANE MOLASSES, SUBJECT TO QUOTA, NESOI",L
+      1703903000,"MOLASSES FROM EXTRACTION/REFINING OF SUGAR, NESOI, COMMERCIAL",L
+      1703905000,"MOLASSES FROM EXTRACTION/REFINING OF SUGAR, NESOI",L
+
+      Generate a single INSERT statement block for ALL these HS codes (both EXPORTS and IMPORTS for each).
+      Use the commodity_group as indicated for each section.
+    validation:
+      must_contain: ["INSERT", "SUGAR", "SWEETENERS", "MOLASSES", "ON CONFLICT"]
+      must_not_contain: ["```", "Here is", "Note:"]
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 6. ETHANOL & BIOFUELS (HS 2207, 3826)
+  # ════════════════════════════════════════════════════════════════════════════
+  - name: ethanol_biofuels
+    output_file: sql/ethanol_biofuels.sql
+    prompt: |
+      You are generating PostgreSQL INSERT statements for silver.trade_commodity_reference.
+
+      Here is the EXACT pattern from an existing migration (follow this format precisely):
+
+      INSERT INTO silver.trade_commodity_reference
+      (hs_code_10, hs_code_6, commodity_group, commodity_name, flow_type, source_unit, display_unit, conversion_factor, is_active, notes)
+      VALUES
+      ('2207106010', '220710', 'ETHANOL', 'Ethanol, undenatured, for fuel use', 'EXPORTS', 'L', '1,000 Gallons', 0.000000264172, true, 'L to thousand gallons'),
+      ('2207106010', '220710', 'ETHANOL', 'Ethanol, undenatured, for fuel use', 'IMPORTS', 'L', '1,000 Gallons', 0.000000264172, true, 'L to thousand gallons')
+      ON CONFLICT (hs_code_10, flow_type) DO UPDATE SET
+          commodity_name = EXCLUDED.commodity_name,
+          conversion_factor = EXCLUDED.conversion_factor;
+
+      Rules:
+      - Each HS code gets TWO rows: one for EXPORTS and one for IMPORTS
+      - is_active = true
+      - hs_code_6 = first 6 digits of hs_code_10
+      - Use a single INSERT ... VALUES block with ON CONFLICT at the end
+      - UNIT AND GROUP HANDLING:
+        * ETHANOL codes (2207): commodity_group='ETHANOL'
+          - If unit is L: source_unit='L', display_unit='1,000 Gallons', conversion_factor=0.000000264172, notes='L to thousand gallons'
+          - If unit is PFL (proof liters): source_unit='PFL', display_unit='1,000 Proof Gallons', conversion_factor=0.000000264172, notes='PFL to thousand proof gallons'
+        * BIODIESEL codes (3826): commodity_group='BIODIESEL'
+          - source_unit='KG', display_unit='1,000 Pounds', conversion_factor=0.0000022046, notes='KG to thousand lbs'
+      - Use a descriptive but concise commodity_name
+
+      Here are the actual rows from the concordance CSV to process.
+      Format: hs_code_10, description, unit1
+
+      --- ETHANOL (commodity_group = 'ETHANOL') ---
+      2207103000,"ETHYL ALCOHOL, UNDENATURED, 80%+ VOL, FOR BEVERAGE PURPOSES",PFL
+      2207106010,"ETHYL ALCOHOL, UNDENATURED, 80%+ VOL, FOR FUEL USE",L
+      2207106090,"ETHYL ALCOHOL, UNDENATURED, 80%+ VOL, FOR NONBEVERAGE PURPOSES, EXCL FUEL",L
+      2207200010,"ETHYL ALCOHOL AND OTHER SPIRITS, DENATURED, FOR FUEL USE",L
+      2207200090,"ETHYL ALCOHOL AND OTHER SPIRITS, DENATURED, EXCL FUEL USE",L
+      --- BIODIESEL (commodity_group = 'BIODIESEL') ---
+      3826001000,"BIODIESEL NOT CONTAINING PETROLEUM OILS (B100)",KG
+      3826003000,"BIODIESEL AND MIXTURES THEREOF, NESOI",KG
+
+      Generate a single INSERT statement block for ALL these HS codes (both EXPORTS and IMPORTS for each).
+    validation:
+      must_contain: ["INSERT", "ETHANOL", "BIODIESEL", "fuel", "ON CONFLICT"]
+      must_not_contain: ["```", "Here is", "Note:"]
