@@ -1,0 +1,402 @@
+# ============================================================================
+# Balance Sheet Workbook Master List
+# ============================================================================
+# Defines every spreadsheet file we need to create, organized by commodity
+# complex. Each workbook contains balance sheets for the seed + products
+# for all major countries.
+#
+# Modeled after: us_soy_complex_trade.xlsm + us_soybean_complex_bal_sheets.xlsx
+#
+# MY start months determine column ordering and formula offsets:
+#   Sep = corn, soybeans, sorghum, barley
+#   Jul = wheat
+#   Oct = protein meals, vegetable oils
+#   Aug = cotton, rice
+# ============================================================================
+
+workbooks:
+
+  # ══════════════════════════════════════════════════════════════════
+  # OILSEED COMPLEXES (seed + oil + meal per country)
+  # ══════════════════════════════════════════════════════════════════
+
+  us_soybean_complex:
+    filename: "us_soybean_complex_bal_sheets.xlsx"
+    status: EXISTS  # Template already built
+    commodities: [soybeans, soybean_oil, soybean_meal]
+    country: US
+    my_start: {soybeans: 9, soybean_oil: 10, soybean_meal: 10}
+    trade_file: "us_soy_complex_trade.xlsm"
+    notes: "Reference template — all others modeled after this"
+
+  brazil_soybean_complex:
+    filename: "brazil_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans, soybean_oil, soybean_meal]
+    country: BR
+    my_start: {soybeans: 2, soybean_oil: 10, soybean_meal: 10}
+    notes: "Brazil MY starts Feb for beans"
+
+  argentina_soybean_complex:
+    filename: "argentina_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans, soybean_oil, soybean_meal]
+    country: AR
+    my_start: {soybeans: 3, soybean_oil: 10, soybean_meal: 10}
+    notes: "Argentina MY starts Mar for beans"
+
+  china_soybean_complex:
+    filename: "china_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans, soybean_oil, soybean_meal]
+    country: CH
+    my_start: {soybeans: 9, soybean_oil: 10, soybean_meal: 10}
+
+  eu_soybean_complex:
+    filename: "eu_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans, soybean_oil, soybean_meal]
+    country: E4
+    my_start: {soybeans: 9, soybean_oil: 10, soybean_meal: 10}
+
+  india_soybean_complex:
+    filename: "india_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans, soybean_oil, soybean_meal]
+    country: IN
+    my_start: {soybeans: 10, soybean_oil: 10, soybean_meal: 10}
+    notes: "India MY starts Oct for beans"
+
+  paraguay_soybean_complex:
+    filename: "paraguay_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans]
+    country: PA
+    my_start: {soybeans: 2}
+    notes: "Mostly exports seed, minimal crush"
+
+  russia_soybean_complex:
+    filename: "russia_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans, soybean_oil, soybean_meal]
+    country: RS
+    my_start: {soybeans: 9, soybean_oil: 10, soybean_meal: 10}
+
+  ukraine_soybean_complex:
+    filename: "ukraine_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans, soybean_oil, soybean_meal]
+    country: UP
+    my_start: {soybeans: 9, soybean_oil: 10, soybean_meal: 10}
+
+  canada_soybean_complex:
+    filename: "canada_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans, soybean_meal]
+    country: CA
+    my_start: {soybeans: 9, soybean_meal: 10}
+    notes: "Canada crushes but limited oil data"
+
+  world_soybean_complex:
+    filename: "world_soybean_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [soybeans, soybean_oil, soybean_meal]
+    country: WD
+    my_start: {soybeans: 9, soybean_oil: 10, soybean_meal: 10}
+    notes: "Global totals"
+
+  # ── Rapeseed/Canola Complex ──────────────────────────────────────
+
+  us_canola_complex:
+    filename: "us_canola_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [rapeseed, rapeseed_oil, rapeseed_meal]
+    country: US
+    my_start: {rapeseed: 7, rapeseed_oil: 10, rapeseed_meal: 10}
+
+  canada_canola_complex:
+    filename: "canada_canola_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [rapeseed, rapeseed_oil, rapeseed_meal]
+    country: CA
+    my_start: {rapeseed: 8, rapeseed_oil: 10, rapeseed_meal: 10}
+    notes: "Canada is #1 canola producer"
+
+  eu_canola_complex:
+    filename: "eu_canola_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [rapeseed, rapeseed_oil, rapeseed_meal]
+    country: E4
+    my_start: {rapeseed: 7, rapeseed_oil: 10, rapeseed_meal: 10}
+
+  # ── Sunflower Complex ───────────────────────────────────────────
+
+  world_sunflower_complex:
+    filename: "world_sunflower_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [sunflowerseed, sunflowerseed_oil, sunflowerseed_meal]
+    country: WD
+    my_start: {sunflowerseed: 10, sunflowerseed_oil: 10, sunflowerseed_meal: 10}
+    notes: "Russia/Ukraine/Argentina/EU are key players"
+
+  # ── Cottonseed Complex ──────────────────────────────────────────
+
+  us_cottonseed_complex:
+    filename: "us_cottonseed_complex_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [cottonseed, cottonseed_oil, cottonseed_meal]
+    country: US
+    my_start: {cottonseed: 8, cottonseed_oil: 10, cottonseed_meal: 10}
+
+  # ── Palm Oil ────────────────────────────────────────────────────
+
+  indonesia_palm_oil:
+    filename: "indonesia_palm_oil_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [palm_oil, palm_kernel_oil]
+    country: ID
+    my_start: {palm_oil: 1, palm_kernel_oil: 1}
+    notes: "#1 producer, calendar year MY"
+
+  malaysia_palm_oil:
+    filename: "malaysia_palm_oil_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [palm_oil, palm_kernel_oil]
+    country: MY
+    my_start: {palm_oil: 1, palm_kernel_oil: 1}
+    notes: "#2 producer"
+
+  world_palm_oil:
+    filename: "world_palm_oil_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [palm_oil, palm_kernel_oil]
+    country: WD
+    my_start: {palm_oil: 1, palm_kernel_oil: 1}
+
+  # ══════════════════════════════════════════════════════════════════
+  # GRAIN COMPLEXES
+  # ══════════════════════════════════════════════════════════════════
+
+  us_corn:
+    filename: "us_corn_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [corn]
+    country: US
+    my_start: {corn: 9}
+
+  brazil_corn:
+    filename: "brazil_corn_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [corn]
+    country: BR
+    my_start: {corn: 2}
+    notes: "Brazil corn MY starts Feb"
+
+  argentina_corn:
+    filename: "argentina_corn_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [corn]
+    country: AR
+    my_start: {corn: 3}
+
+  china_corn:
+    filename: "china_corn_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [corn]
+    country: CH
+    my_start: {corn: 10}
+
+  ukraine_corn:
+    filename: "ukraine_corn_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [corn]
+    country: UP
+    my_start: {corn: 10}
+
+  eu_corn:
+    filename: "eu_corn_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [corn]
+    country: E4
+    my_start: {corn: 10}
+
+  world_corn:
+    filename: "world_corn_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [corn]
+    country: WD
+    my_start: {corn: 9}
+
+  # ── Wheat ───────────────────────────────────────────────────────
+
+  us_wheat:
+    filename: "us_wheat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [wheat]
+    country: US
+    my_start: {wheat: 6}
+
+  russia_wheat:
+    filename: "russia_wheat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [wheat]
+    country: RS
+    my_start: {wheat: 7}
+
+  eu_wheat:
+    filename: "eu_wheat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [wheat]
+    country: E4
+    my_start: {wheat: 7}
+
+  canada_wheat:
+    filename: "canada_wheat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [wheat]
+    country: CA
+    my_start: {wheat: 8}
+
+  australia_wheat:
+    filename: "australia_wheat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [wheat]
+    country: AS
+    my_start: {wheat: 10}
+    notes: "Southern hemisphere — Oct MY start"
+
+  argentina_wheat:
+    filename: "argentina_wheat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [wheat]
+    country: AR
+    my_start: {wheat: 12}
+    notes: "Dec MY start"
+
+  ukraine_wheat:
+    filename: "ukraine_wheat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [wheat]
+    country: UP
+    my_start: {wheat: 7}
+
+  india_wheat:
+    filename: "india_wheat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [wheat]
+    country: IN
+    my_start: {wheat: 4}
+    notes: "India wheat MY starts Apr"
+
+  world_wheat:
+    filename: "world_wheat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [wheat]
+    country: WD
+    my_start: {wheat: 7}
+
+  # ── Sorghum ─────────────────────────────────────────────────────
+
+  us_sorghum:
+    filename: "us_sorghum_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [sorghum]
+    country: US
+    my_start: {sorghum: 9}
+
+  # ── Barley ──────────────────────────────────────────────────────
+
+  us_barley:
+    filename: "us_barley_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [barley]
+    country: US
+    my_start: {barley: 6}
+
+  # ── Rice ────────────────────────────────────────────────────────
+
+  us_rice:
+    filename: "us_rice_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [rice]
+    country: US
+    my_start: {rice: 8}
+
+  # ── Cotton ──────────────────────────────────────────────────────
+
+  us_cotton:
+    filename: "us_cotton_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [cotton]
+    country: US
+    my_start: {cotton: 8}
+
+  brazil_cotton:
+    filename: "brazil_cotton_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [cotton]
+    country: BR
+    my_start: {cotton: 8}
+
+  india_cotton:
+    filename: "india_cotton_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [cotton]
+    country: IN
+    my_start: {cotton: 10}
+
+  world_cotton:
+    filename: "world_cotton_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [cotton]
+    country: WD
+    my_start: {cotton: 8}
+
+  # ── Sugar ───────────────────────────────────────────────────────
+
+  us_sugar:
+    filename: "us_sugar_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [sugar]
+    country: US
+    my_start: {sugar: 10}
+
+  brazil_sugar:
+    filename: "brazil_sugar_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [sugar]
+    country: BR
+    my_start: {sugar: 4}
+    notes: "Brazil sugar MY starts Apr"
+
+  world_sugar:
+    filename: "world_sugar_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [sugar]
+    country: WD
+    my_start: {sugar: 10}
+
+# ============================================================================
+# SUMMARY
+# ============================================================================
+# Total workbooks: 44 (1 existing + 43 needed)
+#
+# By commodity group:
+#   Soybean complex:  11 (US, Brazil, Argentina, China, EU, India, Paraguay,
+#                         Russia, Ukraine, Canada, World)
+#   Canola/Rapeseed:   3 (US, Canada, EU)
+#   Sunflower:         1 (World — includes Russia/Ukraine/Argentina/EU)
+#   Cottonseed:        1 (US)
+#   Palm oil:          3 (Indonesia, Malaysia, World)
+#   Corn:              7 (US, Brazil, Argentina, China, Ukraine, EU, World)
+#   Wheat:             9 (US, Russia, EU, Canada, Australia, Argentina,
+#                         Ukraine, India, World)
+#   Sorghum:           1 (US)
+#   Barley:            1 (US)
+#   Rice:              1 (US)
+#   Cotton:            4 (US, Brazil, India, World)
+#   Sugar:             3 (US, Brazil, World)
+#
+# Each workbook contains tabs for each commodity in the complex.
+# Each tab has the standard balance sheet layout matching the
+# us_soybean_complex_bal_sheets.xlsx template.

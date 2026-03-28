@@ -347,11 +347,23 @@ def main():
         result = engine.calibrate(args.calibrate)
         if result:
             print(f"\nCalibration for {args.calibrate}:")
-            print(f"  R²:    {result['r_squared']:.3f}")
-            print(f"  MAPE:  {result['mape']:.1f}%")
-            print(f"  N:     {result['n_obs']}")
-            print(f"  β₀:    {result['intercept']:.2f}")
-            print(f"  β₁:    {result['margin_coeff']:.4f}")
+            # Show unit context
+            mean = result['mean_actual']
+            annual_tons = mean * 12
+            annual_bu = annual_tons * 2000 / 60  # short tons to bushels
+            print(f"  R-sq:       {result['r_squared']:.3f}")
+            print(f"  MAPE:       {result['mape']:.1f}%")
+            print(f"  N:          {result['n_obs']}")
+            print(f"  Intercept:  {result['intercept']:.2f}")
+            print(f"  Margin coeff: {result['margin_coeff']:.4f}")
+            print(f"  Mean monthly: {mean/1e6:.1f}M short tons ({mean*2000/60/1e6:.0f}M bu)")
+            print(f"  Annual avg:   {annual_tons/1e6:.1f}M tons ({annual_bu/1e9:.2f}B bu)")
+            if result.get('seasonal_pattern'):
+                months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+                print(f"  Seasonal pattern:")
+                for i, (m, s) in enumerate(zip(months, result['seasonal_pattern'])):
+                    bar = '#' * int(s * 200)
+                    print(f"    {m}: {s:.3f} {bar}")
 
     elif args.validate:
         engine.validate()

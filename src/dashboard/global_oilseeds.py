@@ -77,6 +77,36 @@ COUNTRY_COLORS = {
 }
 
 
+# Marketing year start months — charts must orient to these, not calendar year
+MY_START_MONTH = {
+    'soybeans': 9, 'corn': 9, 'sorghum': 9,            # Sep-Aug
+    'wheat': 7,                                          # Jul-Jun (HRW); Jun-May for other classes
+    'rapeseed': 7, 'palm_oil': 10, 'cotton': 8,         # Varies by commodity
+    'soybean_meal': 10, 'soybean_oil': 10,               # Oct-Sep for products
+    'canola_oil': 10, 'sunflower_oil': 10,
+}
+
+MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+               'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+
+def my_month_order(commodity):
+    """Return month numbers in marketing year order for a commodity."""
+    start = MY_START_MONTH.get(commodity, 9)
+    return [(start + i - 1) % 12 + 1 for i in range(12)]
+
+
+def my_month_labels(commodity):
+    """Return month name labels in marketing year order."""
+    order = my_month_order(commodity)
+    return [MONTH_NAMES[m - 1] for m in order]
+
+
+def format_my(marketing_year):
+    """Format marketing year as 'MY 2024/25'."""
+    return f"MY {marketing_year}/{str(marketing_year + 1)[-2:]}"
+
+
 def _get_latest_by_country(df):
     """Keep only the latest report_date per country/marketing_year."""
     if 'report_date' in df.columns:
@@ -155,7 +185,7 @@ def page_global_oilseeds(query_fn):
 
     if not world.empty:
         w = world.iloc[0]
-        st.subheader(f"MY {latest_my}/{str(latest_my + 1)[-2:]} World {selected_name}")
+        st.subheader(f"{format_my(latest_my)} World {selected_name}")
         m1, m2, m3, m4, m5 = st.columns(5)
         m1.metric("Production", f"{w['production']:,.0f}")
         m2.metric("Total Supply", f"{w['total_supply']:,.0f}")
@@ -186,7 +216,7 @@ def page_global_oilseeds(query_fn):
                 color='country_name',
                 color_discrete_map=COUNTRY_COLORS,
                 labels={'production': '1,000 MT', 'country_name': ''},
-                title=f"Top Producers — MY {latest_my}/{str(latest_my+1)[-2:]}",
+                title=f"Top Producers — {format_my(latest_my)}",
             )
             fig_prod.update_layout(showlegend=False, height=400, margin=dict(l=0, r=20))
             st.plotly_chart(fig_prod, use_container_width=True)
@@ -210,7 +240,7 @@ def page_global_oilseeds(query_fn):
                 color='stu_pct',
                 color_continuous_scale=['#c00000', '#f4b942', '#548235'],
                 labels={'stu_pct': 'Stocks/Use %', 'country_name': ''},
-                title=f"Stocks-to-Use — MY {latest_my}/{str(latest_my+1)[-2:]}",
+                title=f"Stocks-to-Use — {format_my(latest_my)}",
             )
             fig_stu.update_layout(
                 showlegend=False, height=400, margin=dict(l=0, r=20),
@@ -234,18 +264,22 @@ def page_global_oilseeds(query_fn):
     ].copy()
 
     if not trend.empty:
+        # Format x-axis as MY labels
+        trend_plot = trend.sort_values('marketing_year').copy()
+        trend_plot['my_label'] = trend_plot['marketing_year'].apply(
+            lambda y: f"{y}/{str(y+1)[-2:]}"
+        )
         fig_trend = px.line(
-            trend.sort_values('marketing_year'),
-            x='marketing_year', y='production',
+            trend_plot,
+            x='my_label', y='production',
             color='country_name',
             color_discrete_map=COUNTRY_COLORS,
             markers=True,
-            labels={'production': '1,000 MT', 'marketing_year': 'Marketing Year',
+            labels={'production': '1,000 MT', 'my_label': 'Marketing Year',
                     'country_name': ''},
             title=f"{selected_name} Production by Country",
         )
         fig_trend.update_layout(height=450, legend=dict(orientation='h', y=-0.15))
-        fig_trend.update_xaxes(dtick=1)
         st.plotly_chart(fig_trend, use_container_width=True)
 
     # ── TRADE FLOWS ────────────────────────────────────────────────
@@ -269,7 +303,7 @@ def page_global_oilseeds(query_fn):
                 color='country_name',
                 color_discrete_map=COUNTRY_COLORS,
                 labels={'exports': '1,000 MT', 'country_name': ''},
-                title=f"Top Exporters — MY {latest_my}/{str(latest_my+1)[-2:]}",
+                title=f"Top Exporters — {format_my(latest_my)}",
             )
             fig_exp.update_layout(showlegend=False, height=350, margin=dict(l=0))
             st.plotly_chart(fig_exp, use_container_width=True)
@@ -290,7 +324,7 @@ def page_global_oilseeds(query_fn):
                 color='country_name',
                 color_discrete_map=COUNTRY_COLORS,
                 labels={'imports': '1,000 MT', 'country_name': ''},
-                title=f"Top Importers — MY {latest_my}/{str(latest_my+1)[-2:]}",
+                title=f"Top Importers — {format_my(latest_my)}",
             )
             fig_imp.update_layout(showlegend=False, height=350, margin=dict(l=0))
             st.plotly_chart(fig_imp, use_container_width=True)
@@ -306,13 +340,17 @@ def page_global_oilseeds(query_fn):
             display_cols.insert(4, 'crush')
 
         bs_display = world_bs[display_cols].copy()
+        # Format marketing year as "MY 2024/25"
+        bs_display['marketing_year'] = bs_display['marketing_year'].apply(
+            lambda y: f"{y}/{str(y+1)[-2:]}" if pd.notna(y) else y
+        )
         bs_display.columns = [c.replace('_', ' ').title() for c in bs_display.columns]
         bs_display = bs_display.rename(columns={'Stu Pct': 'STU %', 'Marketing Year': 'MY'})
 
         st.dataframe(bs_display, width="stretch", hide_index=True)
 
     # ── COUNTRY COMPARISON TABLE ───────────────────────────────────
-    st.subheader(f"Country Comparison — MY {latest_my}/{str(latest_my+1)[-2:]}")
+    st.subheader(f"Country Comparison \u2014 {format_my(latest_my)}")
 
     country_table = df[
         (df['marketing_year'] == latest_my) &

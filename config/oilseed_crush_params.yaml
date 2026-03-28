@@ -34,8 +34,8 @@ oilseeds:
     seed_price_divisor: 100    # CBOT ZS is in cents/bu, divide by 100 for $/bu
     my_start_month: 9
     has_nass_monthly: true
-    nass_source: "NASS_FATS_OILS"
-    nass_attribute: "oil_production_crude"
+    nass_source: "NASS_SOY_CRUSH"       # 128 months back to 2015
+    nass_attribute: "crush"              # Monthly soybean crush volume
     capacity_annual_thou_tons: 62000
 
   canola:

@@ -1,0 +1,126 @@
+# ============================================================================
+# Balance Sheet Inventory — Have the LLM categorize all D: drive spreadsheets
+# ============================================================================
+# Reads the inventory of all spreadsheet tab names and asks the LLM to
+# organize them into the 5-group framework:
+# 1. Oilseeds  2. Feed Grains  3. Food Grains  4. Livestock  5. Energy
+# ============================================================================
+
+model: "qwen3-coder:30b"
+temperature: 0.2
+
+system_prompt: |
+  You are an agricultural commodity market analyst. You organize data into
+  market categories. Output clean, structured text. No markdown code fences.
+
+tasks:
+  - name: categorize_balance_sheets
+    output_file: inventory/balance_sheet_master_inventory.txt
+    prompt: |
+      Below is a complete inventory of balance sheet and trade spreadsheets from
+      a commodity analysis firm. Each line shows a filename and its tab/sheet names.
+
+      Your task: Organize EVERY unique country/commodity combination into exactly
+      5 groups. For each combination, indicate:
+      - Group (Oilseeds, Feed Grains, Food Grains, Livestock, Energy)
+      - Sub-group (e.g., "Soybean Complex", "Palm/Lauric", "Fats & Greases")
+      - Country
+      - Commodities covered (seed, oil, meal, or standalone)
+      - Priority (Tier 1 = major global player, Tier 2 = significant, Tier 3 = minor)
+      - Whether a balance sheet AND trade file exist
+
+      FORMAT your output as a structured list, grouped by the 5 categories.
+
+      === BALANCE SHEET FILES ===
+
+      sbwldbal.xls tabs: World, US Soy Complex, World Soy S&D, World Soymeal S&D,
+      World Soyoil S&D, Brazil Soy Complex, Brazil Soymeal, Brazil Soyoil,
+      Argentina Soy Complex, Argentina Soymeal, Argentina Soyoil,
+      Paraguay Soy Complex, Uruguay Soy Complex, Canada Soy Complex,
+      EU Soy Complex, EU Soyoil, China Soy Complex, India Soy Complex,
+      Japan Soy Complex, Mexico Soy Complex, Ukraine Soy Complex, Russia Soy Complex
+
+      sbusbal.xls tabs: SBComp, Soybeans, Soymeal, Soyoil, Total Oil,
+      Sunflower, Sunoil, Canola, Canola Oil, Cottonseed, Cottonseed Oil,
+      Peanut, Peanut Oil, Flaxseed, Safflower, Corn Oil, Palm, Palm Oil,
+      PKO, Copra, Coconut Oil, Meat & Bone Meal, Edible Tallow,
+      Inedible Tallow, Yellow Grease, Other Grease, Lard,
+      Feather Meal, Poultry Byproduct Meal, Poultry Fat,
+      Total Oil Bal, Vegoil Dom Use, Lauric Dom Use, Fat Dom Use
+
+      rawldbal.xls tabs: World Rapeseed, US Rapeseed Complex, Canada Rapeseed Complex,
+      Australia Rapeseed Complex, China Rapeseed Complex, EU Rapeseed Complex,
+      Ukraine Rapeseed Complex, Russia Rapeseed Complex, Japan Rapeseed Complex,
+      India Rapeseed Complex, Mexico Rapeseed Complex
+
+      suwldbal.xls tabs: US Sun Complex, Argentina Sun Complex, EU Sun Complex,
+      Ukraine Sun Complex, Russia Sun Complex, China Sun Complex,
+      India Sun Complex, Canada Sun Complex, Mexico Sun Complex, Turkey Sun Complex
+
+      pnwldbal.xls tabs: Argentina Peanut Complex, China Peanut Complex, India Peanut Complex
+
+      WLDlauricbal.xls tabs: World Palm Oil S&D, World PKO S&D, World CNO S&D,
+      Malaysia Palm Complex, Indonesia Palm Complex,
+      Philippines Copra Complex, Indonesia Copra Complex
+
+      wldtalbal.xlsx tabs: Canada Tallow, Australia Tallow, New Zealand Tallow,
+      Paraguay Tallow, Brazil Tallow, Uruguay Tallow, Mexico Tallow,
+      China Tallow, EU-28 Tallow
+
+      wlducobal.xlsx tabs: China UCO, Indonesia UCO, India UCO, Mexico UCO,
+      EU-28 UCO, Japan UCO, Canada UCO, New Zealand UCO
+
+      chinaoilseedbal.xlsx tabs: Oilseed, Protein Meal, Vegetable Oil,
+      Cottonseed Complex
+
+      uscalyearbal.xlsx tabs: Total Feedstocks, Veg Oils, Fats and Grease,
+      SBO, Canola Oil, DCO, Inedible Tallow, UCO-YG, Yellow Grease,
+      UCO, CWG, Poultry Fat
+
+      cnwldbal.xls (CORN) tabs: World, US, Argentina, Brazil, Ukraine, Russia,
+      Serbia, Croatia, EU, South Africa, Paraguay, China, India, Thailand,
+      Canada, Japan, South Korea, Taiwan, Malaysia, Indonesia, Philippines,
+      Egypt, Mexico
+
+      fgusbal.xls tabs: FGComp, Corn, Sorghum, Barley, Oats, Feed&Residual Model
+
+      gswldbal.xls (SORGHUM) tabs: World, US, Argentina, Australia, Brazil,
+      China, EU, Japan, Taiwan, Mexico, India
+
+      bawldbal.xls (BARLEY) tabs: World, US, EU, Australia, Canada, Ukraine,
+      Russia, Kazakhstan, Argentina, Saudi Arabia, China, Japan
+
+      oawldbal.xls (OATS) tabs: World, US, EU, Australia, Canada, Russia, Ukraine, China
+
+      wldfgbal.xlsx tabs: Brazil, China, United States, World
+
+      usethanolbal.xlsx tabs: Ethanol Balance Sheet, Corn Gluten Meal Balance Sheet,
+      DDG Balance Sheet, Co-Products Production
+
+      wldrapbal.xlsx tabs: World Rapeseed, Canada Rapeseed, Australia Rapeseed,
+      China Rapeseed, EU Rapeseed, Ukraine Rapeseed, Russia Rapeseed,
+      Japan Rapeseed, India Rapeseed, Mexico Rapeseed
+
+      wldsunbal.xlsx tabs: Argentina Sun Complex, EU Sun Complex,
+      Ukraine Sun Complex, Russia Sun Complex, India Sun Complex,
+      China Sun Complex, Canada Sun Complex, Mexico Sun Complex, Turkey Sun Complex
+
+      wldlaubal.xlsx tabs: Malaysia Palm Complex, Indonesia Palm Complex,
+      Philippines Copra Complex, Indonesia Copra Complex
+
+      wldpeabal.xlsx tabs: Argentina Peanut Complex, China Peanut Complex
+
+      NOTE: Wheat files were not found in this scan but are known to exist
+      (uswheatbal, wldwheatbal) with countries including: US, Russia, EU,
+      Canada, Australia, Argentina, Ukraine, India, Kazakhstan, Egypt, Brazil, China.
+
+      Rice balance sheets exist but with minimal country coverage currently.
+      Sugar balance sheets exist for Brazil and US.
+
+      For each group, list ALL country/commodity combinations needed, including
+      ones from the files above AND any obvious gaps (major producing/consuming
+      countries that should be tracked but aren't in these files).
+
+    validation:
+      must_contain: ["Oilseeds", "Feed Grains", "Food Grains"]
+      min_length: 2000
