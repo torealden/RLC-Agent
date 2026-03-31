@@ -400,3 +400,71 @@ workbooks:
 # Each workbook contains tabs for each commodity in the complex.
 # Each tab has the standard balance sheet layout matching the
 # us_soybean_complex_bal_sheets.xlsx template.
+
+  # ══════════════════════════════════════════════════════════════════
+  # US FATS & GREASES (NEW)
+  # ══════════════════════════════════════════════════════════════════
+
+  us_edible_tallow:
+    filename: "us_edible_tallow_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [edible_tallow]
+    country: US
+    my_start: {edible_tallow: 10}
+    trade_file: "us_fats_greases_trade.xlsx"
+
+  us_inedible_tallow:
+    filename: "us_inedible_tallow_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [inedible_tallow]
+    country: US
+    my_start: {inedible_tallow: 10}
+    trade_file: "us_fats_greases_trade.xlsx"
+
+  us_yellow_grease:
+    filename: "us_yellow_grease_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [yellow_grease]
+    country: US
+    my_start: {yellow_grease: 10}
+    trade_file: "us_fats_greases_trade.xlsx"
+
+  us_cwg:
+    filename: "us_cwg_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [cwg]
+    country: US
+    my_start: {cwg: 10}
+    trade_file: "us_fats_greases_trade.xlsx"
+
+  us_uco:
+    filename: "us_uco_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [uco]
+    country: US
+    my_start: {uco: 10}
+    trade_file: "us_fats_greases_trade.xlsx"
+
+  us_lard:
+    filename: "us_lard_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [lard]
+    country: US
+    my_start: {lard: 10}
+    trade_file: "us_fats_greases_trade.xlsx"
+
+  us_poultry_fat:
+    filename: "us_poultry_fat_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [poultry_fat]
+    country: US
+    my_start: {poultry_fat: 10}
+    trade_file: "us_fats_greases_trade.xlsx"
+
+  us_dco:
+    filename: "us_dco_bal_sheets.xlsx"
+    status: NEEDED
+    commodities: [dco]
+    country: US
+    my_start: {dco: 10}
+    trade_file: "us_fats_greases_trade.xlsx"

@@ -99,6 +99,8 @@ DEFAULT_HS_CODES_10 = [
     '1208100000',
     # Soybean oil (1507904040 = HTS/imports, 1507904050 = Schedule B/exports)
     '1507100000', '1507904020', '1507904040', '1507904050',
+    # Peanut oil (crude + refined)
+    '1508100000', '1508900000',
     # Palm oil
     '1511100000', '1511900000',
     # Sunflower oil
@@ -127,10 +129,25 @@ DEFAULT_HS_CODES_10 = [
     '2306100000',
     # Sunflower meal
     '2306300000',
+    # Peanut meal
+    '2305000000',
     # Linseed meal + flaxseed screenings
     '2306200000', '2308009300',
     # Cotton
     '5201001090', '5201002030', '5201009000',
+    # ── Fats & Greases ──
+    # Lard
+    '1501100000',
+    # Choice White Grease + Yellow Grease + Other pig fat
+    '1501200040', '1501200060', '1501200080',
+    # Poultry fat
+    '1501900000',
+    # Edible tallow + Inedible tallow + Other bovine fats
+    '1502100020', '1502100040', '1502900000',
+    # Lard stearin / tallow oil
+    '1503000000',
+    # UCO / inedible fat mixtures
+    '1518004000',
 ]
 
 

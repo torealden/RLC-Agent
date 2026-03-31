@@ -205,8 +205,9 @@ COMMODITY_LAYOUT = {
     'palm_oil': 'palm', 'palm_kernel_oil': 'palm',
     'soybean_meal': 'meal', 'rapeseed_meal': 'meal', 'sunflowerseed_meal': 'meal',
     'cottonseed_meal': 'meal', 'peanut_meal': 'meal',
-    'tallow': 'fat', 'uco': 'fat', 'yellow_grease': 'fat', 'lard': 'fat',
-    'cwg': 'fat', 'poultry_fat': 'fat', 'dco': 'fat',
+    'tallow': 'fat', 'edible_tallow': 'fat', 'inedible_tallow': 'fat',
+    'uco': 'fat', 'yellow_grease': 'fat', 'lard': 'fat',
+    'cwg': 'fat', 'poultry_fat': 'fat', 'dco': 'fat', 'other_grease': 'fat',
     'ethanol': 'ethanol', 'biodiesel': 'ethanol', 'renewable_diesel': 'ethanol',
 }
 
@@ -244,6 +245,87 @@ COUNTRY_NAMES = {
 MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+# ── Monthly block definitions per commodity type ────────────────────
+# Each block becomes a 14-row section: title, unit, 12 months, MY total
+
+OILSEED_MONTHLY_BLOCKS = [
+    ('IMPORTS', 'million bushels'),
+    ('EXPORTS', 'million bushels'),
+    ('CRUSH', 'million bushels'),
+    ('SEED USE', 'million bushels'),
+    ('RESIDUAL USE', 'million bushels'),
+    ('STOCKS', 'million bushels'),
+]
+
+OIL_MONTHLY_BLOCKS = [
+    ('PRODUCTION', 'million pounds'),
+    ('YIELD', 'pounds per bushel'),
+    ('IMPORTS', 'million pounds'),
+    ('EXPORTS', 'million pounds'),
+    ('DOMESTIC USE', 'million pounds'),
+    ('BIOMASS-BASED DIESEL USE', 'million pounds'),
+    ('BIODIESEL USE', 'million pounds'),
+    ('RENEWABLE DIESEL USE', 'million pounds'),
+    ('CO-PROCESSING USE', 'million pounds'),
+    ('NON-BIODIESEL USE', 'million pounds'),
+    ('STOCKS', 'million pounds'),
+]
+
+MEAL_MONTHLY_BLOCKS = [
+    ('PRODUCTION', 'thousand short tons'),
+    ('YIELD', 'pounds per bushel'),
+    ('IMPORTS', 'thousand short tons'),
+    ('EXPORTS', 'thousand short tons'),
+    ('DOMESTIC USE', 'thousand short tons'),
+    ('STOCKS', 'thousand short tons'),
+]
+
+FAT_MONTHLY_BLOCKS = OIL_MONTHLY_BLOCKS  # Same structure as vegetable oils
+
+GRAIN_MONTHLY_BLOCKS = [
+    ('IMPORTS', '1,000 MT'),
+    ('EXPORTS', '1,000 MT'),
+    ('FEED & RESIDUAL USE', '1,000 MT'),
+    ('FSI USE', '1,000 MT'),
+    ('STOCKS', '1,000 MT'),
+]
+
+PALM_MONTHLY_BLOCKS = [
+    ('PRODUCTION', '1,000 MT'),
+    ('IMPORTS', '1,000 MT'),
+    ('EXPORTS', '1,000 MT'),
+    ('DOMESTIC USE', '1,000 MT'),
+    ('BIODIESEL USE', '1,000 MT'),
+    ('STOCKS', '1,000 MT'),
+]
+
+ETHANOL_MONTHLY_BLOCKS = [
+    ('PRODUCTION', 'million gallons'),
+    ('IMPORTS', 'million gallons'),
+    ('EXPORTS', 'million gallons'),
+    ('STOCKS', 'million gallons'),
+]
+
+MONTHLY_BLOCKS = {
+    'oilseed': OILSEED_MONTHLY_BLOCKS,
+    'oil': OIL_MONTHLY_BLOCKS,
+    'meal': MEAL_MONTHLY_BLOCKS,
+    'fat': FAT_MONTHLY_BLOCKS,
+    'grain': GRAIN_MONTHLY_BLOCKS,
+    'palm': PALM_MONTHLY_BLOCKS,
+    'ethanol': ETHANOL_MONTHLY_BLOCKS,
+}
+
+BLOCK_FONT = Font(name='Calibri', size=11, bold=True, color=NAVY)
+BLOCK_UNIT_FONT = Font(name='Calibri', size=9, italic=True, color='808080')
+MONTH_FONT = Font(name='Calibri', size=10)
+TOTAL_FONT = Font(name='Calibri', size=10, bold=True)
+
+
+def get_my_months(my_start):
+    """Return month names in marketing year order."""
+    return [MONTH_NAMES[(my_start - 1 + i) % 12] for i in range(12)]
+
 
 def get_my_label(my_start, year):
     """Generate marketing year column headers."""
@@ -253,9 +335,50 @@ def get_my_label(my_start, year):
     return f"{year}/{str(end_yr)[-2:]}"
 
 
+def add_monthly_block(ws, start_row, block_title, unit_label, my_start,
+                      country_name, commodity_display, num_my_cols):
+    """
+    Add one monthly block (14 rows):
+    Row 1: blank spacer
+    Row 2: "{COUNTRY} {COMMODITY} {BLOCK_TITLE}"
+    Row 3: "(unit_label)"
+    Rows 4-15: 12 months in MY order
+    Row 16: "  Marketing-year Total" or "  Marketing-year Average" for yields
+    """
+    row = start_row
+
+    # Spacer
+    row += 1
+
+    # Block title
+    title = f"{country_name.upper()} {commodity_display.upper()} {block_title}"
+    cell = ws.cell(row=row, column=1, value=title)
+    cell.font = BLOCK_FONT
+    row += 1
+
+    # Unit
+    ws.cell(row=row, column=1, value=f"({unit_label})").font = BLOCK_UNIT_FONT
+    row += 1
+
+    # 12 months in MY order
+    months = get_my_months(my_start)
+    for month_name in months:
+        ws.cell(row=row, column=1, value=month_name).font = MONTH_FONT
+        row += 1
+
+    # MY Total or Average
+    is_yield = 'YIELD' in block_title.upper()
+    total_label = "  Marketing-year Average" if is_yield else "  Marketing-year Total"
+    cell = ws.cell(row=row, column=1, value=total_label)
+    cell.font = TOTAL_FONT
+    row += 1
+
+    return row
+
+
 def create_balance_sheet_tab(wb, tab_name, commodity, country_code, my_start,
                              start_year=2015, end_year=2026):
-    """Create one balance sheet tab in a workbook."""
+    """Create one balance sheet tab with annual section + monthly blocks."""
     ws = wb.create_sheet(title=tab_name)
 
     # Determine row layout
@@ -267,12 +390,8 @@ def create_balance_sheet_tab(wb, tab_name, commodity, country_code, my_start,
 
     # ── Title row ──────────────────────────────────────────────────
     ws.merge_cells('A1:M1')
-    ws['A1'] = f"{country_name} — {commodity_display} Balance Sheet"
+    ws['A1'] = f"{country_name} {commodity_display.upper()} SUPPLY AND DEMAND"
     ws['A1'].font = TITLE_FONT
-
-    # Unit label
-    ws['A2'] = "Units: 1,000 MT (unless noted)"
-    ws['A2'].font = Font(name='Calibri', size=9, italic=True, color='808080')
 
     # ── Column headers (marketing years) ───────────────────────────
     header_row = 3
@@ -280,11 +399,7 @@ def create_balance_sheet_tab(wb, tab_name, commodity, country_code, my_start,
     ws.cell(row=header_row, column=1).fill = HEADER_FILL
     ws.cell(row=header_row, column=1).alignment = Alignment(horizontal='left')
 
-    # Monthly sub-columns header
-    ws.cell(row=header_row, column=2, value="Source").font = HEADER_FONT
-    ws.cell(row=header_row, column=2).fill = HEADER_FILL
-
-    col = 3
+    col = 2
     for year in range(start_year, end_year + 1):
         label = get_my_label(my_start, year)
         cell = ws.cell(row=header_row, column=col, value=label)
@@ -293,7 +408,9 @@ def create_balance_sheet_tab(wb, tab_name, commodity, country_code, my_start,
         cell.alignment = Alignment(horizontal='center')
         col += 1
 
-    # ── Data rows ──────────────────────────────────────────────────
+    num_my_cols = col - 2
+
+    # ── Annual balance sheet rows ──────────────────────────────────
     current_row = header_row + 1
     for i, (label, row_type) in enumerate(rows):
         cell = ws.cell(row=current_row, column=1, value=label)
@@ -314,21 +431,37 @@ def create_balance_sheet_tab(wb, tab_name, commodity, country_code, my_start,
             current_row += 1
             continue
 
-        # Source column
-        if row_type == 'data':
-            ws.cell(row=current_row, column=2, value="USDA").font = Font(
-                name='Calibri', size=9, color='808080')
-
         current_row += 1
 
+    # ── RLC estimate note ──────────────────────────────────────────
+    current_row += 1
+    ws.cell(row=current_row, column=1,
+            value="Bold, green numbers are RLC estimates and predictions").font = Font(
+        name='Calibri', size=9, italic=True, color='548235')
+    current_row += 1
+
+    # ── Monthly blocks ─────────────────────────────────────────────
+    monthly_blocks = MONTHLY_BLOCKS.get(layout_type, GRAIN_MONTHLY_BLOCKS)
+
+    # Determine the MY start for monthly blocks
+    # Oils and meals use Oct-Sep even if the seed uses Sep-Aug
+    block_my_start = my_start
+    if layout_type in ('oil', 'meal', 'fat'):
+        block_my_start = 10  # Oct-Sep for products
+
+    for block_title, unit in monthly_blocks:
+        current_row = add_monthly_block(
+            ws, current_row, block_title, unit, block_my_start,
+            country_name, commodity_display, num_my_cols
+        )
+
     # ── Column widths ──────────────────────────────────────────────
-    ws.column_dimensions['A'].width = 28
-    ws.column_dimensions['B'].width = 8
-    for c in range(3, col):
+    ws.column_dimensions['A'].width = 38
+    for c in range(2, col):
         ws.column_dimensions[get_column_letter(c)].width = 12
 
     # Freeze panes
-    ws.freeze_panes = 'C4'
+    ws.freeze_panes = 'B4'
 
     return ws
 

@@ -394,12 +394,36 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         commodity = "COTTONSEED_OIL"
     ElseIf InStr(sheetLower, "cottonseed") > 0 Then
         commodity = "COTTONSEED"
+    ElseIf InStr(sheetLower, "peanut") > 0 And InStr(sheetLower, "meal") > 0 Then
+        commodity = "PEANUT_MEAL"
+    ElseIf InStr(sheetLower, "peanut") > 0 And InStr(sheetLower, "oil") > 0 Then
+        commodity = "PEANUT_OIL"
+    ElseIf InStr(sheetLower, "peanut") > 0 Then
+        commodity = "PEANUTS"
     ElseIf (InStr(sheetLower, "linseed") > 0 Or InStr(sheetLower, "flax") > 0) And InStr(sheetLower, "meal") > 0 Then
         commodity = "LINSEED_MEAL"
     ElseIf (InStr(sheetLower, "linseed") > 0 Or InStr(sheetLower, "flax") > 0) And InStr(sheetLower, "oil") > 0 Then
         commodity = "LINSEED_OIL"
     ElseIf InStr(sheetLower, "flax") > 0 Or InStr(sheetLower, "linseed") > 0 Then
         commodity = "FLAXSEED"
+    ElseIf InStr(sheetLower, "edible tallow") > 0 Then
+        commodity = "EDIBLE_TALLOW"
+    ElseIf InStr(sheetLower, "inedible tallow") > 0 Or InStr(sheetLower, "technical tallow") > 0 Then
+        commodity = "INEDIBLE_TALLOW"
+    ElseIf InStr(sheetLower, "tallow") > 0 Then
+        commodity = "INEDIBLE_TALLOW"
+    ElseIf InStr(sheetLower, "choice white") > 0 Or InStr(sheetLower, "cwg") > 0 Then
+        commodity = "CWG"
+    ElseIf InStr(sheetLower, "yellow grease") > 0 Then
+        commodity = "YELLOW_GREASE"
+    ElseIf InStr(sheetLower, "used cooking") > 0 Or InStr(sheetLower, "uco") > 0 Then
+        commodity = "UCO"
+    ElseIf InStr(sheetLower, "poultry") > 0 And InStr(sheetLower, "fat") > 0 Then
+        commodity = "POULTRY_FAT"
+    ElseIf InStr(sheetLower, "lard") > 0 Then
+        commodity = "LARD"
+    ElseIf InStr(sheetLower, "grease") > 0 Then
+        commodity = "OTHER_GREASE"
     Else
         commodity = "UNKNOWN"
     End If
