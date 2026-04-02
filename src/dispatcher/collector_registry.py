@@ -115,6 +115,14 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.us.usda_nass_collector',
         'class': 'NASSCollector',
     },
+    'usda_nass_acreage': {
+        'module': 'src.agents.collectors.us.usda_nass_collector',
+        'class': 'NASSCollector',
+    },
+    'usda_nass_production': {
+        'module': 'src.agents.collectors.us.usda_nass_collector',
+        'class': 'NASSCollector',
+    },
     'canada_statscan_stocks': {
         'module': 'src.agents.collectors.canada.canada_statscan_collector',
         'class': 'StatsCanCollector',

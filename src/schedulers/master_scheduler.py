@@ -139,6 +139,19 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
                      'diesel', 'fertilizer'],
     ),
 
+    # ── DOC: Daily Operations Cycle (runs after all daily collectors) ──
+    'doc_daily_ops': CollectorSchedule(
+        collector_name='doc_daily_ops',
+        collector_class='DOCRunner',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(17, 30),  # 5:30 PM ET — after market close + collectors
+            description="DOC: verify collectors, compute margins, detect anomalies, generate summary"
+        ),
+        priority=10,  # Low priority — runs after everything else
+        commodities=['all'],
+    ),
+
     'yield_forecast': CollectorSchedule(
         collector_name='yield_forecast',
         collector_class='YieldForecastCollector',
@@ -398,6 +411,48 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         ),
         priority=1,
         commodities=['corn', 'soybeans', 'wheat'],
+    ),
+
+    # ── NASS Acreage (Prospective Plantings Mar 31, Acreage Jun 30, Final Jan) ──
+    'usda_nass_acreage': CollectorSchedule(
+        collector_name='usda_nass_acreage',
+        collector_class='NASSCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.QUARTERLY,
+            day_of_month=31,  # Approximate — actual dates vary
+            release_time=time(12, 0),
+            description="USDA NASS Acreage reports (Prospective Plantings Mar, Acreage Jun, Final Jan)"
+        ),
+        priority=1,
+        commodities=['corn', 'soybeans', 'wheat', 'sorghum', 'cotton', 'barley', 'oats', 'sunflower', 'canola'],
+    ),
+
+    # ── NASS Processing (Fats & Oils, Grain Crush, Peanut — monthly ~10th) ──
+    'nass_processing': CollectorSchedule(
+        collector_name='nass_processing',
+        collector_class='NASSProcessingCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=10,
+            release_time=time(15, 0),  # 3:00 PM ET
+            description="NASS Fats & Oils, Grain Crushings, Flour Milling, Peanut Processing"
+        ),
+        priority=1,
+        commodities=['soybeans', 'canola', 'corn', 'cottonseed', 'sunflower', 'peanuts', 'sorghum'],
+    ),
+
+    # ── NASS Production (monthly during harvest, annual Jan) ──
+    'usda_nass_production': CollectorSchedule(
+        collector_name='usda_nass_production',
+        collector_class='NASSCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=12,  # Typically same day as WASDE
+            release_time=time(12, 0),
+            description="USDA NASS Crop Production (monthly Aug-Jan, annual)"
+        ),
+        priority=1,
+        commodities=['corn', 'soybeans', 'wheat', 'sorghum', 'cotton', 'barley', 'oats'],
     ),
 
     'canada_statscan_stocks': CollectorSchedule(
