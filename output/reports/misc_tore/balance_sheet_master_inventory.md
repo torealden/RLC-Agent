@@ -91,7 +91,7 @@ Organized into 5 market groups per user framework.
 |---------------|-------------|
 | Total Vegetable Oil | sbusbal |
 | Total Protein Meal | sbusbal |
-| PCAU (per capita apparent use) | sbusbal |
+| PCAU (protein consuming animal unit) | sbusbal |
 | Edible Fats & Oil Balance | sbusbal |
 | Vegoil Domestic Use | sbusbal |
 | Lauric Domestic Use | sbusbal |
@@ -290,7 +290,7 @@ Organized into 5 market groups per user framework.
 |--------|-----------|-------------|
 | US Ethanol | Y | usethanolbal |
 | World Ethanol | Y | fgethanol (EIA World Ethanol) |
-| Brazil Ethanol | TBD | (linked to sugar) |
+| Brazil Ethanol | TBD | (linked to sugar and corn - growing in Mato Gross and northern regions) |
 
 ### 5B. Ethanol Co-Products
 | Product | Bal Sheet | Source File |
