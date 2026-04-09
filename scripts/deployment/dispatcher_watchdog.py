@@ -5,11 +5,11 @@ Checks if the RLC dispatcher process is running AND healthy, and restarts
 it if dead or if the scheduler has become a zombie (process alive but
 APScheduler not firing jobs).
 
-Health check: the dispatcher writes a heartbeat file every 5 minutes.
-If the heartbeat is older than HEARTBEAT_MAX_AGE_MINUTES, the watchdog
-treats the process as a zombie and restarts it.
+Health check: the dispatcher writes a heartbeat file every 15 minutes.
+If the heartbeat is older than HEARTBEAT_MAX_AGE_MINUTES (30 min), the
+watchdog treats the process as a zombie and restarts it.
 
-Designed to run as a Windows Scheduled Task every 15 minutes.
+Designed to run as a Windows Scheduled Task every 30 minutes.
 
 Usage:
     python scripts/deployment/dispatcher_watchdog.py
@@ -33,7 +33,8 @@ LOG_FILE = Path(__file__).parent / 'watchdog.log'
 PYTHON_EXE = sys.executable
 
 # If heartbeat is older than this, treat the dispatcher as a zombie
-HEARTBEAT_MAX_AGE_MINUTES = 10
+# Heartbeat writes every 15 min, so allow 2 missed beats before zombie flag
+HEARTBEAT_MAX_AGE_MINUTES = 30
 
 # Setup logging
 logging.basicConfig(

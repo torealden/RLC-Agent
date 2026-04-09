@@ -468,3 +468,55 @@ workbooks:
     country: US
     my_start: {dco: 10}
     trade_file: "us_fats_greases_trade.xlsx"
+
+  # ══════════════════════════════════════════════════════════════════
+  # US BIOFUELS & FOSSIL FUELS (Calendar Year)
+  # ══════════════════════════════════════════════════════════════════
+
+  us_biodiesel:
+    filename: "us_biodiesel_bal_sheets.xlsx"
+    status: EXISTS
+    commodities: [biodiesel]
+    country: US
+    my_start: {biodiesel: 1}
+    notes: "Calendar year. Data from bronze.bbd_balance_sheet + legacy."
+
+  us_renewable_diesel:
+    filename: "us_renewable_diesel_bal_sheets.xlsx"
+    status: EXISTS
+    commodities: [renewable_diesel]
+    country: US
+    my_start: {renewable_diesel: 1}
+    notes: "Calendar year. Data from bronze.bbd_balance_sheet + legacy."
+
+  us_saf:
+    filename: "us_saf_bal_sheets.xlsx"
+    status: EXISTS
+    commodities: [saf]
+    country: US
+    my_start: {saf: 1}
+    notes: "Calendar year. Limited history — production starts ~2022."
+
+  us_distillate_fuel_oil:
+    filename: "us_distillate_fuel_oil_bal_sheets.xlsx"
+    status: EXISTS
+    commodities: [distillate_fuel_oil]
+    country: US
+    my_start: {distillate_fuel_oil: 1}
+    notes: "Fossil mirror for diesel pool comparison. Calendar year."
+
+  us_ethanol:
+    filename: "us_ethanol_bal_sheets.xlsx"
+    status: EXISTS
+    commodities: [ethanol]
+    country: US
+    my_start: {ethanol: 1}
+    notes: "Calendar year. Template only — needs EIA data population."
+
+  us_bbd_combined:
+    filename: "us_bbd_combined_bal_sheets.xlsx"
+    status: EXISTS
+    commodities: [bbd_combined]
+    country: US
+    my_start: {bbd_combined: 1}
+    notes: "Aggregated BD+RD+SAF production + monthly capacity sheet."

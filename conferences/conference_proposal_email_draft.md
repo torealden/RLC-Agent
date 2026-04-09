@@ -25,7 +25,7 @@ I'd like to propose a presentation for [Conference Name]: **"AI Isn't Coming for
 
 **Format:** I'm flexible — this works as a 20-minute focused talk or a 45-minute deep dive with audience Q&A. Happy to tailor to your audience.
 
-**About me:** I'm Tore Alden, founder of Round Lakes Companies. I've spent 20+ years in agricultural commodity markets covering oilseeds, biofuels, and feedstock economics. I've presented at [list relevant past conferences] and formerly produced the "Fats, Fuels & Oils" weekly webinar series.
+**About me:** I'm Tore Alden, founder of Round Lakes Companies. I've spent 25+ years in agricultural commodity markets covering oilseeds, biofuels, and feedstock economics. I've presented at Global Grains, Fastmarkets' Biofuels Americas, Biofuels Europe, and Global Grains Conferences, Livestock Marketing Information Center's Industry Outlook, Informa's Annual Client Conference, American Fats and Oils Association's Annual Meeting. You can find videos of weekly webinars I did at Fastmarkets by searching for Fastmarkets' "Fats, Fuels & Oils" webinar series on YouTube.
 
 I'd welcome the chance to discuss this further. A brief deck overview is available upon request.
 

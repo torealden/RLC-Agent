@@ -14,11 +14,11 @@ I'd like to propose a presentation for the 2026 Annual Meeting: **"AI Isn't Comi
 
 Over the past year, I built a production-grade oilseed market intelligence system — 187,000 lines of code, 4 million data points across 22 commodities and 35 years of history — without writing a single line of code by hand. Everything was built through conversation with an AI.
 
-The audience gets a live look at automated data collection from USDA, EIA, CONAB, and 30+ other sources; a knowledge graph encoding 20 years of analyst intuition about crush economics and cross-market linkages; and an honest assessment of what AI can and cannot replace in oilseed analysis. This includes a working crush margin model that tracks soybean, canola, cottonseed, sunflower, and palm economics.
+The audience gets a live look at automated data collection from USDA, EIA, CONAB, and 30+ other sources; a knowledge graph encoding 20 years of analyst intuition about agricultural economics and cross-market linkages; and an honest assessment of what AI can and cannot replace in oilseed analysis. This includes a working crush margin model that tracks soybean, canola, cottonseed, sunflower, and palm economics.
 
 This talk is designed for the AOCS audience — it's built by an oilseed analyst, for oilseed analysts. I'm flexible on format (20 or 45 minutes).
 
-I'm Tore Alden, founder of Round Lakes Companies. I've spent 20+ years covering oilseeds, biofuels, and feedstock economics, and formerly produced the "Fats, Fuels & Oils" weekly webinar series. [Add: I've previously presented at AOCS in X year / or "I've attended AOCS for X years."]
+I'm Tore Alden, founder of Round Lakes Companies. I've spent 20+ years covering oilseeds, biofuels, and feedstock economics, and formerly produced the "Fats, Fuels & Oils" weekly webinar series. 
 
 Best regards,
 Tore Alden
@@ -72,7 +72,7 @@ Of particular interest to AAEA members:
 
 This presentation bridges the gap between AI capability demonstrations and rigorous applied economics — showing how the tools augment rather than replace trained analysts.
 
-I'm Tore Alden, founder of Round Lakes Companies, with 20+ years in agricultural commodity markets. [Add: degree/credential info if relevant for AAEA audience.]
+I'm Tore Alden, founder of Round Lakes Companies, with 25+ years in agricultural commodity markets. [Add: degree/credential info if relevant for AAEA audience.]
 
 Best regards,
 Tore Alden
