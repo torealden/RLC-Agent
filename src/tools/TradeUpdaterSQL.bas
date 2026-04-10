@@ -117,6 +117,28 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     Dim cellsUpdated As Long
     Dim countriesNotFound As Long
 
+    ' Save Excel performance settings to restore on exit
+    Dim savedScreenUpdating As Boolean
+    Dim savedCalculation As Long
+    Dim savedEnableEvents As Boolean
+    Dim savedDisplayAlerts As Boolean
+    savedScreenUpdating = Application.ScreenUpdating
+    savedCalculation = Application.Calculation
+    savedEnableEvents = Application.EnableEvents
+    savedDisplayAlerts = Application.DisplayAlerts
+
+    ' Disable Excel features that slow down bulk cell updates
+    ' Without these, every cell write triggers a screen repaint, full recalc,
+    ' and event firing — turning a 30-second job into a 10-minute job for
+    ' large recordsets like CORN_OIL trade.
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+    Application.EnableEvents = False
+    Application.DisplayAlerts = False
+
+    ' Use error handler to ensure we always restore Excel settings
+    On Error GoTo CleanupAndExit
+
     ' Show status
     Application.StatusBar = "Connecting to database..."
     Application.Cursor = xlWait
@@ -125,9 +147,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     ' Get connection
     Set conn = GetConnection()
     If conn Is Nothing Then
-        Application.StatusBar = False
-        Application.Cursor = xlDefault
-        Exit Sub
+        GoTo CleanupAndExit
     End If
 
     Set ws = ActiveSheet
@@ -143,6 +163,19 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
         Exit Sub
     End If
 
+    ' Track trade mode for DCO / non-DCO corn oil splits
+    Dim tradeMode As String
+    Dim queryCommodity As String
+    queryCommodity = commodity
+    tradeMode = "NORMAL"
+    If commodity = "CORN_OIL_DCO_SUBSET" Then
+        queryCommodity = "CORN_OIL"
+        tradeMode = "DCO_ONLY"
+    ElseIf commodity = "CORN_OIL_NON_DCO" Then
+        queryCommodity = "CORN_OIL"
+        tradeMode = "NON_DCO"
+    End If
+
     Application.StatusBar = "Fetching " & commodity & " " & flow & " data..."
     DoEvents
 
@@ -152,7 +185,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     sql = "SELECT " & _
           "    year, month, country_name, spreadsheet_row, quantity " & _
           "FROM gold.trade_export_matrix " & _
-          "WHERE commodity_group = '" & commodity & "' " & _
+          "WHERE commodity_group = '" & queryCommodity & "' " & _
           "  AND flow = '" & flow & "' " & _
           "  AND (is_regional_total = FALSE OR country_name = 'WORLD TOTAL') " & _
           "  AND (year, month) IN ( " & _
@@ -207,12 +240,10 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     If rs.BOF And rs.EOF Then
         rs.Close
         conn.Close
-        Application.StatusBar = False
-        Application.Cursor = xlDefault
         MsgBox "No data found for " & commodity & " " & flow & "." & vbCrLf & vbCrLf & _
                "The data may not have been collected yet, or there may be " & _
                "no trade activity for this commodity/flow.", vbInformation, "Trade Updater"
-        Exit Sub
+        GoTo CleanupAndExit
     End If
 
     ' Reset recordset to beginning for second pass
@@ -229,6 +260,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
         Dim countryName As String
         Dim rowNum As Variant
         Dim quantity As Variant
+        Dim includeRow As Boolean
 
         yr = rs("year")
         mo = rs("month")
@@ -236,10 +268,27 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
         rowNum = rs("spreadsheet_row")
         quantity = rs("quantity")
 
+        ' Apply DCO/non-DCO country filter
+        ' DCO trade flows only between specific countries — see GetCommodityAndFlow comments
+        includeRow = True
+        If tradeMode = "DCO_ONLY" Then
+            ' Skip non-DCO countries; WORLD TOTAL handled separately
+            If countryName <> "WORLD TOTAL" Then
+                includeRow = IsDcoCountry(countryName, flow)
+            Else
+                includeRow = False  ' Skip WORLD TOTAL — will be recomputed by sheet formula
+            End If
+        ElseIf tradeMode = "NON_DCO" Then
+            ' Skip DCO countries
+            If countryName <> "WORLD TOTAL" Then
+                includeRow = Not IsDcoCountry(countryName, flow)
+            End If
+        End If
+
         ' Find column for this month
         colNum = FindColumnForDate(ws, yr, mo)
 
-        If colNum > 0 Then
+        If colNum > 0 And includeRow Then
             ' Use spreadsheet_row from database, or search by country name
             Dim targetRow As Integer
             If IsNull(rowNum) Or rowNum = 0 Then
@@ -270,9 +319,10 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     rs.Close
     conn.Close
 
-    ' Reset status
-    Application.StatusBar = False
-    Application.Cursor = xlDefault
+    ' Force a recalc now that all cell writes are done (cheap because it's one batch)
+    Application.Calculation = xlCalculationAutomatic
+    Application.Calculate
+    Application.Calculation = xlCalculationManual
 
     ' Report results
     MsgBox "Update complete!" & vbCrLf & vbCrLf & _
@@ -280,13 +330,29 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
            "Cells updated: " & cellsUpdated & vbCrLf & _
            "Countries not found: " & countriesNotFound, vbInformation, "Trade Updater"
 
-    Exit Sub
+    GoTo CleanupAndExit
 
 QueryError:
+    MsgBox "Query error:" & vbCrLf & vbCrLf & Err.Description, vbCritical, "Trade Updater"
+    If Not rs Is Nothing Then
+        On Error Resume Next
+        rs.Close
+        On Error GoTo 0
+    End If
+    If Not conn Is Nothing Then
+        On Error Resume Next
+        conn.Close
+        On Error GoTo 0
+    End If
+
+CleanupAndExit:
+    ' Always restore Excel settings, even on error
+    Application.ScreenUpdating = savedScreenUpdating
+    Application.Calculation = savedCalculation
+    Application.EnableEvents = savedEnableEvents
+    Application.DisplayAlerts = savedDisplayAlerts
     Application.StatusBar = False
     Application.Cursor = xlDefault
-    MsgBox "Query error:" & vbCrLf & vbCrLf & Err.Description, vbCritical, "Trade Updater"
-    If Not conn Is Nothing Then conn.Close
 End Sub
 
 ' =============================================================================
@@ -363,8 +429,13 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         commodity = "SOYBEAN_OIL"
     ElseIf InStr(sheetLower, "soybean") > 0 Or InStr(sheetLower, "soy ") > 0 Then
         commodity = "SOYBEANS"
+    ElseIf InStr(sheetLower, "dco") > 0 Or (InStr(sheetLower, "distillers") > 0 And InStr(sheetLower, "oil") > 0) Then
+        ' DCO and corn oil share HS code 1515.21 — Census does not distinguish them.
+        ' Pull CORN_OIL trade data; row processing filters by DCO country list.
+        commodity = "CORN_OIL_DCO_SUBSET"
     ElseIf InStr(sheetLower, "corn") > 0 And InStr(sheetLower, "oil") > 0 Then
-        commodity = "CORN_OIL"
+        ' Regular corn oil sheet — pull CORN_OIL data minus DCO countries
+        commodity = "CORN_OIL_NON_DCO"
     ElseIf InStr(sheetLower, "corn") > 0 Or InStr(sheetLower, "maize") > 0 Then
         commodity = "CORN"
     ElseIf InStr(sheetLower, "wheat") > 0 Then
@@ -428,6 +499,46 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         commodity = "UNKNOWN"
     End If
 End Sub
+
+Private Function IsDcoCountry(countryName As String, flow As String) As Boolean
+    ' Determine if a country is a DCO trade partner.
+    ' Logic:
+    '   - DCO IMPORTS: only realistic from countries with corn-ethanol industries close to US
+    '       Primary: Canada
+    '       Possible: Argentina, Brazil (corn ethanol emerging, but logistics make this rare)
+    '   - DCO EXPORTS: only goes to countries with strong biofuel/BBD incentive programs
+    '       EU biodiesel hub: Netherlands, Belgium, Spain, Germany, UK, France, Italy
+    '       Scandinavia: Sweden, Denmark, Finland, Norway
+    '       Asia/Pacific: Singapore, South Korea, Japan
+    '       Americas: Canada (Clean Fuel Regulations)
+    '
+    ' All other corn oil trade is treated as non-DCO (food/industrial).
+
+    Dim cn As String
+    cn = UCase(Trim(countryName))
+
+    If LCase(flow) = "imports" Then
+        ' DCO import sources
+        Select Case cn
+            Case "CANADA", "ARGENTINA", "BRAZIL"
+                IsDcoCountry = True
+            Case Else
+                IsDcoCountry = False
+        End Select
+    Else
+        ' DCO export destinations
+        Select Case cn
+            Case "NETHERLANDS", "BELGIUM", "SPAIN", "GERMANY", _
+                 "UNITED KINGDOM", "FRANCE", "ITALY", "PORTUGAL", _
+                 "SWEDEN", "DENMARK", "FINLAND", "NORWAY", "IRELAND", _
+                 "SINGAPORE", "SOUTH KOREA", "KOREA, SOUTH", "JAPAN", _
+                 "CANADA"
+                IsDcoCountry = True
+            Case Else
+                IsDcoCountry = False
+        End Select
+    End If
+End Function
 
 Private Function FindColumnForDate(ws As Worksheet, yr As Integer, mo As Integer) As Integer
     ' Find column number for a given year/month in the header row
