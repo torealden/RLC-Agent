@@ -17,9 +17,10 @@ import sys
 from datetime import datetime, date
 from pathlib import Path
 
-# Configuration
-LOG_DIR = Path(os.environ.get("RLC_LOG_DIR", Path.home() / "rlc_scheduler" / "logs"))
-EXPORT_DIR = Path(os.environ.get("RLC_EXPORT_DIR", Path.home() / "rlc_scheduler" / "exports"))
+# Configuration — default to repo-relative paths (was home dir, broke after repo relocation)
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+LOG_DIR = Path(os.environ.get("RLC_LOG_DIR", _REPO_ROOT / "logs" / "activity"))
+EXPORT_DIR = Path(os.environ.get("RLC_EXPORT_DIR", _REPO_ROOT / "exports"))
 
 # Notion Database IDs
 NOTION_DBS = {

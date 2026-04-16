@@ -92,6 +92,24 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'class': 'GrainCoProductsCollector',
     },
 
+    # === Monthly: NASS Processing (Fats & Oils, Grain Crush, Flour, Peanut) ===
+    'nass_processing': {
+        'module': 'src.agents.collectors.us.nass_processing_collector',
+        'class': 'NASSProcessingCollector',
+    },
+
+    # === Monthly: EIA Biofuel finished-fuel production/stocks/trade ===
+    'eia_biofuels_monthly': {
+        'module': 'src.agents.collectors.us.eia_biofuels_monthly_collector',
+        'class': 'EIAMonthlyBiofuelsCollector',
+    },
+
+    # === EIA Natural Gas (monthly prod/cons/trade + weekly storage + daily HH) ===
+    'eia_natural_gas': {
+        'module': 'src.agents.collectors.us.eia_natural_gas_collector',
+        'class': 'EIANaturalGasCollector',
+    },
+
     # === Monthly ===
     'mpob': {
         'module': 'src.agents.collectors.asia.mpob_collector',
@@ -188,6 +206,21 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
     'weather_daily_summary': {
         'module': 'src.agents.collectors.us.weather_summary_collector',
         'class': 'WeatherSummaryCollector',
+    },
+
+    'gfs_forecast': {
+        'module': 'src.agents.collectors.global.gfs_forecast_adapter',
+        'class': 'GFSForecastCollector',
+    },
+
+    'gefs_ensemble': {
+        'module': 'src.agents.collectors.global.gefs_ensemble_adapter',
+        'class': 'GEFSEnsembleCollector',
+    },
+
+    'ndvi_charts': {
+        'module': 'src.agents.collectors.global.ndvi_adapter',
+        'class': 'NDVIChartCollector',
     },
 
     # === Tier 1 New Collectors ===

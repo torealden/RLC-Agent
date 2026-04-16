@@ -178,6 +178,43 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['corn', 'soybeans', 'wheat', 'cotton'],
     ),
 
+    'gfs_forecast': CollectorSchedule(
+        collector_name='gfs_forecast',
+        collector_class='GFSForecastCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(7, 30),  # 7:30 AM ET — after NOAA GFS 06Z run lands
+            description="NOAA GFS 16-day regional crop forecasts → silver.weather_forecast_daily"
+        ),
+        priority=2,
+        commodities=['corn', 'soybeans', 'wheat', 'cotton'],
+    ),
+
+    'gefs_ensemble': CollectorSchedule(
+        collector_name='gefs_ensemble',
+        collector_class='GEFSEnsembleCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(8, 0),  # 8:00 AM ET — after deterministic GFS finishes
+            description="NOAA GEFS ensemble p10/p50/p90 for yield risk modeling"
+        ),
+        priority=2,
+        commodities=['corn', 'soybeans', 'wheat', 'cotton'],
+    ),
+
+    'ndvi_charts': CollectorSchedule(
+        collector_name='ndvi_charts',
+        collector_class='NDVIChartCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.WEEKLY,
+            day_of_week=DayOfWeek.TUESDAY,
+            release_time=time(10, 0),  # USDA Crop Explorer updates Monday; grab Tuesday
+            description="USDA Crop Explorer NDVI + anomaly + precip + soil moisture charts"
+        ),
+        priority=3,
+        commodities=['corn', 'soybeans', 'wheat', 'cotton', 'rice', 'sorghum'],
+    ),
+
     # -------------------------------------------------------------------------
     # WEEKLY RELEASES - MONDAY
     # -------------------------------------------------------------------------
@@ -380,8 +417,52 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
             description="EPA RFS RIN Generation Monthly Data"
         ),
         priority=3,
-        enabled=False,  # Disabled — EPA files require manual download for now
+        enabled=False,  # EPA EMTS files require manual download — no public API
         commodities=['ethanol', 'biodiesel', 'renewable_diesel'],
+    ),
+
+    # ── EIA Natural Gas (monthly PSM + weekly storage + daily HH spot) ──
+    'eia_natural_gas': CollectorSchedule(
+        collector_name='eia_natural_gas',
+        collector_class='EIANaturalGasCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=28,
+            release_time=time(14, 30),
+            description="EIA Natural Gas: monthly prod/cons/trade, weekly storage, daily HH spot"
+        ),
+        priority=2,
+        commodities=['natural_gas'],
+    ),
+
+    # ── EIA Monthly Biofuels (Form 819 + PSM — released ~end-of-month) ──
+    'eia_biofuels_monthly': CollectorSchedule(
+        collector_name='eia_biofuels_monthly',
+        collector_class='EIAMonthlyBiofuelsCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=28,
+            release_time=time(14, 0),
+            description="EIA Monthly Biofuels: BD/RD/SAF (Other Biofuels)/ethanol "
+                        "production, imports, exports, stocks, blender input"
+        ),
+        priority=1,
+        commodities=['biodiesel', 'renewable_diesel', 'other_biofuels',
+                     'fuel_ethanol', 'biofuels_ex_ethanol'],
+    ),
+
+    # ── CONAB Brazil Crop Estimates (monthly, variable date ~10th) ──
+    'conab': CollectorSchedule(
+        collector_name='conab',
+        collector_class='CONABCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=10,
+            release_time=time(9, 0),
+            description="CONAB Brazil Crop Production Estimates (soybeans, corn, cotton, etc.)"
+        ),
+        priority=2,
+        commodities=['soybeans', 'corn', 'cotton', 'wheat', 'rice', 'sugar'],
     ),
 
     'canada_statscan': CollectorSchedule(

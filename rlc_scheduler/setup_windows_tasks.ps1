@@ -2,8 +2,9 @@
 # Run this script as Administrator to configure scheduled tasks
 
 # Configuration
-$SchedulerDir = "C:\Users\torem\rlc_scheduler"
-$PythonPath = "python"  # Update if using a specific Python installation
+$SchedulerDir = $PSScriptRoot  # Use script's own directory, not a hardcoded path
+# Use absolute path to python.exe — "python" alone resolves to Microsoft Store stub
+$PythonPath = 'C:\Users\torem\AppData\Local\Programs\Python\Python311\python.exe'
 
 # Task 1: End of Day Notion Export (5:30 PM daily)
 $Action1 = New-ScheduledTaskAction -Execute $PythonPath -Argument "daily_activity_log.py export" -WorkingDirectory $SchedulerDir

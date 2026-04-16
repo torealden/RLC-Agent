@@ -47,8 +47,12 @@ AWS_REGION = "us-east-1"
 # GEFS has 31 members: gec00 (control) + gep01-gep30 (perturbed)
 ENSEMBLE_MEMBERS = ['gec00'] + [f'gep{i:02d}' for i in range(1, 31)]
 
-# Import crop regions from GFS collector
-from gfs_forecast_collector import CROP_REGION_BOUNDS, GFSCollector
+# Import crop regions from GFS collector — prefer relative import; fall back to
+# bare import when run as a standalone script from this directory.
+try:
+    from .gfs_forecast_collector import CROP_REGION_BOUNDS, GFSCollector
+except ImportError:
+    from gfs_forecast_collector import CROP_REGION_BOUNDS, GFSCollector
 
 
 @dataclass

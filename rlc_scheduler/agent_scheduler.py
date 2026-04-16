@@ -349,16 +349,23 @@ OTHER_SCHEDULES = {
     "weather_intelligence": {
         "name": "Weather Intelligence Agent",
         "schedule": "weather_custom",  # Custom schedule for weather emails
-        # Weekdays: 7:30 AM, 1:00 PM, 8:00 PM ET
-        # Saturday: 12:00 PM ET
-        # Sunday: 9:00 AM, 7:00 PM ET
+        # Year-round baseline:
+        #   Weekdays: 7:30 AM, 1:00 PM, 8:00 PM ET
+        #   Saturday: 12:00 PM ET
+        #   Sunday: 9:00 AM, 7:00 PM ET
         "weekday_times": ["07:30", "13:00", "20:00"],
         "saturday_times": ["12:00"],
         "sunday_times": ["09:00", "19:00"],
+        # Summer/growing-season augment (May-Sep) — only fires in these months.
+        # User requirement: denser briefs during the growing season.
+        "summer_months": [5, 6, 7, 8, 9],
+        "summer_additional_weekday_times": ["10:30", "16:00"],  # mid-morning + late-afternoon adds
+        "summer_additional_saturday_times": ["18:00"],          # evening add Sat
+        "summer_additional_sunday_times": ["13:00"],            # mid-day add Sun
         "timezone": "America/New_York",
         "agent": "weather_intelligence_agent",
-        "agent_path": r"C:\Users\torem\rlc_scheduler\agents\weather_intelligence_agent.py",
-        "description": "Process meteorologist emails with LLM-powered synthesis for market-focused weather briefs"
+        "agent_path": "rlc_scheduler/agents/weather_intelligence_agent.py",
+        "description": "Process meteorologist emails with LLM-powered synthesis for market-focused weather briefs. Summer months (May-Sep) add 2 weekday + 1 Sat + 1 Sun extra slots."
     },
     "weather_collector": {
         "name": "Weather Data Collector",
@@ -366,7 +373,7 @@ OTHER_SCHEDULES = {
         "time": "06:00",  # 6 AM before morning weather email summary
         "timezone": "America/Chicago",
         "agent": "weather_collector_agent",
-        "agent_path": r"C:\RLC-Agent\rlc_scheduler\agents\weather_collector_agent.py",
+        "agent_path": "rlc_scheduler/agents/weather_collector_agent.py",
         "description": "Collect daily weather data for agricultural locations"
     }
 }
@@ -686,32 +693,69 @@ class RLCScheduler:
 
         elif sched_type == "weather_custom":
             # Custom schedule for weather emails:
-            # Weekdays (Mon-Fri): multiple times per day
+            # Weekdays (Mon-Fri): multiple times per day (year-round baseline)
             # Saturday: specific times
             # Sunday: specific times
+            # Summer months (configurable): additional slots, only fire during May-Sep
             agent_path = config.get("agent_path")
+            summer_months = set(config.get("summer_months", []))
 
             def run_weather_agent(path=agent_path, agent=agent_name):
                 logger.info(f"Running weather email agent")
                 return self.runner.run_agent(agent, agent_path=path)
 
-            # Weekday times (Mon-Fri)
-            for t in config.get("weekday_times", []):
-                schedule.every().monday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
-                schedule.every().tuesday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
-                schedule.every().wednesday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
-                schedule.every().thursday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
-                schedule.every().friday.at(t).do(run_weather_agent).tag(schedule_id, "weekday")
+            def run_weather_agent_summer_only(path=agent_path, agent=agent_name,
+                                              _sm=summer_months):
+                if datetime.now().month not in _sm:
+                    logger.debug(
+                        f"Skipping summer-only weather slot (month={datetime.now().month} "
+                        f"not in {sorted(_sm)})"
+                    )
+                    return None
+                logger.info("Running weather email agent (summer-only slot fired)")
+                return self.runner.run_agent(agent, agent_path=path)
 
-            # Saturday times
+            def _add_weekday(t, func):
+                schedule.every().monday.at(t).do(func).tag(schedule_id, "weekday")
+                schedule.every().tuesday.at(t).do(func).tag(schedule_id, "weekday")
+                schedule.every().wednesday.at(t).do(func).tag(schedule_id, "weekday")
+                schedule.every().thursday.at(t).do(func).tag(schedule_id, "weekday")
+                schedule.every().friday.at(t).do(func).tag(schedule_id, "weekday")
+
+            # Year-round baseline
+            for t in config.get("weekday_times", []):
+                _add_weekday(t, run_weather_agent)
             for t in config.get("saturday_times", []):
                 schedule.every().saturday.at(t).do(run_weather_agent).tag(schedule_id, "saturday")
-
-            # Sunday times
             for t in config.get("sunday_times", []):
                 schedule.every().sunday.at(t).do(run_weather_agent).tag(schedule_id, "sunday")
 
-            times_str = f"Weekdays: {config.get('weekday_times')}, Sat: {config.get('saturday_times')}, Sun: {config.get('sunday_times')}"
+            # Summer augments (fire only May-Sep via wrapper)
+            def _add_weekday_summer(t, func):
+                for day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']:
+                    getattr(schedule.every(), day).at(t).do(func).tag(
+                        schedule_id, "weekday", "summer"
+                    )
+
+            for t in config.get("summer_additional_weekday_times", []):
+                _add_weekday_summer(t, run_weather_agent_summer_only)
+            for t in config.get("summer_additional_saturday_times", []):
+                schedule.every().saturday.at(t).do(run_weather_agent_summer_only).tag(schedule_id, "saturday", "summer")
+            for t in config.get("summer_additional_sunday_times", []):
+                schedule.every().sunday.at(t).do(run_weather_agent_summer_only).tag(schedule_id, "sunday", "summer")
+
+            times_str = (
+                f"Weekdays: {config.get('weekday_times')}, "
+                f"Sat: {config.get('saturday_times')}, "
+                f"Sun: {config.get('sunday_times')}"
+            )
+            if summer_months:
+                times_str += (
+                    f" | SUMMER+ (months {sorted(summer_months)}): "
+                    f"Wkday: {config.get('summer_additional_weekday_times')}, "
+                    f"Sat: {config.get('summer_additional_saturday_times')}, "
+                    f"Sun: {config.get('summer_additional_sunday_times')}"
+                )
             logger.info(f"Scheduled: {config.get('name', schedule_id)} ({times_str})")
             return  # Skip the default log message below
 
@@ -756,7 +800,13 @@ class RLCScheduler:
             print(f"{i}. [{next_run}] {tags}")
 
     def trigger(self, agent_name: str):
-        """Manually trigger an agent."""
+        """Manually trigger an agent by schedule key or agent name."""
+        schedule = OTHER_SCHEDULES.get(agent_name) or USDA_RELEASES.get(agent_name)
+        if schedule:
+            return self.runner.run_agent(
+                schedule.get("agent", agent_name),
+                agent_path=schedule.get("agent_path"),
+            )
         return self.runner.run_agent(agent_name)
 
 

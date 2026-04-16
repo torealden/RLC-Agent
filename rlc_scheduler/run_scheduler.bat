@@ -2,7 +2,7 @@
 REM RLC Agent Scheduler Startup Script
 REM This can be used with Windows Task Scheduler for automatic startup
 
-cd /d "C:\RLC-Agent"
+cd /d "C:\dev\rlc-agent"
 echo Starting RLC Agent Scheduler...
 echo Working directory: %CD%
 echo.
