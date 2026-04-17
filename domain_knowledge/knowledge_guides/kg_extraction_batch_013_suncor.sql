@@ -30,107 +30,107 @@
 -- 1. SOURCE REGISTRATION
 -- ============================================================================
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_lt_forecast_assumptions_nov22', 'consulting_report', 'Suncor Long-Term Forecast Assumptions Report - First Draft', 'Fastmarkets (Jacobsen)', '2022-11-21',
- 'Dropbox/Jacobsen/Projects/Suncor/Suncor Long-Term Forecast Assumptions Report - First Draft.docx', 'completed', 'batch_013',
- 'Cover letter + qualitative assumptions for Nov 2022 study update. LCFS changes, feedstock mix, SAF, RFS mandates, acreage, biodiesel rationalization, Canada pricing.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_lt_forecast_assumptions_nov22', 'consulting_report', 'Suncor Long-Term Forecast Assumptions Report - First Draft', 'Fastmarkets (Jacobsen)', '2022-11-21',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Suncor Long-Term Forecast Assumptions Report - First Draft.docx', 'completed', 'batch_013',
+-- [SKIP]  'Cover letter + qualitative assumptions for Nov 2022 study update. LCFS changes, feedstock mix, SAF, RFS mandates, acreage, biodiesel rationalization, Canada pricing.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_lt_forecast_nov22_xlsx', 'consulting_workbook', 'Suncor Long-Term Forecast - Nov 22', 'Fastmarkets (Jacobsen)', '2022-11-21',
- 'Dropbox/Jacobsen/Projects/Suncor/Suncor Long-Term Forecast - Nov 22.xlsx', 'completed', 'batch_013',
- '8 sheets: SBO, CO, UCO, DCO, Tallow, Credit Values, HRD, SAF. US balance sheets 2023-2035+.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_lt_forecast_nov22_xlsx', 'consulting_workbook', 'Suncor Long-Term Forecast - Nov 22', 'Fastmarkets (Jacobsen)', '2022-11-21',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Suncor Long-Term Forecast - Nov 22.xlsx', 'completed', 'batch_013',
+-- [SKIP]  '8 sheets: SBO, CO, UCO, DCO, Tallow, Credit Values, HRD, SAF. US balance sheets 2023-2035+.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_us_bs_2018_2040', 'consulting_workbook', 'Long-Term US Oilseed and Fats Balance Sheets 2018-2040', 'Jacobsen', '2018-05-04',
- 'Dropbox/Jacobsen/Projects/Suncor/Long-Term US Oilseed and Fats Balance Sheets - 2018-2040 - 05042018.xlsx', 'completed', 'batch_013',
- '28 sheets. 7 commodity BS with High/Mid/Low scenarios + price forecasts. SBO, canola, tallow, CWG, YG, poultry fat, DCO.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_us_bs_2018_2040', 'consulting_workbook', 'Long-Term US Oilseed and Fats Balance Sheets 2018-2040', 'Jacobsen', '2018-05-04',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Long-Term US Oilseed and Fats Balance Sheets - 2018-2040 - 05042018.xlsx', 'completed', 'batch_013',
+-- [SKIP]  '28 sheets. 7 commodity BS with High/Mid/Low scenarios + price forecasts. SBO, canola, tallow, CWG, YG, poultry fat, DCO.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_us_bs_2018_2040_slides', 'consulting_workbook', 'Long-Term US Oilseed and Fats Balance Sheets 2018-2040 (Slides version)', 'Jacobsen', '2018-05-04',
- 'Dropbox/Jacobsen/Projects/Suncor/Copy of Long-Term US Oilseed and Fats Balance Sheets - 2018-2040 - Slides.xlsx', 'completed', 'batch_013',
- '7 commodity BS presentation version with 2024-2037 forecast horizon. Updated projections vs May 2018 original.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_us_bs_2018_2040_slides', 'consulting_workbook', 'Long-Term US Oilseed and Fats Balance Sheets 2018-2040 (Slides version)', 'Jacobsen', '2018-05-04',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Copy of Long-Term US Oilseed and Fats Balance Sheets - 2018-2040 - Slides.xlsx', 'completed', 'batch_013',
+-- [SKIP]  '7 commodity BS presentation version with 2024-2037 forecast horizon. Updated projections vs May 2018 original.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_us_projections_2018_2040', 'consulting_workbook', 'US Oilseed and Fats Projections 2018-2040', 'Jacobsen', '2018-05-03',
- 'Dropbox/Jacobsen/Projects/Suncor/US Oilseed and Fats Projections - 2018-2040 - 05032018.xlsx', 'completed', 'batch_013',
- 'PCAU-driven meal demand model, total meal/oil/fats annual. Historical back to 93/94.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_us_projections_2018_2040', 'consulting_workbook', 'US Oilseed and Fats Projections 2018-2040', 'Jacobsen', '2018-05-03',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/US Oilseed and Fats Projections - 2018-2040 - 05032018.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'PCAU-driven meal demand model, total meal/oil/fats annual. Historical back to 93/94.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_balance_sheets_apr18', 'consulting_workbook', 'Suncor Balance Sheets (April 2018)', 'Jacobsen', '2018-04-18',
- 'Dropbox/Jacobsen/Projects/Suncor/Suncor Balance Sheets.xlsx', 'completed', 'batch_013',
- '10 sheets: Tallow, DCO, YG, WG, Poultry Fat, SBO, Canola Oil, Palm Oil, Coconut Oil, PKO. Historical 2013-2022 + forecasts.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_balance_sheets_apr18', 'consulting_workbook', 'Suncor Balance Sheets (April 2018)', 'Jacobsen', '2018-04-18',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Suncor Balance Sheets.xlsx', 'completed', 'batch_013',
+-- [SKIP]  '10 sheets: Tallow, DCO, YG, WG, Poultry Fat, SBO, Canola Oil, Palm Oil, Coconut Oil, PKO. Historical 2013-2022 + forecasts.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_canadian_bs', 'consulting_workbook', 'Suncor Canadian Balance Sheets', 'Jacobsen', '2018-04-18',
- 'Dropbox/Jacobsen/Projects/Suncor/Suncor Canadian Balance Sheets.xlsx', 'completed', 'batch_013',
- '17 sheets: PCAU + 4 commodities (SBO, canola oil, tallow, UCO) x High/Mid/Low + Cal Yr BS. Canada soybean complex with crush/export/meal.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_canadian_bs', 'consulting_workbook', 'Suncor Canadian Balance Sheets', 'Jacobsen', '2018-04-18',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Suncor Canadian Balance Sheets.xlsx', 'completed', 'batch_013',
+-- [SKIP]  '17 sheets: PCAU + 4 commodities (SBO, canola oil, tallow, UCO) x High/Mid/Low + Cal Yr BS. Canada soybean complex with crush/export/meal.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_feedstock_requirement', 'consulting_workbook', 'Feedstock Requirement Breakout', 'Jacobsen', '2018-04-18',
- 'Dropbox/Jacobsen/Projects/Suncor/Feedstock Requirement Breakout.xlsx', 'completed', 'batch_013',
- 'BD + RD feedstock requirement scenarios with 13 feedstock types, individual yields (7.45-9.38 gal/lb), breakout by forecast period.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_feedstock_requirement', 'consulting_workbook', 'Feedstock Requirement Breakout', 'Jacobsen', '2018-04-18',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Feedstock Requirement Breakout.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'BD + RD feedstock requirement scenarios with 13 feedstock types, individual yields (7.45-9.38 gal/lb), breakout by forecast period.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_bio_rd_methodology', 'consulting_workbook', 'Suncor Bio and RD Forecast Methodology', 'Jacobsen', '2018-04-12',
- 'Dropbox/Jacobsen/Projects/Suncor/Suncor Bio and RD forecast metho 041218.xlsx', 'completed', 'batch_013',
- 'BBD demand methodology: RFS D4/D5, LCFS, CAN RFS, provincial schemes. 3-5, 5-10, 10-20 year horizons. CARB projections.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_bio_rd_methodology', 'consulting_workbook', 'Suncor Bio and RD Forecast Methodology', 'Jacobsen', '2018-04-12',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Suncor Bio and RD forecast metho 041218.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'BBD demand methodology: RFS D4/D5, LCFS, CAN RFS, provincial schemes. 3-5, 5-10, 10-20 year horizons. CARB projections.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_lcfs_feedstock_mix', 'consulting_workbook', 'LCFS Feedstock Mix', 'Jacobsen', '2018-04-18',
- 'Dropbox/Jacobsen/Projects/Suncor/LCFS Feedstock Mix.xlsx', 'completed', 'batch_013',
- 'Historical LCFS credit generation by fuel type 2011-2017 Q3. Biodiesel, RD, ethanol, CNG, electricity credits.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_lcfs_feedstock_mix', 'consulting_workbook', 'LCFS Feedstock Mix', 'Jacobsen', '2018-04-18',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/LCFS Feedstock Mix.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'Historical LCFS credit generation by fuel type 2011-2017 Q3. Biodiesel, RD, ethanol, CNG, electricity credits.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_historical_can_feedstock', 'consulting_workbook', 'Historical Canadian Feedstock Data', 'Jacobsen / Environment Canada', '2018-04-18',
- 'Dropbox/Jacobsen/Projects/Suncor/Historical Canadian Feedstock Data.xlsx', 'completed', 'batch_013',
- 'Canadian RFS compliance data 2013-2014. Fuel production/import volumes, ethanol/BBD by feedstock, provincial breakdown.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_historical_can_feedstock', 'consulting_workbook', 'Historical Canadian Feedstock Data', 'Jacobsen / Environment Canada', '2018-04-18',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Historical Canadian Feedstock Data.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'Canadian RFS compliance data 2013-2014. Fuel production/import volumes, ethanol/BBD by feedstock, provincial breakdown.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_price_definitions', 'consulting_workbook', 'Historical Price Definitions', 'Jacobsen', '2018-07-13',
- 'Dropbox/Jacobsen/Projects/Suncor/Historical Price Definitions - 07132018.xlsx', 'completed', 'batch_013',
- 'Price basis definitions: SBO=Crude CIL (GX_GR117), Tallow=BFT Chicago, DCO=Crude Corn Oil CIL, YG=Illinois.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_price_definitions', 'consulting_workbook', 'Historical Price Definitions', 'Jacobsen', '2018-07-13',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Historical Price Definitions - 07132018.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'Price basis definitions: SBO=Crude CIL (GX_GR117), Tallow=BFT Chicago, DCO=Crude Corn Oil CIL, YG=Illinois.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_world_crushing_plants', 'consulting_workbook', 'World Crushing Plants', 'Jacobsen', '2018-04-18',
- 'Dropbox/Jacobsen/Projects/Suncor/World Crushing Plants.xlsx', 'completed', 'batch_013',
- 'Global oilseed crushing plant database.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_world_crushing_plants', 'consulting_workbook', 'World Crushing Plants', 'Jacobsen', '2018-04-18',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/World Crushing Plants.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'Global oilseed crushing plant database.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_plan', 'consulting_workbook', 'Suncor Plan (work assignment)', 'Jacobsen', '2018-04-18',
- 'Dropbox/Jacobsen/Projects/Suncor/Suncor Plan.xlsx', 'completed', 'batch_013',
- 'Workload assignment: Tore (BS + drivers for SBO, canola, palm, rape, tropical), Ryan (tallow, DCO, YG, CWG, PF pricing/hedging), John C (global waste).')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_plan', 'consulting_workbook', 'Suncor Plan (work assignment)', 'Jacobsen', '2018-04-18',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Suncor Plan.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'Workload assignment: Tore (BS + drivers for SBO, canola, palm, rape, tropical), Ryan (tallow, DCO, YG, CWG, PF pricing/hedging), John C (global waste).')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_can_fuel_production', 'consulting_workbook', 'Canadian Fuel Production Info June 2018', 'Jacobsen', '2018-06-01',
- 'Dropbox/Jacobsen/Projects/Suncor/Copy of Canadian Fuel Production Info June 2018.xlsx', 'completed', 'batch_013',
- 'Canadian fuel production data for balance sheet construction.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_can_fuel_production', 'consulting_workbook', 'Canadian Fuel Production Info June 2018', 'Jacobsen', '2018-06-01',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Copy of Canadian Fuel Production Info June 2018.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'Canadian fuel production data for balance sheet construction.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_broiler_production', 'consulting_workbook', 'World Broiler Production - Mark Jordan', 'Mark Jordan (Jacobsen)', '2018-04-06',
- 'Dropbox/Jacobsen/Projects/Suncor/World Broiler Production - Mark Jordan - 04062018.xlsx', 'completed', 'batch_013',
- 'Global broiler production data supporting poultry fat supply projections.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_broiler_production', 'consulting_workbook', 'World Broiler Production - Mark Jordan', 'Mark Jordan (Jacobsen)', '2018-04-06',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/World Broiler Production - Mark Jordan - 04062018.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'Global broiler production data supporting poultry fat supply projections.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
-INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
-('suncor_biodiesel_class_breakout', 'consulting_workbook', 'Biodiesel Class Breakout', 'Bob (Jacobsen)', '2018-04-18',
- 'Dropbox/Jacobsen/Projects/Suncor/Biodiesel Class Breakout - Bob - 04182018.xlsx', 'completed', 'batch_013',
- 'Biodiesel production by feedstock class.')
-ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
+-- [SKIP] INSERT INTO core.kg_source (source_key, source_type, title, author, date_produced, file_path, status, extraction_batch, notes) VALUES
+-- [SKIP] ('suncor_biodiesel_class_breakout', 'consulting_workbook', 'Biodiesel Class Breakout', 'Bob (Jacobsen)', '2018-04-18',
+-- [SKIP]  'Dropbox/Jacobsen/Projects/Suncor/Biodiesel Class Breakout - Bob - 04182018.xlsx', 'completed', 'batch_013',
+-- [SKIP]  'Biodiesel production by feedstock class.')
+-- [SKIP] ON CONFLICT (source_key) DO UPDATE SET status = 'completed';
 
 
 -- ============================================================================
@@ -350,98 +350,98 @@ ON CONFLICT (node_key) DO UPDATE SET properties = EXCLUDED.properties;
 -- ============================================================================
 
 -- Suncor study links to existing nodes
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('suncor_feedstock_study', 'renewable_diesel', 'ANALYZES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'suncor_feedstock_study'), (SELECT id FROM core.kg_node WHERE node_key = 'renewable_diesel'), 'ANALYZES',
  '{"context": "Study provides long-term feedstock S&D outlook for Suncor RD investment decision. Covers feedstock supply, demand, prices, and margins.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('suncor_feedstock_study', 'sustainable_aviation_fuel', 'ANALYZES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'suncor_feedstock_study'), (SELECT id FROM core.kg_node WHERE node_key = 'sustainable_aviation_fuel'), 'ANALYZES',
  '{"context": "2022 update added SAF supply/demand/pricing projections. SAF CAGR 1233% — competes with RD for feedstock.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('suncor_feedstock_study', 'feedstock_supply_chain_model', 'EXTENDS',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'suncor_feedstock_study'), (SELECT id FROM core.kg_node WHERE node_key = 'feedstock_supply_chain_model'), 'EXTENDS',
  '{"context": "Suncor study provides 20-year projections using same supply chain logic as the feedstock supply chain model but with plant-level granularity.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- Feedstock mix methodology links
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('feedstock_mix_methodology', 'bbd_balance_sheet_model', 'FEEDS',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'feedstock_mix_methodology'), (SELECT id FROM core.kg_node WHERE node_key = 'bbd_balance_sheet_model'), 'FEEDS',
  '{"context": "Plant-level feedstock mix projections feed into industry-wide BBD balance sheet. Each facility has individual feedstock assumptions.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- Acreage model links
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('na_oilseed_acreage_expansion_model', 'canola_oil', 'SUPPLIES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'na_oilseed_acreage_expansion_model'), (SELECT id FROM core.kg_node WHERE node_key = 'canola_oil'), 'SUPPLIES',
  '{"context": "Canadian canola acreage expansion to 10M ha is required to meet projected canola oil demand growth. Wheat-to-canola substitution is the primary mechanism.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('na_oilseed_acreage_expansion_model', 'soybeans', 'SUPPLIES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'na_oilseed_acreage_expansion_model'), (SELECT id FROM core.kg_node WHERE node_key = 'soybeans'), 'SUPPLIES',
  '{"context": "US soybean acreage to 100M acres by 2040 — challenged by crop rotation constraint and limited unused arable land.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- RD feedstock competition
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('renewable_diesel', 'tallow', 'CONSUMES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'renewable_diesel'), (SELECT id FROM core.kg_node WHERE node_key = 'tallow'), 'CONSUMES',
  '{"context": "Tallow is 70% of RD feedstock in 2018 study. By 2037, tallow demand for RD alone reaches 22B lbs (High scenario) — far exceeding US production of 5-7B lbs, requiring massive imports.", "quantified": true, "rd_tallow_demand_2037_mlb_high": 22050, "us_tallow_production_2037_mlb": 7288, "import_requirement_mlb": 14762, "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('renewable_diesel', 'used_cooking_oil', 'CONSUMES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'renewable_diesel'), (SELECT id FROM core.kg_node WHERE node_key = 'used_cooking_oil'), 'CONSUMES',
  '{"context": "UCO is 18% of RD feedstock. By 2037, RD UCO demand reaches 5.8B lbs (High). Import-dependent.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- SAF competes with RD for feedstock
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('sustainable_aviation_fuel', 'renewable_diesel', 'COMPETES_WITH',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'sustainable_aviation_fuel'), (SELECT id FROM core.kg_node WHERE node_key = 'renewable_diesel'), 'COMPETES_WITH',
  '{"context": "SAF competes with RD and ethanol for feedstock at shared facilities. Growth depends on SAF vs RD economics. Many RD facilities announcing SAF capability addition.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- Biodiesel rationalization
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('biodiesel_rationalization_model', 'renewable_diesel', 'CAUSED_BY',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'biodiesel_rationalization_model'), (SELECT id FROM core.kg_node WHERE node_key = 'renewable_diesel'), 'CAUSED_BY',
  '{"context": "RD capacity growth drives violent restructuring of biodiesel capacity. Integrated crusher-biodiesel plants survive; small independents exit. Starting 2024.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- Canadian policy drives demand
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('canada_cfr', 'canada_tallow_balance_sheet', 'CAUSES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'canada_cfr'), (SELECT id FROM core.kg_node WHERE node_key = 'canada_tallow_balance_sheet'), 'CAUSES',
  '{"context": "Canadian clean fuel mandates drive tallow demand from near-zero BBD use to 136-234M lbs/yr by 2024, forcing Canada from tallow self-sufficiency to import dependency.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('canada_cfr', 'canada_canola_oil_balance_sheet', 'CAUSES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'canada_cfr'), (SELECT id FROM core.kg_node WHERE node_key = 'canada_canola_oil_balance_sheet'), 'CAUSES',
  '{"context": "Canadian RFS/CFR mandates redirect canola oil from export to domestic BBD use. Exports decline as BBD consumption absorbs available supply.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('canada_cfr', 'canada_uco_balance_sheet', 'CAUSES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'canada_cfr'), (SELECT id FROM core.kg_node WHERE node_key = 'canada_uco_balance_sheet'), 'CAUSES',
  '{"context": "Canadian BBD mandates overwhelm tiny domestic UCO supply base (~110M lbs/yr), requiring 40-200M lbs imports depending on scenario.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- LCFS credit model links
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('lcfs_credit_pricing_model_suncor', 'lcfs_credit_framework', 'EXTENDS',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'lcfs_credit_pricing_model_suncor'), (SELECT id FROM core.kg_node WHERE node_key = 'lcfs_credit_framework'), 'EXTENDS',
  '{"context": "Suncor study model quantifies LCFS credit floor at ~$50/tonne marginal shipping cost. Three-step adjustment: model base, CARB modification upside, shipping cost cap.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- Suncor → BBD margin model
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('suncor_feedstock_study', 'bbd_margin_model', 'EXTENDS',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'suncor_feedstock_study'), (SELECT id FROM core.kg_node WHERE node_key = 'bbd_margin_model'), 'EXTENDS',
  '{"context": "Suncor study provides projected average gross margins for RD producers, incorporating feedstock costs, fuel revenues, and credit values.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- Canadian soybeans to Canada SBO balance sheet
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('canada_soybeans', 'canola_oil', 'COMPETES_WITH',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'canada_soybeans'), (SELECT id FROM core.kg_node WHERE node_key = 'canola_oil'), 'COMPETES_WITH',
  '{"context": "Canadian soybean and canola compete for acreage on the Prairies. Both expanding at wheat expense. SBO crush growing from 1.5 to 3.0 MMT.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
 -- Suncor links to existing HEFA
-INSERT INTO core.kg_edge (source_node_key, target_node_key, edge_type, properties) VALUES
-('suncor_energy', 'hefa_technology', 'EVALUATES',
+INSERT INTO core.kg_edge (source_node_id, target_node_id, edge_type, properties) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'suncor_energy'), (SELECT id FROM core.kg_node WHERE node_key = 'hefa_technology'), 'EVALUATES',
  '{"context": "Suncor commissioned this study to evaluate RD investment opportunity. Study provides feedstock S&D, margin outlook, and competitive landscape for HEFA technology.", "source": "batch_013"}'::jsonb)
 ON CONFLICT DO NOTHING;
 
@@ -450,74 +450,74 @@ ON CONFLICT DO NOTHING;
 -- 4. CONTEXTS: Analyst-level frameworks and rules
 -- ============================================================================
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('tallow', 'expert_rule', 'tallow_import_surge_requirement',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'tallow'), (SELECT id FROM core.kg_node WHERE node_key = 'expert_rule'), 'tallow_import_surge_requirement',
  'US tallow production grows ~1.5%/yr (livestock herd expansion) from ~5B to ~7.3B lbs by 2037. But RD tallow demand grows from ~2.7B lbs (2018) to 10.9-22.1B lbs (Mid/High 2037). The deficit requires tallow imports to surge from ~270M lbs (2018) to 5.7-8.4B lbs (2025 Mid/High) and 9.2-21.8B lbs (2037 Mid/High). This is the single most important feedstock supply constraint in the RD buildout. Non-biodiesel tallow use shrinks from 3.1B lbs to near zero as BBD absorbs all domestic production plus imports.',
  'suncor_us_bs_2018_2040', 0.90)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('soybean_oil', 'forecast_framework', 'sbo_bbd_demand_trajectory',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'soybean_oil'), (SELECT id FROM core.kg_node WHERE node_key = 'forecast_framework'), 'sbo_bbd_demand_trajectory',
  'SBO is the largest single BBD feedstock at 54% of mix (2022 study). In the 2022 Nov study, SBO BBD use grows from 12.4B lbs (2023) to 35.5B lbs (2035), a CAGR of ~9%. Total SBO production must grow from 27.6B to 48.0B lbs to meet total demand. Non-biodiesel SBO use declines from 14.5B to 12.3B lbs as food/industrial loses share to BBD. Price range projects 31-54 cents/lb (2025 High) rising to 53-86 cents/lb (2035 High).',
  'suncor_lt_forecast_nov22_xlsx', 0.85)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('canola_oil', 'forecast_framework', 'canola_oil_import_dependency',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'canola_oil'), (SELECT id FROM core.kg_node WHERE node_key = 'forecast_framework'), 'canola_oil_import_dependency',
  'US canola oil is structurally import-dependent. Domestic production only ~1.8-2.1B lbs/yr but imports grow from 5.5B to 8.9B lbs (2037 High). Total BBD use of canola oil grows from 1.5B lbs (2024) to 5.4B lbs (2037 High). Non-BBD canola use also grows steadily (~5-6.3B lbs) as food/industrial demand expands. Price range: 36-44 to 37-50 cents/lb across forecast. Canada is virtually the only source of US canola oil imports.',
  'suncor_us_bs_2018_2040_slides', 0.85)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('yellow_grease', 'forecast_framework', 'yg_import_surge',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'yellow_grease'), (SELECT id FROM core.kg_node WHERE node_key = 'forecast_framework'), 'yg_import_surge',
  'US yellow grease production is relatively flat at 3.0-3.5B lbs/yr. BBD demand grows from 2.7B lbs (2024) to 13.8B lbs (2037 High). Like tallow, the deficit is met by massive imports growing from near zero (2018) to 4.1B lbs (2025 High) and 10.0B lbs (2037 High). Non-biodiesel YG use shrinks from 817M lbs (2018) to negative levels by 2028 in projections, meaning ALL domestic production plus imports are absorbed by BBD.',
  'suncor_us_bs_2018_2040_slides', 0.85)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('feedstock_supply_chain_model', 'expert_rule', 'plant_level_aggregation_method',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'feedstock_supply_chain_model'), (SELECT id FROM core.kg_node WHERE node_key = 'expert_rule'), 'plant_level_aggregation_method',
  'The Jacobsen/Fastmarkets methodology for forecasting industry feedstock demand works bottom-up: (1) assign individual feedstock mix to each RD/biodiesel facility based on location, technology, and contracts, (2) project monthly production at each facility, (3) multiply production x mix to get monthly feedstock demand per plant, (4) sum across all plants to get industry totals, (5) divide each feedstock total by grand total to get industry-wide mix percentages. This contrasts with top-down approaches that assume a fixed national mix.',
  'suncor_lt_forecast_assumptions_nov22', 0.90)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('lcfs_credit_framework', 'expert_rule', 'lcfs_marginal_shipping_cost_floor',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'lcfs_credit_framework'), (SELECT id FROM core.kg_node WHERE node_key = 'expert_rule'), 'lcfs_marginal_shipping_cost_floor',
  'The LCFS credit value has a practical floor at the marginal cost of shipping RD to California (~$50/tonne as of 2022). Below this level, producers stop shipping to CA because the credit revenue does not cover transportation. CARB modifications (forklift phase-out, hydrogen inclusion, intrastate jet fuel) aim to lift credit values, but added revenue incentivizes MORE RD shipments to CA, which caps the upside. If CARB imposes lipid-based biofuel caps, the qualifying supply constraint could lift credits above the shipping cost floor.',
  'suncor_lt_forecast_assumptions_nov22', 0.85)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('renewable_diesel', 'expert_rule', 'rd_displaces_biodiesel_capacity',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'renewable_diesel'), (SELECT id FROM core.kg_node WHERE node_key = 'expert_rule'), 'rd_displaces_biodiesel_capacity',
  'Renewable diesel capacity growth drives biodiesel capacity rationalization in two phases: (1) 2022-2024: SRE elimination and supplemental mandates temporarily support BD margins, (2) 2024+: supplemental mandates expire and IRA transition from blenders credit to production credit hits BD producers. Surviving BD capacity concentrates at large facilities integrated with multinational crushers. State-level policies may slow the decline but accelerate consolidation. BD production share falls as RD production grows ~10x.',
  'suncor_lt_forecast_assumptions_nov22', 0.85)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('sustainable_aviation_fuel', 'forecast_framework', 'saf_pricing_premium_trajectory',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'sustainable_aviation_fuel'), (SELECT id FROM core.kg_node WHERE node_key = 'forecast_framework'), 'saf_pricing_premium_trajectory',
  'SAF prices start at ~2x jet fuel price, narrowing to ~1.25x by forecast end as production scales. Pricing does NOT include credit values (RINs, LCFS). Credit allocation between producer and airline varies by contract — some airlines get full credit value, some get none. California likely price-setting market. If CARB requires intrastate SAF, stable demand base could accelerate production expansion.',
  'suncor_lt_forecast_assumptions_nov22', 0.85)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('canada_cfr', 'forecast_framework', 'canada_feedstock_import_dependency',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'canada_cfr'), (SELECT id FROM core.kg_node WHERE node_key = 'forecast_framework'), 'canada_feedstock_import_dependency',
  'Canadian clean fuel mandates create structural import dependency across all BBD feedstocks. Before mandates, Canada was roughly self-sufficient in tallow (~260M lbs production, ~260M lbs domestic use) and exported canola oil (2.4-3.1B lbs). Under mandate scenarios: (a) tallow imports grow from zero to 55-190M lbs by 2024, (b) canola oil exports decline as domestic BBD absorbs supply, (c) UCO imports grow from zero to 40-200M lbs, (d) SBO imports remain small (~20M lbs) but domestic BBD use grows from ~6M lbs (2017) to 181-340M lbs (2024). Canada becomes a net feedstock IMPORTER as mandates grow.',
  'suncor_canadian_bs', 0.90)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('acreage_rules_of_thumb', 'expert_rule', 'crop_rotation_constraint_100m_soy',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'acreage_rules_of_thumb'), (SELECT id FROM core.kg_node WHERE node_key = 'expert_rule'), 'crop_rotation_constraint_100m_soy',
  'Reaching 100M acres of continuous US soybean area faces a hard constraint: farmers make at least 50% of acreage decisions based on crop rotation concerns. With limited unused arable land, the expansion must come from other crops. Historical precedent: last major soy acreage expansion came from Plains wheat-to-soy substitution. But high wheat prices (Ukraine war) reduce willingness to switch. The war-driven wheat premium must subside before the next wave of soy expansion.',
  'suncor_lt_forecast_assumptions_nov22', 0.85)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('bbd_margin_model', 'forecast_framework', 'ira_transition_impact_bd_margins',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'bbd_margin_model'), (SELECT id FROM core.kg_node WHERE node_key = 'forecast_framework'), 'ira_transition_impact_bd_margins',
  'The 2025 transition from blenders tax credit to IRA production credit (45Z) has asymmetric impact: RD producers benefit because production credit rewards lower-CI feedstocks, while BD producers lose because blenders credit was feedstock-agnostic. This policy shift is one of the triggers for BD capacity rationalization, as BD margins compress while RD margins may be maintained or improved through CI optimization.',
  'suncor_lt_forecast_assumptions_nov22', 0.85)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO core.kg_context (node_key, context_type, context_key, content, source_key, confidence) VALUES
-('feedstock_mix_methodology', 'expert_rule', 'feedstock_mix_shifts_over_forecast',
+INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, applicable_when, source) VALUES
+((SELECT id FROM core.kg_node WHERE node_key = 'feedstock_mix_methodology'), (SELECT id FROM core.kg_node WHERE node_key = 'expert_rule'), 'feedstock_mix_shifts_over_forecast',
  'The industry-wide feedstock mix is not static — it shifts substantially from forecast beginning to end. In the 2022 study, the average mix is 54% SBO / 14% DCO / 13% UCO / 9% BFT / 5% YG / 3% CWG / 2% canola / <1% poultry fat. But monthly variation is large, and the composition changes as (a) new RD facilities with different feedstock flexibility come online, (b) CI-score optimization shifts toward lower-CI feedstocks (UCO, waste fats), (c) feedstock price signals alter economic mix. Plant-level methodology captures these shifts; top-down approaches miss them.',
  'suncor_lt_forecast_assumptions_nov22', 0.90)
 ON CONFLICT DO NOTHING;
