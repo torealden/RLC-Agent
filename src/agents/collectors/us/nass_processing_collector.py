@@ -91,6 +91,18 @@ FATS_OILS_COMMODITIES = {
         'commodity_desc': 'OIL',
         'class_desc': 'PALM',
     },
+    'palm_kernel_oil': {
+        'commodity_desc': 'OIL',
+        'class_desc': 'PALM KERNEL',
+    },
+    'coconut_oil': {
+        'commodity_desc': 'OIL',
+        'class_desc': 'COCONUT',
+    },
+    'safflower_oil': {
+        'commodity_desc': 'OIL',
+        'class_desc': 'SAFFLOWER',
+    },
 }
 
 # Crush, cake/meal, millfeed data — uses different commodity_desc than oil
@@ -202,6 +214,18 @@ PEANUT_PROCESSING_COMMODITIES = {
         'commodity_desc': 'PEANUTS',
         'statisticcat_desc': 'USAGE',
     },
+    'peanuts_production': {
+        'commodity_desc': 'PEANUTS',
+        'statisticcat_desc': 'PRODUCTION',
+    },
+    'peanuts_disappearance': {
+        'commodity_desc': 'PEANUTS',
+        'statisticcat_desc': 'DISAPPEARANCE',
+    },
+    'peanuts_distribution': {
+        'commodity_desc': 'PEANUTS',
+        'statisticcat_desc': 'DISTRIBUTION',
+    },
 }
 
 # Flour Milling commodities
@@ -251,6 +275,40 @@ class NASSProcessingCollector:
                 "No NASS API key. Set NASS_API_KEY environment variable. "
                 "Register at: https://quickstats.nass.usda.gov/api"
             )
+
+    def collect(self, **kwargs):
+        """Dispatcher-compatible entry point. Runs all NASS processing reports
+        and returns a CollectorResult-like object."""
+        from dataclasses import dataclass, field as dc_field
+        from datetime import datetime as dt
+
+        @dataclass
+        class _Result:
+            success: bool = False
+            source: str = 'nass_processing'
+            records_fetched: int = 0
+            error_message: str = None
+            warnings: list = dc_field(default_factory=list)
+            collected_at: dt = dc_field(default_factory=dt.now)
+            data_as_of: str = None
+
+        result = _Result()
+        try:
+            year = kwargs.get('year', dt.now().year)
+            totals = self.save_to_monthly_realized(report_type='all', year=year)
+            total_bronze = sum(v.get('bronze', 0) for v in totals.values())
+            total_silver = sum(v.get('silver', 0) for v in totals.values())
+            result.success = True
+            result.records_fetched = total_bronze + total_silver
+            result.data_as_of = str(year)
+            self.logger.info(
+                f"Collected {total_bronze} bronze + {total_silver} silver "
+                f"across {len(totals)} report types"
+            )
+        except Exception as e:
+            result.error_message = str(e)
+            self.logger.error(f"Collection failed: {e}")
+        return result
 
     def _make_request(self, params: Dict) -> Optional[Dict]:
         """Make API request to NASS."""
@@ -712,7 +770,8 @@ class NASSProcessingCollector:
             return None
 
         year = year or datetime.now().year
-        stat_categories = stat_categories or ['MILLED', 'CRUSHED', 'STOCKS', 'USAGE']
+        stat_categories = stat_categories or ['MILLED', 'CRUSHED', 'STOCKS', 'USAGE',
+                                               'PRODUCTION', 'DISAPPEARANCE', 'DISTRIBUTION']
 
         all_records = []
 
@@ -1088,6 +1147,21 @@ class NASSProcessingCollector:
                 return 'canola'
             if 'COTTONSEED' in class_desc:
                 return 'cottonseed'
+            if 'SUNFLOWER' in class_desc:
+                return 'sunflower'
+            # Order matters: PALM KERNEL must be checked before PALM
+            if 'PALM KERNEL' in class_desc:
+                return 'palm_kernel'
+            if class_desc == 'PALM':
+                return 'palm'
+            if 'COCONUT' in class_desc:
+                return 'coconut'
+            if 'SAFFLOWER' in class_desc:
+                return 'safflower'
+            if 'PEANUT' in class_desc:
+                return 'peanut'
+            if class_desc == 'CORN':
+                return 'corn'
 
         # Fall back to commodity key
         comm = row.get('commodity', '').lower()
