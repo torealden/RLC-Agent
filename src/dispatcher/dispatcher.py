@@ -181,16 +181,15 @@ class Dispatcher:
         )
         logger.debug("Registered failure alert check every 2h (Mon-Fri)")
 
-        # Register heartbeat every 15 minutes so the watchdog can detect a zombie
-        # (was 5 min — too frequent, caused focus-stealing popups on user's desktop)
+        # Register heartbeat every 60 minutes so the watchdog can detect a zombie
         self.scheduler.add_job(
             func=self._write_heartbeat,
-            trigger=IntervalTrigger(minutes=15),
+            trigger=IntervalTrigger(minutes=60),
             id='_heartbeat',
             name='Dispatcher Heartbeat',
             replace_existing=True,
         )
-        logger.debug("Registered heartbeat (every 15 min)")
+        logger.debug("Registered heartbeat (every 60 min)")
 
     def _write_heartbeat(self):
         """Write a heartbeat timestamp so the watchdog can detect a zombie dispatcher."""
