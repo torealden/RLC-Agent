@@ -1,3 +1,4 @@
+Attribute VB_Name = "TradeUpdaterSQL"
 ' =============================================================================
 ' TradeUpdaterSQL - Pure VBA with PostgreSQL Connection
 ' =============================================================================
@@ -455,10 +456,23 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         commodity = "SUNFLOWER_OIL"
     ElseIf InStr(sheetLower, "sunflower") > 0 Then
         commodity = "SUNFLOWER"
-    ElseIf InStr(sheetLower, "palm") > 0 And InStr(sheetLower, "kernel") > 0 Then
+    ElseIf InStr(sheetLower, "palm") > 0 And InStr(sheetLower, "kernel") > 0 _
+           And InStr(sheetLower, "oil") > 0 Then
         commodity = "PALM_KERNEL_OIL"
+    ElseIf InStr(sheetLower, "palm") > 0 And InStr(sheetLower, "kernel") > 0 _
+           And (InStr(sheetLower, "cake") > 0 Or InStr(sheetLower, "meal") > 0) Then
+        commodity = "PALM_KERNEL_MEAL"
+    ElseIf InStr(sheetLower, "palm") > 0 And InStr(sheetLower, "kernel") > 0 Then
+        ' "Palm Kernel" alone (no oil/cake/meal) = the seed/nut itself (HS 1207.10)
+        commodity = "PALM_KERNEL"
     ElseIf InStr(sheetLower, "palm") > 0 Then
         commodity = "PALM_OIL"
+    ElseIf InStr(sheetLower, "copra") > 0 And InStr(sheetLower, "meal") > 0 Then
+        commodity = "COPRA_MEAL"
+    ElseIf InStr(sheetLower, "copra") > 0 Then
+        commodity = "COPRA"
+    ElseIf InStr(sheetLower, "coconut") > 0 Then
+        commodity = "COCONUT_OIL"
     ElseIf InStr(sheetLower, "cottonseed") > 0 And InStr(sheetLower, "meal") > 0 Then
         commodity = "COTTONSEED_MEAL"
     ElseIf InStr(sheetLower, "cottonseed") > 0 And InStr(sheetLower, "oil") > 0 Then
@@ -597,18 +611,22 @@ End Function
 ' KEYBOARD SHORTCUTS
 ' =============================================================================
 
-Public Sub AssignKeyboardShortcuts()
+Public Sub AssignTradeShortcuts()
     ' Assign Ctrl+I and Ctrl+Shift+I shortcuts
-
     Application.OnKey "^i", "UpdateTradeData"
     Application.OnKey "^+i", "UpdateTradeDataCustom"
+End Sub
 
-    MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
-           "Ctrl+I = Quick update (latest 3 months)" & vbCrLf & _
-           "Ctrl+Shift+I = Custom month count", vbInformation, "Trade Updater"
+Public Sub RemoveTradeShortcuts()
+    Application.OnKey "^i"
+    Application.OnKey "^+i"
+End Sub
+
+' Backward-compat aliases so existing Workbook_Open calls keep working
+Public Sub AssignKeyboardShortcuts()
+    AssignTradeShortcuts
 End Sub
 
 Public Sub RemoveKeyboardShortcuts()
-    Application.OnKey "^i"
-    Application.OnKey "^+i"
+    RemoveTradeShortcuts
 End Sub

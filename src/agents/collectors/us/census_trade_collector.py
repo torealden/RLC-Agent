@@ -107,8 +107,10 @@ DEFAULT_HS_CODES_10 = [
     '1512110020', '1512190020',
     # Cottonseed oil
     '1512210000', '1512290020', '1512290040',
+    # Coconut oil (crude + refined)
+    '1513110000', '1513190000',
     # Palm kernel oil
-    '1513290000',
+    '1513210000', '1513290000',
     # Canola oil
     '1514110000', '1514190000',
     # Linseed oil + inedible linseed oil preparations
@@ -133,6 +135,8 @@ DEFAULT_HS_CODES_10 = [
     '2305000000',
     # Linseed meal + flaxseed screenings
     '2306200000', '2308009300',
+    # Copra + copra meal
+    '1203000000', '2306600000',
     # Cotton
     '5201001090', '5201002030', '5201009000',
     # ── Fats & Greases ──
