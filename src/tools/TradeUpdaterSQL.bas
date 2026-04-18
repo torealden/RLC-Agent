@@ -47,18 +47,21 @@ Public Sub UpdateTradeData()
                     vbYesNo + vbQuestion, "Trade Updater")
 
     If result = vbYes Then
-        UpdateFromDatabase 3
+        UpdateFromDatabase 3, clearAll:=False
     End If
 End Sub
 
 Public Sub UpdateTradeDataCustom()
     ' Custom update with user-specified months
     ' Keyboard shortcut: Ctrl+Shift+I
+    ' Clears ALL data columns in the range first, then refills
 
     Dim monthCount As String
     monthCount = InputBox("How many months of data to update?" & vbCrLf & vbCrLf & _
-                          "Enter a number (e.g., 6 for last 6 months)", _
-                          "Trade Updater", "3")
+                          "Enter a number (e.g., 6 for last 6 months)" & vbCrLf & _
+                          "Enter 0 to update ALL available data" & vbCrLf & vbCrLf & _
+                          "NOTE: This will clear the entire data range first.", _
+                          "Trade Updater (Full Clear)", "6")
 
     If monthCount = "" Then Exit Sub
 
@@ -67,7 +70,7 @@ Public Sub UpdateTradeDataCustom()
         Exit Sub
     End If
 
-    UpdateFromDatabase CInt(monthCount)
+    UpdateFromDatabase CInt(monthCount), clearAll:=True
 End Sub
 
 ' =============================================================================
@@ -106,8 +109,10 @@ End Function
 ' MAIN UPDATE LOGIC
 ' =============================================================================
 
-Private Sub UpdateFromDatabase(monthCount As Integer)
+Private Sub UpdateFromDatabase(monthCount As Integer, Optional clearAll As Boolean = False)
     ' Fetch data from database and update the active sheet
+    ' clearAll=True: clear entire data range before populating (Ctrl+Shift+I)
+    ' clearAll=False: clear only columns being updated (Ctrl+I)
 
     Dim conn As Object
     Dim rs As Object
@@ -224,18 +229,30 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
         rs.MoveNext
     Loop
 
-    ' Clear all columns that will be updated (except regional subtotal rows)
-    Application.StatusBar = "Clearing " & columnsToUpdate.Count & " columns..."
-    DoEvents
-
     Dim colKey As Variant
     Dim columnsCleared As Integer
     columnsCleared = 0
 
-    For Each colKey In columnsToUpdate.Keys
-        ClearColumnForUpdate ws, CInt(colKey)
-        columnsCleared = columnsCleared + 1
-    Next colKey
+    If clearAll Then
+        ' Full clear: wipe ALL data columns (col 2 to last used column)
+        Dim lastCol As Integer
+        lastCol = ws.Cells(2, ws.Columns.Count).End(xlToLeft).Column
+        Application.StatusBar = "Full clear: columns 2 to " & lastCol & "..."
+        DoEvents
+        Dim c As Integer
+        For c = 2 To lastCol
+            ClearColumnForUpdate ws, c
+            columnsCleared = columnsCleared + 1
+        Next c
+    Else
+        ' Partial clear: only columns that will receive new data
+        Application.StatusBar = "Clearing " & columnsToUpdate.Count & " columns..."
+        DoEvents
+        For Each colKey In columnsToUpdate.Keys
+            ClearColumnForUpdate ws, CInt(colKey)
+            columnsCleared = columnsCleared + 1
+        Next colKey
+    End If
 
     ' If no data was returned, report and exit cleanly
     If rs.BOF And rs.EOF Then
@@ -291,8 +308,11 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
 
         If colNum > 0 And includeRow Then
             ' Use spreadsheet_row from database, or search by country name
+            ' WORLD TOTAL always goes to row 217 (DATA_END_ROW)
             Dim targetRow As Integer
-            If IsNull(rowNum) Or rowNum = 0 Then
+            If countryName = "WORLD TOTAL" Then
+                targetRow = DATA_END_ROW
+            ElseIf IsNull(rowNum) Or rowNum = 0 Then
                 targetRow = FindRowForCountry(ws, countryName)
             Else
                 targetRow = rowNum
