@@ -58,9 +58,8 @@ Public Sub UpdateTradeDataCustom()
 
     Dim monthCount As String
     monthCount = InputBox("How many months of data to update?" & vbCrLf & vbCrLf & _
-                          "Enter a number (e.g., 6 for last 6 months)" & vbCrLf & _
-                          "Enter 0 to update ALL available data" & vbCrLf & vbCrLf & _
-                          "NOTE: This will clear the entire data range first.", _
+                          "Enter a number (e.g., 144 for last 12 years)" & vbCrLf & _
+                          "Enter 0 to clear all data (preserves headers and regional formulas)", _
                           "Trade Updater (Full Clear)", "6")
 
     If monthCount = "" Then Exit Sub
@@ -258,9 +257,15 @@ Private Sub UpdateFromDatabase(monthCount As Integer, Optional clearAll As Boole
     If rs.BOF And rs.EOF Then
         rs.Close
         conn.Close
-        MsgBox "No data found for " & commodity & " " & flow & "." & vbCrLf & vbCrLf & _
-               "The data may not have been collected yet, or there may be " & _
-               "no trade activity for this commodity/flow.", vbInformation, "Trade Updater"
+        If monthCount = 0 And clearAll Then
+            MsgBox "Sheet cleared." & vbCrLf & vbCrLf & _
+                   columnsCleared & " columns cleared (headers and regional formulas preserved).", _
+                   vbInformation, "Trade Updater"
+        Else
+            MsgBox "No data found for " & commodity & " " & flow & "." & vbCrLf & vbCrLf & _
+                   "The data may not have been collected yet, or there may be " & _
+                   "no trade activity for this commodity/flow.", vbInformation, "Trade Updater"
+        End If
         GoTo CleanupAndExit
     End If
 
