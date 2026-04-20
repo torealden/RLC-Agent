@@ -47,7 +47,7 @@ class FeedGrainsConfig(CollectorConfig):
     frequency: DataFrequency = DataFrequency.MONTHLY
 
     # Direct download URLs for yearbook tables
-    yearbook_url: str = "https://www.ers.usda.gov/webdocs/DataFiles/50048/FeedGrainsYearbookTables2024.xlsx"
+    yearbook_url: str = "https://www.ers.usda.gov/media/5764/feed-grains-yearbook-tables-all-years.xlsx"
 
     # Commodities covered
     commodities: List[str] = field(default_factory=lambda: [
@@ -235,17 +235,19 @@ class OilCropsConfig(CollectorConfig):
     auth_type: AuthType = AuthType.NONE
     frequency: DataFrequency = DataFrequency.MONTHLY
 
-    # Direct download URLs
-    base_download_url: str = "https://www.ers.usda.gov/webdocs/DataFiles/52218/"
+    # ERS migrated to a single consolidated file in 2024+. All commodities live in
+    # one xlsx with sheet names that include the commodity (e.g., "Soybean meal").
+    base_download_url: str = "https://www.ers.usda.gov/media/5220/"
 
-    # Available datasets
+    # All commodities point to the same consolidated file; the parser distinguishes
+    # by sheet-name keyword. Duplicate URLs are deduped at fetch time.
     datasets: Dict[str, str] = field(default_factory=lambda: {
-        'soybeans': 'SoybeansOilCrops.xlsx',
-        'sunflower': 'Sunflower.xlsx',
-        'canola': 'Canola.xlsx',
-        'cottonseed': 'Cottonseed.xlsx',
-        'peanuts': 'Peanuts.xlsx',
-        'flaxseed': 'Flaxseed.xlsx',
+        'soybeans': 'all-tables-oil-crops-yearbook.xlsx',
+        'sunflower': 'all-tables-oil-crops-yearbook.xlsx',
+        'canola': 'all-tables-oil-crops-yearbook.xlsx',
+        'cottonseed': 'all-tables-oil-crops-yearbook.xlsx',
+        'peanuts': 'all-tables-oil-crops-yearbook.xlsx',
+        'flaxseed': 'all-tables-oil-crops-yearbook.xlsx',
     })
 
 
@@ -289,6 +291,7 @@ class OilCropsCollector(BaseCollector):
 
         all_records = []
         warnings = []
+        url_cache = {}  # dedupe duplicate downloads (consolidated file pattern)
 
         for commodity in commodities:
             if commodity not in self.config.datasets:
@@ -298,20 +301,43 @@ class OilCropsCollector(BaseCollector):
             filename = self.config.datasets[commodity]
             url = f"{self.config.base_download_url}{filename}"
 
-            response, error = self._make_request(url, timeout=60)
+            if url in url_cache:
+                content = url_cache[url]
+            else:
+                response, error = self._make_request(url, timeout=60)
 
-            if error:
-                warnings.append(f"{commodity}: {error}")
-                continue
+                if error:
+                    warnings.append(f"{commodity}: {error}")
+                    continue
 
-            if response.status_code != 200:
-                warnings.append(f"{commodity}: HTTP {response.status_code}")
-                continue
+                if response.status_code != 200:
+                    warnings.append(f"{commodity}: HTTP {response.status_code}")
+                    continue
+
+                content = response.content
+                url_cache[url] = content
 
             try:
-                excel_data = pd.ExcelFile(io.BytesIO(response.content))
+                excel_data = pd.ExcelFile(io.BytesIO(content))
+
+                # The consolidated yearbook uses generic sheet names ("Table01"…).
+                # Map sheet → commodity by reading the Contents sheet on first
+                # access; this list is stable across releases.
+                commodity_table_map = {
+                    'soybeans':   ['Table01','Table02','Table03','Table04','Table05',
+                                   'Table06','Table07','Table08','Table09'],
+                    'peanuts':    ['Table10','Table11','Table12','Table13','Table14',
+                                   'Table15','Table16'],
+                    'cottonseed': ['Table17','Table18','Table19','Table20'],
+                    'sunflower':  ['Table21','Table22','Table23','Table24'],
+                    'canola':     ['Table25','Table26','Table27'],
+                    'flaxseed':   ['Table28','Table29','Table30','Table31'],
+                }
+                target_sheets = commodity_table_map.get(commodity, [])
 
                 for sheet_name in excel_data.sheet_names:
+                    if sheet_name not in target_sheets:
+                        continue
                     try:
                         df = pd.read_excel(excel_data, sheet_name=sheet_name)
                         records = self._parse_oil_crops_sheet(df, commodity, sheet_name)
@@ -409,7 +435,7 @@ class WheatDataConfig(CollectorConfig):
     frequency: DataFrequency = DataFrequency.MONTHLY
 
     # Download URL
-    yearbook_url: str = "https://www.ers.usda.gov/webdocs/DataFiles/54096/Wheat-Data-Yearbook-Tables.xlsx"
+    yearbook_url: str = "https://www.ers.usda.gov/media/5706/wheat-data-all-years.xlsx"
 
     # Wheat classes
     wheat_classes: List[str] = field(default_factory=lambda: [

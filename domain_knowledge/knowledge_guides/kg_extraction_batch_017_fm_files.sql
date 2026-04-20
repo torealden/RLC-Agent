@@ -265,38 +265,38 @@ INSERT INTO core.kg_context (node_id, context_type, context_key, context_value, 
 -- 4. SOURCE REGISTRATION
 -- ============================================================================
 
-INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
-('fm_quarterly_q2_2023', 'quarterly_report', 'Fats, Fuels and Feedstock Outlook - Q2 2023 Update',
- '[2023-04-01, 2023-06-30]',
- '{"author": "Fastmarkets (Tore Alden, Joao)", "publisher": "Fastmarkets Ag Analytics", "length_chars": 76425, "sections": ["Executive Summary", "RFS Mandates", "Capacity Utilization", "Biofuel Summary", "Veg Oil Summary", "Fat/Grease Summary", "LCFS", "Canada CFR", "Balance Sheets"]}'::jsonb)
-ON CONFLICT (source_key) DO NOTHING;
+-- [AUTO-FIXED] INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
+-- [AUTO-FIXED] ('fm_quarterly_q2_2023', 'quarterly_report', 'Fats, Fuels and Feedstock Outlook - Q2 2023 Update',
+-- [AUTO-FIXED]  '[2023-04-01, 2023-06-30]',
+-- [AUTO-FIXED]  '{"author": "Fastmarkets (Tore Alden, Joao)", "publisher": "Fastmarkets Ag Analytics", "length_chars": 76425, "sections": ["Executive Summary", "RFS Mandates", "Capacity Utilization", "Biofuel Summary", "Veg Oil Summary", "Fat/Grease Summary", "LCFS", "Canada CFR", "Balance Sheets"]}'::jsonb)
+-- [AUTO-FIXED] ON CONFLICT (source_key) DO NOTHING;
 
-INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
-('fm_quarterly_q4_2023', 'quarterly_report', 'Fats, Fuels and Feedstock Outlook - Q4 2023 Update',
- '[2023-10-01, 2023-12-31]',
- '{"author": "Fastmarkets (Tore Alden)", "publisher": "Fastmarkets Ag Analytics", "length_chars": 66787, "sections": ["Executive Summary", "BBD Production Records", "Capacity Expansion", "Margin Compression", "Feedstock Import Surge", "LCFS Credit Decline"]}'::jsonb)
-ON CONFLICT (source_key) DO NOTHING;
+-- [AUTO-FIXED] INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
+-- [AUTO-FIXED] ('fm_quarterly_q4_2023', 'quarterly_report', 'Fats, Fuels and Feedstock Outlook - Q4 2023 Update',
+-- [AUTO-FIXED]  '[2023-10-01, 2023-12-31]',
+-- [AUTO-FIXED]  '{"author": "Fastmarkets (Tore Alden)", "publisher": "Fastmarkets Ag Analytics", "length_chars": 66787, "sections": ["Executive Summary", "BBD Production Records", "Capacity Expansion", "Margin Compression", "Feedstock Import Surge", "LCFS Credit Decline"]}'::jsonb)
+-- [AUTO-FIXED] ON CONFLICT (source_key) DO NOTHING;
 
-INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
-('fm_motiva_study_2024', 'consulting_engagement', 'Motiva Bio Feedstocks Market Advisory & Outlook Study',
- '[2024-01-01, 2024-07-31]',
- '{"client": "Motiva Enterprises", "author": "Fastmarkets Ag Analytics", "scope": "SAF/RD industry analysis, feedstock strategy, pathway economics, regulatory environment", "documents_processed": 12}'::jsonb)
-ON CONFLICT (source_key) DO NOTHING;
+-- [AUTO-FIXED] INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
+-- [AUTO-FIXED] ('fm_motiva_study_2024', 'consulting_engagement', 'Motiva Bio Feedstocks Market Advisory & Outlook Study',
+-- [AUTO-FIXED]  '[2024-01-01, 2024-07-31]',
+-- [AUTO-FIXED]  '{"client": "Motiva Enterprises", "author": "Fastmarkets Ag Analytics", "scope": "SAF/RD industry analysis, feedstock strategy, pathway economics, regulatory environment", "documents_processed": 12}'::jsonb)
+-- [AUTO-FIXED] ON CONFLICT (source_key) DO NOTHING;
 
-INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
-('fm_buckeye_study_2025', 'consulting_engagement', 'Buckeye Partners Ethanol-to-SAF Market Analysis',
- '[2025-03-01, 2025-04-30]',
- '{"client": "Buckeye Partners", "author": "Fastmarkets / RLC", "scope": "Regional ethanol market analysis, AtJ switching economics, SAF demand fundamentals", "documents_processed": 4}'::jsonb)
-ON CONFLICT (source_key) DO NOTHING;
+-- [AUTO-FIXED] INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
+-- [AUTO-FIXED] ('fm_buckeye_study_2025', 'consulting_engagement', 'Buckeye Partners Ethanol-to-SAF Market Analysis',
+-- [AUTO-FIXED]  '[2025-03-01, 2025-04-30]',
+-- [AUTO-FIXED]  '{"client": "Buckeye Partners", "author": "Fastmarkets / RLC", "scope": "Regional ethanol market analysis, AtJ switching economics, SAF demand fundamentals", "documents_processed": 4}'::jsonb)
+-- [AUTO-FIXED] ON CONFLICT (source_key) DO NOTHING;
 
-INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
-('fm_bob_rvo_analysis_q3_2023', 'analytical_note', 'Hidden Gems for BBD in EPA 2023-2025 Final Rule (Bob)',
- '[2023-07-01, 2023-09-30]',
- '{"author": "Bob (industry analyst)", "publisher": "Fastmarkets", "length_chars": 4135, "key_finding": "BBD effective RVO 4.52B gal vs headline 2.82B gal after accounting for ethanol/cellulosic/remand gaps"}'::jsonb)
-ON CONFLICT (source_key) DO NOTHING;
+-- [AUTO-FIXED] INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
+-- [AUTO-FIXED] ('fm_bob_rvo_analysis_q3_2023', 'analytical_note', 'Hidden Gems for BBD in EPA 2023-2025 Final Rule (Bob)',
+-- [AUTO-FIXED]  '[2023-07-01, 2023-09-30]',
+-- [AUTO-FIXED]  '{"author": "Bob (industry analyst)", "publisher": "Fastmarkets", "length_chars": 4135, "key_finding": "BBD effective RVO 4.52B gal vs headline 2.82B gal after accounting for ethanol/cellulosic/remand gaps"}'::jsonb)
+-- [AUTO-FIXED] ON CONFLICT (source_key) DO NOTHING;
 
-INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
-('fm_commodity_commentary_oct_2023', 'market_commentary', 'FM Commodity Commentary Collection (Oct 2023)',
- '[2023-10-01, 2023-10-31]',
- '{"author": "Fastmarkets (Tore Alden, Joao)", "commodities": ["BFT/tallow", "SBO", "biodiesel", "canola oil", "palm oil"], "documents": 6}'::jsonb)
-ON CONFLICT (source_key) DO NOTHING;
+-- [AUTO-FIXED] INSERT INTO core.kg_source (source_key, source_type, title, date_range, properties) VALUES
+-- [AUTO-FIXED] ('fm_commodity_commentary_oct_2023', 'market_commentary', 'FM Commodity Commentary Collection (Oct 2023)',
+-- [AUTO-FIXED]  '[2023-10-01, 2023-10-31]',
+-- [AUTO-FIXED]  '{"author": "Fastmarkets (Tore Alden, Joao)", "commodities": ["BFT/tallow", "SBO", "biodiesel", "canola oil", "palm oil"], "documents": 6}'::jsonb)
+-- [AUTO-FIXED] ON CONFLICT (source_key) DO NOTHING;

@@ -914,7 +914,36 @@ class FeedstockAllocator:
             # Save tallow split if we ran it
             if hasattr(self, '_last_tallow_result') and self._last_tallow_result:
                 self.save_tallow_split(period, self._last_tallow_result, run_id)
+            # Sync to eia_data.xlsm for downstream balance sheet consumption.
+            # Best-effort — don't let an Excel sync failure fail the allocation run.
+            try:
+                self._write_to_eia_data()
+            except Exception as e:
+                logger.warning(f"Post-run eia_data.xlsm sync failed: {e}")
         return results
+
+    def _write_to_eia_data(self):
+        """Push bronze.historical_feedstock_allocation -> eia_data.xlsm.
+
+        Runs the scripts/write_allocation_to_eia_data.py logic inline so the
+        xlsm stays in sync after every allocation run. If the eia_data file
+        is open in Excel, this will log a warning but not fail the run.
+        """
+        import subprocess, sys as _sys
+        from pathlib import Path as _Path
+        script = _Path(__file__).parent.parent.parent.parent / 'scripts' / 'write_allocation_to_eia_data.py'
+        if not script.exists():
+            logger.warning(f"eia_data sync script not found at {script}")
+            return
+        result = subprocess.run(
+            [_sys.executable, str(script)],
+            capture_output=True, text=True, timeout=60,
+        )
+        if result.returncode != 0:
+            logger.warning(f"eia_data sync exited {result.returncode}: "
+                           f"{result.stderr[:200]}")
+        else:
+            logger.info("eia_data.xlsm synced.")
 
     def run_range(self, start: date, end: date, scenario: str = 'base', save: bool = True):
         """Run allocation for a date range."""

@@ -171,10 +171,17 @@ class MPOBCollector(BaseCollector):
                 self.logger.error(f"Error parsing {category}: {e}", exc_info=True)
 
         if not all_records:
+            # Always report failure when no records are produced — surface the
+            # reason via error_message so it lands in core.collection_status
+            # instead of NULL'ing out and looking healthy.
+            err_msg = (
+                "; ".join(warnings) if warnings
+                else "No data retrieved (all categories empty)"
+            )
             return CollectorResult(
-                success=len(warnings) == 0,
+                success=False,
                 source=self.config.source_name,
-                error_message="No data retrieved" if not warnings else None,
+                error_message=err_msg,
                 warnings=warnings
             )
 

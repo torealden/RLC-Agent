@@ -39,29 +39,29 @@
 -- ============================================================================
 -- SOURCE REGISTRATION
 -- ============================================================================
-INSERT INTO core.kg_source (source_key, source_type, title, url, report_date, category, commodities, themes, status, first_seen, last_processed, node_count, edge_count, context_count)
-VALUES
-('hb_weekly_chatgpt_aug_oct_2025', 'report_collection', 'HB Weekly ChatGPT Summaries (Aug-Oct 2025)',
- 'file://dropbox/RLC Documents/Reports/HB Weekly ChatGPT Summary/', '2025-10-01',
- 'weekly_market_analysis',
- '["corn","soybeans","soybean_oil","soybean_meal","wheat_srw","wheat_hrw","wheat_hrs","ethanol"]',
- '["harvest_fundamentals","carry_spreads","basis_logistics","export_demand","fund_positioning","south_american_weather"]',
- 'completed', '2026-04-16', '2026-04-16', 2, 4, 7),
-
-('tore_daily_20250701', 'daily_comment', 'Tore Comments - July 1, 2025',
- 'file://dropbox/RLC Documents/Reports/Daily Comments/2025/July/Tore Comments - 070125.docx', '2025-07-01',
- 'daily_analysis',
- '["soybeans","soybean_oil","corn"]',
- '["bimodal_price_distribution","feedstock_demand_elasticity","biofuel_policy"]',
- 'completed', '2026-04-16', '2026-04-16', 1, 2, 2),
-
-('world_biofuel_lt_oct_2025', 'long_term_outlook', 'World Biofuel Long-Term Report (Oct 2025)',
- 'file://dropbox/RLC Documents/Reports/Long-Term Outlooks/2025/October/', '2025-10-05',
- 'long_term_biofuel_outlook',
- '["soybean_oil","renewable_diesel","sustainable_aviation_fuel"]',
- '["bbd_complexity","saf_market_structure","ci_pathway_approval"]',
- 'completed', '2026-04-16', '2026-04-16', 0, 0, 1)
-ON CONFLICT (source_key) DO NOTHING;
+-- [AUTO-FIXED] INSERT INTO core.kg_source (source_key, source_type, title, url, report_date, category, commodities, themes, status, first_seen, last_processed, node_count, edge_count, context_count)
+-- [AUTO-FIXED] VALUES
+-- [AUTO-FIXED] ('hb_weekly_chatgpt_aug_oct_2025', 'report_collection', 'HB Weekly ChatGPT Summaries (Aug-Oct 2025)',
+-- [AUTO-FIXED]  'file://dropbox/RLC Documents/Reports/HB Weekly ChatGPT Summary/', '2025-10-01',
+-- [AUTO-FIXED]  'weekly_market_analysis',
+-- [AUTO-FIXED]  '["corn","soybeans","soybean_oil","soybean_meal","wheat_srw","wheat_hrw","wheat_hrs","ethanol"]',
+-- [AUTO-FIXED]  '["harvest_fundamentals","carry_spreads","basis_logistics","export_demand","fund_positioning","south_american_weather"]',
+-- [AUTO-FIXED]  'completed', '2026-04-16', '2026-04-16', 2, 4, 7),
+-- [AUTO-FIXED] 
+-- [AUTO-FIXED] ('tore_daily_20250701', 'daily_comment', 'Tore Comments - July 1, 2025',
+-- [AUTO-FIXED]  'file://dropbox/RLC Documents/Reports/Daily Comments/2025/July/Tore Comments - 070125.docx', '2025-07-01',
+-- [AUTO-FIXED]  'daily_analysis',
+-- [AUTO-FIXED]  '["soybeans","soybean_oil","corn"]',
+-- [AUTO-FIXED]  '["bimodal_price_distribution","feedstock_demand_elasticity","biofuel_policy"]',
+-- [AUTO-FIXED]  'completed', '2026-04-16', '2026-04-16', 1, 2, 2),
+-- [AUTO-FIXED] 
+-- [AUTO-FIXED] ('world_biofuel_lt_oct_2025', 'long_term_outlook', 'World Biofuel Long-Term Report (Oct 2025)',
+-- [AUTO-FIXED]  'file://dropbox/RLC Documents/Reports/Long-Term Outlooks/2025/October/', '2025-10-05',
+-- [AUTO-FIXED]  'long_term_biofuel_outlook',
+-- [AUTO-FIXED]  '["soybean_oil","renewable_diesel","sustainable_aviation_fuel"]',
+-- [AUTO-FIXED]  '["bbd_complexity","saf_market_structure","ci_pathway_approval"]',
+-- [AUTO-FIXED]  'completed', '2026-04-16', '2026-04-16', 0, 0, 1)
+-- [AUTO-FIXED] ON CONFLICT (source_key) DO NOTHING;
 
 
 -- ============================================================================
