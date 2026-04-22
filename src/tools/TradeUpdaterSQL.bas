@@ -479,6 +479,8 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
     ElseIf InStr(sheetLower, "corn") > 0 And InStr(sheetLower, "oil") > 0 Then
         ' Regular corn oil sheet — pull CORN_OIL data minus DCO countries
         commodity = "CORN_OIL_NON_DCO"
+    ElseIf InStr(sheetLower, "corn") > 0 And (InStr(sheetLower, "meal") > 0 Or InStr(sheetLower, "gluten") > 0) Then
+        commodity = "CORN_GLUTEN"
     ElseIf InStr(sheetLower, "corn") > 0 Or InStr(sheetLower, "maize") > 0 Then
         commodity = "CORN"
     ElseIf InStr(sheetLower, "wheat") > 0 Then
