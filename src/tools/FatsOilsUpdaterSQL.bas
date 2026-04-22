@@ -133,6 +133,8 @@ Private Function GetCommodityFromSheet(ByVal sheetName As String) As String
             GetCommodityFromSheet = "canola"
         Case sn Like "*cottonseed*"
             GetCommodityFromSheet = "cottonseed"
+        Case sn Like "*corn*crush*" Or sn Like "*corn_grind*" Or sn Like "*grain*crush*"
+            GetCommodityFromSheet = "corn_grind"
         Case sn Like "*corn*oil*" Or sn Like "*corn_oil*"
             GetCommodityFromSheet = "corn"
         Case sn Like "*sunflower*"
