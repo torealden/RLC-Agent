@@ -345,6 +345,23 @@ Private Sub UpdateFromDatabase(monthCount As Integer, Optional clearAll As Boole
     rs.Close
     conn.Close
 
+    ' For DCO mode, row 217 needs the sum of DCO countries (no Census WORLD TOTAL).
+    ' Recalc first so row 216 (Sum of Regional Totals) is current, then copy to 217.
+    If tradeMode = "DCO_ONLY" Or tradeMode = "NON_DCO" Then
+        Application.Calculation = xlCalculationAutomatic
+        Application.Calculate
+        Application.Calculation = xlCalculationManual
+        For Each colKey In columnsToUpdate.Keys
+            Dim dcoCol As Integer
+            dcoCol = CInt(colKey)
+            Dim row216Val As Variant
+            row216Val = ws.Cells(216, dcoCol).Value
+            If Not IsEmpty(row216Val) And IsNumeric(row216Val) Then
+                ws.Cells(DATA_END_ROW, dcoCol).Value = CDbl(row216Val)
+            End If
+        Next colKey
+    End If
+
     ' Force a recalc now that all cell writes are done (cheap because it's one batch)
     Application.Calculation = xlCalculationAutomatic
     Application.Calculate
