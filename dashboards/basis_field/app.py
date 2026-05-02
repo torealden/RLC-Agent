@@ -19,6 +19,8 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 
 import folium
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import psycopg2
 import psycopg2.extras
@@ -54,6 +56,17 @@ COMMODITY_OPTIONS = {
     "soybean_oil":  {"label": "Soybean Oil (output) — pending more sources", "ready": False, "min_samples": 8},
     "soybean_meal": {"label": "Soybean Meal (output) — pending more sources", "ready": False, "min_samples": 8},
 }
+
+UNCERTAINTY_THRESHOLD_CENTS = 6.0   # cells with std_err above this get hatched
+HATCH_LINES_PER_CELL = 4            # number of diagonal hatch strokes per uncertain cell
+
+# Coloring modes for the cell heatmap
+COLOR_MODES = {
+    "Basis (¢ vs futures)":  "basis",
+    "Uncertainty (std err)": "uncertainty",
+    "Sample density":        "density",
+}
+
 
 # Bounding box presets
 REGION_PRESETS = {
@@ -231,11 +244,29 @@ selected_date = st.sidebar.date_input(
     max_value=date.today(),
 )
 
+# Coloring mode
+color_mode_label = st.sidebar.selectbox(
+    "Color cells by",
+    list(COLOR_MODES.keys()),
+    index=0,
+)
+color_mode = COLOR_MODES[color_mode_label]
+
 # Overlay toggles
 st.sidebar.markdown("---")
 st.sidebar.markdown("**Overlays**")
 show_samples = st.sidebar.checkbox("Show AMS sample points", value=True)
 show_facilities = st.sidebar.checkbox("Show oilseed crusher facilities", value=False)
+show_uncertainty_hatch = st.sidebar.checkbox(
+    f"Hatch high-uncertainty cells (std_err > {UNCERTAINTY_THRESHOLD_CENTS:.0f}¢)",
+    value=True,
+    help="Diagonal stripes mark cells where the field is making a less-confident prediction.",
+)
+show_basis_contours = st.sidebar.checkbox(
+    "Basis contour lines (every 5¢)",
+    value=False,
+    help="Iso-basis lines so you can read gradients at a glance — like a topo map.",
+)
 
 # Sidebar — note about not-yet-ready commodities
 st.sidebar.markdown("---")
@@ -307,25 +338,143 @@ folium.TileLayer(
     attr="Esri", name="Satellite", overlay=False, control=False,
 ).add_to(fmap)
 
-# Field cells
+# Field cells — color by selected mode (basis / uncertainty / density)
+def color_for_value(t: float, mode: str) -> str:
+    """Map normalized value [0..1] to a hex color per the selected mode."""
+    t = max(0.0, min(1.0, t))
+    if mode == "basis":
+        # Red (wide basis) → green (tight basis)
+        r_, g_ = int(255 * (1 - t)), int(180 * t + 60)
+        return f"#{r_:02x}{g_:02x}3c"
+    elif mode == "uncertainty":
+        # White/cream (low std_err = confident) → dark red (high std_err = guessing)
+        r_ = 240
+        g_ = int(220 * (1 - t) + 30)
+        b_ = int(180 * (1 - t) + 30)
+        return f"#{r_:02x}{g_:02x}{b_:02x}"
+    elif mode == "density":
+        # White (few samples) → dark blue (many samples)
+        r_ = int(220 * (1 - t) + 30)
+        g_ = int(220 * (1 - t) + 80)
+        b_ = int(180 * (1 - 0.4*t) + 60)
+        return f"#{r_:02x}{g_:02x}{b_:02x}"
+    return "#888888"
+
+
+def add_hatch(fmap, lat_c: float, lon_c: float, half_size: float = 0.125,
+              n_lines: int = HATCH_LINES_PER_CELL, color: str = "#1A1A1A",
+              opacity: float = 0.55, weight: float = 1.2):
+    """Draw n parallel diagonal lines (NE-SW direction) inside a cell.
+    Lines run from the lower-left edge to the upper-right edge, offset
+    perpendicular to the diagonal so they appear as evenly-spaced hatching."""
+    # Diagonal lines from the cell's bottom-left to top-right, offset along the
+    # perpendicular axis (NW-SE direction).
+    for i in range(n_lines):
+        # Offset normalized to [-0.85 .. +0.85] of the cell half-size, in the
+        # NW-SE direction (lat decreases as lon decreases for SW corner)
+        frac = (i + 0.5) / n_lines  # 0..1
+        offset = (frac - 0.5) * 1.7 * half_size  # spans most of cell
+        # Line endpoints (clip diagonals at cell edges where they would overflow)
+        # Simple approach: a NE-SW diagonal segment offset perpendicular
+        p1 = (lat_c - half_size + offset, lon_c - half_size - offset)
+        p2 = (lat_c + half_size + offset, lon_c + half_size - offset)
+        # Clip into the cell bounds
+        def clip_pt(lat, lon):
+            return (
+                max(lat_c - half_size, min(lat_c + half_size, lat)),
+                max(lon_c - half_size, min(lon_c + half_size, lon)),
+            )
+        folium.PolyLine(
+            locations=[clip_pt(*p1), clip_pt(*p2)],
+            color=color, weight=weight, opacity=opacity,
+        ).add_to(fmap)
+
+
 if not grid.empty:
-    bmin = float(grid['basis_cents'].min())
-    bmax = float(grid['basis_cents'].max())
+    # Compute the value range for the selected color mode
+    if color_mode == "basis":
+        vals = grid['basis_cents'].astype(float)
+        vmin, vmax = float(vals.min()), float(vals.max())
+        legend_low, legend_high = "wider (red)", "tighter (green)"
+    elif color_mode == "uncertainty":
+        vals = grid['std_err'].fillna(0).astype(float)
+        vmin, vmax = float(vals.min()), float(vals.max())
+        legend_low, legend_high = "confident (cream)", "guessing (red)"
+    else:  # density
+        vals = grid['n_samples'].fillna(0).astype(float)
+        vmin, vmax = float(vals.min()), float(vals.max())
+        legend_low, legend_high = "few (light)", "many (blue)"
+
     for _, row in grid.iterrows():
-        b = float(row['basis_cents'])
-        t = (b - bmin) / (bmax - bmin) if bmax != bmin else 0.5
-        r_, g_ = int(255*(1-t)), int(180*t + 60)
-        color = f"#{r_:02x}{g_:02x}3c"
+        if color_mode == "basis":
+            v = float(row['basis_cents'])
+        elif color_mode == "uncertainty":
+            v = float(row['std_err'] or 0)
+        else:
+            v = float(row['n_samples'] or 0)
+        t = (v - vmin) / (vmax - vmin) if vmax != vmin else 0.5
+        color = color_for_value(t, color_mode)
+
+        cell_lat = float(row['cell_lat'])
+        cell_lon = float(row['cell_lon'])
+        std_err_v = float(row['std_err'] or 0)
+
         folium.Rectangle(
             bounds=[
-                [float(row['cell_lat']) - 0.125, float(row['cell_lon']) - 0.125],
-                [float(row['cell_lat']) + 0.125, float(row['cell_lon']) + 0.125],
+                [cell_lat - 0.125, cell_lon - 0.125],
+                [cell_lat + 0.125, cell_lon + 0.125],
             ],
             color=None, weight=0,
             fill=True, fill_color=color, fill_opacity=0.55,
-            popup=f"<b>{b:.0f}¢</b> vs futures<br>±{row['std_err'] or 0:.1f}¢ std err<br>"
-                  f"n={row['n_samples']} samples · nearest {row['nearest_sample_mi'] or 0:.0f}mi",
+            popup=(f"<b>{float(row['basis_cents']):.0f}¢</b> vs futures<br>"
+                   f"±{std_err_v:.1f}¢ std err<br>"
+                   f"n={row['n_samples']} samples · nearest {row['nearest_sample_mi'] or 0:.0f}mi"),
         ).add_to(fmap)
+
+        # Hatch high-uncertainty cells
+        if show_uncertainty_hatch and std_err_v > UNCERTAINTY_THRESHOLD_CENTS:
+            add_hatch(fmap, cell_lat, cell_lon)
+
+# Basis contour lines — only on basis-color mode (other modes don't pair)
+if show_basis_contours and not grid.empty and color_mode == "basis":
+    # Reshape grid into 2D array
+    g = grid.copy()
+    g['cell_lat'] = g['cell_lat'].astype(float).round(4)
+    g['cell_lon'] = g['cell_lon'].astype(float).round(4)
+    g['basis_cents'] = g['basis_cents'].astype(float)
+    pivot = g.pivot_table(
+        index='cell_lat', columns='cell_lon', values='basis_cents', aggfunc='mean'
+    )
+    if not pivot.empty and pivot.shape[0] > 2 and pivot.shape[1] > 2:
+        lats_arr = pivot.index.to_numpy()
+        lons_arr = pivot.columns.to_numpy()
+        Z = pivot.to_numpy()
+        # Levels every 5¢
+        z_min = float(np.nanmin(Z))
+        z_max = float(np.nanmax(Z))
+        levels = np.arange(np.floor(z_min/5)*5, np.ceil(z_max/5)*5 + 1, 5)
+        # Compute contours headlessly
+        fig_h, ax_h = plt.subplots()
+        cs = ax_h.contour(lons_arr, lats_arr, Z, levels=levels)
+        # Extract contour line segments and render them via folium
+        for level_idx, level_val in enumerate(cs.levels):
+            try:
+                segs = cs.allsegs[level_idx]
+            except (AttributeError, IndexError):
+                segs = []
+            for seg in segs:
+                if len(seg) < 2:
+                    continue
+                # seg is (N, 2) array of (lon, lat) — flip to (lat, lon)
+                pts = [(float(p[1]), float(p[0])) for p in seg]
+                folium.PolyLine(
+                    locations=pts,
+                    color="#FFFFFF",
+                    weight=1.0,
+                    opacity=0.55,
+                    popup=f"{int(level_val)}¢ basis iso-line",
+                ).add_to(fmap)
+        plt.close(fig_h)
 
 # Sample dots
 if not samples.empty:
@@ -361,12 +510,22 @@ fmap.fit_bounds([[lat_min, lon_min], [lat_max, lon_max]])
 
 st_folium(fmap, height=620, width=None, returned_objects=[])
 
-# Legend / explanation
+# Legend / explanation — adapts to the active color mode
+hatch_text = (
+    f' <strong>Diagonal hatching</strong> = std_err > {UNCERTAINTY_THRESHOLD_CENTS:.0f}¢ '
+    f'(field is making a less-confident prediction).'
+    if show_uncertainty_hatch else ''
+)
+contour_text = (
+    ' <strong style="color:#FFFFFF;">White lines</strong> = basis iso-contours every 5¢ (read gradient direction + steepness).'
+    if (show_basis_contours and color_mode == 'basis') else ''
+)
+
 st.markdown(f"""
 <div class="legend-row" style="margin-top: 0.5rem;">
   <strong style="color: {COLORS['accent']}">Gold dots</strong> = AMS regional bid samples (the data driving the field).
-  <strong>Cells</strong> red→green = wider→tighter basis (negative is more under futures).
-  <strong>Click any cell</strong> for that location's predicted basis + uncertainty.
+  <strong>Cells</strong> colored by <em>{color_mode_label.lower()}</em> ({legend_low} → {legend_high}).{hatch_text}{contour_text}
+  <strong>Click any cell</strong> for that location's basis + std_err + sample count.
   <strong>Click any gold dot</strong> for that AMS region's actual observed bid.
   Pan/zoom to see satellite imagery underneath.
 </div>
