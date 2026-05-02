@@ -73,11 +73,25 @@ REPORT_CATALOG: Dict[str, Dict] = {
     # --- Grain (daily, structured via allSections=true) ---
     '3192': {'name': 'IL Grain Processor/Elevator', 'category': 'grain'},
     '3225': {'name': 'NE Grain Country Elevators', 'category': 'grain'},
-    '2932': {'name': 'National Grain/Oilseed Terminals', 'category': 'grain'},
+    '2932': {'name': 'MO Daily Grain Bids', 'category': 'grain'},
     '3046': {'name': 'MN Grain Minneapolis', 'category': 'grain'},
     '3148': {'name': 'PNW/MT Grain', 'category': 'grain'},
     '2771': {'name': 'MT/ND Durum/Barley', 'category': 'grain'},
     '3511': {'name': 'Soybean Meal/Feedstuffs', 'category': 'grain'},
+
+    # --- Grain (added 2026-05-02 for basis-field state coverage) ---
+    '2850': {'name': 'IA Daily Cash Grain Bids', 'category': 'grain'},
+    '2851': {'name': 'OH Daily Grain Bids', 'category': 'grain'},
+    '2886': {'name': 'KS Daily Grain Bids', 'category': 'grain'},
+    '2912': {'name': 'CO/NE/WY Elevator Grain Bids', 'category': 'grain'},
+    '2928': {'name': 'MS Daily Grain Bids', 'category': 'grain'},
+    '2960': {'name': 'AR Daily Grain Bids', 'category': 'grain'},
+    '3049': {'name': 'Southern MN Daily Grain Bids', 'category': 'grain'},
+    '3088': {'name': 'TN Daily Grain Bids', 'category': 'grain'},
+    '3100': {'name': 'OK Daily Grain Bids', 'category': 'grain'},
+    '3186': {'name': 'East River SD Grain Market', 'category': 'grain'},
+    '3463': {'name': 'IN Daily Grain Bids', 'category': 'grain'},
+    '2711': {'name': 'TX High Plains Elevator Grain Bids', 'category': 'grain'},
 
     # --- Specialty Grain ---
     '2887': {'name': 'ND Sunflower/Specialty', 'category': 'specialty_grain'},
