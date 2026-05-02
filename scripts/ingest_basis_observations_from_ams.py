@@ -17,6 +17,42 @@ from src.services.database.db_config import get_connection
 
 
 def main():
+    # Map AMS delivery_period strings → canonical CME futures contract codes.
+    # Physical-delivery months map to the futures contract month commonly used
+    # for hedging that delivery (the "next-rolling" contract):
+    #   Jan-Feb delivery → F (Jan futures); Mar-Apr → H (Mar); May-Jun → K (May);
+    #   Jul → N; Aug → Q; Sep → U; Oct-Nov → X; Dec → F (next year).
+    # For soybeans this matches the CBOT/CME contract calendar.
+    MONTH_TO_CONTRACT = {
+        # (delivery_month_int, year_suffix_offset) → contract letter
+        1: ("F", 0),  2: ("H", 0),  3: ("H", 0),  4: ("K", 0),
+        5: ("K", 0),  6: ("N", 0),  7: ("N", 0),  8: ("Q", 0),
+        9: ("U", 0), 10: ("X", 0), 11: ("X", 0), 12: ("F", 1),
+    }
+    DELIVERY_MAP_SQL = """
+    CASE
+      -- AMS uses 'Yes' to mean current/spot delivery
+      WHEN delivery_period IS NULL OR delivery_period = '' OR delivery_period = 'Yes' THEN 'spot'
+      -- Explicit YYYY-MM-DD delivery dates → contract letter+year
+      WHEN delivery_period ~ '^\\d{4}-\\d{2}-\\d{2}$' THEN
+        CASE EXTRACT(MONTH FROM delivery_period::date)::int
+          WHEN 1  THEN 'F' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 2  THEN 'H' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 3  THEN 'H' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 4  THEN 'K' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 5  THEN 'K' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 6  THEN 'N' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 7  THEN 'N' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 8  THEN 'Q' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 9  THEN 'U' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 10 THEN 'X' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 11 THEN 'X' || RIGHT(EXTRACT(YEAR FROM delivery_period::date)::text, 2)
+          WHEN 12 THEN 'F' || RIGHT((EXTRACT(YEAR FROM delivery_period::date)::int + 1)::text, 2)
+        END
+      ELSE 'spot'
+    END
+    """
+
     with get_connection() as conn:
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
@@ -40,7 +76,26 @@ def main():
                         WHEN LOWER(a.commodity) LIKE '%barley%' THEN 'barley'
                         ELSE LOWER(a.commodity)
                     END AS commodity,
-                    COALESCE(a.delivery_period, 'spot') AS delivery_month,
+                    -- Map AMS delivery_period to canonical CME contract code
+                    (CASE
+                      WHEN a.delivery_period IS NULL OR a.delivery_period = '' OR a.delivery_period = 'Yes' THEN 'spot'
+                      WHEN a.delivery_period ~ '^\\d{4}-\\d{2}-\\d{2}$' THEN
+                        CASE EXTRACT(MONTH FROM a.delivery_period::date)::int
+                          WHEN 1  THEN 'F' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 2  THEN 'H' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 3  THEN 'H' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 4  THEN 'K' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 5  THEN 'K' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 6  THEN 'N' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 7  THEN 'N' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 8  THEN 'Q' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 9  THEN 'U' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 10 THEN 'X' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 11 THEN 'X' || RIGHT(EXTRACT(YEAR FROM a.delivery_period::date)::text, 2)
+                          WHEN 12 THEN 'F' || RIGHT((EXTRACT(YEAR FROM a.delivery_period::date)::int + 1)::text, 2)
+                        END
+                      ELSE 'spot'
+                    END) AS delivery_month,
                     a.grade,
                     a.id::text AS source_record_id,
                     'ams' AS source,

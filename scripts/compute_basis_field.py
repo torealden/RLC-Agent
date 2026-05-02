@@ -114,18 +114,19 @@ def compute_field_for(date_: date, commodity: str, delivery: str = "spot") -> in
     with get_connection() as conn:
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # Pull samples for this date (or nearest preceding date if no exact match)
+        # Pull samples for this date+delivery_month (or nearest preceding date)
         cur.execute("""
             SELECT lat, lon, basis_cents, cash_price, sample_weight, location_label
             FROM bronze.cash_bid_observation
-            WHERE commodity = %s
+            WHERE commodity = %s AND delivery_month = %s
               AND observation_date = (
                 SELECT MAX(observation_date)
                 FROM bronze.cash_bid_observation
-                WHERE commodity = %s AND observation_date <= %s
+                WHERE commodity = %s AND delivery_month = %s
+                  AND observation_date <= %s
               )
               AND basis_cents IS NOT NULL
-        """, (commodity, commodity, date_))
+        """, (commodity, delivery, commodity, delivery, date_))
         rows = cur.fetchall()
 
         if not rows:
