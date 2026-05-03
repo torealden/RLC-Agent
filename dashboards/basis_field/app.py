@@ -419,6 +419,15 @@ if not grid.empty:
         cell_lon = float(row['cell_lon'])
         std_err_v = float(row['std_err'] or 0)
 
+        # Plain-English popup so non-quant users can read the reasoning chain
+        nearest_v = float(row['nearest_sample_mi'] or 0)
+        n_v = int(row['n_samples'] or 0)
+        popup_html = (
+            f"<b>{float(row['basis_cents']):.0f}¢</b> under futures<br>"
+            f"<span style='color:#666'>Confident within ±{std_err_v:.0f}¢</span><br>"
+            f"<span style='color:#666'>Built from {n_v} nearby price reports</span><br>"
+            f"<span style='color:#666'>Nearest one {nearest_v:.0f} miles away</span>"
+        )
         folium.Rectangle(
             bounds=[
                 [cell_lat - 0.125, cell_lon - 0.125],
@@ -426,9 +435,7 @@ if not grid.empty:
             ],
             color=None, weight=0,
             fill=True, fill_color=color, fill_opacity=0.55,
-            popup=(f"<b>{float(row['basis_cents']):.0f}¢</b> vs futures<br>"
-                   f"±{std_err_v:.1f}¢ std err<br>"
-                   f"n={row['n_samples']} samples · nearest {row['nearest_sample_mi'] or 0:.0f}mi"),
+            popup=popup_html,
         ).add_to(fmap)
 
         # Hatch high-uncertainty cells

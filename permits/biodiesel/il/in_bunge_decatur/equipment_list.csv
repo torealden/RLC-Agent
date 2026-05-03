@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-001","receiving","Soybean receiving and storage unit","","","","",""
+"EU-002","conditioning","Soybean conditioning and drying unit","150","tons/hour","","",""
+"EU-003","extraction","Soybean oil extraction unit","250","tons/hour","","","ED-001"
+"EU-004","refining","Biodiesel refining and bleaching unit","200","tons/hour","","","ED-002"

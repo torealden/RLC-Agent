@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-2","refining","Step 7","","","720","batches/month","CE-2"
+"EU-4","packaging","Packaging","8000","kg/day","","",""
+"EU-6.1","storage","Tank Farm","5032.8","m³/year","","","CE-6.1"
+"EU-8","conditioning","Catalyst Dump","300","kg/batch","","","CE-8"
+"EU-9.01 to EU-9.13, EU-6.1","refining","Vitamin E Plant, Hydrogenation, and Tank Farm","","","583000","scfm/year","CE-9"
