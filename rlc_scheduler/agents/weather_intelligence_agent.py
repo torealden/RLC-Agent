@@ -22,11 +22,12 @@ import sys
 import json
 import base64
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.utils import parsedate_to_datetime
 
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -231,14 +232,14 @@ class WeatherIntelligenceAgent:
             # Extract body and attachments
             body_text, attachments = self._extract_body_and_attachments(msg['payload'], msg_id)
 
-            # Parse date
+            # Parse date — RFC 2822 format from Gmail header
             date_str = headers.get('Date', '')
             try:
-                # Simple date parsing
-                received_at = datetime.now()  # Fallback
-                # TODO: Proper date parsing
+                received_at = parsedate_to_datetime(date_str) if date_str else datetime.now(timezone.utc)
+                if received_at.tzinfo is None:
+                    received_at = received_at.replace(tzinfo=timezone.utc)
             except Exception:
-                received_at = datetime.now()
+                received_at = datetime.now(timezone.utc)
 
             return {
                 'id': msg_id,
@@ -309,6 +310,148 @@ class WeatherIntelligenceAgent:
 
         return body_text, attachments
 
+    def _get_db_connection(self):
+        """Lazy-import DB helper. Returns None if unavailable (so the agent
+        can still run a brief without DB persistence)."""
+        try:
+            project_root = str(Path(__file__).parent.parent.parent)
+            if project_root not in sys.path:
+                sys.path.insert(0, project_root)
+            from src.services.database.db_config import get_connection
+            return get_connection
+        except Exception as e:
+            logger.warning(f"DB persistence unavailable: {e}")
+            return None
+
+    def _save_extract_to_bronze(self, extracted, processing_time_ms: int = 0) -> bool:
+        """Persist a single extracted email to bronze.weather_email_extract.
+
+        ON CONFLICT (email_id) updates so this is idempotent — same Gmail
+        message id never duplicates rows.
+        """
+        get_conn = self._get_db_connection()
+        if get_conn is None:
+            return False
+
+        try:
+            locations = sorted({r.region_name for r in extracted.regions.values()
+                                if r.region_name})
+            summary_lines = []
+            if extracted.headline_summary:
+                summary_lines.append(extracted.headline_summary)
+            if extracted.key_points:
+                summary_lines.extend(f"- {p}" for p in extracted.key_points[:10])
+            weather_summary = "\n".join(summary_lines) or extracted.full_text_summary or ""
+            extracted_conditions = json.dumps(extracted.to_dict(), default=str)
+            llm_model_used = ('claude' if (self.synthesizer.use_claude
+                                            and self.synthesizer.anthropic_available)
+                              else self.synthesizer.ollama_model)
+
+            with get_conn() as conn:
+                cur = conn.cursor()
+                cur.execute("""
+                    INSERT INTO bronze.weather_email_extract
+                        (email_id, email_subject, email_from, email_date,
+                         extracted_locations, weather_summary,
+                         extracted_conditions, llm_model, processing_time_ms,
+                         collected_at)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s, NOW())
+                    ON CONFLICT (email_id) DO UPDATE SET
+                        email_subject = EXCLUDED.email_subject,
+                        email_from = EXCLUDED.email_from,
+                        email_date = EXCLUDED.email_date,
+                        extracted_locations = EXCLUDED.extracted_locations,
+                        weather_summary = EXCLUDED.weather_summary,
+                        extracted_conditions = EXCLUDED.extracted_conditions,
+                        llm_model = EXCLUDED.llm_model,
+                        processing_time_ms = EXCLUDED.processing_time_ms
+                """, (
+                    extracted.email_id,
+                    extracted.subject[:1000] if extracted.subject else None,
+                    extracted.sender[:500] if extracted.sender else None,
+                    extracted.received_at,
+                    locations or None,
+                    weather_summary,
+                    extracted_conditions,
+                    llm_model_used,
+                    processing_time_ms,
+                ))
+                conn.commit()
+            return True
+        except Exception as e:
+            logger.warning(f"Failed to save extract for {extracted.email_id}: {e}")
+            return False
+
+    def _load_recent_extracts_from_bronze(
+        self, days_back: int = 7, exclude_email_ids: Optional[set] = None
+    ) -> List[Dict]:
+        """Pull recent emails out of bronze.weather_email_extract for synthesis
+        context. Excludes any email_ids passed in (so we don't double-count
+        emails we already added to today's batch)."""
+        get_conn = self._get_db_connection()
+        if get_conn is None:
+            return []
+
+        exclude_email_ids = exclude_email_ids or set()
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days_back)
+
+        try:
+            with get_conn() as conn:
+                cur = conn.cursor()
+                cur.execute("""
+                    SELECT email_id, email_subject, email_from, email_date,
+                           extracted_locations, weather_summary
+                    FROM bronze.weather_email_extract
+                    WHERE email_date >= %s
+                    ORDER BY email_date DESC
+                    LIMIT 100
+                """, (cutoff,))
+                rows = cur.fetchall()
+
+            recents = []
+            for r in rows:
+                # tolerate either tuple or RealDictRow
+                if isinstance(r, dict):
+                    email_id = r['email_id']
+                    subj = r['email_subject']; sender = r['email_from']
+                    edate = r['email_date']; locs = r['extracted_locations']
+                    summary = r['weather_summary']
+                else:
+                    email_id, subj, sender, edate, locs, summary = r
+                if email_id in exclude_email_ids:
+                    continue
+                recents.append({
+                    'email_id': email_id, 'subject': subj or '',
+                    'sender': sender or '', 'email_date': edate,
+                    'locations': list(locs or []),
+                    'summary': summary or '',
+                })
+            return recents
+        except Exception as e:
+            logger.warning(f"Failed to load recent extracts: {e}")
+            return []
+
+    @staticmethod
+    def _format_history_context(recents: List[Dict]) -> str:
+        """Build a 'PRIOR WEEK CONTEXT' block from recent extract rows."""
+        if not recents:
+            return ""
+        lines = ["", "=" * 60,
+                 "PRIOR WEEK CONTEXT (already-processed emails for trend reference)",
+                 "Use this to assess week-over-week changes — do NOT just restate it.",
+                 "=" * 60]
+        for r in recents:
+            d = r['email_date']
+            d_str = d.strftime('%Y-%m-%d %H:%M') if hasattr(d, 'strftime') else str(d)
+            sender_short = (r['sender'].split('<')[0].strip() or r['sender'])[:35]
+            subj = r['subject'][:90]
+            lines.append(f"\n[{d_str}] {sender_short} — {subj}")
+            if r['summary']:
+                # First 400 chars of summary is enough for trend tracking
+                snippet = r['summary'][:400].strip()
+                lines.append(snippet)
+        return "\n".join(lines)
+
     def process_emails(
         self,
         hours_back: int = None,
@@ -322,8 +465,10 @@ class WeatherIntelligenceAgent:
         1. Fetch emails
         2. Classify each email
         3. Extract structured data
-        4. Synthesize into brief
-        5. Send summary email
+        4. Persist each extract to bronze.weather_email_extract
+        5. Load last 7 days from bronze for synthesis context
+        6. Synthesize into brief
+        7. Send summary email
         """
         result = {
             'success': False,
@@ -386,6 +531,9 @@ class WeatherIntelligenceAgent:
                 batch.add_email(extracted)
                 result['emails_processed'] += 1
 
+                # 5. Persist to bronze (idempotent on email_id)
+                self._save_extract_to_bronze(extracted)
+
                 # Mark as processed
                 self.processed_ids.add(email['id'])
 
@@ -395,12 +543,28 @@ class WeatherIntelligenceAgent:
         # Save processed IDs
         self._save_processed_ids()
 
-        # 5. Synthesize with research
-        if result['emails_processed'] >= self.config.get("min_emails_for_summary", 1):
-            logger.info("Generating weather intelligence brief with research context...")
+        # 6. Synthesize with research + 7-day rolling context
+        # We synthesize even on a 0-new-email day if there is recent history,
+        # so the brief reflects the current state of Drew's commentary stream.
+        new_extract_ids = {e.email_id for e in batch.emails}
+        recent_history = self._load_recent_extracts_from_bronze(
+            days_back=7, exclude_email_ids=new_extract_ids
+        )
+        result['recent_history_count'] = len(recent_history)
+
+        min_for_summary = self.config.get("min_emails_for_summary", 1)
+        have_enough = (result['emails_processed'] >= min_for_summary
+                       or len(recent_history) >= min_for_summary)
+        if have_enough:
+            logger.info(
+                f"Generating brief: {result['emails_processed']} new emails, "
+                f"{len(recent_history)} from prior 7 days"
+            )
 
             batch_data = batch.to_dict()
-            batch_data["llm_context"] = batch.get_llm_context()
+            base_context = batch.get_llm_context()
+            history_block = self._format_history_context(recent_history)
+            batch_data["llm_context"] = base_context + "\n" + history_block
 
             # Use research-enhanced synthesis
             brief = self.synthesizer.synthesize_with_research(
@@ -409,8 +573,9 @@ class WeatherIntelligenceAgent:
             )
             result['brief'] = brief
 
-            # Add header/footer
-            full_brief = self._format_full_brief(brief, batch)
+            # Add header/footer (counts include the 7-day rolling window
+            # used for synthesis, not just today's new emails)
+            full_brief = self._format_full_brief(brief, batch, recent_history)
 
             if not test_mode:
                 # Save brief
@@ -431,19 +596,30 @@ class WeatherIntelligenceAgent:
         result['success'] = True
         return result
 
-    def _format_full_brief(self, brief: str, batch: WeatherSummaryBatch) -> str:
-        """Format the full brief with header and footer."""
+    def _format_full_brief(self, brief: str, batch: WeatherSummaryBatch,
+                           recent_history: Optional[List[Dict]] = None) -> str:
+        """Format the full brief with header and footer.
+
+        Counts and region list reflect the full 7-day synthesis window
+        (today's new emails + prior-week history), not just today's batch.
+        """
+        recent_history = recent_history or []
+        history_regions = {loc for r in recent_history for loc in (r.get('locations') or [])}
+        total_regions = sorted(set(batch.regions_covered) | history_regions)
+        total_emails = batch.emails_processed + len(recent_history)
+
         lines = [
             "=" * 60,
             "WEATHER INTELLIGENCE BRIEF",
             f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')} ET",
-            f"Emails analyzed: {batch.emails_processed}",
+            f"Emails analyzed: {total_emails} "
+            f"({batch.emails_processed} new today, {len(recent_history)} from prior 7 days)",
             "=" * 60,
             "",
             brief,
             "",
             "-" * 60,
-            f"Regions: {', '.join(batch.regions_covered)}",
+            f"Regions: {', '.join(total_regions) if total_regions else '(none parsed)'}",
             f"Sentiment: {batch.overall_sentiment}",
             "Source: World Weather Inc.",
             "Analysis by: Claude (Anthropic)" if self.synthesizer.use_claude else f"Analysis by: Ollama ({self.synthesizer.ollama_model})",

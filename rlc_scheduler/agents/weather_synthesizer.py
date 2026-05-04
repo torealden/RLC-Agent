@@ -239,22 +239,47 @@ Key Crops to Watch: {', '.join(calendar.get('key_crops', []))}
                 prompt += f"CRITICAL: {calendar['critical_note']}\n"
 
         prompt += """
-OUTPUT FORMAT:
-Generate a professional weather intelligence brief with these sections:
-1. EXECUTIVE SUMMARY (2-3 sentences, key takeaway)
-2. Regional sections (US, BRAZIL, ARGENTINA as applicable)
-3. KEY CHANGES FROM PRIOR UPDATE
-4. MARKET IMPLICATIONS (if significant)
+OUTPUT FORMAT — generate exactly these sections, in this order:
+
+1. LATEST UPDATE
+   - Cite the single most recent email's sender, subject, and timestamp
+     verbatim from the data ("Per Andy Karst's 'World Weather Outlook for
+     May 4, 2026' at 06:30 ET, ...").
+   - Lead with what that report says, before any synthesis from older
+     emails. The latest report drives the brief; prior week supports it.
+
+2. EXECUTIVE SUMMARY (2-3 sentences) — the trader takeaway.
+
+3. REGIONAL CONDITIONS — US / BRAZIL / ARGENTINA / OTHER as applicable.
+   Bullet points. Specific regions (Mato Grosso, Tennessee River Basin,
+   Buenos Aires) — never just "South America".
+
+4. SPECIAL REPORTS THIS WEEK
+   - List each distinct "Outlook", "Special Report", "Maps Package", or
+     non-routine email observed in the prior-week context, with one
+     sentence on its key takeaway. Cite by subject + date.
+   - If none in the prior 7 days, write "None this period" — do not omit
+     this section.
+
+5. WEEK-OVER-WEEK CHANGES
+   - Compare today's outlook to what the prior-week emails said. Call out
+     what shifted (e.g. "Brazil safrinha — Apr 28 noted moisture adequate;
+     today flips to harvest disruption from returning rains"). If nothing
+     materially changed, say so explicitly.
+
+6. MARKET IMPLICATIONS — supportive / neutral / bearish factors and any
+   yield-stage-specific risk thresholds crossed.
 
 IMPORTANT GUIDELINES:
-- Keep the tone professional and concise
-- Use bullet points for clarity
-- Do NOT make up specific numbers if not provided in the data
-- If ADDITIONAL CONTEXT FROM RESEARCH is provided, integrate relevant
-  threshold information and historical context naturally into your analysis
-- When discussing risks (winterkill, drought, heat stress), reference the
-  specific thresholds and conditions from the research context
-- Connect weather conditions to specific crop stages and potential yield impacts
+- Treat the LATEST UPDATE email as the primary source. Prior-week emails
+  are CONTEXT for week-over-week comparison, not equal-weight inputs.
+- Never silently drop the SPECIAL REPORTS section. If the prior week had
+  no specials, name that explicitly.
+- Use bullet points within sections; section headers in markdown (##).
+- Do NOT make up specific numbers. If a threshold is referenced, cite it.
+- Connect conditions to crop-stage-specific yield risk where relevant.
+- Keep regional names specific. Avoid empty phrases like "weather pattern
+  to watch" without saying what to watch and why.
 """
         return prompt
 

@@ -39,32 +39,39 @@ class NDVIChartCollector(BaseCollector):
 
     def fetch_data(self, start_date=None, end_date=None, **kwargs) -> CollectorResult:
         """
-        Pull NDVI + anomaly + precip + soil moisture charts for key commodities/regions.
+        Pull NDVI + anomaly + precip + soil moisture charts.
+
+        The underlying NDVICollector iterates CROP_REGIONS internally
+        (region -> countries -> commodities). We just choose chart_types.
 
         kwargs:
-            commodities: list (default: corn, soybeans, wheat)
-            countries: list (default: US, BR, AR, CN, IN, AU, UA, RU)
+            chart_types: list (default: ['ndvi', 'ndvi_anomaly'])
+            force: bool (default False — skip already-downloaded charts)
         """
         started_at = datetime.now(timezone.utc)
-        commodities = kwargs.get('commodities', ['corn', 'soybeans', 'wheat'])
-        countries = kwargs.get('countries', ['US', 'BR', 'AR', 'CN', 'IN', 'AU', 'UA', 'RU'])
+        chart_types = kwargs.get('chart_types', ['ndvi', 'ndvi_anomaly'])
+        force = kwargs.get('force', False)
 
         try:
             collector = self._get_collector()
-            total = 0
-            for commodity in commodities:
-                charts = collector.download_all_charts(
-                    commodity=commodity,
-                    countries=countries,
-                )
-                total += len(charts) if charts else 0
+            results = collector.download_all_charts(
+                chart_types=chart_types,
+                force=force,
+            ) or {}
+
+            # results: {region_id: [NDVIChart, ...]}; flatten + persist
+            all_charts = [c for charts in results.values() for c in charts]
+            n_saved = collector.save_to_database(all_charts) if all_charts else 0
 
             return CollectorResult(
-                success=total > 0,
+                success=len(all_charts) > 0,
                 source=self.config.source_name,
                 collected_at=datetime.now(timezone.utc),
-                records_fetched=total,
-                data={'commodities': commodities, 'countries': countries},
+                records_fetched=n_saved,
+                data={'chart_types': chart_types,
+                      'regions': list(results.keys()),
+                      'charts_downloaded': len(all_charts),
+                      'charts_persisted': n_saved},
                 response_time_ms=int(
                     (datetime.now(timezone.utc) - started_at).total_seconds() * 1000
                 ),
