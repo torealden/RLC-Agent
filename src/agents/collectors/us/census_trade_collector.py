@@ -116,7 +116,13 @@ DEFAULT_HS_CODES_10 = [
     # Linseed oil + inedible linseed oil preparations
     '1515110000', '1515190000', '1518002000',
     # Corn oil
-    '1515290040',
+    # Crude: 1515210000 = HTS/imports (single bucket — covers DCO + food)
+    #        1515210010 = Schedule B/exports food-grade
+    #        1515210050 = Schedule B/exports NESOI / industrial = DCO
+    #          (Green Plains official DCO HS code; see project_dco_corn_oil_trade_split.md)
+    # Refined: 1515290020 = once-refined; 1515290040 = fully refined
+    '1515210000', '1515210010', '1515210050',
+    '1515290020', '1515290040',
     # Other veg oil
     '1515906000',
     # Soybean meal / hulls

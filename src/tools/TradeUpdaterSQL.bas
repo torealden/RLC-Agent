@@ -233,15 +233,21 @@ Private Sub UpdateFromDatabase(monthCount As Integer, Optional clearAll As Boole
     columnsCleared = 0
 
     If clearAll Then
-        ' Full clear: wipe ALL data columns (col 2 to last used column)
+        ' Full clear: wipe only columns whose HEADER_ROW cell is a month-year date.
+        ' This skips aggregator columns at the start of the sheet (e.g., columns
+        ' B..AG in us_oilseed_complex_trade hold sums/derived series with non-date
+        ' headers) and any blank spacer columns. Monthly date columns (e.g.,
+        ' Jan-94 onward) are the only ones cleared.
         Dim lastCol As Integer
-        lastCol = ws.Cells(2, ws.Columns.Count).End(xlToLeft).Column
-        Application.StatusBar = "Full clear: columns 2 to " & lastCol & "..."
+        lastCol = ws.Cells(HEADER_ROW, ws.Columns.Count).End(xlToLeft).Column
+        Application.StatusBar = "Full clear: scanning columns 2 to " & lastCol & " for month-year headers..."
         DoEvents
         Dim c As Integer
         For c = 2 To lastCol
-            ClearColumnForUpdate ws, c
-            columnsCleared = columnsCleared + 1
+            If IsMonthHeaderCell(ws.Cells(HEADER_ROW, c).Value) Then
+                ClearColumnForUpdate ws, c
+                columnsCleared = columnsCleared + 1
+            End If
         Next c
     Else
         ' Partial clear: only columns that will receive new data
@@ -347,19 +353,33 @@ Private Sub UpdateFromDatabase(monthCount As Integer, Optional clearAll As Boole
 
     ' For DCO mode, row 217 needs the sum of DCO countries (no Census WORLD TOTAL).
     ' Recalc first so row 216 (Sum of Regional Totals) is current, then copy to 217.
+    '
+    ' BUGFIX 2026-05-04: was iterating columnsToUpdate.Keys, which missed any
+    ' column where no DCO trade was reported in the current run (early years,
+    ' or months with zero DCO flow). That left row 217 with stale values.
+    ' Fix: iterate ALL date-header columns so row 217 always reflects the
+    ' current row 216 across the entire data range.
     If tradeMode = "DCO_ONLY" Or tradeMode = "NON_DCO" Then
         Application.Calculation = xlCalculationAutomatic
         Application.Calculate
         Application.Calculation = xlCalculationManual
-        For Each colKey In columnsToUpdate.Keys
-            Dim dcoCol As Integer
-            dcoCol = CInt(colKey)
-            Dim row216Val As Variant
-            row216Val = ws.Cells(216, dcoCol).Value
-            If Not IsEmpty(row216Val) And IsNumeric(row216Val) Then
-                ws.Cells(DATA_END_ROW, dcoCol).Value = CDbl(row216Val)
+
+        Dim allLastCol As Integer
+        allLastCol = ws.Cells(HEADER_ROW, ws.Columns.Count).End(xlToLeft).Column
+        Dim dcoCopyCol As Integer
+        For dcoCopyCol = 2 To allLastCol
+            If IsMonthHeaderCell(ws.Cells(HEADER_ROW, dcoCopyCol).Value) Then
+                Dim r216Val As Variant
+                r216Val = ws.Cells(216, dcoCopyCol).Value
+                If Not IsEmpty(r216Val) And IsNumeric(r216Val) Then
+                    ws.Cells(DATA_END_ROW, dcoCopyCol).Value = CDbl(r216Val)
+                Else
+                    ' Row 216 empty/non-numeric — clear row 217 too rather
+                    ' than leave stale value
+                    ws.Cells(DATA_END_ROW, dcoCopyCol).Value = 0
+                End If
             End If
-        Next colKey
+        Next dcoCopyCol
     End If
 
     ' Force a recalc now that all cell writes are done (cheap because it's one batch)
@@ -597,6 +617,34 @@ Private Function IsDcoCountry(countryName As String, flow As String) As Boolean
         End Select
     End If
 End Function
+
+Private Function IsMonthHeaderCell(cellVal As Variant) As Boolean
+    ' Returns True if the supplied row-2 header cell holds a month-year date.
+    ' Used by the full-clear path to skip aggregator/non-date columns. Date
+    ' detection accepts both real Date values and numeric Excel serials. We
+    ' guard against treating small integer aggregator headers (counts, codes)
+    ' as dates by requiring serials >= 1000 (= 1902-09-26), well before the
+    ' earliest Jan-94 trade column.
+
+    IsMonthHeaderCell = False
+    If IsEmpty(cellVal) Or IsNull(cellVal) Then Exit Function
+    If IsDate(cellVal) Then
+        IsMonthHeaderCell = True
+        Exit Function
+    End If
+    If IsNumeric(cellVal) Then
+        Dim n As Double
+        n = CDbl(cellVal)
+        If n >= 1000 Then
+            On Error Resume Next
+            Dim d As Date
+            d = CDate(n)
+            If Err.Number = 0 Then IsMonthHeaderCell = True
+            On Error GoTo 0
+        End If
+    End If
+End Function
+
 
 Private Function FindColumnForDate(ws As Worksheet, yr As Integer, mo As Integer) As Integer
     ' Find column number for a given year/month in the header row
