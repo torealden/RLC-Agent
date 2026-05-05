@@ -620,14 +620,22 @@ End Function
 
 Private Function IsMonthHeaderCell(cellVal As Variant) As Boolean
     ' Returns True if the supplied row-2 header cell holds a month-year date.
-    ' Used by the full-clear path to skip aggregator/non-date columns. Date
-    ' detection accepts both real Date values and numeric Excel serials. We
-    ' guard against treating small integer aggregator headers (counts, codes)
-    ' as dates by requiring serials >= 1000 (= 1902-09-26), well before the
-    ' earliest Jan-94 trade column.
+    ' Used by the full-clear path to skip aggregator/non-date columns.
+    '
+    ' Date detection accepts:
+    '   - real Date typed cells (TypeName = "Date")
+    '   - Excel date serial numbers >= 1000 (= 1902-09-26+, well before
+    '     the earliest Jan-94 trade column; guards against integer codes)
+    '
+    ' Strings are REJECTED outright — marketing-year accumulator headers
+    ' like "2013/14" / "2024/25" can be parsed as dates by VBA's permissive
+    ' IsDate() under some locales (it may interpret "2013/14" as a literal
+    ' M/D string), which would let the macro accidentally clear MY columns.
+    ' All real month-year headers in this workbook are typed Date cells.
 
     IsMonthHeaderCell = False
     If IsEmpty(cellVal) Or IsNull(cellVal) Then Exit Function
+    If TypeName(cellVal) = "String" Then Exit Function
     If IsDate(cellVal) Then
         IsMonthHeaderCell = True
         Exit Function
@@ -647,7 +655,12 @@ End Function
 
 
 Private Function FindColumnForDate(ws As Worksheet, yr As Integer, mo As Integer) As Integer
-    ' Find column number for a given year/month in the header row
+    ' Find column number for a given year/month in the header row.
+    '
+    ' Strings are skipped — see IsMonthHeaderCell for why. Marketing-year
+    ' accumulator headers are stored as text ("2024/25") and must never
+    ' match a date lookup, otherwise the partial-clear path would wipe
+    ' those columns when the macro updates monthly data.
 
     Dim col As Integer
     Dim cellVal As Variant
@@ -656,7 +669,9 @@ Private Function FindColumnForDate(ws As Worksheet, yr As Integer, mo As Integer
     For col = 2 To ws.UsedRange.Columns.Count + 2
         cellVal = ws.Cells(HEADER_ROW, col).Value
 
-        If IsDate(cellVal) Then
+        If TypeName(cellVal) = "String" Then
+            ' Skip MY accumulator columns and other text headers
+        ElseIf IsDate(cellVal) Then
             cellDate = CDate(cellVal)
             If Year(cellDate) = yr And Month(cellDate) = mo Then
                 FindColumnForDate = col
