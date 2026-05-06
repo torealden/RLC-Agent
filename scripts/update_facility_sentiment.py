@@ -63,6 +63,15 @@ BETA  = 0.30   # exogenous (news) forcing
 GAMMA = 0.10   # network influence
 EPS   = 0.02   # weak-tie random jump probability magnitude
 
+# Reversal logic (per spec — Iran-war-style sentiment flip on contradicting events):
+# When today's news has opposite sign from yesterday's sentiment AND meaningful
+# intensity, the decay term is suppressed and the news term gets the freed
+# weight. This lets sentiment snap toward the new direction in one step
+# rather than smoothing through many days of decay.
+REVERSAL_THRESHOLD     = 0.4  # |news_force| must exceed this for reversal to fire
+REVERSAL_BETA_BOOST    = 1.0  # absorb ALPHA's weight into BETA when reversing
+                              # (so total mass on the news term = BETA + ALPHA*REVERSAL_BETA_BOOST)
+
 # Fallback oil_share if silver.oilseed_crush_margin has no row for this date
 DEFAULT_OIL_SHARE = 0.45
 
@@ -267,6 +276,7 @@ def update_for_date(as_of: date, recompute: bool = False,
     rng = random.Random(rng_seed if rng_seed is not None else int(as_of.toordinal()))
 
     rows_to_persist = []
+    n_reversals = 0
     for fac in facilities:
         topic_sentiments = {}
         contribution_breakdown = {}
@@ -275,14 +285,35 @@ def update_for_date(as_of: date, recompute: bool = False,
             n = news_force[(fac, k)]
             net = network_force[(fac, k)]
             jump = sample_jump(rng)
-            new_s = ALPHA * s_prev + BETA * n + GAMMA * net + EPS * jump
+
+            # Reversal trigger: meaningful news with opposite sign to yesterday
+            is_reversal = (
+                abs(n) >= REVERSAL_THRESHOLD
+                and abs(s_prev) > 0.05
+                and (n > 0) != (s_prev > 0)
+            )
+            if is_reversal:
+                # Suppress decay; redirect ALPHA's weight to BETA
+                effective_alpha = 0.0
+                effective_beta = BETA + ALPHA * REVERSAL_BETA_BOOST
+                n_reversals += 1
+            else:
+                effective_alpha = ALPHA
+                effective_beta = BETA
+
+            decay_term     = effective_alpha * s_prev
+            exogenous_term = effective_beta * n
+            network_term   = GAMMA * net
+            jump_term      = EPS * jump
+            new_s = decay_term + exogenous_term + network_term + jump_term
             new_s = max(-1.0, min(1.0, new_s))
             topic_sentiments[k] = round(new_s, 5)
             contribution_breakdown[k] = {
-                'decay':     round(ALPHA * s_prev, 5),
-                'exogenous': round(BETA * n, 5),
-                'network':   round(GAMMA * net, 5),
-                'jump':      round(EPS * jump, 5),
+                'decay':     round(decay_term, 5),
+                'exogenous': round(exogenous_term, 5),
+                'network':   round(network_term, 5),
+                'jump':      round(jump_term, 5),
+                'reversed':  is_reversal,
             }
         rows_to_persist.append((
             MARKET_ID, fac, as_of,
@@ -320,6 +351,8 @@ def update_for_date(as_of: date, recompute: bool = False,
         cur = conn.cursor()
         cur.executemany(sql, rows_to_persist)
         conn.commit()
+    if n_reversals:
+        logger.info(f'  reversals fired this run: {n_reversals}')
     return len(rows_to_persist)
 
 
