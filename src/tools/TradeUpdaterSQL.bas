@@ -555,10 +555,14 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         commodity = "LINSEED_OIL"
     ElseIf InStr(sheetLower, "flax") > 0 Or InStr(sheetLower, "linseed") > 0 Then
         commodity = "FLAXSEED"
+    ElseIf InStr(sheetLower, "inedible tallow") > 0 Or InStr(sheetLower, "technical tallow") > 0 Then
+        ' MUST come before the "edible tallow" check — InStr("inedible tallow",
+        ' "edible tallow") returns 3 because "edible tallow" is a substring of
+        ' "inedible tallow". Pre-fix, every Inedible Tallow sheet was getting
+        ' EDIBLE_TALLOW data (~58x smaller volumes than the truth).
+        commodity = "INEDIBLE_TALLOW"
     ElseIf InStr(sheetLower, "edible tallow") > 0 Then
         commodity = "EDIBLE_TALLOW"
-    ElseIf InStr(sheetLower, "inedible tallow") > 0 Or InStr(sheetLower, "technical tallow") > 0 Then
-        commodity = "INEDIBLE_TALLOW"
     ElseIf InStr(sheetLower, "tallow") > 0 Then
         commodity = "INEDIBLE_TALLOW"
     ElseIf InStr(sheetLower, "choice white") > 0 Or InStr(sheetLower, "cwg") > 0 Then
