@@ -347,6 +347,10 @@ def main():
     ap.add_argument('--dir', type=Path, help='Directory of PDFs')
     ap.add_argument('--pages', type=str, default='all',
                     help='Pages to process: "all" or comma-separated 1-based (e.g. "1,2,3")')
+    ap.add_argument('--runs', type=int, default=1,
+                    help='Run extraction N times per page for best-of-N variance '
+                         'reduction. Each run uses extractor_version=v1-r<N>; the '
+                         'consolidation script later picks consensus across runs.')
     ap.add_argument('--dry-run', action='store_true',
                     help='Show extracted JSON, do not write to DB')
     args = ap.parse_args()
@@ -374,25 +378,29 @@ def main():
         else:
             page_indices = [int(p.strip()) - 1 for p in args.pages.split(',')]
 
-        logger.info(f'{pdf_path.name}: {n_pages} pages, processing {len(page_indices)}')
+        logger.info(f'{pdf_path.name}: {n_pages} pages, processing {len(page_indices)} '
+                    f'with {args.runs} run(s) each')
 
         for pi in page_indices:
-            parsed = extract_one_page(client, pdf_path, pi)
-            if parsed is None:
-                continue
-            usage = parsed.get('_usage', {})
-            total_in += usage.get('input_tokens') or 0
-            total_out += usage.get('output_tokens') or 0
+            for run_idx in range(1, args.runs + 1):
+                global EXTRACTOR_VERSION
+                EXTRACTOR_VERSION = f'v1-r{run_idx}' if args.runs > 1 else 'v1'
+                parsed = extract_one_page(client, pdf_path, pi)
+                if parsed is None:
+                    continue
+                usage = parsed.get('_usage', {})
+                total_in += usage.get('input_tokens') or 0
+                total_out += usage.get('output_tokens') or 0
 
-            if args.dry_run:
-                print(f'\n--- {pdf_path.name} page {pi + 1} ---')
-                print(json.dumps({k: v for k, v in parsed.items()
-                                  if k != '_usage'}, indent=2, default=str))
-            else:
-                n = persist(pdf_path, pi + 1, file_hash, parsed)
-                total_rows += n
-                logger.info(f'  page {pi + 1}: {n} bronze rows')
-            total_pages += 1
+                if args.dry_run:
+                    print(f'\n--- {pdf_path.name} page {pi + 1} run {run_idx}/{args.runs} ---')
+                    print(json.dumps({k: v for k, v in parsed.items()
+                                      if k != '_usage'}, indent=2, default=str))
+                else:
+                    n = persist(pdf_path, pi + 1, file_hash, parsed)
+                    total_rows += n
+                    logger.info(f'  page {pi + 1} run {run_idx}/{args.runs}: {n} bronze rows')
+                total_pages += 1
 
     cost = total_in / 1_000_000 * 3.0 + total_out / 1_000_000 * 15.0
     logger.info(f'Done. {total_pages} pages processed, {total_rows} bronze rows persisted. '
