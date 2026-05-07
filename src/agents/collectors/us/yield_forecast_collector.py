@@ -27,7 +27,7 @@ class YieldForecastCollector(BaseCollector):
     def __init__(self, **kwargs):
         config = CollectorConfig(
             source_name='yield_forecast',
-            base_url='',  # Not HTTP-based — uses DB data
+            source_url='',  # Not HTTP-based — uses DB data
             frequency=DataFrequency.WEEKLY,
         )
         super().__init__(config)

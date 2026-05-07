@@ -52,7 +52,7 @@ class GEFSEnsembleCollector(BaseCollector):
                 max_lead_days=max_lead_days,
                 n_members=n_members,
             )
-            saved = collector.save_to_database(forecasts) if forecasts else 0
+            saved = collector.save_ensemble_to_database(forecasts) if forecasts else 0
 
             return CollectorResult(
                 success=saved > 0,
