@@ -180,6 +180,48 @@ def chunk_by_item_sections(text: str, max_chunk_chars: int = MAX_CTX_CHARS) -> l
 
 # --- Ollama call --------------------------------------------------------------
 
+def precheck_ollama() -> None:
+    """
+    Verify Ollama is reachable and the configured model is installed.
+    Raises a clear error before we try to process any filings — without
+    this, an unreachable Ollama or a typo'd model name would silently
+    fail every filing in the batch (saw exactly that on a laptop run
+    where the model name didn't match anything in `ollama list`).
+    """
+    # Reachability
+    try:
+        r = requests.get(f"{OLLAMA_HOST}/api/tags", timeout=5)
+        r.raise_for_status()
+    except requests.exceptions.ConnectionError as e:
+        raise SystemExit(
+            f"FATAL: cannot reach Ollama at {OLLAMA_HOST}. "
+            f"Is `ollama serve` running? Original error: {e}"
+        )
+    except Exception as e:
+        raise SystemExit(f"FATAL: Ollama health check at {OLLAMA_HOST}/api/tags "
+                         f"failed: {e}")
+
+    # Model availability
+    available = [m["name"] for m in r.json().get("models", [])]
+    if MODEL not in available:
+        # Try matching base name (Ollama stores 'qwen3-coder:30b' but list has tags)
+        base = MODEL.split(":")[0]
+        partial = [m for m in available if m.startswith(base + ":") or m == base]
+        msg = (
+            f"FATAL: model '{MODEL}' is not installed on this Ollama instance.\n"
+            f"  Host: {OLLAMA_HOST}\n"
+            f"  Available models: {', '.join(available) if available else '(none)'}\n"
+        )
+        if partial:
+            msg += f"  Did you mean: {', '.join(partial)} ?\n"
+        msg += (
+            f"\n"
+            f"  Fix: either set SEC_EXTRACT_MODEL to one of the available names,\n"
+            f"  or run `ollama pull {MODEL}` to install it.\n"
+        )
+        raise SystemExit(msg)
+
+
 def ollama_extract(prompt: str, system: str, model: str = MODEL,
                    timeout: int = OLLAMA_TIMEOUT_SEC) -> str:
     """Call Ollama with format=json. Returns raw response text (the JSON).
@@ -570,6 +612,12 @@ def main():
                         help="list filings that would be extracted, don't run")
 
     args = parser.parse_args()
+
+    # Fail fast if Ollama is unreachable or the model isn't installed,
+    # rather than silently failing every filing in the batch.
+    if not args.dry_run:
+        precheck_ollama()
+        print(f"Ollama precheck OK: model={MODEL} host={OLLAMA_HOST} num_ctx={NUM_CTX}")
 
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
     run_ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
