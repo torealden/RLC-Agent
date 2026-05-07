@@ -1,0 +1,121 @@
+{
+  "schema_name": "sec_10kq_v1",
+  "schema_version": "1.0",
+  "description": "Extraction schema for SEC 10-K (annual) and 10-Q (quarterly) reports. These are large narrative documents (300K-500K text chars typical). Extractor chunks by section (Item 1 Business, Item 1A Risk Factors, Item 2 Properties, Item 7 MD&A) and merges results.",
+  "applies_to": ["10-K", "10-K/A", "10-Q", "10-Q/A"],
+  "sections": {
+    "filing_metadata": {
+      "company_ticker": "string",
+      "company_name": "string",
+      "filing_type": "10-K | 10-Q",
+      "filing_date": "ISO date",
+      "fiscal_period_end": "ISO date (the as-of date for the financials)",
+      "fiscal_year": "integer",
+      "fiscal_quarter": "integer 1-4 (10-Q only; null for 10-K)"
+    },
+    "business_overview": {
+      "description": "2-3 paragraph overview of what the company does, principal segments, geographic footprint, and key end markets",
+      "primary_segments": ["array of segment names as named in the filing"],
+      "primary_commodities": ["corn, soybeans, wheat, etc."],
+      "geographic_focus": ["array of regions: North America, South America, EMEA, APAC"]
+    },
+    "segments": [
+      {
+        "name": "as named in filing (e.g. 'Ag Services and Oilseeds')",
+        "revenue_usd_mn": "number or null",
+        "operating_profit_usd_mn": "number or null",
+        "operating_margin_pct": "number or null",
+        "yoy_revenue_change_pct": "number or null",
+        "yoy_op_profit_change_pct": "number or null",
+        "key_drivers": ["positive drivers cited in MD&A"],
+        "key_concerns": ["headwinds cited in MD&A"],
+        "products_services": ["list of products/services"]
+      }
+    ],
+    "facilities_named": [
+      {
+        "name": "facility name as cited",
+        "city": "city",
+        "state_or_region": "state (US) or region (intl)",
+        "country": "US, BR, AR, CN, etc. (ISO-2 if possible)",
+        "facility_type": "oilseed_crush | ethanol | biodiesel | renewable_diesel | grain_handling | rail_terminal | river_terminal | nutrition | feed_mill | beverage | flavors | corporate | r_and_d | other | unknown",
+        "owned_or_leased": "owned | leased | jv | unknown",
+        "operating_status": "active | idle | closed | under_construction | announced | unknown",
+        "capacity_value": "number or null",
+        "capacity_unit": "string (bu/day, mgy, mt/year, sq_ft, etc.) or null",
+        "context": "1 sentence from filing — why mentioned, any operational notes"
+      }
+    ],
+    "capital_expenditures": {
+      "total_capex_usd_mn": "number or null",
+      "capex_guidance_usd_mn_low": "number or null",
+      "capex_guidance_usd_mn_high": "number or null",
+      "capex_by_segment": {
+        "segment_name": "amount_usd_mn"
+      },
+      "major_projects": [
+        {
+          "project_name": "string",
+          "location": "string",
+          "estimated_cost_usd_mn": "number or null",
+          "expected_completion": "ISO date or year",
+          "status": "announced | in_progress | completed | cancelled"
+        }
+      ]
+    },
+    "risk_factors_top": [
+      {
+        "title": "short title (e.g. 'Commodity price volatility')",
+        "category": "macro | commodity | regulatory | operational | climate | geopolitical | financial | competitive | reputational | cyber | other",
+        "summary": "1-2 sentence summary"
+      }
+    ],
+    "forward_guidance": [
+      {
+        "metric": "e.g. EPS, segment operating profit, capex",
+        "period": "FY 2026, Q2 2026, etc.",
+        "value_low": "number or null",
+        "value_high": "number or null",
+        "value_unit": "USD, USD_mn, USD_bn, EPS_USD, percent",
+        "direction_vs_prior": "raised | lowered | maintained | initiated | new"
+      }
+    ],
+    "customer_concentration": {
+      "single_customer_over_10pct": "boolean",
+      "named_customers": ["array of customer names if disclosed"],
+      "geographic_concentration_note": "string"
+    },
+    "commodity_exposures": [
+      {
+        "commodity": "corn, soybeans, wheat, palm oil, etc.",
+        "exposure_type": "input | output | both",
+        "hedging_practice": "string (e.g. 'futures contracts up to 12 months')"
+      }
+    ],
+    "policy_and_regulatory_callouts": [
+      "Free-form list (e.g. RFS RVO, EU SAF mandate, Inflation Reduction Act 45Z, EPA Title V)"
+    ],
+    "esg_or_sustainability_targets": [
+      {
+        "target": "string (e.g. 'Reduce GHG emissions 25% by 2035')",
+        "baseline_year": "integer or null",
+        "target_year": "integer or null",
+        "metric": "string"
+      }
+    ],
+    "extraction_confidence": "high | medium | low",
+    "extraction_notes": "extractor caveats — sections that were truncated, quality flags, etc."
+  },
+  "chunking_strategy": {
+    "approach": "Split by section using regex on '^Item N+[A-Z]?\\.' pattern. Extract per chunk with focused prompt. Merge per-chunk results into the unified schema.",
+    "section_to_field_mapping": {
+      "Item 1. Business": ["business_overview", "primary_segments"],
+      "Item 1A. Risk Factors": ["risk_factors_top"],
+      "Item 2. Properties": ["facilities_named"],
+      "Item 7. MD&A": ["segments", "capital_expenditures", "forward_guidance"],
+      "Item 7A. Quantitative & Qualitative Disclosures": ["commodity_exposures"]
+    },
+    "best_of_n_passes": 1,
+    "best_of_n_merge_strategy": "For lists (facilities, risks): union by case-insensitive name match. For scalars (revenue): mode/median across passes. For sentiment: average."
+  }
+}

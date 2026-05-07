@@ -200,10 +200,47 @@ def filing_doc_url(cik_int: int, accession: str, doc_name: str) -> str:
     return f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{accn}/{doc_name}"
 
 
+def is_useful_doc(name: str, primary: str) -> bool:
+    """
+    Decide whether a document in a filing is worth downloading.
+
+    Default policy: primary doc + any HTML exhibit (press releases, narrative).
+    Skip XBRL technical files, schemas, images, zips, embedded JS/CSS.
+
+    The valuable content in a typical 8-K is in `*-ex991*.htm` (Exhibit 99.1,
+    the press release). The primary `.htm` is often just a cover sheet
+    pointing to the exhibit. 10-K/Q have the substance in the primary doc
+    plus longer narrative exhibits.
+    """
+    if name == primary:
+        return True
+    n = name.lower()
+    # Skip technical / non-narrative files
+    if n.endswith((".xsd", ".css", ".js", ".jpg", ".jpeg", ".png", ".gif",
+                   ".zip", ".json", ".xml")):
+        return False
+    # Skip XBRL helpers (lab/pre/def/cal/htm.xml side files)
+    if any(s in n for s in ("_lab.", "_pre.", "_def.", "_cal.", "_htm.xml",
+                            "filingsummary", "metalinks", "show.js", "report.css")):
+        return False
+    # Skip the auto-generated R1.htm / R2.htm tabular reports (XBRL views)
+    if re.match(r"^r\d+\.htm$", n):
+        return False
+    # Skip header-only HTML index pages
+    if "index-headers" in n or n.endswith("-index.html"):
+        return False
+    # Keep .htm/.html (these are typically the exhibits we want)
+    if n.endswith((".htm", ".html")):
+        return True
+    return False
+
+
 def download_filing(cik_int: int, ticker: str, f: dict, out_root: Path,
                     download_all_docs: bool = False) -> dict:
     """
-    Download primary document (and optionally all documents) for one filing.
+    Download useful documents (primary + exhibits) for one filing. With
+    `download_all_docs=True`, grab everything.
+
     Returns a dict suitable for the manifest row.
     """
     fdir = out_root / filing_dir_name(f)
@@ -222,9 +259,10 @@ def download_filing(cik_int: int, ticker: str, f: dict, out_root: Path,
     # Save the index
     (fdir / "index.json").write_text(json.dumps(idx, indent=2), encoding="utf-8")
 
-    targets = items if download_all_docs else [
-        i for i in items if i["name"] == f["primary_document"]
-    ]
+    if download_all_docs:
+        targets = items
+    else:
+        targets = [i for i in items if is_useful_doc(i["name"], f["primary_document"])]
     for it in targets:
         name = it["name"]
         out_file = fdir / name

@@ -1,0 +1,91 @@
+{
+  "schema_name": "sec_8k_v1",
+  "schema_version": "1.0",
+  "description": "Extraction schema for SEC 8-K current reports. Applies to the primary cover sheet PLUS any narrative exhibit (typically Exhibit 99.x = press release).",
+  "applies_to": ["8-K", "8-K/A"],
+  "sections": {
+    "filing_metadata": {
+      "company_ticker": "string (e.g. ADM)",
+      "company_name": "string (full legal name)",
+      "filing_date": "ISO date YYYY-MM-DD",
+      "report_date": "ISO date — date of earliest event reported",
+      "items_disclosed": ["array of item codes, e.g. 2.02, 5.02, 7.01, 9.01"]
+    },
+    "summary": {
+      "category": "one of: earnings_release | acquisition | divestiture | leadership_change | financial_restatement | dividend_buyback | debt_issuance | facility_event | regulatory_disclosure | shareholder_meeting | reg_fd | other",
+      "headline": "1 short sentence (under 25 words) of what this filing announces",
+      "narrative_summary": "2-4 sentence paraphrase of the filing's substance"
+    },
+    "earnings_release": {
+      "applicable": "boolean (true if this 8-K is a quarterly/annual earnings release, typically Item 2.02 + Exhibit 99.1)",
+      "period_covered": "string (e.g. Q1 2026, FY 2025)",
+      "period_end_date": "ISO date",
+      "headline_numbers": {
+        "revenue_usd_mn": "number or null",
+        "net_earnings_usd_mn": "number or null",
+        "adjusted_net_earnings_usd_mn": "number or null",
+        "eps_diluted_usd": "number or null",
+        "adjusted_eps_diluted_usd": "number or null",
+        "ebitda_usd_mn": "number or null",
+        "operating_cash_flow_usd_mn": "number or null"
+      },
+      "guidance_changes": [
+        {
+          "metric": "string (e.g. adjusted_eps_2026, capex_2026, segment_op_profit)",
+          "old_low": "number or null",
+          "old_high": "number or null",
+          "new_low": "number or null",
+          "new_high": "number or null",
+          "direction": "raised | lowered | maintained | initiated"
+        }
+      ],
+      "capex_guidance_usd_bn_low": "number or null",
+      "capex_guidance_usd_bn_high": "number or null"
+    },
+    "segment_commentary": [
+      {
+        "segment_name": "string as named in filing",
+        "performance": "positive | negative | mixed | neutral",
+        "drivers": ["array of cited positive drivers"],
+        "concerns": ["array of cited headwinds"],
+        "quoted_metric": "optional: a specific revenue or margin figure if cited"
+      }
+    ],
+    "facilities_mentioned": [
+      {
+        "name": "string (plant/facility name as cited)",
+        "operator": "string (parent company or subsidiary)",
+        "location_hint": "string (city/region as cited)",
+        "country_hint": "string (US, BR, AR, etc.)",
+        "facility_type_hint": "oilseed_crush | ethanol | biodiesel | nutrition | grain_handling | refinery | corporate_hq | other | unknown",
+        "context": "1 sentence explaining why mentioned (e.g. 'recovery from outage', 'announced expansion', 'sale to X')"
+      }
+    ],
+    "regulatory_or_policy_mentions": [
+      "Free-form list of policy/regulation references (e.g. RVO, RFS, 45Z, EPA biofuel pathway, FDA labeling, EU CFD)"
+    ],
+    "leadership_changes": [
+      {
+        "name": "Person name",
+        "role": "title",
+        "action": "appointed | departed | promoted | retired | role_change",
+        "effective_date": "ISO date or null"
+      }
+    ],
+    "ma_or_capital_allocation": [
+      {
+        "type": "acquisition | divestiture | dividend | buyback | debt_issuance | debt_repayment",
+        "counterparty": "string or null",
+        "amount_usd_mn": "number or null",
+        "description": "1 sentence"
+      }
+    ],
+    "people_quoted": [
+      "Names of executives quoted in the press release (e.g. CEO, CFO)"
+    ],
+    "polarity_overall": "positive | negative | neutral | mixed",
+    "polarity_intensity": "number 0.0-1.0 (0=mild, 1=strong)",
+    "extraction_confidence": "high | medium | low",
+    "extraction_notes": "any caveats from the extractor (e.g. 'numbers from Exhibit 99.1; cover sheet only had Item references')"
+  }
+}
