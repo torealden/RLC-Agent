@@ -40,3 +40,8 @@ credentials.json
 token.json
 *.pem
 *.key
+
+# SEC EDGAR raw filings — bulky and reproducible via scripts/sec_edgar_puller.py.
+# Track the manifests and ticker list, not the filings themselves.
+domain_knowledge/company_reports/*/[0-9]*_*/
+domain_knowledge/company_reports/company_tickers_cache.json
