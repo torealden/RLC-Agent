@@ -182,13 +182,14 @@ def chunk_by_item_sections(text: str, max_chunk_chars: int = MAX_CTX_CHARS) -> l
 
 def precheck_ollama() -> None:
     """
-    Verify Ollama is reachable and the configured model is installed.
-    Raises a clear error before we try to process any filings — without
-    this, an unreachable Ollama or a typo'd model name would silently
-    fail every filing in the batch (saw exactly that on a laptop run
-    where the model name didn't match anything in `ollama list`).
+    Verify Ollama is reachable, the configured model is installed, AND
+    the model can actually load given current free VRAM. Without the
+    third check, an installed-but-too-big model would fail at first
+    inference call after we've already started a batch (saw exactly
+    that on a laptop where qwen2.5:7b unquantized fp16 wanted 12 GB
+    on an 8 GB card).
     """
-    # Reachability
+    # 1. Reachability
     try:
         r = requests.get(f"{OLLAMA_HOST}/api/tags", timeout=5)
         r.raise_for_status()
@@ -201,7 +202,7 @@ def precheck_ollama() -> None:
         raise SystemExit(f"FATAL: Ollama health check at {OLLAMA_HOST}/api/tags "
                          f"failed: {e}")
 
-    # Model availability
+    # 2. Model availability
     available = [m["name"] for m in r.json().get("models", [])]
     if MODEL not in available:
         # Try matching base name (Ollama stores 'qwen3-coder:30b' but list has tags)
@@ -220,6 +221,49 @@ def precheck_ollama() -> None:
             f"  or run `ollama pull {MODEL}` to install it.\n"
         )
         raise SystemExit(msg)
+
+    # 3. Model can actually load (catches OOM-on-load before we batch)
+    try:
+        r = requests.post(
+            f"{OLLAMA_HOST}/api/generate",
+            json={
+                "model": MODEL,
+                "prompt": "ok",
+                "stream": False,
+                "options": {"num_ctx": NUM_CTX, "num_predict": 1},
+            },
+            timeout=(15, 120),  # allow up to 2 min for a cold model load
+        )
+        if r.status_code == 500:
+            err = r.json().get("error", "")
+            if "system memory" in err.lower() or "out of memory" in err.lower():
+                # Pull installed-model sizes from /api/tags response for ranking
+                tags = requests.get(f"{OLLAMA_HOST}/api/tags", timeout=5).json()
+                with_sizes = [(m["name"], m.get("size", 0)) for m in tags.get("models", [])]
+                with_sizes.sort(key=lambda x: x[1])
+                smaller = [n for n, s in with_sizes if 0 < s < 8 * 1024**3 and n != MODEL]
+                msg = (
+                    f"FATAL: model '{MODEL}' won't fit on this GPU.\n"
+                    f"  Ollama said: {err}\n"
+                    f"  Host: {OLLAMA_HOST}\n"
+                )
+                if smaller:
+                    msg += (
+                        f"\n  Smaller installed models that should fit:\n"
+                        + "\n".join(f"    - {n}" for n in smaller[:8])
+                        + "\n"
+                    )
+                msg += (
+                    f"\n  Fix: set SEC_EXTRACT_MODEL to a smaller model, "
+                    f"or reduce SEC_EXTRACT_NUM_CTX (current {NUM_CTX}).\n"
+                )
+                raise SystemExit(msg)
+            raise SystemExit(f"FATAL: model load failed (HTTP 500): {err}")
+        r.raise_for_status()
+    except SystemExit:
+        raise
+    except Exception as e:
+        raise SystemExit(f"FATAL: model load smoke-test failed: {e}")
 
 
 def ollama_extract(prompt: str, system: str, model: str = MODEL,
