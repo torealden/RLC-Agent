@@ -65,8 +65,13 @@ if _raw_host and not _raw_host.startswith(("http://", "https://")):
 # 0.0.0.0 is a server-bind address, not a client connection address
 OLLAMA_HOST = _raw_host.replace("0.0.0.0", "127.0.0.1")
 MODEL = os.environ.get("SEC_EXTRACT_MODEL", "qwen3-coder:30b")
-MAX_CTX_CHARS = int(os.environ.get("SEC_EXTRACT_MAX_CTX_CHARS", "30000"))  # ~7-8K tokens
+MAX_CTX_CHARS = int(os.environ.get("SEC_EXTRACT_MAX_CTX_CHARS", "15000"))  # ~3-4K tokens of input
 NUM_CTX = int(os.environ.get("SEC_EXTRACT_NUM_CTX", "12288"))  # 12K — fits qwen3-coder:30b on 16GB VRAM
+OLLAMA_TIMEOUT_SEC = int(os.environ.get("SEC_EXTRACT_OLLAMA_TIMEOUT", "240"))  # 4 min hard cap per call
+
+# 10-K/Q sections we extract from. Other items (3-6, 8, 9, signatures, exhibits)
+# are skipped to keep runtime bounded.
+RELEVANT_ITEM_PREFIXES = ("Item 1.", "Item 1A.", "Item 2.", "Item 7.", "Item 7A.")
 
 SCHEMA_8K_PATH = SCHEMAS_DIR / "sec_8k_v1.json"
 SCHEMA_10KQ_PATH = SCHEMAS_DIR / "sec_10kq_v1.json"
@@ -104,44 +109,85 @@ ITEM_HEADER_RE = re.compile(
 )
 
 
+def normalize_item_title(title: str) -> str:
+    """Reduce 'Item 1A. RISK FACTORS' / 'Item 1A.' / 'Item 1a Risk Factors' to canonical form."""
+    m = re.match(r"Item\s+(\d+[A-Z]?)\.?\s*(.*)", title.strip(), re.IGNORECASE)
+    if not m:
+        return title.strip()
+    num = m.group(1).upper()
+    rest = m.group(2).strip()
+    return f"Item {num}." + (f" {rest}" if rest else "")
+
+
+def is_relevant_item(title: str) -> bool:
+    """Whether this Item section is one we extract from."""
+    t = title.upper()
+    return any(t.startswith(p.upper()) for p in RELEVANT_ITEM_PREFIXES)
+
+
 def chunk_by_item_sections(text: str, max_chunk_chars: int = MAX_CTX_CHARS) -> list[dict]:
     """
-    Split a 10-K/Q text into Item-titled sections. Returns
-    [{title, content}] in document order.
-    Falls back to fixed-size chunks if no Item headers detected.
+    Split a 10-K/Q into Item-titled sections, then merge consecutive
+    matches of the same Item (the regex over-matches because filings
+    repeat 'Item 1. BUSINESS' as a running header). Returns
+    [{title, content}] only for sections in RELEVANT_ITEM_PREFIXES.
+    Each yielded chunk is at most max_chunk_chars long; long sections
+    get split.
     """
     matches = list(ITEM_HEADER_RE.finditer(text))
     if not matches:
-        # No Item headers — fall back to fixed chunks
+        # No Item headers — fall back to fixed chunks across whole doc
         chunks = []
-        for i in range(0, len(text), max_chunk_chars):
+        for i in range(0, min(len(text), max_chunk_chars * 6), max_chunk_chars):
             chunks.append({"title": f"chunk_{i // max_chunk_chars + 1}",
                            "content": text[i:i + max_chunk_chars]})
         return chunks
 
-    chunks = []
+    # Build (start, end, normalized_title) ranges
+    ranges = []
     for i, m in enumerate(matches):
         start = m.start()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
-        title = m.group(1).strip()
-        content = text[start:end]
-        # If section itself is too big, split it further
-        if len(content) > max_chunk_chars:
-            for j in range(0, len(content), max_chunk_chars):
-                chunks.append({
-                    "title": f"{title} (part {j // max_chunk_chars + 1})",
-                    "content": content[j:j + max_chunk_chars],
-                })
+        ranges.append((start, end, normalize_item_title(m.group(1))))
+
+    # Merge consecutive same-title ranges (collapses repeated running-header matches)
+    merged = []
+    for s, e, t in ranges:
+        if merged and merged[-1][2] == t and merged[-1][1] == s:
+            merged[-1] = (merged[-1][0], e, t)
         else:
-            chunks.append({"title": title, "content": content})
+            merged.append([s, e, t])
+
+    chunks = []
+    for s, e, t in merged:
+        if not is_relevant_item(t):
+            continue
+        content = text[s:e]
+        if len(content) <= max_chunk_chars:
+            chunks.append({"title": t, "content": content})
+            continue
+        # Long section: split, but cap to a reasonable max parts so we
+        # don't burn an hour on a single risk-factors block
+        max_parts = 6
+        part_size = max(max_chunk_chars, len(content) // max_parts + 1)
+        for j in range(0, len(content), part_size):
+            chunks.append({
+                "title": f"{t} (part {j // part_size + 1})",
+                "content": content[j:j + part_size],
+            })
     return chunks
 
 
 # --- Ollama call --------------------------------------------------------------
 
 def ollama_extract(prompt: str, system: str, model: str = MODEL,
-                   timeout: int = 600) -> str:
-    """Call Ollama with format=json. Returns raw response text (the JSON)."""
+                   timeout: int = OLLAMA_TIMEOUT_SEC) -> str:
+    """Call Ollama with format=json. Returns raw response text (the JSON).
+
+    The timeout is BOTH connect and read — if Ollama doesn't return any
+    bytes for `timeout` seconds, we abort. Setting this high is dangerous
+    because long prompts can leave the GPU silent for minutes.
+    """
     url = f"{OLLAMA_HOST}/api/generate"
     body = {
         "model": model,
@@ -154,7 +200,8 @@ def ollama_extract(prompt: str, system: str, model: str = MODEL,
             "num_ctx": NUM_CTX,
         },
     }
-    r = requests.post(url, json=body, timeout=timeout)
+    # Use (connect_timeout, read_timeout) tuple for explicit control
+    r = requests.post(url, json=body, timeout=(15, timeout))
     r.raise_for_status()
     return r.json()["response"]
 
@@ -280,26 +327,100 @@ def fields_for_section(title: str) -> list[str]:
     return ["business_overview"]  # default
 
 
+# For these list fields, dedupe by a name-like key rather than full JSON identity.
+# An entry with the same name but more-filled scalar values wins.
+LIST_DEDUPE_KEYS = {
+    "segments": "name",
+    "facilities_named": "name",
+    "facilities_mentioned": "name",
+    "risk_factors_top": "title",
+    "forward_guidance": "metric",
+    "commodity_exposures": "commodity",
+    "ma_or_capital_allocation": "type",
+    "leadership_changes": "name",
+    "guidance_changes": "metric",
+    "segment_commentary": "segment_name",
+    "esg_or_sustainability_targets": "target",
+}
+
+
+def _entry_fill_score(d: dict) -> int:
+    """How many non-null/non-empty scalar fields the entry has. Higher = more useful."""
+    if not isinstance(d, dict):
+        return 0
+    s = 0
+    for v in d.values():
+        if v is None or v == "" or v == [] or v == {}:
+            continue
+        s += 1
+    return s
+
+
+def _merge_list_by_key(existing: list, incoming: list, key: str) -> list:
+    """Dedupe by case-folded value at `key`; on collision keep the entry with more filled fields,
+    plus shallow-merge scalar values from the loser into the winner where the winner had nothing."""
+    by_k = {}
+    order = []
+    for x in existing + incoming:
+        if not isinstance(x, dict):
+            continue
+        k = (x.get(key) or "").strip().lower()
+        if not k:
+            # No name to match — keep as anonymous, don't dedupe
+            order.append(("__anon__", x))
+            continue
+        if k not in by_k:
+            by_k[k] = x
+            order.append((k, None))
+        else:
+            cur = by_k[k]
+            if _entry_fill_score(x) > _entry_fill_score(cur):
+                # Promote the more-filled entry; backfill from the loser
+                for kk, vv in cur.items():
+                    if x.get(kk) in (None, "", [], {}) and vv not in (None, "", [], {}):
+                        x[kk] = vv
+                by_k[k] = x
+            else:
+                # Keep current; backfill any empty fields from the new one
+                for kk, vv in x.items():
+                    if cur.get(kk) in (None, "", [], {}) and vv not in (None, "", [], {}):
+                        cur[kk] = vv
+    out = []
+    for k, anon in order:
+        if k == "__anon__":
+            out.append(anon)
+        elif k in by_k:
+            out.append(by_k[k])
+            del by_k[k]  # prevent re-adding on later same-k order entries
+    return out
+
+
 def merge_extractions(parts: list[dict]) -> dict:
-    """Merge per-section extractions into one. Lists union; scalars first-non-null wins."""
-    out = {}
+    """Merge per-section extractions. Lists with known name fields dedupe by name;
+    other lists union by JSON identity. Scalars: first-non-null wins."""
+    out: dict = {}
     for p in parts:
+        if not isinstance(p, dict):
+            continue
         for k, v in p.items():
             if v is None or v == "" or v == []:
                 continue
-            if k not in out or out[k] is None or out[k] == "":
+            if k not in out or out[k] is None or out[k] == "" or out[k] == []:
                 out[k] = v
             elif isinstance(v, list) and isinstance(out[k], list):
-                # Dedupe by JSON string
-                seen = {json.dumps(x, sort_keys=True) for x in out[k]}
-                for x in v:
-                    if json.dumps(x, sort_keys=True) not in seen:
-                        out[k].append(x)
-                        seen.add(json.dumps(x, sort_keys=True))
+                if k in LIST_DEDUPE_KEYS:
+                    out[k] = _merge_list_by_key(out[k], v, LIST_DEDUPE_KEYS[k])
+                else:
+                    seen = {json.dumps(x, sort_keys=True) for x in out[k]}
+                    for x in v:
+                        s = json.dumps(x, sort_keys=True)
+                        if s not in seen:
+                            out[k].append(x)
+                            seen.add(s)
             elif isinstance(v, dict) and isinstance(out[k], dict):
-                # Shallow merge
+                # Shallow merge: prefer first non-null
                 for kk, vv in v.items():
-                    if kk not in out[k] or out[k][kk] is None:
+                    if kk not in out[k] or out[k][kk] in (None, "", [], {}):
                         out[k][kk] = vv
     return out
 
