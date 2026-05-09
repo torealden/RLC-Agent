@@ -32,6 +32,8 @@ import psycopg2
 import psycopg2.extras
 import streamlit as st
 from dotenv import load_dotenv
+import folium
+from streamlit_folium import st_folium
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 load_dotenv(ROOT / ".env")
@@ -356,22 +358,119 @@ def render_grid():
 
     st.divider()
 
-    # --- Grid ---------------------------------------------------------------
+    # --- View toggle: Grid | Map -------------------------------------------
+    view_mode = st.radio(
+        "View",
+        ["Grid", "Map"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="grid_view_mode",
+    )
+    st.divider()
+
     if len(f) == 0:
         st.info("No facilities match these filters.")
         return
 
-    # Render in rows of 4 tiles
-    cols_per_row = 4
-    for row_start in range(0, len(f), cols_per_row):
-        cols = st.columns(cols_per_row)
-        for i in range(cols_per_row):
-            idx = row_start + i
-            if idx >= len(f):
-                break
-            r = f.iloc[idx]
-            with cols[i]:
-                render_tile(r, sentiment_set, permits_set)
+    if view_mode == "Map":
+        render_map(f)
+    else:
+        # Grid: rows of 4 tiles
+        cols_per_row = 4
+        for row_start in range(0, len(f), cols_per_row):
+            cols = st.columns(cols_per_row)
+            for i in range(cols_per_row):
+                idx = row_start + i
+                if idx >= len(f):
+                    break
+                r = f.iloc[idx]
+                with cols[i]:
+                    render_tile(r, sentiment_set, permits_set)
+
+
+def render_map(df: pd.DataFrame):
+    """Folium map of facilities with lat/lon. Click a marker to open detail."""
+    geo = df.dropna(subset=["lat", "lon"]).copy()
+    geo["lat"] = pd.to_numeric(geo["lat"], errors="coerce")
+    geo["lon"] = pd.to_numeric(geo["lon"], errors="coerce")
+    geo = geo.dropna(subset=["lat", "lon"])
+    geo = geo[(geo["lat"] != 0) & (geo["lon"] != 0)]
+
+    if len(geo) == 0:
+        st.info("None of the filtered facilities have coordinates on file.")
+        return
+
+    skipped = len(df) - len(geo)
+    if skipped > 0:
+        st.caption(
+            f"Showing {len(geo)} of {len(df)} (skipped {skipped} without coordinates)."
+        )
+
+    # Map centered on the centroid of the visible set
+    center_lat = float(geo["lat"].mean())
+    center_lon = float(geo["lon"].mean())
+    m = folium.Map(
+        location=[center_lat, center_lon],
+        zoom_start=6,
+        tiles="cartodbpositron",
+    )
+
+    for _, r in geo.iterrows():
+        sty = industry_style(r["industry_code"])
+        operator = r.get("operator") or "(no operator)"
+        city = r.get("city") or "(no city)"
+        state = r.get("state") or ""
+        popup_html = (
+            f"<div style='font-family:sans-serif;'>"
+            f"<b>{operator}</b><br>"
+            f"{city}, {state}<br>"
+            f"<i>{sty['icon']} {sty['label']}</i><br>"
+            f"<code style='font-size:0.8em;'>{r['facility_id']}</code>"
+            f"</div>"
+        )
+        # The tooltip text is what we read back to navigate on click —
+        # use the facility_id verbatim so the lookup is unambiguous.
+        folium.CircleMarker(
+            location=[float(r["lat"]), float(r["lon"])],
+            radius=7,
+            color=sty["color"],
+            fill=True,
+            fill_color=sty["color"],
+            fill_opacity=0.85,
+            weight=2,
+            popup=folium.Popup(popup_html, max_width=260),
+            tooltip=str(r["facility_id"]),
+        ).add_to(m)
+
+    # Render the map; capture click events
+    out = st_folium(
+        m,
+        height=600,
+        use_container_width=True,
+        returned_objects=["last_object_clicked_tooltip"],
+        key="facility_map",
+    )
+
+    clicked = (out or {}).get("last_object_clicked_tooltip")
+    if clicked:
+        # Confirm-and-navigate UI so a stray click on a marker doesn't immediately
+        # warp us out of the map view.
+        st.success(f"Selected: `{clicked}`")
+        if st.button(f"Open {clicked} →", type="primary"):
+            st.query_params["facility"] = clicked
+            st.rerun()
+
+    # Inline industry legend
+    with st.expander("Industry legend"):
+        legend_cols = st.columns(4)
+        items = list(INDUSTRY_META.items())
+        for i, (code, meta) in enumerate(items):
+            with legend_cols[i % 4]:
+                st.markdown(
+                    f"<span style='color:{meta['color']};font-size:1.2em;'>●</span> "
+                    f"{meta['icon']} {meta['label']}",
+                    unsafe_allow_html=True,
+                )
 
 
 def render_tile(r: pd.Series, sentiment_set: set, permits_set: set):
@@ -614,13 +713,32 @@ def render_relationships_tab(facility_id: str, all_facilities: pd.DataFrame):
 
     st.divider()
     st.markdown("### Add edge")
-    other_ids = sorted(
-        [fid for fid in all_facilities["facility_id"].tolist() if fid != facility_id]
+
+    # Build a human-friendly searchable label for each facility:
+    # "AGP — Eagle Grove (IA) · ia.agp_eagle_grove"
+    others = all_facilities[all_facilities["facility_id"] != facility_id].copy()
+    others["__label"] = (
+        others["operator"].fillna("(no operator)").astype(str)
+        + " — "
+        + others["city"].fillna("(no city)").astype(str)
+        + " ("
+        + others["state"].fillna("?").astype(str)
+        + ") · "
+        + others["facility_id"]
     )
+    others = others.sort_values("__label").reset_index(drop=True)
+    label_to_id = dict(zip(others["__label"], others["facility_id"]))
+
     with st.form(f"add_edge_{facility_id}"):
         c1, c2, c3 = st.columns([2, 1.5, 1])
         with c1:
-            target = st.selectbox("Target facility", other_ids)
+            target_label = st.selectbox(
+                "Target facility (type to search)",
+                options=list(label_to_id.keys()),
+                help="Streamlit selectboxes are search-as-you-type — start "
+                     "typing operator, city, or state.",
+            )
+            target = label_to_id[target_label]
         with c2:
             etype = st.selectbox("Edge type", EDGE_TYPES)
         with c3:
@@ -737,6 +855,55 @@ def render_overview(fac: dict):
     if fac.get("notes"):
         st.markdown("### Notes")
         st.text(fac["notes"])
+
+    # --- Danger zone ---------------------------------------------------------
+    st.divider()
+    with st.expander("⚠️ Danger zone — delete this facility"):
+        st.markdown(
+            "Hard-deletes the row from `reference.facility_master` (or "
+            "`reference.oilseed_crush_facilities` if it lives there). All "
+            "edges in `reference.facility_edge_weights` referencing this "
+            "facility are also hard-deleted. This is reversible only by "
+            "writing a new migration to recreate the row."
+        )
+        confirm = st.text_input(
+            f"To confirm, type the facility_id exactly: `{fac['facility_id']}`",
+            key=f"confirm_{fac['facility_id']}",
+        )
+        if st.button("Delete this facility permanently",
+                     type="primary", disabled=(confirm != fac["facility_id"])):
+            try:
+                # Edges first (FK-style cleanup, even though no FK is enforced)
+                ne = execute(
+                    """
+                    DELETE FROM reference.facility_edge_weights
+                    WHERE source_facility_id = %s OR target_facility_id = %s
+                    """,
+                    (fac["facility_id"], fac["facility_id"]),
+                )
+                # Facility row — try both tables
+                nf = execute(
+                    "DELETE FROM reference.facility_master WHERE facility_id = %s",
+                    (fac["facility_id"],),
+                )
+                noc = execute(
+                    "DELETE FROM reference.oilseed_crush_facilities WHERE facility_id = %s",
+                    (fac["facility_id"],),
+                )
+                # Bust caches
+                list_facilities.clear()
+                fetch_edges_for.clear()
+                st.success(
+                    f"Deleted `{fac['facility_id']}` "
+                    f"(rows: master={nf}, oilseed_crush={noc}, edges={ne}). "
+                    f"Returning to grid…"
+                )
+                if "facility" in st.query_params: del st.query_params["facility"]
+                st.rerun()
+            except Exception as e:
+                st.error(f"Delete failed: {e}")
+                try: get_conn().rollback()
+                except Exception: pass
 
 
 def render_sentiment_tab(facility_id: str):
