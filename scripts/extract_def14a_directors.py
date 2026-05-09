@@ -350,7 +350,14 @@ def extract_one(fdir: Path, model: str = DEFAULT_MODEL,
     prompt = build_prompt(schema, ticker, info["filing_date"], section)
 
     started = time.time()
-    parsed, usage = call_claude(prompt, model=model)
+    try:
+        parsed, usage = call_claude(prompt, model=model)
+    except json.JSONDecodeError as e:
+        return {"status": "bad_json", "filing_dir": fdir.name,
+                "error": f"Claude response not parseable as JSON: {e}"}
+    except Exception as e:
+        return {"status": "api_error", "filing_dir": fdir.name,
+                "error": f"{type(e).__name__}: {e}"}
     elapsed = time.time() - started
 
     cost = (usage["input_tokens"] * COST_IN_M
@@ -551,17 +558,25 @@ def main():
         filings = discover_def14a_filings(all_tickers=True)
 
     grand_cost = 0.0
+    counts = {"ok": 0, "skipped": 0, "bad_json": 0, "api_error": 0,
+              "no_html": 0, "unrecognized": 0}
     for f in filings:
         print(f"--- {f.parent.name} / {f.name} ---")
-        r = extract_one(f, model=args.model, force=args.force)
+        try:
+            r = extract_one(f, model=args.model, force=args.force)
+        except Exception as e:
+            r = {"status": "fatal", "error": f"{type(e).__name__}: {e}"}
+        counts[r.get("status", "fatal")] = counts.get(r.get("status", "fatal"), 0) + 1
         if r["status"] == "ok":
             grand_cost += r.get("cost_usd", 0)
             print(f"  ok: {r['n_directors']} directors  "
                   f"${r['cost_usd']:.4f}  {r['elapsed_sec']:.1f}s")
         else:
-            print(f"  {r['status']}")
+            err = r.get("error", "")
+            print(f"  {r['status']}{(': ' + err[:120]) if err else ''}")
     if filings:
-        print(f"\nTotal extraction cost: ${grand_cost:.4f}")
+        print(f"\nSummary: {counts}")
+        print(f"Total extraction cost: ${grand_cost:.4f}")
 
     # Load
     if args.load_to_db:
