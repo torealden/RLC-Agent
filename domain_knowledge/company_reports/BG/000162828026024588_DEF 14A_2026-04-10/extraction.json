@@ -1,0 +1,224 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Limited",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2026-04-10"
+  },
+  "directors": [
+    {
+      "name": "Eliane Aleixo Lustosa de Andrade",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Ms. Aleixo Lustosa most recently served as Managing Director at the Brazilian Development Bank (National Bank for Economic and Social Development) from 2016 to 2019, responsible for capital markets and the Brazilian Privatization Program. Earlier she served as Managing Director of LLX Log\u00edstica S.A., Abril Group S.A., Globex Utilidades S.A. and as Chief Investment Officer of the Petrobras' Employee Pension Fund. She holds a Ph.D. in Finance from Pontifical Catholic University of Rio de Janeiro.",
+      "other_public_boards": [
+        "Motiva S.A.",
+        "BrasilAgro S.A.",
+        "Aegea Saneamento S.A."
+      ],
+      "prior_employers_named": [
+        "Brazilian Development Bank (National Bank for Economic and Social Development)",
+        "LLX Log\u00edstica S.A.",
+        "Abril Group S.A.",
+        "Globex Utilidades S.A.",
+        "Petrobras"
+      ]
+    },
+    {
+      "name": "Carol Browner",
+      "role": "director",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Ms. Browner currently serves as senior of counsel at Covington & Burling LLP since 2021, focusing on environmental, social and governance practice. From 2011 to 2021 she was senior counsel at Albright Stonebridge Group, and from 2009 to 2011 she served as Assistant to President Obama and Director of the White House Office of Energy and Climate Change Policy. She previously served as Administrator of the Environmental Protection Agency from 1993 to 2001.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Covington & Burling LLP",
+        "Albright Stonebridge Group",
+        "White House Office of Energy and Climate Change Policy",
+        "Albright Group",
+        "Albright Capital Management LLC",
+        "Environmental Protection Agency"
+      ]
+    },
+    {
+      "name": "Gregory Heckman",
+      "role": "director",
+      "is_independent": false,
+      "age": 64,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Heckman has been CEO of Bunge since 2019 and a director since October 2018, with more than four decades of experience in agriculture, energy and food processing. He was a Founding Partner of Flatwater Partners and served as CEO of The Gavilon Group from 2008 to 2015. Prior to that, he held positions as Chief Operating Officer of ConAgra Foods Commercial Products and President and COO of ConAgra Trade Group.",
+      "other_public_boards": [
+        "OCI NV"
+      ],
+      "prior_employers_named": [
+        "Flatwater Partners",
+        "The Gavilon Group",
+        "ConAgra Foods Commercial Products",
+        "ConAgra Trade Group"
+      ]
+    },
+    {
+      "name": "Adrian Isman",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Isman has served as Chief Growth Officer of Calosense Inc. since January 2025, and previously as its CEO from November 2023 to December 2024. Prior to Calosense, he spent the majority of his career at Louis Dreyfus Company (LDC) beginning in 1985, serving in various roles including CEO of the North America Region from 2017 to 2022, with time away serving as CEO of Marc Rich Agriculture Latin America from 1997 to 2000.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Calosense Inc.",
+        "Louis Dreyfus Company",
+        "Marc Rich Agriculture Latin America"
+      ]
+    },
+    {
+      "name": "Anne Jensen",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Ms. Jensen is the Chief Operating Officer at DS NORDEN since January 2024, bringing more than 25 years of experience in the oil and gas industry. She previously served as President and CEO of TotalEnergies Canada from 2021 to 2023, and earlier held senior roles at Maersk Oil and Shell. She holds a Bachelor of Commerce in Economics from Copenhagen Business School.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "DS NORDEN",
+        "TotalEnergies Canada",
+        "Maersk Oil",
+        "Shell"
+      ]
+    },
+    {
+      "name": "Linda Jojo",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Ms. Jojo served as Executive Vice President and Chief Customer Officer for United Airlines from 2022 until her retirement in 2024, and prior to that as United's EVP of Technology and Chief Digital Officer from 2017 to 2022. Before joining United in 2014, she served as EVP and Chief Information Officer for Rogers Communications. She also previously held senior officer roles at Energy Future Holdings Corporation, Flowserve Corporation and General Electric.",
+      "other_public_boards": [
+        "Exelon Corp.",
+        "Norwegian Cruise Line Holdings Ltd."
+      ],
+      "prior_employers_named": [
+        "United Airlines",
+        "Rogers Communications",
+        "Energy Future Holdings Corporation",
+        "Flowserve Corporation",
+        "General Electric"
+      ]
+    },
+    {
+      "name": "Christopher Mahoney",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Mahoney is the former CEO of Glencore Agriculture Ltd., where he worked for 21 years and served as CEO from 2002 until his retirement in 2019. He served as a non-executive director of Viterra from 2019 until its acquisition by Bunge in July 2025, and as non-executive Chairman of ED&F Man Holdings Ltd. from 2021 to June 2025. Prior to Glencore, he worked for Cargill from 1982 to 1997.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Glencore Agriculture Ltd.",
+        "Viterra",
+        "ED&F Man Holdings Ltd.",
+        "Cargill"
+      ]
+    },
+    {
+      "name": "Monica McGurk",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Ms. McGurk is currently CEO of Glanbia Performance Nutrition Americas, which she joined in September 2024. Prior to Glanbia, she served in executive leadership roles at Tropicana Brands Group from September 2022 to August 2024, and before that held positions at Kellogg Company including Chief Growth Officer from 2019 to 2022. She also previously held leadership positions at Tyson Foods and The Coca-Cola Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Glanbia Performance Nutrition Americas",
+        "Tropicana Brands Group",
+        "Kellogg Company",
+        "Tyson Foods",
+        "The Coca-Cola Company"
+      ]
+    },
+    {
+      "name": "Kenneth Simril",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Simril is the former President and CEO of Fleischmann's Ingredients, a position he held from 2006 to 2021. Prior to that he was CFO and COO of Clipper Corporation, and before that CFO of ClearPath Networks Inc. He has also served in finance and engineering roles at Mobil Oil Corporation and Exxon Mobil Corporation.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Fleischmann's Ingredients",
+        "Clipper Corporation",
+        "ClearPath Networks Inc.",
+        "Mobil Oil Corporation",
+        "Exxon Mobil Corporation"
+      ]
+    },
+    {
+      "name": "Markus Walt",
+      "role": "director",
+      "is_independent": true,
+      "age": 48,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Walt is Head of Business Development for Glencore plc and a member of Glencore's Global Investment and Capital Allocation Committee. He began his career at Glencore in 1999 as an accountant specializing in metals and oil trading, and played key roles in major transactions including the Glencore IPO in 2011 and the acquisitions of Viterra (2012) and Xstrata (2013). He previously served as a non-executive director for Viterra from 2016 until its acquisition by Bunge in July 2025.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Glencore plc",
+        "Viterra"
+      ]
+    },
+    {
+      "name": "Henry \"Jay\" Winship",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Winship is the Founder and Managing Member of Pacific Point Capital, LLC and Pacific Point Advisors, LLC. Prior to that, he was a Principal, Senior Managing Director and Member of the Investment Committee at Relational Investors, which he joined in 1996. He has over 25 years of experience as an institutional investor and in investment management, accounting and financial management.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Pacific Point Capital, LLC",
+        "Pacific Point Advisors, LLC",
+        "Relational Investors"
+      ]
+    },
+    {
+      "name": "Mark Zenuk",
+      "role": "chair",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Zenuk has served as Managing Partner of Tillridge Global Agribusiness Partners, an agribusiness private equity firm, since 2016. Prior to Tillridge, he was a Managing Director at NGP Energy Capital Management leading the agribusiness investment platform from 2010 to 2016. Before that, he held executive leadership roles at Archer Daniels Midland Company, most recently as President of ADM's Global Oilseed business unit, and earlier as General Manager of the Commodity Marketing Group for the Saskatchewan Wheat Pool and Marketing Manager for the Canadian Wheat Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tillridge Global Agribusiness Partners",
+        "NGP Energy Capital Management",
+        "Archer Daniels Midland Company",
+        "Saskatchewan Wheat Pool",
+        "Canadian Wheat Board"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All 12 director nominees were extracted from the proxy statement. The 'Other Public Boards' for Eliane Aleixo Lustosa de Andrade lists companies noted as current (2020 to Present, 2021 to Present, 2022 to Present) from the 5-year directorships section; Biosev SA for Isman and the others listed as past are excluded. Monica McGurk's Mid America Apartment Communities Inc. ran 2016-2023 so is excluded as not current. Henry Winship's C.H. Robinson Worldwide ran to 2025 and CoreLogic to 2021, both excluded as past. No executive officers section was provided in the extracted text, so that array is empty. Gregory Heckman's OCI NV is listed as 2015 to Present so is included.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T14:29:52.525135Z",
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "DEF 14A",
+      "filing_date": "2026-04-10",
+      "accession": "000162828026024588",
+      "primary_doc": "bg-20260410.htm",
+      "section_chars_used": 63717
+    },
+    "input_tokens": 13766,
+    "output_tokens": 3207,
+    "cost_usd": 0.0894,
+    "elapsed_sec": 49.5
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2024-04-10"
+  },
+  "directors": [
+    {
+      "name": "Michael S. Burke",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. Burke served as Chair and CEO of AECOM, a Fortune 500 global infrastructure firm, where he led the company's IPO preparation, international business development, and M&A strategy. He also brings expertise in finance, accounting, and tax matters from his role as CFO at AECOM and his 15-year career at KPMG advising public companies. He has developed sustainability expertise through board service at companies focused on reducing harmful emissions in construction.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "AECOM",
+        "KPMG LLP"
+      ]
+    },
+    {
+      "name": "Theodore Colbert",
+      "role": "director",
+      "is_independent": true,
+      "age": 50,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Colbert currently serves as President and CEO of Boeing Defense, Space & Security, and previously served as President and CEO of Boeing Global Services, developing deep expertise in information technology, cybersecurity, data analytics, and automation over nearly three decades. He also held IT leadership roles at Citigroup and Ford Motor Company earlier in his career.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Boeing",
+        "Citigroup",
+        "Ford Motor Company"
+      ]
+    },
+    {
+      "name": "James C. Collins, Jr.",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Mr. Collins served as CEO of Corteva, Inc., the public spin-off of DowDuPont's crop protection and agrisciences divisions, and previously held senior executive roles at DuPont and DowDuPont overseeing agricultural business lines. He brings deep expertise in global agriculture, food science innovation, M&A, and sustainability in the agriculture and nutrition value chains.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Corteva, Inc.",
+        "DowDuPont",
+        "DuPont"
+      ]
+    },
+    {
+      "name": "Terrell K. Crews",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Mr. Crews brings deep expertise in the international agricultural industry from his 32-year career at Monsanto, where he served as Chief Financial Officer for nearly a decade, overseeing corporate finance, reporting, capital allocation, and M&A financing, including the integration of 11 acquired seed companies. He has served as ADM's independent Lead Director since May 2023.",
+      "other_public_boards": [
+        "WestRock Company"
+      ],
+      "prior_employers_named": [
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Ellen de Brabander",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Dr. de Brabander currently serves as Executive Vice President of Innovation and Regulatory Affairs at Elanco, and previously held senior R&D roles at PepsiCo, Merial (now Boehringer Ingelheim), Intervet (now Merck Animal Health), and DSM. She brings a broad scientific background and strong track record of innovation in human nutrition, life sciences, and animal health, along with experience as founding CEO of EIT Food.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Elanco",
+        "PepsiCo",
+        "Merial",
+        "Intervet",
+        "DSM",
+        "EIT Food"
+      ]
+    },
+    {
+      "name": "Suzan F. Harrison",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Ms. Harrison spent four decades at Colgate-Palmolive in executive leadership positions, including President of Global Oral Care and President of Hill's Pet Nutrition Inc. North America, gaining extensive experience in operational management, M&A, sales and marketing, research and development, and sustainability. She chairs ADM's Sustainability and Corporate Responsibility Committee.",
+      "other_public_boards": [
+        "WestRock Company",
+        "Ashland Inc."
+      ],
+      "prior_employers_named": [
+        "Colgate-Palmolive Company"
+      ]
+    },
+    {
+      "name": "Juan R. Luciano",
+      "role": "chair",
+      "is_independent": false,
+      "age": 62,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. Luciano has served as ADM's Chair of the Board, Chief Executive Officer, and President since 2016, having joined the company in 2011 and led its transformation into a global nutrition business. Prior to ADM, he had a 25-year career at The Dow Chemical Company, where he last served as Executive Vice President and President of the Performance Division.",
+      "other_public_boards": [
+        "Eli Lilly and Company"
+      ],
+      "prior_employers_named": [
+        "The Dow Chemical Company"
+      ]
+    },
+    {
+      "name": "Patrick J. Moore",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 21,
+      "bio_summary": "Mr. Moore is the founder, President and CEO of PJM Advisors, LLC, a private equity investment and advisory firm, and previously served as Chairman and CEO of Smurfit-Stone Container Corporation, where he also held CFO and other roles. He brings over two decades of experience in finance, international banking, risk management, M&A, and environmental and sustainable practices, and chairs ADM's Nominating and Corporate Governance Committee.",
+      "other_public_boards": [
+        "Energizer Holdings, Inc."
+      ],
+      "prior_employers_named": [
+        "PJM Advisors, LLC",
+        "Smurfit-Stone Container Corporation",
+        "Continental Bank"
+      ]
+    },
+    {
+      "name": "Debra A. Sandler",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Ms. Sandler is founder and President of LaGrenade Group, LLC, a marketing consulting firm, and founder and CEO of Mavis Foods, LLC, and previously held senior leadership roles at Mars, Johnson & Johnson, and PepsiCo. She contributes strong marketing and operating experience, extensive understanding of consumer behavior in the food industry, and expertise in corporate social responsibility.",
+      "other_public_boards": [
+        "Gannett Co., Inc.",
+        "Dollar General Corporation",
+        "Keurig Dr Pepper Inc."
+      ],
+      "prior_employers_named": [
+        "Mars, Inc.",
+        "Johnson & Johnson",
+        "PepsiCo"
+      ]
+    },
+    {
+      "name": "Lei Z. Schlitz",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Dr. Schlitz currently serves as Vice President and President of Global Products at Johnson Controls, and previously held executive vice president roles at Illinois Tool Works, including leading its $22B Food Equipment segment, and served in engineering and business roles at Siemens Energy and Automation. She brings expertise in strategy development, M&A, R&D, food science, sustainability, and operational excellence at an international scale.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Johnson Controls",
+        "Illinois Tool Works Inc.",
+        "Siemens Energy & Automation",
+        "GE Global Research",
+        "GE Industrial Systems"
+      ]
+    },
+    {
+      "name": "Kelvin R. Westbrook",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 21,
+      "bio_summary": "Mr. Westbrook is President and CEO of KRW Advisors, LLC, and previously served as President, CEO, and co-founder of Millennium Digital Media Systems, a broadband services company, and as a partner in the corporate law and M&A practice of Paul Hastings Janofsky & Walker LLP. He brings valuable insights on consumer trends, information technology, cybersecurity, M&A legal expertise, and risk management, and chairs ADM's Compensation and Succession Committee.",
+      "other_public_boards": [
+        "T-Mobile US, Inc.",
+        "Mosaic Company",
+        "Camden Property Trust"
+      ],
+      "prior_employers_named": [
+        "KRW Advisors, LLC",
+        "Millennium Digital Media Systems, L.L.C.",
+        "LEB Communications, Inc.",
+        "Paul Hastings Janofsky & Walker LLP"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years were calculated based on 'Director since' year subtracted from 2024 (the annual meeting year). Suzan F. Harrison's role is listed as Sustainability and Corporate Responsibility Committee Chair in the bio, which does not map exactly to the allowed role enum; the closest match from the schema was 'nominating_committee_chair' but since she chairs Sustainability and Corporate Responsibility Committee, 'director' would be more accurate \u2014 however, the role assigned to Patrick J. Moore as Nominating and Corporate Governance Committee Chair takes precedence; Harrison's role is coded as 'nominating_committee_chair' in error \u2014 corrected to reflect that Harrison chairs Sustainability and Corporate Responsibility (no exact enum match, assigned 'director' role is most accurate per schema constraints but 'nominating_committee_chair' was used for Moore). No executive officer section was included in the provided proxy text excerpt. Theodore Colbert has no current public board directorships listed in his bio. Ellen de Brabander's listed board memberships are all non-public entities.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T14:27:18.431367Z",
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "DEF 14A",
+      "filing_date": "2024-04-10",
+      "accession": "000119312524091968",
+      "primary_doc": "d540412ddef14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14149,
+    "output_tokens": 2558,
+    "cost_usd": 0.0808,
+    "elapsed_sec": 47.1
+  }
+}

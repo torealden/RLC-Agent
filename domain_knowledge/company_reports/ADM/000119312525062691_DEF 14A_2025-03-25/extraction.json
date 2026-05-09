@@ -1,0 +1,217 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "fiscal_year_disclosed": 2025,
+    "filing_date": "2025-03-25"
+  },
+  "directors": [
+    {
+      "name": "Michael S. Burke",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Burke served as Chairman and CEO of AECOM, a Fortune 500 global infrastructure firm, where he drove international business development and M&A strategy and prepared the company for its IPO. He also brings financial expertise from his role as CFO at AECOM and a 15-year career at KPMG advising public companies. He contributes expertise in strategic planning, risk management, sustainability, and finance/accounting.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "AECOM",
+        "KPMG LLP"
+      ]
+    },
+    {
+      "name": "Theodore Colbert III",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Colbert has nearly three decades of experience overseeing information technology, cybersecurity, data and analytics at global companies including Boeing and Citigroup. At Boeing, he served as President and CEO of both its Global Services and Defense, Space & Security businesses. He previously held IT leadership roles at Citigroup and Ford Motor Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Boeing",
+        "Citigroup",
+        "Ford Motor Company"
+      ]
+    },
+    {
+      "name": "James C. Collins, Jr.",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Collins served as CEO of Corteva, Inc., the public spin-off of Dow DuPont's crop protection and agrisciences divisions, and held executive roles at DuPont and DowDuPont overseeing agriculture business lines. He brings deep expertise in global agriculture, food science innovation, R&D, sales and marketing, sustainability, and M&A. He also led the integration of legacy DuPont and Dow agricultural businesses prior to Corteva's spin-off.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Corteva, Inc.",
+        "DowDuPont",
+        "DuPont"
+      ]
+    },
+    {
+      "name": "Terrell K. Crews",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Mr. Crews spent 32 years at Monsanto, a global agrochemical and agricultural biotechnology company, including nearly a decade as Chief Financial Officer overseeing corporate finance, capital allocation, and financial integration of 11 acquired seed companies. He has served as ADM's independent Lead Director since May 2023 and contributes deep expertise in international agriculture, business transformation, agri-business operations, and M&A. He currently serves on the board of Smurfit WestRock plc.",
+      "other_public_boards": [
+        "Smurfit WestRock plc"
+      ],
+      "prior_employers_named": [
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Ellen de Brabander",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Dr. de Brabander currently serves as Executive Vice President of Innovation and Regulatory Affairs at Elanco, driving R&D pipeline execution across pet health and farm animals. She previously held senior R&D roles at PepsiCo with company-wide responsibility for food safety, quality, and digital transformation, and led R&D operations at Merial (now Boehringer Ingelheim), Intervet (now Merck Animal Health), and DSM. She holds a Ph.D. cum laude in bio-organic chemistry from Leiden University and co-authored over 60 scientific publications.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Elanco",
+        "PepsiCo",
+        "Merial",
+        "Intervet",
+        "DSM",
+        "EIT Food"
+      ]
+    },
+    {
+      "name": "Suzan F. Harrison",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Ms. Harrison spent four decades at Colgate-Palmolive, a global consumer products company, rising to President of Global Oral Care and developing deep expertise in operational management, M&A, consumer trends, sales and marketing, and customer-driven innovation. She also oversaw new product development in oral care, pet nutrition, and oral pharmaceuticals. She currently serves on the boards of Smurfit WestRock plc and Ashland Inc.",
+      "other_public_boards": [
+        "Smurfit WestRock plc",
+        "Ashland Inc."
+      ],
+      "prior_employers_named": [
+        "Colgate-Palmolive Company"
+      ]
+    },
+    {
+      "name": "Juan R. Luciano",
+      "role": "chair",
+      "is_independent": false,
+      "age": 63,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. Luciano has served as ADM's Chair of the Board, CEO, and President since 2016, having joined ADM in 2011 and spending over a decade in senior executive leadership roles driving the company's transformation and global expansion. Prior to ADM, he had a 25-year career at The Dow Chemical Company, where he last served as executive vice president and president of the Performance division. He currently serves as Lead Director on the board of Eli Lilly and Company.",
+      "other_public_boards": [
+        "Eli Lilly and Company"
+      ],
+      "prior_employers_named": [
+        "The Dow Chemical Company"
+      ]
+    },
+    {
+      "name": "David R. McAtee II",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. McAtee has served as Senior EVP and General Counsel at AT&T since 2015, overseeing global legal matters including corporate governance, M&A, finance, supply chain, compliance, and stockholder engagement. Before joining AT&T, he was a partner at Haynes and Boone, LLP, specializing in litigation, antitrust, and government investigations. He brings expertise in strategic planning, risk management, data security, and government and institutional stakeholder engagement.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "AT&T",
+        "Haynes and Boone, LLP"
+      ]
+    },
+    {
+      "name": "Patrick J. Moore",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": 22,
+      "bio_summary": "Mr. Moore is founder, President and CEO of PJM Advisors, LLC, a private equity investment and advisory firm, and previously served as Chairman and CEO of Smurfit-Stone Container Corporation, a leader in containerboard and corrugated packaging and paper recycling. He brings over two decades of financial sector experience including roles at Continental Bank and as CFO of Smurfit-Stone, with expertise in international banking and finance, strategy, commodity management, risk management, and M&A. He currently serves as Chairman of Energizer Holdings, Inc.",
+      "other_public_boards": [
+        "Energizer Holdings, Inc."
+      ],
+      "prior_employers_named": [
+        "PJM Advisors, LLC",
+        "Smurfit-Stone Container Corporation",
+        "Continental Bank"
+      ]
+    },
+    {
+      "name": "Debra A. Sandler",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Ms. Sandler is President of LaGrenade Group, LLC, a marketing consulting firm she founded, and previously founded Mavis Foods, LLC, a food startup. She has held leadership positions at Mars, Johnson & Johnson, and PepsiCo, building expertise in marketing, consumer behavior, brand development, and corporate social responsibility. She currently serves on the boards of Gannett Co., Inc., Dollar General Corporation, and Keurig Dr Pepper Inc.",
+      "other_public_boards": [
+        "Gannett Co., Inc.",
+        "Dollar General Corporation",
+        "Keurig Dr Pepper Inc."
+      ],
+      "prior_employers_named": [
+        "LaGrenade Group, LLC",
+        "Mavis Foods, LLC",
+        "Mars, Inc.",
+        "Johnson & Johnson",
+        "PepsiCo"
+      ]
+    },
+    {
+      "name": "Lei Z. Schlitz",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Dr. Schlitz currently serves as Vice President and President of Global Products at Johnson Controls and has held executive roles at Illinois Tool Works and Siemens Energy and Automation, building expertise in strategy development, M&A, operational excellence, R&D, and food science. She led ITW's $22B Food Equipment segment servicing global commercial food service and food retail customers. She holds a doctorate in mechanical engineering from the University of Wisconsin-Milwaukee.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Johnson Controls",
+        "Illinois Tool Works Inc.",
+        "Siemens Energy & Automation",
+        "GE Global Research",
+        "GE Industrial Systems"
+      ]
+    },
+    {
+      "name": "Kelvin R. Westbrook",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 22,
+      "bio_summary": "Mr. Westbrook is President and CEO of KRW Advisors, LLC, a consulting and advisory firm he founded, and previously served as President, CEO, and co-founder of two large cable television and broadband companies, including Millennium Digital Media Systems. He also brings significant legal expertise in M&A and risk management from his prior career as a partner in corporate law and M&A at Paul Hastings Janofsky & Walker LLP. He currently serves on the boards of T-Mobile US, Inc., Mosaic Company, and Camden Property Trust as Lead Independent Trust Manager.",
+      "other_public_boards": [
+        "T-Mobile US, Inc.",
+        "Mosaic Company",
+        "Camden Property Trust"
+      ],
+      "prior_employers_named": [
+        "KRW Advisors, LLC",
+        "Millennium Digital Media Systems, L.L.C.",
+        "LEB Communications, Inc.",
+        "Paul Hastings Janofsky & Walker LLP"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All 12 director nominees were extracted from the proxy statement with full bios. No executive officer section was included in the provided text excerpt, so executive_officers is an empty array. Tenure years are calculated based on director since year versus 2025 annual meeting year. Theodore Colbert III is listed in the director overview table as 'Theodore Colbert III' but his bio heading reads 'Theodore Colbert'; the full name with 'III' suffix is used as it appears in the director overview table. Ellen de Brabander's bio notes her current role at Elanco but Elanco is not a public board directorship \u2014 it is her current employer. Lei Schlitz's middle initial 'Z' appears in the bio heading.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T14:28:05.468861Z",
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "DEF 14A",
+      "filing_date": "2025-03-25",
+      "accession": "000119312525062691",
+      "primary_doc": "d919406ddef14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14228,
+    "output_tokens": 2914,
+    "cost_usd": 0.0864,
+    "elapsed_sec": 47.0
+  }
+}

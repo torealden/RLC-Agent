@@ -53,13 +53,23 @@ st.set_page_config(
 
 @st.cache_resource
 def get_conn():
-    return psycopg2.connect(
+    """Cached connection for the Streamlit session. We force AUTOCOMMIT so
+    every SELECT closes its implicit transaction immediately. Without this,
+    psycopg2's default behaviour leaves the connection in 'idle in
+    transaction' state forever — which holds a lock that blocks any
+    background TRUNCATE/DDL on tables we read here. (Saw exactly that:
+    a 4h41m idle-in-transaction connection blocked director_appointment
+    TRUNCATEs from the loader.)
+    """
+    conn = psycopg2.connect(
         host=os.environ.get("RLC_PG_HOST", "localhost"),
         port=os.environ.get("RLC_PG_PORT", "5432"),
         database=os.environ.get("RLC_PG_DATABASE", "rlc_commodities"),
         user=os.environ.get("RLC_PG_USER", "postgres"),
         password=os.environ.get("RLC_PG_PASSWORD", ""),
     )
+    conn.autocommit = True
+    return conn
 
 
 def query(sql: str, params=None) -> list[dict]:
@@ -70,11 +80,10 @@ def query(sql: str, params=None) -> list[dict]:
 
 
 def execute(sql: str, params=None) -> int:
-    """Execute a write statement, commit, return rowcount."""
+    """Execute a write statement, return rowcount. Connection is autocommit."""
     conn = get_conn()
     with conn.cursor() as cur:
         cur.execute(sql, params or [])
-        conn.commit()
         return cur.rowcount
 
 

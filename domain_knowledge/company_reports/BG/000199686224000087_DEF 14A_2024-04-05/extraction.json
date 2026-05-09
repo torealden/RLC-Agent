@@ -1,0 +1,200 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Limited",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2024-04-05"
+  },
+  "directors": [
+    {
+      "name": "Gregory Heckman",
+      "role": "director",
+      "is_independent": false,
+      "age": 61,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. Heckman has been Bunge's CEO since 2019 and a director since October 2018, with over 30 years of experience in agriculture, energy and food processing. He is Founding Partner of Flatwater Partners and formerly served as CEO of The Gavilon Group (2008\u20132015). Prior to that, he served as COO of ConAgra Foods Commercial Products and President and COO of ConAgra Trade Group.",
+      "other_public_boards": [
+        "OCI NV"
+      ],
+      "prior_employers_named": [
+        "The Gavilon Group",
+        "ConAgra Foods Commercial Products",
+        "ConAgra Trade Group"
+      ]
+    },
+    {
+      "name": "Bernardo Hees",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Hees was a partner at 3G Capital from 2010 until the end of 2019 and served as CEO of The Kraft Heinz Company (2015\u20132019), H.J. Heinz Company (2013\u20132015), and Burger King Worldwide Holdings, Inc. (2010\u20132013). He currently serves as Executive Chairman of the Board of Directors of Avis Budget Group, Inc.",
+      "other_public_boards": [
+        "Avis Budget Group, Inc."
+      ],
+      "prior_employers_named": [
+        "3G Capital",
+        "The Kraft Heinz Company",
+        "H.J. Heinz Company",
+        "Burger King Worldwide Holdings, Inc.",
+        "Burger King Worldwide, Inc.",
+        "Am\u00e9rica Latina Log\u00edstica"
+      ]
+    },
+    {
+      "name": "Adrian Isman",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": null,
+      "bio_summary": "Mr. Isman has been CEO of Calosense Inc. since November 2023. He spent the bulk of his career at Louis Dreyfus Company (LDC) from 1985\u20131997 and again 2000\u20132022, serving as CEO North America Region from 2017 to 2022. He also served as CEO of Marc Rich Agriculture Latin America from 1997 to 2000.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Calosense Inc.",
+        "Louis Dreyfus Company",
+        "Marc Rich Agriculture Latin America"
+      ]
+    },
+    {
+      "name": "Anne Jensen",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": null,
+      "bio_summary": "Ms. Jensen became Chief Operating Officer, Assets & Logistics for Norden in January 2024. Previously, she served as President and CEO for TotalEnergies EP Canada (2021\u20132023) and held roles at Maersk Oil and Shell in various international commercial and trading positions.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Norden",
+        "TotalEnergies EP Canada",
+        "Maersk Oil",
+        "Shell"
+      ]
+    },
+    {
+      "name": "Michael Kobori",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Kobori is currently the Chief Sustainability Officer at Starbucks Coffee Company, a position he has held since 2020. Prior to Starbucks, he served as Vice President of Sustainability at Levi Strauss & Co. from 2007 to 2020, and before that was with The Asia Foundation supporting human rights and economic development.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Starbucks Coffee Company",
+        "Levi Strauss & Co.",
+        "The Asia Foundation"
+      ]
+    },
+    {
+      "name": "Christopher Mahoney",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": null,
+      "bio_summary": "Mr. Mahoney is the former CEO of Glencore Agriculture Ltd., where he worked for 21 years and served as CEO from 2016 until his retirement in 2019. He currently serves as non-executive Chairman of the Board of ED&F Man Holdings Ltd. and as a non-executive director of Viterra Ltd. Prior to Glencore, he worked for Cargill from 1982 to 1997.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Glencore Agriculture Ltd.",
+        "Viterra Ltd.",
+        "Cargill"
+      ]
+    },
+    {
+      "name": "Monica McGurk",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Ms. McGurk is currently the CEO of the North American Business Unit at Tropicana Brands Group, joining the company in September 2022. Previously she served as Chief Global Growth Officer at Kellogg Company (2019\u20132022) and held leadership roles at Tyson Foods and The Coca-Cola Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tropicana Brands Group",
+        "Kellogg Company",
+        "Tyson Foods",
+        "The Coca-Cola Company"
+      ]
+    },
+    {
+      "name": "Kenneth Simril",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Simril is the former President and CEO of Fleischmann's Ingredients (2006\u20132021). Prior to that, he served as CFO and COO of Clipper Corporation and as CFO of ClearPath Networks Inc., and held various finance and engineering roles with Mobil Oil Corporation and Exxon Mobil Corporation.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Fleischmann's Ingredients",
+        "Clipper Corporation",
+        "ClearPath Networks Inc.",
+        "Mobil Oil Corporation",
+        "Exxon Mobil Corporation"
+      ]
+    },
+    {
+      "name": "Markus Walt",
+      "role": "director",
+      "is_independent": true,
+      "age": 46,
+      "tenure_years_on_board": null,
+      "bio_summary": "Mr. Walt is Head of Business Development for Glencore plc, where he started his career in 1999 as an accountant in metals and oil trading. He has been involved in Glencore's major M&A activities, including the Glencore IPO and the acquisitions of Viterra and Xstrata, and has served on the Viterra Board since 2016.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Glencore plc",
+        "Viterra"
+      ]
+    },
+    {
+      "name": "Henry \"Jay\" Winship",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. Winship is the Founder and Managing Member of Pacific Point Capital, LLC and Pacific Point Advisors, LLC. Prior to that, he was a Principal, Senior Managing Director and Member of the Investment Committee at Relational Investors, which he joined in 1996, with over 25 years of experience as an institutional investor.",
+      "other_public_boards": [
+        "C.H. Robinson"
+      ],
+      "prior_employers_named": [
+        "Relational Investors",
+        "Pacific Point Capital, LLC",
+        "Pacific Point Advisors, LLC"
+      ]
+    },
+    {
+      "name": "Mark Zenuk",
+      "role": "chair",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. Zenuk has served as Managing Partner of Tillridge Global Agribusiness Partners since 2016 and previously was a Managing Director at NGP Energy Capital Management (2010\u20132016) leading its agribusiness investment platform. Before that, he held domestic and international executive leadership roles with Archer Daniels Midland Company and served with the Saskatchewan Wheat Pool and the Canadian Wheat Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tillridge Global Agribusiness Partners",
+        "NGP Energy Capital Management",
+        "Archer Daniels Midland Company",
+        "Saskatchewan Wheat Pool",
+        "Canadian Wheat Board"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "The proxy text provided covers the director bios in detail but does not include a separate executive officers section in the supplied text. Carol Ann Browner is referenced in the text fragment at the beginning but her full bio entry (age, tenure) is not fully included in the supplied excerpt; she is not listed among the director nominees table shown. The four CPP Investments and Glencore nominees (Isman, Jensen, Mahoney, Walt) are conditional nominees pending Viterra Transaction closing, so tenure is null. Kenneth Simril is listed as Chair of the Human Resources and Compensation Committee. Other public boards for Mahoney include ED&F Man Holdings Ltd. and Viterra Ltd., but these appear to be private companies, so they are excluded per the rules.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T14:30:34.390126Z",
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "DEF 14A",
+      "filing_date": "2024-04-05",
+      "accession": "000199686224000087",
+      "primary_doc": "bg-20240405.htm",
+      "section_chars_used": 52779
+    },
+    "input_tokens": 11705,
+    "output_tokens": 2447,
+    "cost_usd": 0.0718,
+    "elapsed_sec": 41.8
+  }
+}

@@ -1,0 +1,194 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "fiscal_year_disclosed": 2020,
+    "filing_date": "2020-03-25"
+  },
+  "directors": [
+    {
+      "name": "Michael S. Burke",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Chairman and CEO of AECOM since March 2015, having joined the company in October 2005 and held roles including CFO and Chief Corporate Officer. Prior to AECOM, he served in various leadership positions at KPMG LLP.",
+      "other_public_boards": [
+        "AECOM"
+      ],
+      "prior_employers_named": [
+        "AECOM",
+        "KPMG LLP"
+      ]
+    },
+    {
+      "name": "Pierre Dufour",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Retired Senior Executive Vice President of Air Liquide Group, where he worked from 1997 until July 2017, overseeing operations across the Americas, Africa-Middle East, and Asia-Pacific zones. He was elected to the board of Air Liquide S.A. in May 2012.",
+      "other_public_boards": [
+        "Air Liquide S.A."
+      ],
+      "prior_employers_named": [
+        "Air Liquide Group"
+      ]
+    },
+    {
+      "name": "Terrell K. Crews",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Retired from Monsanto Company in 2009, where he served as Executive Vice President, CFO and Vegetable Business CEO from 2007 to 2009 and as EVP and CFO from 2000 to 2007. He brings expertise in finance, agri-business, and international operations.",
+      "other_public_boards": [
+        "WestRock Company",
+        "Hormel Foods Corporation"
+      ],
+      "prior_employers_named": [
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Donald E. Felsinger",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Retired Executive Chairman of Sempra Energy, where he served until December 2012, bringing extensive experience as a board member, chair, and CEO with Fortune 500 companies. He provides expertise in mergers and acquisitions, corporate governance, strategic planning, and risk management.",
+      "other_public_boards": [
+        "Northrop Grumman Corporation"
+      ],
+      "prior_employers_named": [
+        "Sempra Energy"
+      ]
+    },
+    {
+      "name": "Suzan F. Harrison",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Retired in 2019 as President of Global Oral Care at Colgate-Palmolive Company, having also served as President of Hill's Pet Nutrition Inc. North America and held various roles at Colgate commencing in 1983. She brings extensive leadership, management, operations, marketing, and international experience.",
+      "other_public_boards": [
+        "WestRock Company"
+      ],
+      "prior_employers_named": [
+        "Colgate-Palmolive Company",
+        "Hill's Pet Nutrition Inc."
+      ]
+    },
+    {
+      "name": "Patrick J. Moore",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 17,
+      "bio_summary": "President and CEO of PJM Advisors, LLC since 2011, and retired CEO of Smurfit-Stone Container Corporation, where he held positions of increasing importance since 1987. Prior to 1987, he served 12 years at Continental Bank in corporate lending, international banking, and administrative roles.",
+      "other_public_boards": [
+        "Energizer Holdings, Inc."
+      ],
+      "prior_employers_named": [
+        "Smurfit-Stone Container Corporation",
+        "Continental Bank",
+        "PJM Advisors, LLC"
+      ]
+    },
+    {
+      "name": "Juan R. Luciano",
+      "role": "chair",
+      "is_independent": false,
+      "age": 58,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Chairman, CEO, and President of ADM since January 2016, having joined the company in 2011 as EVP and COO. Previously, he was with The Dow Chemical Company, where he last served as executive vice president and president of the performance division.",
+      "other_public_boards": [
+        "Eli Lilly and Company"
+      ],
+      "prior_employers_named": [
+        "The Dow Chemical Company"
+      ]
+    },
+    {
+      "name": "Francisco J. Sanchez",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Senior Managing Director of Pt. Capital and Chairman of CNS Global Advisors since November 2013, specializing in international trade and investment. He previously served as Under Secretary for International Trade at the U.S. Department of Commerce from 2010 to November 2013.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "U.S. Department of Commerce",
+        "Pt. Capital",
+        "CNS Global Advisors"
+      ]
+    },
+    {
+      "name": "Debra A. Sandler",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 4,
+      "bio_summary": "President of LaGrenade Group, LLC since October 2015, a marketing consultancy she founded. She previously held senior roles at Mars, Inc. including Chief Health and Wellbeing Officer and President, Chocolate, North America, and spent 10 years at Johnson & Johnson prior to joining Mars.",
+      "other_public_boards": [
+        "Gannett Co., Inc."
+      ],
+      "prior_employers_named": [
+        "Mars, Inc.",
+        "Johnson & Johnson",
+        "PepsiCo"
+      ]
+    },
+    {
+      "name": "Kelvin R. Westbrook",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 17,
+      "bio_summary": "President and CEO of KRW Advisors, LLC since 2007, bringing legal, media, and marketing expertise to the Board. He is a former partner of a national law firm and was President, CEO, and co-founder of two large cable television and broadband companies, including serving as Chairman and Chief Strategic Officer of Millennium Digital Media Systems.",
+      "other_public_boards": [
+        "T-Mobile USA, Inc.",
+        "Mosaic Company",
+        "Camden Property Trust"
+      ],
+      "prior_employers_named": [
+        "Millennium Digital Media Systems, L.L.C.",
+        "KRW Advisors, LLC"
+      ]
+    },
+    {
+      "name": "Lei Z. Schlitz",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Executive Vice President, Automotive OEM at Illinois Tool Works Inc. since January 2020, having previously served as EVP of Food Equipment and in other leadership roles at Illinois Tool Works since 2008. She brings extensive experience in strategy development, growth initiatives, and operational excellence.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Illinois Tool Works Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director tenure years calculated from 'Director since' year subtracted from the 2020 annual meeting year. The proxy text provided does not include a separate executive officers section beyond what is described in the director bios; therefore executive_officers is empty. For Pierre Dufour, 'Director of National Grid plc.' is noted as 'within the past five years' (i.e., past directorship), so it is excluded from other_public_boards. For Francisco Sanchez, 'Director of Good Resources Holdings Ltd.' is noted as 'within the past five years' (past directorship), so it is excluded. For Donald Felsinger, 'Director of Gannett Co., Inc.' is noted as 'within the past five years' (past directorship), so it is excluded. For Kelvin Westbrook, 'Director of Stifel Financial Corp.' is noted as 'within the past five years' (past directorship), so it is excluded; Camden Property Trust is listed as 'Lead Independent Trust Manager' which appears to be a current public company role. Lei Schlitz does not list any other public company directorships explicitly.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T14:24:41.729622Z",
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "DEF 14A",
+      "filing_date": "2020-03-25",
+      "accession": "000119312520084320",
+      "primary_doc": "d865428ddef14a.htm",
+      "section_chars_used": 53434
+    },
+    "input_tokens": 12305,
+    "output_tokens": 2252,
+    "cost_usd": 0.0707,
+    "elapsed_sec": 38.9
+  }
+}

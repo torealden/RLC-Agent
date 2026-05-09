@@ -1,0 +1,192 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "fiscal_year_disclosed": 2022,
+    "filing_date": "2022-03-22"
+  },
+  "directors": [
+    {
+      "name": "Michael S. Burke",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Burke retired in August 2020 as Chairman and CEO of AECOM, a global infrastructure firm, having joined the company in 2005 and previously held roles including CFO and Chief Corporate Officer. Prior to AECOM, he served in various leadership positions at KPMG LLP.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "AECOM",
+        "KPMG LLP"
+      ]
+    },
+    {
+      "name": "Theodore Colbert",
+      "role": "director",
+      "is_independent": true,
+      "age": 48,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Colbert is Executive Vice President of The Boeing Company and President and CEO of Boeing Global Services since October 2019, having served various roles at Boeing since 2009 including CIO. He previously served as Senior Vice President of Enterprise Architecture at Citigroup from 2007 to 2009.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "The Boeing Company",
+        "Citigroup"
+      ]
+    },
+    {
+      "name": "Terrell K. Crews",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. Crews retired from Monsanto Company in 2009, where he served as Executive Vice President, CFO and Vegetable Business CEO, as well as Executive Vice President and CFO from 2000 to 2007. He brings expertise in finance, agri-business, and international operations.",
+      "other_public_boards": [
+        "WestRock Company",
+        "Hormel Foods Corporation"
+      ],
+      "prior_employers_named": [
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Donald E. Felsinger",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Mr. Felsinger retired as Executive Chairman of Sempra Energy in December 2012 and brings extensive experience as a board member, chair, and CEO with Fortune 500 companies. He provides expertise in mergers and acquisitions, corporate governance, strategic planning, and international business.",
+      "other_public_boards": [
+        "Northrop Grumman Corporation"
+      ],
+      "prior_employers_named": [
+        "Sempra Energy"
+      ]
+    },
+    {
+      "name": "Suzan F. Harrison",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Ms. Harrison retired in 2019 as President of Global Oral Care at Colgate-Palmolive Company, where she held various leadership roles beginning in 1983, including President of Hill's Pet Nutrition Inc. North America. She brings extensive leadership, marketing, operations, and international experience.",
+      "other_public_boards": [
+        "WestRock Company"
+      ],
+      "prior_employers_named": [
+        "Colgate-Palmolive Company",
+        "Hill's Pet Nutrition Inc."
+      ]
+    },
+    {
+      "name": "Juan R. Luciano",
+      "role": "chair",
+      "is_independent": false,
+      "age": 60,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Luciano has served as Chairman of the Board, CEO, and President of ADM since January 2016, having joined ADM in 2011 as EVP and COO. Previously, he was with The Dow Chemical Company, where he last served as EVP and President of the performance division.",
+      "other_public_boards": [
+        "Eli Lilly and Company"
+      ],
+      "prior_employers_named": [
+        "The Dow Chemical Company"
+      ]
+    },
+    {
+      "name": "Patrick J. Moore",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 18,
+      "bio_summary": "Mr. Moore retired as CEO of Smurfit-Stone Container Corporation in 2011, where he held positions of increasing importance since 1987, and is currently President and CEO of PJM Advisors, LLC. Prior to 1987, he served 12 years at Continental Bank in various corporate lending and international banking positions.",
+      "other_public_boards": [
+        "Energizer Holdings, Inc."
+      ],
+      "prior_employers_named": [
+        "Smurfit-Stone Container Corporation",
+        "Continental Bank"
+      ]
+    },
+    {
+      "name": "Francisco J. Sanchez",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Sanchez is a Partner at Holland & Knight LLP and Advisor to Pt. Capital since July 2020, and previously served as CEO and Chairman of CNS Global Advisors from November 2013 to July 2020. He served as Under Secretary for International Trade at the U.S. Department of Commerce from 2010 to November 2013.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Holland & Knight LLP",
+        "Pt. Capital",
+        "CNS Global Advisors",
+        "U.S. Department of Commerce"
+      ]
+    },
+    {
+      "name": "Debra A. Sandler",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Ms. Sandler is currently President of LaGrenade Group, LLC, a marketing consultancy she founded, and previously held senior roles at Mars, Inc. including Chief Health and Wellbeing Officer and President of Chocolate North America. Prior to Mars, she spent 10 years with Johnson & Johnson in various leadership roles.",
+      "other_public_boards": [
+        "Gannett Co., Inc.",
+        "Dollar General Corporation",
+        "Keurig Dr Pepper Inc."
+      ],
+      "prior_employers_named": [
+        "Mars, Inc.",
+        "Johnson & Johnson",
+        "PepsiCo"
+      ]
+    },
+    {
+      "name": "Lei Z. Schlitz",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Dr. Schlitz is currently Executive Vice President of the Automotive OEM segment at Illinois Tool Works Inc., a global multi-industrial manufacturer, since January 2020, and previously served as EVP of the Food Equipment segment and in other leadership roles at Illinois Tool Works since 2008. She brings extensive leadership experience in strategy development, operational excellence, and sustainability.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Illinois Tool Works Inc."
+      ]
+    },
+    {
+      "name": "Kelvin R. Westbrook",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 18,
+      "bio_summary": "Mr. Westbrook is President and CEO of KRW Advisors, LLC since 2007, and brings legal, media, and marketing expertise as a former partner of a national law firm and co-founder of two large cable television and broadband companies. He previously served as Chairman and Chief Strategic Officer of Millennium Digital Media Systems from 2006 to 2007.",
+      "other_public_boards": [
+        "T-Mobile USA, Inc.",
+        "Mosaic Company",
+        "Camden Property Trust"
+      ],
+      "prior_employers_named": [
+        "Millennium Digital Media Systems, L.L.C."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All 11 director nominees extracted from the proxy. Theodore Colbert's tenure is listed as 0 years as he joined in 2021 and the table shows '0' years on board. Donald Felsinger is identified as Lead Director per the board leadership section. Juan Luciano serves as Chairman and CEO, assigned role 'chair'. Camden Property Trust for Westbrook is listed as 'Lead Independent Trust Manager' which is a current public-company board role. Executive officers section was not included in the provided text excerpt; no executive officer data extracted.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T14:25:54.615063Z",
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "DEF 14A",
+      "filing_date": "2022-03-22",
+      "accession": "000119312522081019",
+      "primary_doc": "d224373ddef14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14014,
+    "output_tokens": 2172,
+    "cost_usd": 0.0746,
+    "elapsed_sec": 35.2
+  }
+}
