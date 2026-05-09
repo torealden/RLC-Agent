@@ -1,0 +1,94 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-04-24",
+    "report_date": "2024-03-31",
+    "items_disclosed": [
+      "2.02"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "Bunge reports first quarter 2024 results with lower earnings compared to prior year.",
+    "narrative_summary": "Bunge Global SA reported Q1 2024 financial results, showing a decline in GAAP diluted EPS from $4.15 to $1.68 and adjusted EPS from $3.26 to $3.04. The company highlighted progress on Viterra integration planning."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q1 2024",
+    "period_end_date": "2024-03-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 244,
+      "adjusted_net_earnings_usd_mn": 304,
+      "eps_diluted_usd": 1.68,
+      "adjusted_eps_diluted_usd": 3.04,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Agribusiness",
+      "performance": "negative",
+      "narrative_summary": "Lower results in Processing were partially offset by higher results in Europe and Asia crush value chains. Merchandising saw lower results due to global grains and oils value chains."
+    },
+    {
+      "segment_name": "Refined Specialty Oils",
+      "performance": "negative",
+      "narrative_summary": "Higher results in Europe were offset by lower results in North America and Asia."
+    },
+    {
+      "segment_name": "Milling",
+      "performance": "positive",
+      "narrative_summary": "Higher results driven by South America, reflecting improved margins and a more favorable origination market environment."
+    }
+  ],
+  "corporate_and_other": {
+    "performance": null,
+    "narrative_summary": "Corporate expenses decreased due to timing of performance-based compensation. Other segment saw higher results related to Bunge Ventures and captive insurance program."
+  },
+  "non_core_segments": [
+    {
+      "segment_name": "Sugar Bioenergy",
+      "performance": "positive",
+      "narrative_summary": "Improved performance driven by higher sugar volumes and prices, offsetting lower ethanol prices."
+    }
+  ],
+  "cash_flow": {
+    "operating_activities_usd_mn": 994,
+    "adjusted_funds_from_operations_usd_mn": 514
+  },
+  "income_taxes": {
+    "expense_usd_mn": 117,
+    "previous_year_expense_usd_mn": 183
+  },
+  "outlook": {
+    "full_year_2024_adjusted_eps_usd": 9.0,
+    "agribusiness_full_year_results": null,
+    "refined_specialty_oils_full_year_results": null,
+    "milling_full_year_results": null,
+    "corporate_and_other_full_year_results": null,
+    "non_core_segments_full_year_results": -15
+  },
+  "conference_call_details": {
+    "date": "2024-04-24",
+    "time": "8:00 a.m. Eastern (7:00 a.m. Central)"
+  },
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:26:10.647736Z",
+    "elapsed_sec": 40.1,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-04-24",
+      "accession": "000199686224000092"
+    }
+  }
+}

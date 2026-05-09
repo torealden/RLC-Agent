@@ -1,0 +1,73 @@
+{
+  "company": "Bunge",
+  "reportType": "Quarterly Report",
+  "period": "Third Quarter 2025",
+  "revenue": {
+    "totalRevenue": 63184,
+    "yearAgoTotalRevenue": 57955
+  },
+  "netIncome": {
+    "totalNetIncome": -1212,
+    "yearAgoNetIncome": -1089
+  },
+  "segmentPerformance": [
+    {
+      "name": "Soybean Processing and Refining",
+      "revenue": 36125,
+      "yearAgoRevenue": 27413,
+      "netIncome": 1068,
+      "yearAgoNetIncome": 463
+    },
+    {
+      "name": "Softseed Processing and Refining",
+      "revenue": 10368,
+      "yearAgoRevenue": 7941,
+      "netIncome": 371,
+      "yearAgoNetIncome": 523
+    },
+    {
+      "name": "Other Oilseeds Processing and Refining",
+      "revenue": 4609,
+      "yearAgoRevenue": 3846,
+      "netIncome": 100,
+      "yearAgoNetIncome": 210
+    },
+    {
+      "name": "Grain Merchandising and Milling",
+      "revenue": 11146,
+      "yearAgoRevenue": 7831,
+      "netIncome": 254,
+      "yearAgoNetIncome": 231
+    },
+    {
+      "name": "Corporate and Other",
+      "revenue": 1090,
+      "yearAgoRevenue": 624,
+      "netIncome": -291,
+      "yearAgoNetIncome": -402
+    }
+  ],
+  "corporateEBIT": {
+    "currentPeriod": -278,
+    "yearAgo": -154
+  },
+  "otherEBIT": {
+    "currentPeriod": 10,
+    "yearAgo": 24
+  },
+  "totalEBIT": 1412,
+  "yearAgoTotalEBIT": 1025,
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:08:32.062796Z",
+    "elapsed_sec": 26.3,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-11-05",
+      "accession": "000162828025049208"
+    }
+  }
+}

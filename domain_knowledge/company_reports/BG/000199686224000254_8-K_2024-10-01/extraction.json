@@ -1,0 +1,55 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-10-01",
+    "report_date": "2024-10-01",
+    "items_disclosed": [
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "divestiture",
+    "headline": "Bunge completes sale of its share in BP Bunge Bioenergia joint venture in Brazil for $828 million.",
+    "narrative_summary": "Bunge Global SA has completed the sale of its 50% ownership stake in BP Bunge Bioenergia, a joint venture focused on sugar and ethanol production, to BP. The transaction is valued at approximately $828 million."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [
+    {
+      "name": "BP Bunge Bioenergia",
+      "operator": "Bunge Brasil Holdings B.V.",
+      "location_hint": "Brazil",
+      "facility_type_hint": "unknown",
+      "context": "sold to BP"
+    }
+  ],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "divestiture",
+      "counterparty": "BP Biofuels Brazil Investment Limited",
+      "amount_usd_mn": 828,
+      "description": "Sale of Bunge's 50% share in BP Bunge Bioenergia joint venture"
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.3,
+  "extraction_confidence": "high",
+  "extraction_notes": null,
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:28:33.403152Z",
+    "elapsed_sec": 18.7,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-10-01",
+      "accession": "000199686224000254"
+    }
+  }
+}

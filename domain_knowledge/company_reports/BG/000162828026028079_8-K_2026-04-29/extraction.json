@@ -1,0 +1,105 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2026-04-29",
+    "report_date": "2026-03-31",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "Bunge reports first quarter 2026 results with lower earnings and higher guidance.",
+    "narrative_summary": "Bunge reported Q1 2026 GAAP diluted EPS of $0.35, down from $1.48 in the prior year. The company raised its full-year adjusted EPS outlook to a range of $9.00-$9.50 from $7.50-$8.00."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q1 2026",
+    "period_end_date": "2026-03-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 68,
+      "adjusted_net_earnings_usd_mn": 183,
+      "eps_diluted_usd": 0.35,
+      "adjusted_eps_diluted_usd": 1.83,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": -541
+    },
+    "guidance_changes": [
+      {
+        "metric": "full-year adjusted eps",
+        "old_low": 7.5,
+        "old_high": 8,
+        "new_low": 9,
+        "new_high": 9.5,
+        "direction": "raised"
+      }
+    ],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Soybean Processing and Refining",
+      "performance": "positive",
+      "drivers": [
+        "strong processing performance in Argentina"
+      ],
+      "concerns": [],
+      "quoted_metric": "$209 million segment EBIT for Q1 2026, up from $271 million in the prior year."
+    },
+    {
+      "segment_name": "Softseed Processing and Refining",
+      "performance": "positive",
+      "drivers": [
+        "higher processing results in Argentina"
+      ],
+      "concerns": [],
+      "quoted_metric": "$76 million segment EBIT for Q1 2026, up from $82 million in the prior year."
+    },
+    {
+      "segment_name": "Tropical Oils and Specialty Ingredients",
+      "performance": "positive",
+      "drivers": [
+        "higher results in Asia"
+      ],
+      "concerns": [],
+      "quoted_metric": "$110 million segment EBIT for Q1 2026, up from $5 million in the prior year."
+    },
+    {
+      "segment_name": "Grain Merchandising and Milling",
+      "performance": "negative",
+      "drivers": [
+        "lower results in ocean freight"
+      ],
+      "concerns": [],
+      "quoted_metric": "-$76 million segment EBIT for Q1 2026, down from $46 million in the prior year."
+    }
+  ],
+  "cash_flow": {
+    "operating_activities_usd_mn": -541
+  },
+  "income_taxes": {
+    "tax_expense_usd_mn_2025": -80,
+    "tax_benefit_usd_mn_2026": 14
+  },
+  "outlook": {
+    "full_year_adjusted_eps_low": 9,
+    "full_year_adjusted_eps_high": 9.5
+  },
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:17:44.806619Z",
+    "elapsed_sec": 41.0,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2026-04-29",
+      "accession": "000162828026028079"
+    }
+  }
+}

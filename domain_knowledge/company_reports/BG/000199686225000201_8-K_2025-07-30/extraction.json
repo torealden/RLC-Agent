@@ -1,0 +1,61 @@
+{
+  "company": "Bunge",
+  "reportType": "Quarterly Report",
+  "period": "Q2 2025",
+  "revenue": {
+    "netSales": 17328,
+    "totalEBIT": 866
+  },
+  "segments": [
+    {
+      "name": "Agribusiness",
+      "ebit": 651
+    },
+    {
+      "name": "Processing (Part of Agribusiness)",
+      "ebit": 413
+    },
+    {
+      "name": "Merchandising (Part of Agribusiness)",
+      "ebit": 88
+    },
+    {
+      "name": "Refined and Specialty Oils",
+      "ebit": 239
+    },
+    {
+      "name": "Milling",
+      "ebit": 42
+    },
+    {
+      "name": "Corporate and Other",
+      "ebit": -197
+    }
+  ],
+  "outlook": {
+    "adjustedEPS": 7.75,
+    "agribusiness": "higher than previous outlook, down from last year",
+    "refinedAndSpecialtyOils": "down from previous outlook and last year",
+    "milling": "down from previous outlook but in line with last year"
+  },
+  "cashFlow": {
+    "operatingActivities": -1357,
+    "adjustedFFO": 693
+  },
+  "taxes": {
+    "incomeTaxExpense": 204
+  },
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:40:35.405861Z",
+    "elapsed_sec": 19.8,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-07-30",
+      "accession": "000199686225000201"
+    }
+  }
+}

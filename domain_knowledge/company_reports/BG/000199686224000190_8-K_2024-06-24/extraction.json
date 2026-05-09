@@ -1,0 +1,74 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-06-24",
+    "report_date": "2024-06-20",
+    "items_disclosed": [
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "divestiture",
+    "headline": "Bunge to sell its 50% share in BP Bunge Bioenergia for $800M",
+    "narrative_summary": "Bunge announced the sale of its 50% ownership in a joint venture with BP, focusing on sugar and bioenergy businesses in Brazil. The transaction is expected to close in Q4 2024."
+  },
+  "earnings_release": {
+    "applicable": null,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [
+    {
+      "name": "BP Bunge Bioenergia",
+      "operator": "Bunge and BP",
+      "location_hint": "Brazil",
+      "country_hint": "BR",
+      "facility_type_hint": "ethanol | sugar",
+      "context": "joint venture business being divested"
+    }
+  ],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "divestiture",
+      "counterparty": "bp",
+      "amount_usd_mn": 800,
+      "description": "Sale of Bunge's 50% share in BP Bunge Bioenergia for approximately $800 million"
+    }
+  ],
+  "people_quoted": [
+    "Greg Heckman (CEO)"
+  ],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.3,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers and details from the press release; filing metadata provided.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:27:26.573930Z",
+    "elapsed_sec": 26.8,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-06-24",
+      "accession": "000199686224000190"
+    }
+  }
+}

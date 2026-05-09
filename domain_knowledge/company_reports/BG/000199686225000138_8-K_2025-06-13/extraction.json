@@ -1,0 +1,44 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2025-06-13",
+    "report_date": "2025-06-13",
+    "items_disclosed": [
+      "2.01",
+      "7.01"
+    ]
+  },
+  "summary": {
+    "category": "acquisition",
+    "headline": "Bunge Global SA amends Business Combination Agreement with Viterra Limited, setting new closing date for July 2, 2025.",
+    "narrative_summary": "Bunge and the Designated Sellers amended the Business Combination Agreement to set the Closing Date as July 2, 2025, extend the Extended Outside Date to July 3, 2025, and waive certain conditions for closing."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [
+    "State Administration for Market Regulation of the People's Republic of China",
+    "Federal Economic Competition Commission of the United Mexican States"
+  ],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": null,
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers and dates are inferred from the filing context; no specific financial details were provided.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:39:03.124085Z",
+    "elapsed_sec": 18.2,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-06-13",
+      "accession": "000199686225000138"
+    }
+  }
+}

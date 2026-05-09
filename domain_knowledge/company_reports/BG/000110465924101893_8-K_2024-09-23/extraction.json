@@ -1,0 +1,48 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "BUNGE GLOBAL SA",
+    "filing_date": "2024-09-23",
+    "report_date": "2024-09-20",
+    "items_disclosed": [
+      "2.01",
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "divestiture",
+    "headline": "Bunge announces early participation results of exchange offers and consent solicitations for Viterra notes.",
+    "narrative_summary": "Bunge's subsidiary BLFC received consents from holders representing over 96.5% in principal amount of certain existing Viterra notes, allowing the company to amend indentures governing these notes."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "divestiture",
+      "counterparty": null,
+      "amount_usd_mn": null,
+      "description": "Announcement of early participation results in exchange offers and consent solicitations for Viterra notes."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers from press release; cover sheet only had Item references",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:03:01.493269Z",
+    "elapsed_sec": 18.9,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-09-23",
+      "accession": "000110465924101893"
+    }
+  }
+}

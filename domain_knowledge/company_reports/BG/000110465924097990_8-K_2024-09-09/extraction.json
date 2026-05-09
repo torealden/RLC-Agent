@@ -1,0 +1,48 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-09-09",
+    "report_date": "2024-09-09",
+    "items_disclosed": [
+      "8.01",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "acquisition",
+    "headline": "Bunge Global SA filed financial statements and pro forma information for the acquisition of Viterra Limited.",
+    "narrative_summary": "This filing provides audited consolidated financial statements of Viterra as well as unaudited pro forma combined financial information following Bunge's acquisition of Viterra."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "acquisition",
+      "counterparty": "Viterra Limited and its shareholders including certain affiliates of Glencore PLC, Canada Pension Plan Investment Board, and British Columbia Investment Management Corporation",
+      "amount_usd_mn": null,
+      "description": "Acquisition completed on June 13, 2023, with shareholder approval at an extraordinary general meeting held on October 5, 2023."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.4,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers and dates from the financial statements in Exhibit 99.1; cover sheet only had Item references.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:01:43.789201Z",
+    "elapsed_sec": 22.1,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-09-09",
+      "accession": "000110465924097990"
+    }
+  }
+}

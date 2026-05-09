@@ -1,0 +1,43 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2025-06-12",
+    "report_date": "2025-06-12",
+    "items_disclosed": [
+      "2.02"
+    ]
+  },
+  "summary": {
+    "category": "regulatory_disclosure",
+    "headline": "Bunge extends expiration date of exchange offers for Viterra notes",
+    "narrative_summary": "Bunge Limited Finance Corp. extended the expiration date of its exchange offers and consent solicitations related to Viterra's debt securities."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [
+    "Exchange Offers",
+    "Consent Solicitations"
+  ],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "high",
+  "extraction_notes": null,
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:38:44.860759Z",
+    "elapsed_sec": 14.8,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-06-12",
+      "accession": "000199686225000136"
+    }
+  }
+}

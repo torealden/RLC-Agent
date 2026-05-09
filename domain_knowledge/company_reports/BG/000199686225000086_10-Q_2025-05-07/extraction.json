@@ -1,0 +1,39 @@
+{
+  "business_overview": {
+    "description": null,
+    "primary_segments": [],
+    "primary_commodities": [],
+    "geographic_focus": []
+  },
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": null,
+    "filing_type": "10-Q",
+    "filing_date": "2025-05-07",
+    "fiscal_period_end": "2025-03-31",
+    "fiscal_year": null,
+    "fiscal_quarter": 1
+  },
+  "extraction_confidence": "low",
+  "extraction_notes": "The provided text does not contain information relevant to the business overview fields.",
+  "risk_factors_top": [
+    {
+      "title": null,
+      "category": null,
+      "summary": null
+    }
+  ],
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_10kq_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:38:02.612187Z",
+    "elapsed_sec": 17.5,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "10-Q",
+      "filing_date": "2025-05-07",
+      "accession": "000199686225000086"
+    }
+  }
+}

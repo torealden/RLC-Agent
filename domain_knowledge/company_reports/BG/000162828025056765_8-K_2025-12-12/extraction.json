@@ -1,0 +1,53 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2025-12-12",
+    "report_date": "2025-12-11",
+    "items_disclosed": [
+      "5.02"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "Bunge Global SA announces departure of co-Chief Operating Officer David Mattiske and appointment of Julio Garros as Chief Operating Officer.",
+    "narrative_summary": "Bunge Global SA announced the departure of co-Chief Operating Officer David Mattiske, who will step down to pursue other opportunities. Julio Garros has been appointed as the new Chief Operating Officer."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "David Mattiske",
+      "role": "co-Chief Operating Officer",
+      "action": "departed",
+      "effective_date": "2025-12-31"
+    },
+    {
+      "name": "Julio Garros",
+      "role": "co-Chief Operating Officer",
+      "action": "promoted to Chief Operating Officer",
+      "effective_date": "2025-12-12"
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.3,
+  "extraction_confidence": "high",
+  "extraction_notes": null,
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:09:21.818540Z",
+    "elapsed_sec": 17.1,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-12-12",
+      "accession": "000162828025056765"
+    }
+  }
+}

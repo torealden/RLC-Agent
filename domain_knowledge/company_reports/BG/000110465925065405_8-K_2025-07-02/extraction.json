@@ -1,0 +1,80 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "BUNGE GLOBAL SA",
+    "filing_date": "2025-07-02",
+    "report_date": "2025-07-02",
+    "items_disclosed": [
+      "2.01",
+      "5.02"
+    ]
+  },
+  "summary": {
+    "category": "acquisition",
+    "headline": "Bunge acquires Viterra in a $7.3 billion deal, appoints new COO.",
+    "narrative_summary": "Bunge acquired all of the issued and outstanding shares of Viterra from Sellers for approximately $5.3 billion in shares and $2.0 billion in cash. The acquisition makes Bunge 33% larger by share count. Additionally, David Mattiske was appointed as Co-Chief Operating Officer."
+  },
+  "earnings_release": {
+    "applicable": null,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [
+    {
+      "name": null,
+      "operator": null,
+      "location_hint": null,
+      "country_hint": null,
+      "facility_type_hint": null,
+      "context": "part of the acquisition"
+    }
+  ],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "David Mattiske",
+      "role": "Co-Chief Operating Officer",
+      "action": "appointed",
+      "effective_date": "2025-07-02"
+    }
+  ],
+  "ma_or_capital_allocation": [
+    {
+      "type": "acquisition",
+      "counterparty": null,
+      "amount_usd_mn": 7300.0,
+      "description": "Bunge acquired all of the issued and outstanding shares of Viterra from Sellers for approximately $5.3 billion in shares and $2.0 billion in cash."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.4,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers are inferred from the filing text; exact financial details not provided in the summary.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:04:08.191482Z",
+    "elapsed_sec": 30.5,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-07-02",
+      "accession": "000110465925065405"
+    }
+  }
+}
