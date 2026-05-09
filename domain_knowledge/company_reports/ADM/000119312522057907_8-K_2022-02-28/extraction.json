@@ -1,0 +1,63 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2022-02-28",
+    "report_date": "2022-02-28",
+    "items_disclosed": [
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "debt_issuance",
+    "headline": "Archer-Daniels-Midland issues $750 million in 2.900% Notes due 2032",
+    "narrative_summary": "Archer-Daniels-Midland Company issued $750,000,000 aggregate principal amount of 2.900% Notes due 2032 on February 28, 2022. The offering was underwritten by representatives of underwriters named in Schedule II to an underwriting agreement dated February 23, 2022. The notes are being issued pursuant to an indenture dated October 16, 2012 between the company and The Bank of New York Mellon as trustee."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "debt_issuance",
+      "counterparty": null,
+      "amount_usd_mn": 750000000,
+      "description": "Archer-Daniels-Midland Company issued $750,000,000 aggregate principal amount of 2.900% Notes due 2032."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "The filing primarily discloses a debt issuance transaction with clear numerical details. No earnings or segment information is provided in the disclosed documents.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:34:25.954377Z",
+    "elapsed_sec": 44.6,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2022-02-28",
+      "accession": "000119312522057907"
+    }
+  }
+}

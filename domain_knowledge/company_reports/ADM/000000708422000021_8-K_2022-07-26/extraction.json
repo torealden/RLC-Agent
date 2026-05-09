@@ -1,0 +1,111 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2022-07-26",
+    "report_date": "2022-07-26",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports second quarter 2022 earnings per share of $2.18, $2.15 on an adjusted basis.",
+    "narrative_summary": "Archer-Daniels-Midland Company (ADM) reported second quarter 2022 financial results, with earnings per share of $2.18 and adjusted earnings per share of $2.15. The company's segment operating profit was $1.84 billion, with strong performance across Ag Services and Oilseeds, Carbohydrate Solutions, and Nutrition segments. The company also announced its expectation to accelerate share repurchases into the second half of 2022, driven by strong cash flows."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q2 2022",
+    "period_end_date": "2022-06-30",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": 1200,
+      "eps_diluted_usd": 2.18,
+      "adjusted_eps_diluted_usd": 2.15,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "positive",
+      "drivers": [
+        "Global Trade had an outstanding quarter",
+        "Strong soy crush margins drove improved performance in all three regions",
+        "Good execution in global freight",
+        "Net timing gains of about $65 million"
+      ],
+      "concerns": [
+        "Year-over-year results were lower due to the prior-year's insurance settlement and strong positioning gains"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "positive",
+      "drivers": [
+        "Starches and Sweeteners subsegment delivered much better results",
+        "Solid demand as food service volumes reached close to pre-pandemic levels",
+        "Strong demand for corn oil",
+        "Effective risk management"
+      ],
+      "concerns": [
+        "Vantage Corn Processors results were slightly higher in an environment of good gasoline demand and strong ethanol blending economics"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "positive",
+      "drivers": [
+        "Human Nutrition delivered higher year-over-year results",
+        "Strong demand for alternative proteins",
+        "Contributions from the Sojaprotein acquisition",
+        "Good demand for texturants",
+        "Strength across probiotics, including in the recently acquired Deerland business",
+        "Robust demand for fibers"
+      ],
+      "concerns": [
+        "Flavors grew revenue in North America, EMEA and South America, though profits were lower due to negative currency effects in EMEA as well as weaker results in APAC"
+      ],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "buyback",
+      "counterparty": null,
+      "amount_usd_mn": 1000,
+      "description": "Accelerating approximately $1 billion in share repurchases into the back half of the year."
+    }
+  ],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.7,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers from Exhibit 99.1; cover sheet only had Item references. Adjusted net earnings of $1.2 billion is inferred from adjusted EPS of $2.15 and diluted shares outstanding.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:22:49.155086Z",
+    "elapsed_sec": 70.6,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2022-07-26",
+      "accession": "000000708422000021"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2025-11-04",
+    "report_date": "2025-11-04",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports third quarter 2025 results with adjusted EPS of $0.92, down 16% year-over-year.",
+    "narrative_summary": "ADM announced its third quarter 2025 financial results, reporting adjusted net earnings of $448 million and adjusted EPS of $0.92, down 16% from the prior year. The company's total segment operating profit was $845 million, down 19% year-over-year. The decline was attributed to lower margins in crushing and carbohydrate solutions, impacted by muted demand due to deferral of U.S. biofuel policy and international trade challenges. The company revised its full-year 2025 adjusted EPS guidance to $3.25 - $3.50 per share from approximately $4.00 per share."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q3 2025",
+    "period_end_date": "2025-09-30",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 147,
+      "adjusted_net_earnings_usd_mn": 448,
+      "eps_diluted_usd": 0.22,
+      "adjusted_eps_diluted_usd": 0.92,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": 5800
+    },
+    "guidance_changes": [
+      {
+        "metric": "adjusted_eps_2025",
+        "old_low": 4.0,
+        "old_high": 4.0,
+        "new_low": 3.25,
+        "new_high": 3.5,
+        "direction": "lowered"
+      }
+    ],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "higher export activity in North America"
+      ],
+      "concerns": [
+        "lower crushing margins due to muted demand from deferral of U.S. biofuel policy",
+        "challenges with international trade flows"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "negative",
+      "drivers": [
+        "strong export flows",
+        "industry inventory dropping due to plant downtime"
+      ],
+      "concerns": [
+        "lower global demand for starches and sweeteners",
+        "persisting higher corn costs in EMEA"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "positive",
+      "drivers": [
+        "record revenue in Flavors North America"
+      ],
+      "concerns": [
+        "no specific concerns mentioned"
+      ],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [
+    "U.S. biofuel policy",
+    "global trade evolution"
+  ],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "negative",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers from Exhibit 99.1; cover sheet only had Item references. Guidance changes are based on the press release text.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:22:52.721534Z",
+    "elapsed_sec": 67.0,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2025-11-04",
+      "accession": "000000708425000049"
+    }
+  }
+}

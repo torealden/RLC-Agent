@@ -1,0 +1,134 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2024-03-12",
+    "report_date": "2024-03-12",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports fourth quarter and full-year 2023 earnings with adjusted EPS of $6.98.",
+    "narrative_summary": "Archer-Daniels-Midland Company (ADM) reported fourth quarter and full-year 2023 financial results, with adjusted earnings per share of $6.98 for the year. The company's full-year segment operating profit was $6,244 million, down 6% from the prior year. Key factors included lower margins in Ag Services and Oilseeds, reduced equity earnings from Wilmar, and impacts from unplanned downtime at the Decatur complex. The company also announced an additional $2 billion in share repurchases."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "FY 2023",
+    "period_end_date": "2023-12-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 6244,
+      "adjusted_net_earnings_usd_mn": 6244,
+      "eps_diluted_usd": 6.43,
+      "adjusted_eps_diluted_usd": 6.98,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "record export volumes out of Brazil",
+        "lower costs"
+      ],
+      "concerns": [
+        "lower margins due to global grain and oilseed supply recovery",
+        "lower equity earnings from Wilmar",
+        "unplanned downtime at Decatur complex"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "positive",
+      "drivers": [
+        "higher pricing and lower input costs in Starches Sweeteners",
+        "strong export demand and steady domestic blending in Vantage Corn Processing"
+      ],
+      "concerns": [
+        "weaker volumes",
+        "cycling one-time benefits from USDA Biofuel Producer Recovery Program"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [
+        "lower volumes and increased manufacturing costs in Human Nutrition",
+        "lower amino acid margins and sub-segment volumes in Animal Nutrition"
+      ],
+      "concerns": [
+        "deconsolidation and write-down of a joint venture",
+        "investment valuation loss",
+        "unplanned downtime at Decatur East"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other and Corporate",
+      "performance": "positive",
+      "drivers": [
+        "higher Captive Insurance results on new programs"
+      ],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [
+    {
+      "name": "Decatur complex",
+      "operator": "ADM",
+      "location_hint": "Decatur",
+      "country_hint": "US",
+      "facility_type_hint": "oilseed_crush",
+      "context": "unplanned downtime negatively impacted fourth quarter EPS"
+    },
+    {
+      "name": "Decatur East",
+      "operator": "ADM",
+      "location_hint": "Decatur East",
+      "country_hint": "US",
+      "facility_type_hint": "oilseed_crush",
+      "context": "unplanned downtime negatively impacted fourth quarter EPS and full-year Nutrition segment results"
+    }
+  ],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "buyback",
+      "counterparty": null,
+      "amount_usd_mn": 2000,
+      "description": "Announces additional $2 billion in share repurchases."
+    }
+  ],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; cover sheet only had Item references.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:59:35.471512Z",
+    "elapsed_sec": 79.1,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-03-12",
+      "accession": "000000708424000010"
+    }
+  }
+}

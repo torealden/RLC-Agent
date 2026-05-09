@@ -1,0 +1,68 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2024-11-06",
+    "report_date": "2024-11-01",
+    "items_disclosed": [
+      "5.02",
+      "7.01",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "ADM board elects AT&T General Counsel David McAtee as new independent director.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced on November 1, 2024, the election of David R. McAtee II as an independent director to fill a vacancy created by an increase in the board size from 11 to 12 directors. McAtee brings extensive experience in legal matters, governance, strategic planning, and regulatory affairs from his role at AT&T. The board highlighted his expertise in government regulation, data security, and strategic planning as valuable for ADM's future direction."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "David R. McAtee II",
+      "role": "Independent Director",
+      "action": "appointed",
+      "effective_date": "2024-11-01"
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano",
+    "David McAtee"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "The filing primarily reports a leadership change with no financial numbers or operational updates. The press release in Exhibit 99.1 provides context on McAtee's background and the board's rationale for his appointment.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:44:14.882223Z",
+    "elapsed_sec": 36.3,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-11-06",
+      "accession": "000119312524252151"
+    }
+  }
+}

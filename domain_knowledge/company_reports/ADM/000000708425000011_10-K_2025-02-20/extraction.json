@@ -1,0 +1,479 @@
+{
+  "business_overview": {
+    "description": "Archer-Daniels-Midland Company (ADM) is a global agricultural supply chain manager and processor that provides food security by connecting local needs with global capabilities. The Company operates in three reportable business segments: Ag Services and Oilseeds, Carbohydrate Solutions, and Nutrition. ADM purchases crops from growers in productive agricultural regions and uses its integrated global network of transportation and processing facilities to move and transform raw commodities into a broad array of products for food, feed, fuel, industrial, and consumer products. The Company serves critical global needs in nutrition, animal health, and sustainable solutions, with a focus on health and well-being, innovation, and sustainability. ADM's operations span North America, South America, EMEA, and APAC regions.",
+    "primary_segments": [
+      "Ag Services and Oilseeds",
+      "Carbohydrate Solutions",
+      "Nutrition"
+    ],
+    "primary_commodities": [
+      "corn",
+      "soybeans",
+      "wheat",
+      "peanuts",
+      "cottonseed",
+      "sunflower seed",
+      "canola",
+      "rapeseed",
+      "flaxseed",
+      "oil palm",
+      "sugar",
+      "edible oils"
+    ],
+    "geographic_focus": [
+      "North America",
+      "South America",
+      "EMEA",
+      "APAC"
+    ]
+  },
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_type": "10-K",
+    "filing_date": "2025-02-20",
+    "fiscal_period_end": "2024-12-31",
+    "fiscal_year": 2024,
+    "fiscal_quarter": null
+  },
+  "extraction_confidence": "low",
+  "extraction_notes": "The section text provided only contains the header 'Item 1. Business' and a page number '5', with no actual business description or relevant details to populate the schema fields.",
+  "capital_expenditures": {
+    "total_capex_usd_mn": 1500,
+    "capex_guidance_usd_mn_low": null,
+    "capex_guidance_usd_mn_high": null,
+    "capex_by_segment": {},
+    "major_projects": []
+  },
+  "risk_factors_top": [
+    {
+      "title": "Operational disruptions from events beyond control",
+      "category": "operational",
+      "summary": "The Company faces potential business disruption from events such as equipment failure, raw material shortages, natural disasters, severe weather, accidents, and fires. These disruptions could result in unplanned downtime, property damage, and business interruption that may not be fully covered by insurance."
+    },
+    {
+      "title": "Transportation and energy cost volatility",
+      "category": "financial",
+      "summary": "Operating costs and product pricing are sensitive to changes in energy prices, inflation, and logistic constraints. The Company's operations depend on electricity, natural gas, coal, rail access, and diesel fuel, and significant increases in these costs could adversely affect production and results."
+    },
+    {
+      "title": "Human capital availability and staffing challenges",
+      "category": "operational",
+      "summary": "The Company may face difficulties in staffing manufacturing facilities with skilled labor due to limited availability of qualified workers, which could negatively impact operations and productivity."
+    },
+    {
+      "title": "Inorganic growth integration risks",
+      "category": "operational",
+      "summary": "Expanding through acquisitions exposes the Company to risks such as increased costs, delayed synergies, integration challenges, and potential impairment charges related to goodwill and intangibles. The Company may not realize expected benefits from acquisitions."
+    },
+    {
+      "title": "Equity investment and joint venture risks",
+      "category": "financial",
+      "summary": "The Company has limited control over investments and joint ventures, exposing it to risks including partner financial strength, loss of revenues, inability to implement management strategies, and potential reputational or operational issues."
+    },
+    {
+      "title": "Health epidemics and pandemics",
+      "category": "geopolitical",
+      "summary": "Health epidemics or pandemics could materially impact the Company through disruptions in contractual obligations, supply chain issues, increased costs, and reduced demand for certain products, particularly in food services channels."
+    },
+    {
+      "title": "International conflicts and geopolitical instability",
+      "category": "geopolitical",
+      "summary": "The Company faces risks from international conflicts, terrorism, war, sanctions, and embargoes, including potential property damage, business disruption, nationalization, and expropriation. The ongoing Russia-Ukraine and Israel-Hamas conflicts have increased risks to operations and supply chains."
+    },
+    {
+      "title": "Trade policy and regulatory changes",
+      "category": "regulatory",
+      "summary": "Political instability and changes in trade, fiscal, monetary, and environmental policies could negatively impact the Company's financial results. Tariffs, trade restrictions, and regulatory changes may affect market access and competitiveness."
+    },
+    {
+      "title": "Investigation and accounting-related risks",
+      "category": "reputational",
+      "summary": "The Company has faced material adverse impacts from an internal investigation into intersegment sales practices, resulting in restatements, management distraction, stock price volatility, litigation risks, and potential additional financial statement errors."
+    },
+    {
+      "title": "Credit rating downgrades",
+      "category": "financial",
+      "summary": "If the Company's credit ratings are downgraded, its access to credit markets and ability to fund working capital and capital expenditures may be affected. As of December 31, 2024, the Company's credit ratings were at investment grade levels with a negative outlook."
+    },
+    {
+      "title": "Government investigations and legal proceedings",
+      "category": "regulatory",
+      "summary": "The Company is subject to ongoing government investigations by the SEC and DOJ relating to intersegment sales. The timing and outcome of these investigations cannot be predicted, and expenses related to them could adversely affect results of operations and liquidity. Potential penalties include fines, injunctions, and other sanctions that could materially impact the Company's business and financial condition."
+    },
+    {
+      "title": "Internal control over financial reporting material weakness",
+      "category": "operational",
+      "summary": "The Company identified a material weakness in internal control over financial reporting related to accounting practices for segment disclosures and intersegment sales. The material weakness could result in additional accounting errors, restatements, and delays in reporting financial information, potentially impacting accuracy and timeliness of SEC filings."
+    },
+    {
+      "title": "Negative publicity and reputational risks",
+      "category": "reputational",
+      "summary": "Negative publicity resulting from investigations and related events has caused and may continue to cause significant declines in the price of the Company's common stock. It can also impact customer and supplier relationships, employee morale, and overall financial performance."
+    },
+    {
+      "title": "Carbon emission regulations and climate change impacts",
+      "category": "climate",
+      "summary": "The Company may be impacted by carbon pricing programs and regulations in multiple regions including the U.S., EU, Canada, Mexico, UK, and China. These regulations could increase energy, transportation, raw material, and administrative costs, and may require additional investments in facilities and equipment."
+    },
+    {
+      "title": "Deforestation regulations and compliance risks",
+      "category": "regulatory",
+      "summary": "Compliance with EU deforestation-free regulation and Brazil's Amazon soy moratorium poses risks including civil, administrative, and criminal penalties, reputational damage, and increased operational costs. Non-compliance could negatively impact business, cash flows, and results of operations."
+    },
+    {
+      "title": "Food safety and product liability risks",
+      "category": "operational",
+      "summary": "The Company faces risks from quality issues, off-label product usage, occupational health and safety issues, and ineffective diversification programs. These risks may expose the Company to regulatory or reputational risks, and liability insurance may not cover all potential claims."
+    },
+    {
+      "title": "Sustainability reporting and compliance costs",
+      "category": "regulatory",
+      "summary": "The Company's sustainable practices require oversight and monitoring, and compliance with sustainability reporting standards such as CSRD will result in increased compliance costs and regulatory reporting risks. Failure to comply can lead to penalties and reputational damage."
+    },
+    {
+      "title": "Access to external financing limitations",
+      "category": "financial",
+      "summary": "The Company's capital-intensive nature requires significant access to credit markets. Limitations on access to external financing could adversely affect operating results. Credit ratings influence access to cost-competitive commercial paper markets, and downgrades could increase borrowing costs."
+    },
+    {
+      "title": "Commodity price volatility",
+      "category": "commodity",
+      "summary": "Agricultural commodity prices are subject to wide fluctuations due to factors beyond the Company's control, including weather conditions, crop disease, government programs, climate change, and global demand. These fluctuations can adversely affect operating results and working capital requirements."
+    },
+    {
+      "title": "Economic downturns and regional volatility",
+      "category": "macro",
+      "summary": "The Company is subject to economic downturns and regional economic volatilities that could adversely affect operating results. While 64% of long-lived assets are in the U.S., the Company also has significant operations in developed and emerging markets, which are subject to impacts such as decreased demand, reduced credit availability, and political instability."
+    },
+    {
+      "title": "Intense industry competition",
+      "category": "competitive",
+      "summary": "The Company faces significant competition in its markets, with competitors impacting pricing, gross profit, and ability to generate returns. Factors include industry processing capacity, global commodity price competition, foreign currency exchange rate changes, improved crop yields, and consolidation through M&A activities."
+    },
+    {
+      "title": "Regulatory and tax compliance risks",
+      "category": "regulatory",
+      "summary": "The Company is subject to numerous global laws and regulations including tax, environmental, product safety, and trade compliance. Changes in tax rules, including OECD Pillar Two implementation, could impact effective tax rates and financial results. The Company also faces risks from evolving trade policies, sanctions, and regulatory requirements affecting agricultural production and trade flows."
+    },
+    {
+      "title": "Cybersecurity and IT system risks",
+      "category": "cyber",
+      "summary": "The Company's inability to successfully implement new ERP systems and upgrade IT platforms could have a material adverse effect on business, financial condition, and operational results. The Company is currently upgrading IT platforms globally, requiring significant human and financial resources."
+    },
+    {
+      "title": "Supply chain and operational disruptions",
+      "category": "operational",
+      "summary": "The Company's operations are subject to supply chain dislocations and reduced market spread and basis opportunities. Emerging markets may face logistics limitations, labor challenges, epidemic outbreaks, currency concerns, and other economic and political instability that could disrupt operations."
+    },
+    {
+      "title": "ERP Implementation Risks",
+      "category": "operational",
+      "summary": "Implementing new ERP systems may lead to increased costs, operational disruptions, and delays. Deficiencies in ERP design and implementation could adversely affect business operations and internal control over financial reporting."
+    },
+    {
+      "title": "IT System Interruptions and Failures",
+      "category": "operational",
+      "summary": "The Company's operations depend on critical IT systems, some provided by third parties. System failures, including legacy system instability, could disrupt business operations, increase security risks, and impact financial performance."
+    },
+    {
+      "title": "Cybersecurity Breaches",
+      "category": "cyber",
+      "summary": "The Company faces cybersecurity threats that could result in data breaches, system failures, and exposure to legal actions. Compliance with evolving data privacy regulations is complex and carries risk of penalties and reputational damage."
+    },
+    {
+      "title": "Generative AI Risks",
+      "category": "operational",
+      "summary": "Rapid advancements in generative AI introduce risks including ethical bias, data security vulnerabilities, regulatory compliance challenges, operational reliability issues, and talent/resource constraints that could impact business processes and financial performance."
+    }
+  ],
+  "facilities_named": [
+    {
+      "name": "Ag Services and Oilseeds Processing Facility",
+      "city": null,
+      "state_or_region": "North America",
+      "country": "US",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 85,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Carbohydrate Solutions Processing Facility",
+      "city": null,
+      "state_or_region": "North America",
+      "country": "US",
+      "facility_type": "ethanol",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 88,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Nutrition Processing Facility",
+      "city": null,
+      "state_or_region": "North America",
+      "country": "US",
+      "facility_type": "nutrition",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 101,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Ag Services and Oilseeds Processing Facility",
+      "city": null,
+      "state_or_region": "South America",
+      "country": "BR",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 32,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Carbohydrate Solutions Processing Facility",
+      "city": null,
+      "state_or_region": "South America",
+      "country": "BR",
+      "facility_type": "ethanol",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 1,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Nutrition Processing Facility",
+      "city": null,
+      "state_or_region": "South America",
+      "country": "BR",
+      "facility_type": "nutrition",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 3,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Ag Services and Oilseeds Processing Facility",
+      "city": null,
+      "state_or_region": "Europe",
+      "country": "DE",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 50,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Carbohydrate Solutions Processing Facility",
+      "city": null,
+      "state_or_region": "Europe",
+      "country": "DE",
+      "facility_type": "ethanol",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 6,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Nutrition Processing Facility",
+      "city": null,
+      "state_or_region": "Europe",
+      "country": "DE",
+      "facility_type": "nutrition",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 13,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Ag Services and Oilseeds Processing Facility",
+      "city": null,
+      "state_or_region": "Asia-Pacific",
+      "country": "CN",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 1,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Carbohydrate Solutions Processing Facility",
+      "city": null,
+      "state_or_region": "Asia-Pacific",
+      "country": "CN",
+      "facility_type": "ethanol",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 1,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    },
+    {
+      "name": "Nutrition Processing Facility",
+      "city": null,
+      "state_or_region": "Asia-Pacific",
+      "country": "CN",
+      "facility_type": "nutrition",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 31,
+      "capacity_unit": "000 metric tons/day",
+      "context": "The Company owns approximately 150 warehouses and terminals primarily used as bulk storage facilities and has 68 innovation centers. Processing plants and procurement facilities owned or leased by unconsolidated affiliates are not included in the tables below."
+    }
+  ],
+  "segments": [
+    {
+      "name": "Ag Services and Oilseeds",
+      "revenue_usd_mn": 66516,
+      "operating_profit_usd_mn": 2447,
+      "operating_margin_pct": null,
+      "yoy_revenue_change_pct": -9,
+      "yoy_op_profit_change_pct": -40,
+      "key_drivers": [
+        "Improved cost position on higher utilization rates",
+        "Higher joint-venture earnings",
+        "Insurance proceeds for partial settlement of Decatur East and West insurance claims"
+      ],
+      "key_concerns": [
+        "Lower origination volumes and margin compression due to slow farmer selling",
+        "Weak exports and costs from carry market limiting trade opportunities",
+        "Increased industry capacity pressuring Crushing margins",
+        "Higher supply of competing low carbon intensity feedstocks",
+        "European Union's Deforestation Regulation delay negatively affecting margins"
+      ],
+      "products_services": [
+        "Ag Services",
+        "Crushing",
+        "Refined Products and Other"
+      ]
+    },
+    {
+      "name": "Carbohydrate Solutions",
+      "revenue_usd_mn": 11234,
+      "operating_profit_usd_mn": 1376,
+      "operating_margin_pct": null,
+      "yoy_revenue_change_pct": -13,
+      "yoy_op_profit_change_pct": 0,
+      "key_drivers": [
+        "Improved cost position on higher utilization rates",
+        "Higher joint-venture earnings",
+        "Insurance proceeds for partial settlement of Decatur East and Decatur West insurance claims"
+      ],
+      "key_concerns": [
+        "Weaker domestic ethanol margins, co-product values, and margins in EMEA",
+        "Lower margins due to higher industry production and inventory levels"
+      ],
+      "products_services": [
+        "Starches and Sweeteners",
+        "Vantage Corn Processors"
+      ]
+    },
+    {
+      "name": "Nutrition",
+      "revenue_usd_mn": 7349,
+      "operating_profit_usd_mn": 386,
+      "operating_margin_pct": null,
+      "yoy_revenue_change_pct": 2,
+      "yoy_op_profit_change_pct": -9,
+      "key_drivers": [
+        "Amino acids market recovery",
+        "Cost optimization efforts",
+        "Lower input costs"
+      ],
+      "key_concerns": [
+        "Unplanned downtime at Decatur East",
+        "Higher costs of goods sold associated with termination of unfavorable supply agreement",
+        "Normalizing texturants market negatively impacting margins",
+        "Inventory reserve adjustments due to changes in customer demand fulfillment",
+        "Softer margins within Vitamins"
+      ],
+      "products_services": [
+        "Human Nutrition",
+        "Animal Nutrition"
+      ]
+    }
+  ],
+  "forward_guidance": [
+    {
+      "metric": "capital expenditures",
+      "period": "FY 2025",
+      "value_low": 1500,
+      "value_high": null,
+      "value_unit": "USD_mn",
+      "direction_vs_prior": "initiated"
+    },
+    {
+      "metric": "dividends",
+      "period": "FY 2025",
+      "value_low": 1000,
+      "value_high": null,
+      "value_unit": "USD_mn",
+      "direction_vs_prior": "initiated"
+    },
+    {
+      "metric": "share repurchases",
+      "period": "FY 2025",
+      "value_low": 155,
+      "value_high": null,
+      "value_unit": "USD_mn",
+      "direction_vs_prior": "initiated"
+    }
+  ],
+  "commodity_exposures": [
+    {
+      "commodity": "corn",
+      "exposure_type": "input",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "soybeans",
+      "exposure_type": "input",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "wheat",
+      "exposure_type": "input",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "palm oil",
+      "exposure_type": "input",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "energy",
+      "exposure_type": "input",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "freight",
+      "exposure_type": "input",
+      "hedging_practice": "futures contracts up to 12 months"
+    }
+  ],
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_10kq_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:18:39.836141Z",
+    "elapsed_sec": 489.7,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "10-K",
+      "filing_date": "2025-02-20",
+      "accession": "000000708425000011"
+    }
+  }
+}

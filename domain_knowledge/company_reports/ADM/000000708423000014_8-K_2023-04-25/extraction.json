@@ -1,0 +1,108 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2023-04-25",
+    "report_date": "2023-04-25",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports first quarter 2023 earnings per share of $2.12, $2.09 on an adjusted basis.",
+    "narrative_summary": "Archer-Daniels-Midland Company (ADM) reported first quarter 2023 financial results, with earnings per share of $2.12 and adjusted earnings per share of $2.09. The company's segment operating profit was $1.719 billion, with strong performance in Ag Services and Oilseeds, while Carbohydrate Solutions and Nutrition segments showed declines. The company also provided commentary on its business segments and strategic outlook."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q1 2023",
+    "period_end_date": "2023-03-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 1200,
+      "adjusted_net_earnings_usd_mn": 1200,
+      "eps_diluted_usd": 2.12,
+      "adjusted_eps_diluted_usd": 2.09,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "positive",
+      "drivers": [
+        "excellent risk management in South American origination",
+        "higher export demand due to record Brazilian soybean crop",
+        "strong soybean exports in North America",
+        "solid margins and efficient execution in Global Trade"
+      ],
+      "concerns": [
+        "lower crush margins in EMEA due to trade flow adjustments from Ukraine war dislocations"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "negative",
+      "drivers": [
+        "solid demand for starches and sweeteners in North America",
+        "improved results in EMEA"
+      ],
+      "concerns": [
+        "lower ethanol margins due to high industry stock levels",
+        "much higher margins in global wheat milling business"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [
+        "healthy margins in Specialty Ingredients"
+      ],
+      "concerns": [
+        "lower results in Animal Nutrition due to much lower margins in amino acids",
+        "Health Wellness results were lower year-over-year"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other Business",
+      "performance": "positive",
+      "drivers": [
+        "improved ADM Investor Services earnings on higher interest income"
+      ],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.7,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers from Exhibit 99.1; cover sheet only had Item references. Some segment commentary was inferred from narrative descriptions.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:38:24.817564Z",
+    "elapsed_sec": 62.1,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2023-04-25",
+      "accession": "000000708423000014"
+    }
+  }
+}

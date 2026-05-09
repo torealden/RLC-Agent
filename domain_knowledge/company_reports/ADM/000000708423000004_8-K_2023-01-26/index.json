@@ -1,0 +1,128 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "0000007084-23-000004-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "0000007084-23-000004-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "0000007084-23-000004.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "0000007084-23-000004-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "109439"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "adm-20230126.htm",
+        "type": "text.gif",
+        "size": "41115"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "adm-20230126.xsd",
+        "type": "text.gif",
+        "size": "2309"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "adm-20230126_def.xml",
+        "type": "text.gif",
+        "size": "6885"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "adm-20230126_g1.jpg",
+        "type": "image2.gif",
+        "size": "111215"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "adm-20230126_htm.xml",
+        "type": "text.gif",
+        "size": "13673"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "adm-20230126_lab.xml",
+        "type": "text.gif",
+        "size": "31204"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "adm-20230126_pre.xml",
+        "type": "text.gif",
+        "size": "16483"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "adm-ex991_20221231xq4.htm",
+        "type": "text.gif",
+        "size": "407821"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "admlogoprimaryrgba.jpg",
+        "type": "image2.gif",
+        "size": "111353"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1779"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "Financial_Report.xlsx",
+        "type": "text.gif",
+        "size": "5833"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "image2a.jpg",
+        "type": "image2.gif",
+        "size": "3734"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "21078"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "43145"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2767"
+      },
+      {
+        "last-modified": "2023-01-26 09:57:44",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1085"
+      }
+    ],
+    "name": "/Archives/edgar/data/7084/000000708423000004",
+    "parent-dir": "/Archives/edgar/data/7084"
+  }
+}

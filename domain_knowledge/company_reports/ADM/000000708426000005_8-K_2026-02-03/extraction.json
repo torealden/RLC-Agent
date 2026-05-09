@@ -1,0 +1,112 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2026-02-03",
+    "report_date": "2026-02-03",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports Q4 and full-year 2025 results, provides 2026 guidance with increased dividend.",
+    "narrative_summary": "Archer-Daniels-Midland Company reported fourth quarter and full-year 2025 financial results, with adjusted EPS of $0.87 for Q4 and $3.43 for the full year. The company provided 2026 adjusted EPS guidance of $3.60 to $4.25, contingent on U.S. biofuel policy clarity. ADM announced a 2% increase in its quarterly dividend, marking its 53rd consecutive year of dividend growth. The company highlighted challenges from global trade uncertainty and biofuel policy deferral, but noted strong cash flow generation and cost-saving initiatives."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "FY 2025",
+    "period_end_date": "2025-12-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 1100,
+      "adjusted_net_earnings_usd_mn": 1700,
+      "eps_diluted_usd": 2.23,
+      "adjusted_eps_diluted_usd": 3.43,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": 5500
+    },
+    "guidance_changes": [
+      {
+        "metric": "adjusted_eps_2026",
+        "old_low": null,
+        "old_high": null,
+        "new_low": 3.6,
+        "new_high": 4.25,
+        "direction": "initiated"
+      }
+    ],
+    "capex_guidance_usd_bn_low": 1.3,
+    "capex_guidance_usd_bn_high": 1.5
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "equity earnings from Wilmar investment"
+      ],
+      "concerns": [
+        "lower soybean export activity",
+        "weaker crush margins",
+        "lower insurance proceeds"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "mixed",
+      "drivers": [
+        "higher ethanol margins"
+      ],
+      "concerns": [
+        "lower starches and sweeteners volumes"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "positive",
+      "drivers": [
+        "stronger organic growth and execution"
+      ],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [
+    "U.S. biofuel policy",
+    "global trade policies"
+  ],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "dividend",
+      "counterparty": null,
+      "amount_usd_mn": null,
+      "description": "Announced increase in quarterly dividend by 2%, marking 53rd consecutive year of dividend growth."
+    }
+  ],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; guidance and segment commentary based on detailed financial narrative.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:24:22.466488Z",
+    "elapsed_sec": 65.5,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2026-02-03",
+      "accession": "000000708426000005"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2024-11-05",
+    "report_date": "2024-11-04",
+    "items_disclosed": [
+      "4.02"
+    ]
+  },
+  "summary": {
+    "category": "financial_restatement",
+    "headline": "ADM to restate prior segment financial disclosures due to intersegment sales errors.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced it will restate segment information in its fiscal year 2023 Form 10-K and first and second quarter 2024 Form 10-Qs. The restatements address errors in intersegment sales reporting, including the inclusion of intrasegment sales and inconsistent accounting practices. The company identified a material weakness in internal controls over financial reporting related to these practices and has implemented remediation measures. The restatements are not expected to materially impact consolidated financial statements."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "negative",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "This filing is a financial restatement announcement, not an earnings release. No financial numbers or segment performance data are provided in the text.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:07:45.753599Z",
+    "elapsed_sec": 33.3,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-11-05",
+      "accession": "000000708424000034"
+    }
+  }
+}

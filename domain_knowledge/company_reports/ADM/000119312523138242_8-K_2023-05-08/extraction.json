@@ -1,0 +1,56 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2023-05-08",
+    "report_date": "2023-05-04",
+    "items_disclosed": [
+      "5.07"
+    ]
+  },
+  "summary": {
+    "category": "shareholder_meeting",
+    "headline": "Archer-Daniels-Midland held its 2023 Annual Meeting of Stockholders.",
+    "narrative_summary": "Archer-Daniels-Midland Company held its 2023 Annual Meeting of Stockholders on May 4, 2023. The meeting included votes on the election of directors, ratification of auditors, advisory approval of executive compensation, and an advisory vote on the frequency of stockholder votes on executive compensation. Additionally, a stockholder proposal regarding an Independent Board Chairman was rejected."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.2,
+  "extraction_confidence": "high",
+  "extraction_notes": "This filing is solely about the annual meeting of stockholders and does not contain any earnings, financial guidance, or operational updates.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:39:02.332885Z",
+    "elapsed_sec": 29.4,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2023-05-08",
+      "accession": "000119312523138242"
+    }
+  }
+}

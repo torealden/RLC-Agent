@@ -1,0 +1,77 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2026-01-28",
+    "report_date": "2026-01-27",
+    "items_disclosed": [
+      "8.01",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "regulatory_disclosure",
+    "headline": "ADM settles SEC investigation into intersegment sales with $40M penalty and DOJ closes its investigation.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced it reached a settlement with the SEC resolving its investigation into intersegment sales without admitting or denying any wrongdoing. The company agreed to pay a $40 million civil penalty. The Department of Justice also closed its investigation with no further action. The settlement concludes both investigations and follows corrections to prior period financial statements related to segment reporting."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [
+    "Section 17(a) of the Securities Act",
+    "Sections 10(b), 13(a), 13(b)(2)(A), and 13(b)(2)(B) of the Exchange Act",
+    "Rules 10b-5, 12b-20, 13a-1, 13a-11, and 13a-13 thereunder"
+  ],
+  "leadership_changes": [
+    {
+      "name": "Juan Luciano",
+      "role": "Chair of the Board, President and CEO",
+      "action": "appointed",
+      "effective_date": null
+    }
+  ],
+  "ma_or_capital_allocation": [
+    {
+      "type": "debt_issuance",
+      "counterparty": "SEC",
+      "amount_usd_mn": 40,
+      "description": "Civil penalty payment to SEC in settlement of investigation."
+    }
+  ],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.3,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers and details extracted directly from the press release and cover sheet; no financial figures or segment performance data provided.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:47:48.765314Z",
+    "elapsed_sec": 42.7,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2026-01-28",
+      "accession": "000119312526025560"
+    }
+  }
+}

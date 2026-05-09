@@ -1,0 +1,518 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "0000007084-26-000023-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "0000007084-26-000023-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "0000007084-26-000023.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "0000007084-26-000023-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "313767"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-20260331.htm",
+        "type": "text.gif",
+        "size": "1621237"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-20260331.xsd",
+        "type": "text.gif",
+        "size": "53924"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-20260331_cal.xml",
+        "type": "text.gif",
+        "size": "106349"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-20260331_def.xml",
+        "type": "text.gif",
+        "size": "233361"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-20260331_g1.jpg",
+        "type": "image2.gif",
+        "size": "111215"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-20260331_htm.xml",
+        "type": "text.gif",
+        "size": "1958440"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-20260331_lab.xml",
+        "type": "text.gif",
+        "size": "706178"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-20260331_pre.xml",
+        "type": "text.gif",
+        "size": "476829"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-ex311_20260331xq1.htm",
+        "type": "text.gif",
+        "size": "10202"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-ex312_20260331xq1.htm",
+        "type": "text.gif",
+        "size": "10040"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-ex321_20260331xq1.htm",
+        "type": "text.gif",
+        "size": "4801"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "adm-ex322_20260331xq1.htm",
+        "type": "text.gif",
+        "size": "4467"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "39835"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "1050441"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "51520"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R10.htm",
+        "type": "text.gif",
+        "size": "93270"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R11.htm",
+        "type": "text.gif",
+        "size": "196441"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R12.htm",
+        "type": "text.gif",
+        "size": "87827"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R13.htm",
+        "type": "text.gif",
+        "size": "18208"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R14.htm",
+        "type": "text.gif",
+        "size": "19564"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R15.htm",
+        "type": "text.gif",
+        "size": "12287"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R16.htm",
+        "type": "text.gif",
+        "size": "9273"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R17.htm",
+        "type": "text.gif",
+        "size": "82851"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R18.htm",
+        "type": "text.gif",
+        "size": "14170"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R19.htm",
+        "type": "text.gif",
+        "size": "136918"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R2.htm",
+        "type": "text.gif",
+        "size": "115741"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R20.htm",
+        "type": "text.gif",
+        "size": "11060"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R21.htm",
+        "type": "text.gif",
+        "size": "15589"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R22.htm",
+        "type": "text.gif",
+        "size": "13715"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R23.htm",
+        "type": "text.gif",
+        "size": "15378"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R24.htm",
+        "type": "text.gif",
+        "size": "8465"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R25.htm",
+        "type": "text.gif",
+        "size": "46591"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R26.htm",
+        "type": "text.gif",
+        "size": "69424"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R27.htm",
+        "type": "text.gif",
+        "size": "86113"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R28.htm",
+        "type": "text.gif",
+        "size": "266360"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R29.htm",
+        "type": "text.gif",
+        "size": "66090"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R3.htm",
+        "type": "text.gif",
+        "size": "68276"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R30.htm",
+        "type": "text.gif",
+        "size": "18274"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R31.htm",
+        "type": "text.gif",
+        "size": "19506"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R32.htm",
+        "type": "text.gif",
+        "size": "77833"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R33.htm",
+        "type": "text.gif",
+        "size": "13608"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R34.htm",
+        "type": "text.gif",
+        "size": "122392"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R35.htm",
+        "type": "text.gif",
+        "size": "11799"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R36.htm",
+        "type": "text.gif",
+        "size": "11900"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R37.htm",
+        "type": "text.gif",
+        "size": "12264"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R38.htm",
+        "type": "text.gif",
+        "size": "12401"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R39.htm",
+        "type": "text.gif",
+        "size": "11117"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R4.htm",
+        "type": "text.gif",
+        "size": "152200"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R40.htm",
+        "type": "text.gif",
+        "size": "66729"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R41.htm",
+        "type": "text.gif",
+        "size": "18818"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R42.htm",
+        "type": "text.gif",
+        "size": "16189"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R43.htm",
+        "type": "text.gif",
+        "size": "83305"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R44.htm",
+        "type": "text.gif",
+        "size": "81854"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R45.htm",
+        "type": "text.gif",
+        "size": "73203"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R46.htm",
+        "type": "text.gif",
+        "size": "17606"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R47.htm",
+        "type": "text.gif",
+        "size": "23323"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R48.htm",
+        "type": "text.gif",
+        "size": "17782"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R49.htm",
+        "type": "text.gif",
+        "size": "54898"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R5.htm",
+        "type": "text.gif",
+        "size": "85887"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R50.htm",
+        "type": "text.gif",
+        "size": "19608"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R51.htm",
+        "type": "text.gif",
+        "size": "13311"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R52.htm",
+        "type": "text.gif",
+        "size": "25747"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R53.htm",
+        "type": "text.gif",
+        "size": "27691"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R54.htm",
+        "type": "text.gif",
+        "size": "30255"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R55.htm",
+        "type": "text.gif",
+        "size": "4601"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R56.htm",
+        "type": "text.gif",
+        "size": "22743"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R57.htm",
+        "type": "text.gif",
+        "size": "60471"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R58.htm",
+        "type": "text.gif",
+        "size": "40215"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R59.htm",
+        "type": "text.gif",
+        "size": "8102"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R6.htm",
+        "type": "text.gif",
+        "size": "51131"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R60.htm",
+        "type": "text.gif",
+        "size": "4859"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R61.htm",
+        "type": "text.gif",
+        "size": "77195"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R62.htm",
+        "type": "text.gif",
+        "size": "28157"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R63.htm",
+        "type": "text.gif",
+        "size": "23754"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R64.htm",
+        "type": "text.gif",
+        "size": "10603"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R65.htm",
+        "type": "text.gif",
+        "size": "11141"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R7.htm",
+        "type": "text.gif",
+        "size": "4458"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R8.htm",
+        "type": "text.gif",
+        "size": "64447"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "R9.htm",
+        "type": "text.gif",
+        "size": "22800"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2767"
+      },
+      {
+        "last-modified": "2026-05-05 16:02:25",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1085"
+      }
+    ],
+    "name": "/Archives/edgar/data/7084/000000708426000023",
+    "parent-dir": "/Archives/edgar/data/7084"
+  }
+}

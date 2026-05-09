@@ -1,0 +1,110 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "0001193125-22-143806-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "0001193125-22-143806-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "0001193125-22-143806.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "0001193125-22-143806-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "15042"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "adm-20220505.xsd",
+        "type": "text.gif",
+        "size": "3896"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "adm-20220505_def.xml",
+        "type": "text.gif",
+        "size": "13666"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "adm-20220505_lab.xml",
+        "type": "text.gif",
+        "size": "22641"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "adm-20220505_pre.xml",
+        "type": "text.gif",
+        "size": "14627"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "d267760d8k.htm",
+        "type": "text.gif",
+        "size": "52243"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "d267760d8k_htm.xml",
+        "type": "text.gif",
+        "size": "5114"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1792"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "Financial_Report.xlsx",
+        "type": "text.gif",
+        "size": "5775"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "g267760g0507013151950.jpg",
+        "type": "image2.gif",
+        "size": "3578"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "21858"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "43957"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2767"
+      },
+      {
+        "last-modified": "2022-05-06 17:10:36",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1085"
+      }
+    ],
+    "name": "/Archives/edgar/data/7084/000119312522143806",
+    "parent-dir": "/Archives/edgar/data/7084"
+  }
+}

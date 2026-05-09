@@ -1,0 +1,38 @@
+{
+  "business_overview": {
+    "description": "Archer Daniels Midland Company (ADM) is a global leader in the processing of agricultural products, including grains, oilseeds, and other agricultural commodities. The company operates through several key segments including Oilseeds Processing, Corn Processing, Human Nutrition, Animal Nutrition, and Starches and Sweeteners. ADM's operations span across North America, South America, EMEA, and APAC regions, with a strong presence in the global agricultural commodity markets. The company serves diverse end markets including food and beverage manufacturers, animal feed producers, and biofuel producers.",
+    "primary_segments": [
+      "Oilseeds Processing",
+      "Corn Processing",
+      "Human Nutrition",
+      "Animal Nutrition",
+      "Starches and Sweeteners"
+    ],
+    "primary_commodities": [
+      "corn",
+      "soybeans",
+      "wheat"
+    ],
+    "geographic_focus": [
+      "North America",
+      "South America",
+      "EMEA",
+      "APAC"
+    ]
+  },
+  "extraction_confidence": "high",
+  "extraction_notes": "The business overview was extracted from the segment descriptions and commodity information provided in the filing. The primary segments were identified from the operational structure described in the document.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_10kq_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:43:44.025271Z",
+    "elapsed_sec": 130.0,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "10-Q",
+      "filing_date": "2023-07-25",
+      "accession": "000000708423000028"
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2026-05-05",
+    "report_date": "2026-05-05",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports first quarter 2026 results with adjusted EPS of $0.71 and raises full-year guidance.",
+    "narrative_summary": "Archer-Daniels-Midland Company reported first quarter 2026 financial results, with adjusted EPS of $0.71, up 1% from the prior year. The company raised its full-year 2026 adjusted EPS guidance to $4.15-$4.70 from $3.60-$4.25, citing improved performance in crushing and ethanol businesses due to U.S. biofuels policy clarity. The results included net negative mark-to-market and timing impacts of approximately $275 million, primarily in the Crushing subsegment."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q1 2026",
+    "period_end_date": "2026-03-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 298,
+      "adjusted_net_earnings_usd_mn": 345,
+      "eps_diluted_usd": 0.62,
+      "adjusted_eps_diluted_usd": 0.71,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [
+      {
+        "metric": "adjusted_eps_2026",
+        "old_low": 3.6,
+        "old_high": 4.25,
+        "new_low": 4.15,
+        "new_high": 4.7,
+        "direction": "raised"
+      }
+    ],
+    "capex_guidance_usd_bn_low": 1.3,
+    "capex_guidance_usd_bn_high": 1.5
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Agriculture Services and Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "higher export activity from North America",
+        "increased soybean and sorghum shipments to China",
+        "strong corn exports"
+      ],
+      "concerns": [
+        "net negative mark-to-market and timing impacts",
+        "weaker crushing subsegment performance"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "positive",
+      "drivers": [
+        "strengthening ethanol margins",
+        "effective risk management",
+        "policy incentives"
+      ],
+      "concerns": [],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "positive",
+      "drivers": [
+        "higher Flavors sales",
+        "continued recovery of Decatur East plant",
+        "improved margins",
+        "foreign exchange gains"
+      ],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [
+    {
+      "name": "Decatur East plant",
+      "operator": "ADM",
+      "location_hint": "Decatur, Illinois",
+      "country_hint": "US",
+      "facility_type_hint": "nutrition",
+      "context": "recovery from outage"
+    }
+  ],
+  "regulatory_or_policy_mentions": [
+    "U.S. Renewable Fuels Standard",
+    "renewable volume obligations (RVO)",
+    "U.S. biofuels policy clarity"
+  ],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.7,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers from Exhibit 99.1; cover sheet only had Item references. Guidance changes and segment performance data extracted directly from the press release.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:50:29.986285Z",
+    "elapsed_sec": 106.6,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2026-05-05",
+      "accession": "000000708426000021"
+    }
+  }
+}

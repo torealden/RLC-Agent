@@ -1,0 +1,73 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2024-07-10",
+    "report_date": "2024-07-03",
+    "items_disclosed": [
+      "5.02",
+      "7.01",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "Archer-Daniels-Midland appoints Monish Patolawala as Executive Vice President and Chief Financial Officer.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced the appointment of Monish Patolawala as Executive Vice President and Chief Financial Officer, effective August 1, 2024. Patolawala will succeed Ismael Roig, who has been serving as Interim CFO since January 21, 2024. The company provided details of Patolawala's compensation package, including base salary, bonus target, equity awards, and relocation benefits."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Monish Patolawala",
+      "role": "Executive Vice President and Chief Financial Officer",
+      "action": "appointed",
+      "effective_date": "2024-08-01"
+    },
+    {
+      "name": "Ismael Roig",
+      "role": "Interim Chief Financial Officer",
+      "action": "departed",
+      "effective_date": "2024-08-01"
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.7,
+  "extraction_confidence": "high",
+  "extraction_notes": "The filing primarily reports on the appointment of a new CFO. Compensation details are provided in Exhibit 10.1, and the press release in Exhibit 99.1 is referenced but not included in the structured data extraction.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:43:38.574332Z",
+    "elapsed_sec": 47.5,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-07-10",
+      "accession": "000119312524177070"
+    }
+  }
+}

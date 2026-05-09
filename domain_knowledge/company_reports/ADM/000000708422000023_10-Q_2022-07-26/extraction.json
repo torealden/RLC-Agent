@@ -1,0 +1,46 @@
+{
+  "business_overview": {
+    "description": "Archer Daniels Midland Company (ADM) is a global leader in agricultural processing and food ingredient solutions. The company operates through several key segments including Ag Services, Crushing, Refined Products and Other, Ag Services and Oilseeds, Starches and Sweeteners, VCP (Value Chain Products), Carbohydrate Solutions, Human Nutrition, Animal Nutrition, and Nutrition. ADM processes agricultural commodities such as corn, soybeans, wheat, and oilseeds into various food ingredients, animal feed, and industrial products. The company has a significant global presence with operations in North America, South America, EMEA (Europe, Middle East, and Africa), and APAC (Asia-Pacific). Its key end markets include food and beverage manufacturers, animal feed producers, and industrial users.",
+    "primary_segments": [
+      "Ag Services",
+      "Crushing",
+      "Refined Products and Other",
+      "Ag Services and Oilseeds",
+      "Starches and Sweeteners",
+      "VCP",
+      "Carbohydrate Solutions",
+      "Human Nutrition",
+      "Animal Nutrition",
+      "Nutrition"
+    ],
+    "primary_commodities": [
+      "corn",
+      "soybeans",
+      "wheat",
+      "oilseeds"
+    ],
+    "geographic_focus": [
+      "North America",
+      "South America",
+      "EMEA",
+      "APAC"
+    ],
+    "extraction_confidence": "low",
+    "extraction_notes": "The provided text contains XBRL data elements and financial statements but lacks a comprehensive business overview description. Segment names are identified from XBRL tags, and commodities are inferred from the segment names, but no explicit description of the company's business, principal segments, geographic footprint, or key end markets is provided in the given text."
+  },
+  "extraction_confidence": "high",
+  "extraction_notes": "The business overview was extracted directly from the company's description in the 10-Q filing, including segments, commodities, and geographic focus as explicitly mentioned.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_10kq_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:25:20.909453Z",
+    "elapsed_sec": 151.7,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "10-Q",
+      "filing_date": "2022-07-26",
+      "accession": "000000708422000023"
+    }
+  }
+}

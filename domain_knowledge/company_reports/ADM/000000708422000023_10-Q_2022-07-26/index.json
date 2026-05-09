@@ -1,0 +1,452 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "0000007084-22-000023-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "0000007084-22-000023-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "0000007084-22-000023.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "0000007084-22-000023-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "445860"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-20220630.htm",
+        "type": "text.gif",
+        "size": "2764276"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-20220630.xsd",
+        "type": "text.gif",
+        "size": "48514"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-20220630_cal.xml",
+        "type": "text.gif",
+        "size": "103546"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-20220630_def.xml",
+        "type": "text.gif",
+        "size": "356055"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-20220630_g1.jpg",
+        "type": "image2.gif",
+        "size": "111215"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-20220630_htm.xml",
+        "type": "text.gif",
+        "size": "2920234"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-20220630_lab.xml",
+        "type": "text.gif",
+        "size": "767840"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-20220630_pre.xml",
+        "type": "text.gif",
+        "size": "524579"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-ex311_2022630xq2.htm",
+        "type": "text.gif",
+        "size": "10437"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-ex312_2022630xq2.htm",
+        "type": "text.gif",
+        "size": "10320"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-ex321_2022630xq2.htm",
+        "type": "text.gif",
+        "size": "4928"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "adm-ex322_2022630xq2.htm",
+        "type": "text.gif",
+        "size": "4682"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "34087"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "Financial_Report.xlsx",
+        "type": "text.gif",
+        "size": "101560"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "810179"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "57855"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R10.htm",
+        "type": "text.gif",
+        "size": "156008"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R11.htm",
+        "type": "text.gif",
+        "size": "262716"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R12.htm",
+        "type": "text.gif",
+        "size": "166561"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R13.htm",
+        "type": "text.gif",
+        "size": "20571"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R14.htm",
+        "type": "text.gif",
+        "size": "16259"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R15.htm",
+        "type": "text.gif",
+        "size": "10591"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R16.htm",
+        "type": "text.gif",
+        "size": "12836"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R17.htm",
+        "type": "text.gif",
+        "size": "73618"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R18.htm",
+        "type": "text.gif",
+        "size": "19336"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R19.htm",
+        "type": "text.gif",
+        "size": "100003"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R2.htm",
+        "type": "text.gif",
+        "size": "97125"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R20.htm",
+        "type": "text.gif",
+        "size": "5593"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R21.htm",
+        "type": "text.gif",
+        "size": "15900"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R22.htm",
+        "type": "text.gif",
+        "size": "10702"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R23.htm",
+        "type": "text.gif",
+        "size": "142955"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R24.htm",
+        "type": "text.gif",
+        "size": "262044"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R25.htm",
+        "type": "text.gif",
+        "size": "152591"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R26.htm",
+        "type": "text.gif",
+        "size": "20625"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R27.htm",
+        "type": "text.gif",
+        "size": "16251"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R28.htm",
+        "type": "text.gif",
+        "size": "74557"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R29.htm",
+        "type": "text.gif",
+        "size": "17411"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R3.htm",
+        "type": "text.gif",
+        "size": "68516"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R30.htm",
+        "type": "text.gif",
+        "size": "94482"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R31.htm",
+        "type": "text.gif",
+        "size": "56700"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R32.htm",
+        "type": "text.gif",
+        "size": "99575"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R33.htm",
+        "type": "text.gif",
+        "size": "16680"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R34.htm",
+        "type": "text.gif",
+        "size": "63060"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R35.htm",
+        "type": "text.gif",
+        "size": "32028"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R36.htm",
+        "type": "text.gif",
+        "size": "39778"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R37.htm",
+        "type": "text.gif",
+        "size": "17854"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R38.htm",
+        "type": "text.gif",
+        "size": "82008"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R39.htm",
+        "type": "text.gif",
+        "size": "29478"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R4.htm",
+        "type": "text.gif",
+        "size": "138847"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R40.htm",
+        "type": "text.gif",
+        "size": "42814"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R41.htm",
+        "type": "text.gif",
+        "size": "19193"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R42.htm",
+        "type": "text.gif",
+        "size": "36433"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R43.htm",
+        "type": "text.gif",
+        "size": "35493"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R44.htm",
+        "type": "text.gif",
+        "size": "23123"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R45.htm",
+        "type": "text.gif",
+        "size": "38334"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R46.htm",
+        "type": "text.gif",
+        "size": "16920"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R47.htm",
+        "type": "text.gif",
+        "size": "39722"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R48.htm",
+        "type": "text.gif",
+        "size": "46920"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R49.htm",
+        "type": "text.gif",
+        "size": "16243"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R5.htm",
+        "type": "text.gif",
+        "size": "98919"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R50.htm",
+        "type": "text.gif",
+        "size": "4355"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R51.htm",
+        "type": "text.gif",
+        "size": "64698"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R52.htm",
+        "type": "text.gif",
+        "size": "10165"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R53.htm",
+        "type": "text.gif",
+        "size": "24580"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R6.htm",
+        "type": "text.gif",
+        "size": "81640"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R7.htm",
+        "type": "text.gif",
+        "size": "4787"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R8.htm",
+        "type": "text.gif",
+        "size": "13154"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "R9.htm",
+        "type": "text.gif",
+        "size": "17635"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2767"
+      },
+      {
+        "last-modified": "2022-07-26 16:01:30",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1085"
+      }
+    ],
+    "name": "/Archives/edgar/data/7084/000000708422000023",
+    "parent-dir": "/Archives/edgar/data/7084"
+  }
+}

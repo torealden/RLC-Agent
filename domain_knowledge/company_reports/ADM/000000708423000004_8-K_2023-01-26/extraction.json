@@ -1,0 +1,124 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2023-01-26",
+    "report_date": "2023-01-26",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports fourth quarter 2022 earnings per share of $1.84, adjusted EPS of $1.93, and increases quarterly dividend by 12.5%.",
+    "narrative_summary": "ADM announced its fourth quarter and annual 2022 financial results, reporting earnings per share of $1.84 and adjusted EPS of $1.93. The company delivered strong performance across segments, with notable growth in Ag Services and Oilseeds and Carbohydrate Solutions. The company also announced a 12.5% increase in its quarterly dividend to $0.45 per share, marking its 50th consecutive year of dividend increases. Financial highlights include adjusted segment operating profit of $1.665 billion and trailing four-quarter average adjusted ROIC of 13.6%."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q4 2022",
+    "period_end_date": "2022-12-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 1000,
+      "adjusted_net_earnings_usd_mn": 1100,
+      "eps_diluted_usd": 1.84,
+      "adjusted_eps_diluted_usd": 1.93,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": 5300
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "positive",
+      "drivers": [
+        "substantially higher year-over-year results",
+        "strong export volumes for soybean meal",
+        "growing domestic demand for renewable diesel",
+        "strong rapeseed margins in EMEA",
+        "low water conditions reduced North American export volumes",
+        "South American team executed well to deliver higher margins and volumes"
+      ],
+      "concerns": [
+        "higher energy costs in EMEA compared to prior year",
+        "expanding margins drove negative timing impacts of approximately $40 million"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "negative",
+      "drivers": [
+        "Starches and Sweeteners subsegment delivered much higher year-over-year results",
+        "North America business delivered solid volumes and strong margins in both starches and sweeteners",
+        "EMEA team effectively managed risk and delivered improved results on better margins"
+      ],
+      "concerns": [
+        "Vantage Corn Processors results were substantially lower due to higher ethanol inventory levels pressuring margins",
+        "global wheat milling business delivered higher margins driven by solid customer demand"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [
+        "Human Nutrition results were lower than those of the fourth quarter of 2021",
+        "Flavors results were similar to the prior year, as strong revenue growth helped offset demand fulfillment challenges",
+        "Specialty Ingredients continued to see strong demand for its product portfolio, including plant-based proteins",
+        "Health Wellness was higher year over year, driven primarily by the bioactives portfolio, including the results from the Deerland acquisition"
+      ],
+      "concerns": [
+        "Animal Nutrition results were substantially lower than the prior-year quarter, primarily due to lower margins in amino acids driven by recovery in the global supply of lysine",
+        "pet nutrition volumes were lower in Latin America, partially driven by demand fulfillment challenges",
+        "Feed results were stronger, driven by APAC and Latin America, partially offset by the impact of softer demand in EMEA"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other Business",
+      "performance": "positive",
+      "drivers": [
+        "Higher short-term interest rates drove improved earnings in ADM Investor Services",
+        "Captive insurance experienced favorable underwriting results and lower claim settlements versus the prior year"
+      ],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "dividend",
+      "counterparty": null,
+      "amount_usd_mn": null,
+      "description": "ADM increased its quarterly dividend by 12.5% to $0.45 per share."
+    }
+  ],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.7,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; cover sheet only had Item references. Some segment commentary was inferred from narrative descriptions.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:30:07.589401Z",
+    "elapsed_sec": 82.9,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2023-01-26",
+      "accession": "000000708423000004"
+    }
+  }
+}

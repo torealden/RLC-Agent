@@ -1,0 +1,127 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2024-07-30",
+    "report_date": "2024-07-30",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports Q2 2024 results with adjusted EPS of $1.03, affirming full-year guidance.",
+    "narrative_summary": "ADM announced its second quarter 2024 financial results, reporting net earnings of $486 million and adjusted net earnings of $508 million. The company's adjusted earnings per share was $1.03, down from the prior year period due to lower pricing and execution margins. Despite challenging market conditions, ADM affirmed its full-year guidance. Segment performance showed declines in Ag Services Oilseeds and Nutrition, while Carbohydrate Solutions showed improvement."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q2 2024",
+    "period_end_date": "2024-06-30",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 486,
+      "adjusted_net_earnings_usd_mn": 508,
+      "eps_diluted_usd": 0.98,
+      "adjusted_eps_diluted_usd": 1.03,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "Improved segment volumes",
+        "Lower costs"
+      ],
+      "concerns": [
+        "Slower farmer selling due to smaller crop in Mato Grosso",
+        "Higher logistics costs related to industry take-or-pay contracts",
+        "Increased supply from Brazil and Argentina shifting export competitiveness",
+        "Global soybean crush margins decreased due to more balanced supply and demand conditions",
+        "Lower soybean oil values caused by increased imports of used cooking oil"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "positive",
+      "drivers": [
+        "Strong starches and sweeteners margins",
+        "Higher volumes",
+        "Strong demand for exports of ethanol supporting higher margins"
+      ],
+      "concerns": [
+        "Lower margins in EMEA region",
+        "Lower domestic ethanol margins"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [
+        "Cost optimization efforts",
+        "Lower input costs"
+      ],
+      "concerns": [
+        "Unplanned downtime at Decatur East",
+        "Normalizing texturants market",
+        "Higher manufacturing costs"
+      ],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [
+    {
+      "name": "Decatur East",
+      "operator": "ADM",
+      "location_hint": "Decatur",
+      "country_hint": "US",
+      "facility_type_hint": "oilseed_crush",
+      "context": "Unplanned downtime negatively impacted Nutrition segment results"
+    }
+  ],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Juan Luciano",
+      "role": "Chair of the Board and CEO",
+      "action": "appointed",
+      "effective_date": null
+    }
+  ],
+  "ma_or_capital_allocation": [
+    {
+      "type": "buyback",
+      "counterparty": null,
+      "amount_usd_mn": null,
+      "description": "Returned significant cash to shareholders through repurchase efforts through the first two quarters."
+    }
+  ],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "mixed",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; cover sheet only had Item references.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:03:56.638446Z",
+    "elapsed_sec": 72.4,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-07-30",
+      "accession": "000000708424000024"
+    }
+  }
+}

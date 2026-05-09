@@ -1,0 +1,112 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2022-04-26",
+    "report_date": "2022-04-26",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports first quarter 2022 earnings per share of $1.86, $1.90 on an adjusted basis.",
+    "narrative_summary": "Archer-Daniels-Midland Company (ADM) reported first quarter 2022 financial results, with earnings per share of $1.86 and adjusted earnings per share of $1.90. The company highlighted strong performance across segments, particularly in Ag Services and Oilseeds, Carbohydrate Solutions, and Nutrition. Results were driven by robust global demand, tight supply conditions, and effective risk management. The company also noted continued supply chain disruptions and expects 2022 results to exceed 2021's performance."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q1 2022",
+    "period_end_date": "2022-03-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 1100,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": 1.86,
+      "adjusted_eps_diluted_usd": 1.9,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "positive",
+      "drivers": [
+        "strong performance in destination marketing and global ocean freight",
+        "robust global demand and tight supply",
+        "short South American crop"
+      ],
+      "concerns": [
+        "North American origination margins and volumes were lower year over year",
+        "approximately $75 million in negative timing effects"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "positive",
+      "drivers": [
+        "higher corn co-product revenues",
+        "improved citric acid profits in North America",
+        "higher volumes and margins in EMEA and wheat milling"
+      ],
+      "concerns": [
+        "Vantage Corn Processors delivered lower results versus the prior year due to position losses on ethanol inventory as prices fell early in the quarter"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "positive",
+      "drivers": [
+        "extremely strong revenue growth of 23%",
+        "strength in amino acids",
+        "product mix changes",
+        "improved North American demand",
+        "global supply chain disruptions"
+      ],
+      "concerns": [
+        "some higher operating costs"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other Business",
+      "performance": "positive",
+      "drivers": [
+        "better performance in captive insurance",
+        "reduced claim settlements versus the prior year"
+      ],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.7,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers from Exhibit 99.1; cover sheet only had Item references. The filing includes adjusted EPS and segment operating profit data but not specific revenue figures or EBITDA.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:19:40.466523Z",
+    "elapsed_sec": 67.1,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2022-04-26",
+      "accession": "000000708422000011"
+    }
+  }
+}

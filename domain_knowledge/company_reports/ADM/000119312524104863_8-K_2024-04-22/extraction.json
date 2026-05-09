@@ -1,0 +1,64 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2024-04-22",
+    "report_date": "2024-04-19",
+    "items_disclosed": [
+      "5.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "Vikram Luthar to resign as executive officer with transition agreement.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced that Vikram Luthar will resign from his executive positions effective September 30, 2024. During a transition period, Luthar will serve as a non-executive employee to provide support. He will receive his 2023 performance incentive award and 2021 performance share unit shares, along with continued benefits and a prorated 2024 cash incentive payment if he remains employed through July 1, 2024."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Vikram Luthar",
+      "role": "executive officer",
+      "action": "departed",
+      "effective_date": "2024-09-30"
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.3,
+  "extraction_confidence": "high",
+  "extraction_notes": "The filing primarily reports on the departure of an executive officer and includes a transition agreement. No financial numbers or segment performance data were disclosed.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:42:22.409583Z",
+    "elapsed_sec": 41.0,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-04-22",
+      "accession": "000119312524104863"
+    }
+  }
+}

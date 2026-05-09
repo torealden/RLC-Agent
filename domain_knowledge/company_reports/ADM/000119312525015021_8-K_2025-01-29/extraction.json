@@ -1,0 +1,73 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2025-01-29",
+    "report_date": "2025-01-29",
+    "items_disclosed": [
+      "5.02",
+      "7.01",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "ADM appoints Carrie Nichol as Vice President and Chief Accounting Officer.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced the appointment of Carrie Nichol as Vice President and Chief Accounting Officer, effective March 1, 2025. She will succeed Molly Strader Fruit, who is transitioning to the role of Vice President, Total Rewards and HR Operations. Nichol brings over 20 years of experience in finance and accounting, most recently serving as Senior Vice President, Chief Accounting Officer at Cargill."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Carrie Nichol",
+      "role": "Vice President and Chief Accounting Officer",
+      "action": "appointed",
+      "effective_date": "2025-03-01"
+    },
+    {
+      "name": "Molly Strader Fruit",
+      "role": "Vice President and Corporate Controller",
+      "action": "departed",
+      "effective_date": "2025-03-01"
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Monish Patolawala"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Leadership change details clearly stated in Item 5.02. No financial numbers or guidance provided in this filing.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:45:40.228740Z",
+    "elapsed_sec": 39.9,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2025-01-29",
+      "accession": "000119312525015021"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2023-11-13",
+    "report_date": "2023-11-10",
+    "items_disclosed": [
+      "5.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "ADM announces leadership change in Nutrition business with Ian Pinner succeeding Vince Macciocchi.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced that Vincent F. Macciocchi will retire from his role as Senior Vice President, President, Nutrition, and Chief Sales and Marketing Officer effective December 31, 2023. Ian Pinner, currently Senior Vice President, Strategy and Innovation, will succeed Macciocchi in the role, effective immediately. Macciocchi will support Pinner during the transition through year-end."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Vincent F. Macciocchi",
+      "role": "Senior Vice President, President, Nutrition, and Chief Sales and Marketing Officer",
+      "action": "departed",
+      "effective_date": "2023-12-31"
+    },
+    {
+      "name": "Ian Pinner",
+      "role": "Senior Vice President, President, Nutrition, and Chief Sales and Marketing Officer",
+      "action": "appointed",
+      "effective_date": "2023-11-10"
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Leadership change details clearly stated in Item 5.02. No financial numbers or guidance provided in the filing.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:39:39.245430Z",
+    "elapsed_sec": 36.9,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2023-11-13",
+      "accession": "000119312523275456"
+    }
+  }
+}

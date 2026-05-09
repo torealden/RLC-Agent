@@ -1,0 +1,44 @@
+{
+  "business_overview": {
+    "description": "Archer-Daniels-Midland Company (ADM) is a global agricultural processing and trading company that generates revenue from merchandising and transporting agricultural commodities, and manufacturing products for use in food, beverages, feed, energy, and industrial applications, and ingredients and solutions for human and animal nutrition. The company operates in multiple segments including Ag Services and Oilseeds, Carbohydrate Solutions, and Nutrition, with operations in North America, South America, EMEA, and APAC regions. ADM's primary commodities include corn, soybeans, wheat, and other agricultural products. The company's business model involves processing agricultural commodities into various products and providing transportation services, with significant operations in global markets including Ukraine and Russia, though operations in these regions have been affected by recent geopolitical events.",
+    "primary_segments": [
+      "Ag Services",
+      "Crushing",
+      "Refined Products and Other",
+      "Ag Services and Oilseeds",
+      "Starches and Sweeteners",
+      "VCP",
+      "Carbohydrate Solutions",
+      "Human Nutrition",
+      "Animal Nutrition",
+      "Nutrition",
+      "All Other Segments"
+    ],
+    "primary_commodities": [
+      "corn",
+      "soybeans",
+      "wheat"
+    ],
+    "geographic_focus": [
+      "North America",
+      "South America",
+      "EMEA",
+      "APAC"
+    ]
+  },
+  "extraction_confidence": "low",
+  "extraction_notes": "The provided text appears to be a section of an SEC filing, but it does not contain sufficient information to populate the business overview fields. It mainly contains XBRL tags and financial data elements without descriptive text about the company's business, segments, commodities, or geographic focus.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_10kq_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:21:38.532542Z",
+    "elapsed_sec": 118.0,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "10-Q",
+      "filing_date": "2022-04-26",
+      "accession": "000000708422000013"
+    }
+  }
+}

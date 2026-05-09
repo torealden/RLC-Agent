@@ -41,7 +41,21 @@ token.json
 *.pem
 *.key
 
-# SEC EDGAR raw filings — bulky and reproducible via scripts/sec_edgar_puller.py.
-# Track the manifests and ticker list, not the filings themselves.
-domain_knowledge/company_reports/*/[0-9]*_*/
+# SEC EDGAR — track the small/valuable artifacts, ignore the bulky raw filings.
+# Keep:  extraction.json (LLM output, ~5KB each), index.json (filing index,
+#        ~3KB each), manifest.csv, extractions_manifest.csv, the ticker xlsx.
+# Skip:  the actual .htm/.xml/.zip/.xsd/image files filed with the SEC
+#        (~50-300KB each, reproducible via scripts/sec_edgar_puller.py).
+domain_knowledge/company_reports/*/[0-9]*_*/*.htm
+domain_knowledge/company_reports/*/[0-9]*_*/*.html
+domain_knowledge/company_reports/*/[0-9]*_*/*.xml
+domain_knowledge/company_reports/*/[0-9]*_*/*.xsd
+domain_knowledge/company_reports/*/[0-9]*_*/*.zip
+domain_knowledge/company_reports/*/[0-9]*_*/*.jpg
+domain_knowledge/company_reports/*/[0-9]*_*/*.jpeg
+domain_knowledge/company_reports/*/[0-9]*_*/*.png
+domain_knowledge/company_reports/*/[0-9]*_*/*.gif
+domain_knowledge/company_reports/*/[0-9]*_*/*.css
+domain_knowledge/company_reports/*/[0-9]*_*/*.js
+domain_knowledge/company_reports/*/[0-9]*_*/*.txt
 domain_knowledge/company_reports/company_tickers_cache.json

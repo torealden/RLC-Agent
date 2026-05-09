@@ -1,0 +1,131 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2023-07-25",
+    "report_date": "2023-07-25",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports Q2 2023 earnings per share of $1.70, adjusted EPS of $1.89, and raises full-year 2023 earnings expectations.",
+    "narrative_summary": "Archer-Daniels-Midland Company reported second quarter 2023 financial results, with earnings per share of $1.70 and adjusted earnings per share of $1.89. The company highlighted strong performance in Ag Services and Oilseeds, particularly in Brazil, and Carbohydrate Solutions, while Nutrition segment results were significantly lower year-over-year. The company raised its full-year 2023 earnings expectations based on strong first-half results and confidence in second-half performance."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q2 2023",
+    "period_end_date": "2023-06-30",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 900,
+      "adjusted_net_earnings_usd_mn": 1000,
+      "eps_diluted_usd": 1.7,
+      "adjusted_eps_diluted_usd": 1.89,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [
+      {
+        "metric": "adjusted_eps_2023",
+        "old_low": null,
+        "old_high": null,
+        "new_low": null,
+        "new_high": null,
+        "direction": "raised"
+      }
+    ],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "positive",
+      "drivers": [
+        "record origination volumes in Brazil",
+        "strong export demand",
+        "strategic investments in port capacity"
+      ],
+      "concerns": [
+        "lower export volumes in North America",
+        "softer demand for meal and oil"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "negative",
+      "drivers": [
+        "solid demand environment",
+        "strong food oil demand",
+        "improved biodiesel volumes"
+      ],
+      "concerns": [
+        "unplanned downtime at corn germ plant",
+        "lower ethanol margins"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [
+        "improved mix and pricing in EMEA Flavors",
+        "improving demand in North America Flavors"
+      ],
+      "concerns": [
+        "softer demand for plant-based proteins",
+        "lower contribution from amino acids",
+        "global feed demand affecting volumes"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other Business",
+      "performance": "positive",
+      "drivers": [
+        "improved ADM Investor Services earnings",
+        "higher net interest income",
+        "captive insurance results improved"
+      ],
+      "concerns": [
+        "increased claim settlements"
+      ],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "buyback",
+      "counterparty": null,
+      "amount_usd_mn": 1000,
+      "description": "Repurchased $1 billion of shares through first half of 2023."
+    }
+  ],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.7,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; cover sheet only had Item references.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:41:34.032400Z",
+    "elapsed_sec": 70.9,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2023-07-25",
+      "accession": "000000708423000024"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2023-04-03",
+    "report_date": "2023-04-03",
+    "items_disclosed": [
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "debt_issuance",
+    "headline": "Archer-Daniels-Midland issues $500 million in 4.500% Notes due 2033.",
+    "narrative_summary": "Archer-Daniels-Midland Company issued $500,000,000 aggregate principal amount of 4.500% Notes due 2033. The offering was underwritten by representatives of underwriters named in Schedule II to the underwriting agreement dated March 29, 2023. The company filed a registration statement on Form S-3 covering the offering."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "debt_issuance",
+      "counterparty": null,
+      "amount_usd_mn": 500000,
+      "description": "Archer-Daniels-Midland issued $500,000,000 aggregate principal amount of 4.500% Notes due 2033."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "The filing primarily discloses a debt issuance. No earnings or guidance information was provided in the filing.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:38:32.875982Z",
+    "elapsed_sec": 41.8,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2023-04-03",
+      "accession": "000119312523089544"
+    }
+  }
+}

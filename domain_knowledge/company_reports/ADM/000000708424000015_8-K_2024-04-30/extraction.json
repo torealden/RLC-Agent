@@ -1,0 +1,128 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2024-04-30",
+    "report_date": "2024-04-30",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports first quarter 2024 results with adjusted EPS of $1.46, affirming full-year guidance.",
+    "narrative_summary": "Archer-Daniels-Midland Company reported first quarter 2024 financial results, showing adjusted segment operating profit of $1,317 million and adjusted EPS of $1.46. The company affirmed its full-year adjusted EPS guidance range of $5.25 to $6.25. Results were impacted by lower pricing and execution margins, particularly in the Ag Services and Oilseeds segment, while improvements in input costs and volume contributed positively to earnings."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q1 2024",
+    "period_end_date": "2024-03-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": 1.42,
+      "adjusted_eps_diluted_usd": 1.46,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [
+      {
+        "metric": "adjusted_eps_2024",
+        "old_low": null,
+        "old_high": null,
+        "new_low": 5.25,
+        "new_high": 6.25,
+        "direction": "maintained"
+      }
+    ],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "higher equity earnings from Wilmar",
+        "improved input and manufacturing costs"
+      ],
+      "concerns": [
+        "lower crush and origination margins",
+        "stabilization of trade flows",
+        "slower farmer selling in South America",
+        "increased imports of used cooking oil"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "negative",
+      "drivers": [
+        "strong demand for sustainably certified ethanol exports"
+      ],
+      "concerns": [
+        "lower domestic ethanol margins due to strong industry production and elevated stocks",
+        "moderating margins in EMEA region"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [
+        "cost optimization efforts",
+        "lower input costs"
+      ],
+      "concerns": [
+        "unplanned downtime at Decatur East",
+        "normalizing texturants market"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other",
+      "performance": "positive",
+      "drivers": [
+        "higher Captive Insurance results",
+        "improved ADM Investor Services net interest income"
+      ],
+      "concerns": [
+        "investment valuation losses in ADM Ventures portfolio"
+      ],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Juan Luciano",
+      "role": "Chair of the Board and CEO",
+      "action": "appointed",
+      "effective_date": null
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; guidance reaffirmed for full year 2024.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:00:44.741062Z",
+    "elapsed_sec": 69.3,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-04-30",
+      "accession": "000000708424000015"
+    }
+  }
+}

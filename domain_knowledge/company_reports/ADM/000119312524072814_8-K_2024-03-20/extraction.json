@@ -1,0 +1,63 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2024-03-20",
+    "report_date": "2024-03-18",
+    "items_disclosed": [
+      "5.02"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "Archer-Daniels-Midland appoints Ismael Roig as Interim CFO with cash stipend and RSU grant.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced the appointment of Ismael Roig as Interim Chief Financial Officer effective January 21, 2024. On March 18, 2024, the Board's Compensation and Succession Committee approved a cash stipend of $35,000 per month and a one-time RSU grant valued at $1,000,000 for Roig's service. The RSUs vest in full on the one-year anniversary of the grant date, subject to continued service and potential forfeiture if Roig retires before a successor is appointed."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Ismael Roig",
+      "role": "Interim Chief Financial Officer",
+      "action": "appointed",
+      "effective_date": "2024-01-21"
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.3,
+  "extraction_confidence": "high",
+  "extraction_notes": "The filing only discusses the appointment of Ismael Roig as Interim CFO and related compensation. No financial results or guidance are included.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:41:41.357722Z",
+    "elapsed_sec": 32.8,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-03-20",
+      "accession": "000119312524072814"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2022-03-08",
+    "report_date": "2022-03-03",
+    "items_disclosed": [
+      "5.02"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "Archer-Daniels-Midland director Pierre Dufour announces intention not to stand for re-election.",
+    "narrative_summary": "Pierre Dufour notified the Board of Directors of Archer-Daniels-Midland Company on March 3, 2022, of his intention not to stand for re-election at the 2022 Annual Meeting of Stockholders. His decision was not due to any dispute or disagreement with the company or the Board. Mr. Dufour also served on the Board's Audit Committee and Sustainability and Corporate Responsibility Committee."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Pierre Dufour",
+      "role": "director",
+      "action": "departed",
+      "effective_date": null
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.2,
+  "extraction_confidence": "high",
+  "extraction_notes": "Only Item 5.02 disclosed, which relates to a director's departure. No financial data or other business events reported.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:35:29.270001Z",
+    "elapsed_sec": 28.7,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2022-03-08",
+      "accession": "000119312522069255"
+    }
+  }
+}

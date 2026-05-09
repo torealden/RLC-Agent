@@ -1,0 +1,120 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2022-10-25",
+    "report_date": "2022-10-25",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports third quarter 2022 earnings per share of $1.83, $1.86 on an adjusted basis.",
+    "narrative_summary": "Archer-Daniels-Midland Company (ADM) reported third quarter 2022 financial results with earnings per share of $1.83, and adjusted earnings per share of $1.86. The company's segment operating profit was $1.559 billion, with strong performance across Ag Services and Oilseeds, Carbohydrate Solutions, and Nutrition segments. The results reflect resilient global demand, improved margins, and effective risk management, while also noting some headwinds such as lower volumes in certain areas and demand fulfillment challenges."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q3 2022",
+    "period_end_date": "2022-09-30",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": 1000,
+      "eps_diluted_usd": 1.83,
+      "adjusted_eps_diluted_usd": 1.86,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "positive",
+      "drivers": [
+        "short crops in South America supporting U.S. exports",
+        "improved volumes and margins in North American origination",
+        "better margins in global ocean freight",
+        "resilient global demand for both meal and oil",
+        "strong rapeseed margins in EMEA",
+        "positive impacts from an insurance settlement",
+        "North American soy crush margins benefiting from renewable diesel demand"
+      ],
+      "concerns": [
+        "lower crush volumes",
+        "impacts from idled facilities in Ukraine and Paraguay"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "positive",
+      "drivers": [
+        "steady global demand for sweeteners and starches",
+        "improved year-over-year results in Starches and Sweeteners subsegment",
+        "continued robust demand for corn oil",
+        "effective risk management"
+      ],
+      "concerns": [
+        "Vantage Corn Processors results were substantially lower",
+        "ethanol margins pressured by lower domestic demand and elevated corn costs"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "mixed",
+      "drivers": [
+        "strong demand for plant-based proteins",
+        "solid performance in texturants",
+        "continued strong demand growth in EMEA"
+      ],
+      "concerns": [
+        "adverse currency translation effects in EMEA",
+        "demand fulfillment challenges in North America",
+        "lower demand in APAC due to lockdowns in China",
+        "Health Wellness was lower versus the prior year"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other Business",
+      "performance": "positive",
+      "drivers": [
+        "higher short-term interest rates driving improved earnings in ADM Investor Services"
+      ],
+      "concerns": [
+        "increased claim settlements in captive insurance"
+      ],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.7,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers from Exhibit 99.1; cover sheet only had Item references. Some financial figures were not explicitly stated in the text but were implied or referenced in the press release.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:26:30.239800Z",
+    "elapsed_sec": 69.3,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2022-10-25",
+      "accession": "000000708422000026"
+    }
+  }
+}

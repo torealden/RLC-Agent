@@ -1,0 +1,114 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2025-05-06",
+    "report_date": "2025-05-06",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports first quarter 2025 results with adjusted EPS of $0.70, reaffirms full-year guidance at lower end.",
+    "narrative_summary": "ADM reported first quarter 2025 financial results, showing net earnings of $295 million and adjusted net earnings of $338 million. Earnings per share were $0.61 (GAAP) and $0.70 (adjusted), both down year-over-year. The company reaffirmed its full-year 2025 adjusted EPS guidance range of $4.00 to $4.75 but expects to deliver at the lower end due to current market conditions. Segment performance varied, with Ag Services and Oilseeds down significantly, Carbohydrate Solutions slightly down, and Nutrition up 13%."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q1 2025",
+    "period_end_date": "2025-03-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 295,
+      "adjusted_net_earnings_usd_mn": 338,
+      "eps_diluted_usd": 0.61,
+      "adjusted_eps_diluted_usd": 0.7,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": -342
+    },
+    "guidance_changes": [
+      {
+        "metric": "adjusted_eps_2025",
+        "old_low": 4.0,
+        "old_high": 4.75,
+        "new_low": 4.0,
+        "new_high": 4.75,
+        "direction": "maintained"
+      }
+    ],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "higher destination marketing volumes and related margins"
+      ],
+      "concerns": [
+        "decrease in volumes and margins due to tariff and trade policy uncertainty",
+        "negative mark-to-market timing impacts",
+        "export duties",
+        "increased industry capacity",
+        "competitive meal exports from Argentina",
+        "higher manufacturing costs",
+        "lower vegetable oil demand due to biofuel and trade policy uncertainty"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "negative",
+      "drivers": [
+        "higher ethanol volumes and improved margins"
+      ],
+      "concerns": [
+        "lower North America starch margins",
+        "lower EMEA S S volumes and margins",
+        "higher manufacturing costs"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "positive",
+      "drivers": [
+        "improved operating profit performance",
+        "higher volumes and margins in North America and EMEA Flavors",
+        "improved market conditions leading to higher margins",
+        "cost optimization efforts"
+      ],
+      "concerns": [
+        "lower margins in Specialty Ingredients",
+        "negative valuation adjustments in Health Wellness"
+      ],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "negative",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; cover sheet only had Item references. Guidance reaffirmed but expected to be at lower end of range.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:19:48.819598Z",
+    "elapsed_sec": 69.0,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2025-05-06",
+      "accession": "000000708425000020"
+    }
+  }
+}

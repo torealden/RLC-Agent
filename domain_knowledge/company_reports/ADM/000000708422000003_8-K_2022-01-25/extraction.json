@@ -1,0 +1,119 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2022-01-25",
+    "report_date": "2022-01-25",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports fourth quarter and full-year 2021 earnings per share of $1.38 and $4.79, respectively.",
+    "narrative_summary": "ADM announced its fourth quarter and full-year 2021 financial results, reporting earnings per share of $1.38 and $4.79, respectively. The company's adjusted earnings per share were $1.50 and $5.19, respectively. Full-year 2021 net earnings were $2.7 billion, with adjusted net earnings of $2.9 billion. Segment operating profit increased 34% year-over-year, and the company announced an 8% increase in its quarterly dividend."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "FY 2021",
+    "period_end_date": "2021-12-31",
+    "headline_numbers": {
+      "revenue_usd_mn": 85249,
+      "net_earnings_usd_mn": 2709,
+      "adjusted_net_earnings_usd_mn": 2935,
+      "eps_diluted_usd": 4.79,
+      "adjusted_eps_diluted_usd": 5.19,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": 6595
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "positive",
+      "drivers": [
+        "solid results in global ocean freight",
+        "strong export margins"
+      ],
+      "concerns": [
+        "lower crushing results due to negative timing impacts"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "positive",
+      "drivers": [
+        "results more than doubled year-over-year"
+      ],
+      "concerns": [
+        "lower Starches and Sweeteners results due to higher input costs"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "positive",
+      "drivers": [
+        "extremely strong quarter",
+        "revenue growth of 19%",
+        "operating profits 26% higher than prior-year period"
+      ],
+      "concerns": [
+        "weaker APAC results"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other Business",
+      "performance": "positive",
+      "drivers": [
+        "higher Captive Insurance underwriting results"
+      ],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Juan Luciano",
+      "role": "Chairman and CEO",
+      "action": "appointed",
+      "effective_date": null
+    }
+  ],
+  "ma_or_capital_allocation": [
+    {
+      "type": "dividend",
+      "counterparty": null,
+      "amount_usd_mn": null,
+      "description": "Announcing 8% increase in quarterly dividend"
+    }
+  ],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.8,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; cover sheet only had Item references",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T08:34:57.491890Z",
+    "elapsed_sec": 121.5,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2022-01-25",
+      "accession": "000000708422000003"
+    }
+  }
+}

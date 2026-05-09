@@ -1,0 +1,134 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2023-10-24",
+    "report_date": "2023-10-24",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports Q3 2023 earnings per share of $1.52, adjusted EPS of $1.63.",
+    "narrative_summary": "Archer-Daniels-Midland Company reported third quarter 2023 earnings with diluted EPS of $1.52, and adjusted EPS of $1.63. The company highlighted strong performance in Carbohydrate Solutions and noted a shift in Ag Services Oilseeds results. Segment operating profit was $1.421 billion, with adjusted segment operating profit of $1.492 billion. The company raised its full-year earnings outlook based on strong performance in 2023 and constructive expectations for the remainder of the year."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q3 2023",
+    "period_end_date": "2023-09-30",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 800,
+      "adjusted_net_earnings_usd_mn": 900,
+      "eps_diluted_usd": 1.52,
+      "adjusted_eps_diluted_usd": 1.63,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "South American origination results were higher year-over-year",
+        "strong export demand",
+        "Global Trade results were strong"
+      ],
+      "concerns": [
+        "North American origination results were lower year-over-year",
+        "shift of exports to South America",
+        "lower crushing results"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "positive",
+      "drivers": [
+        "Starches and Sweeteners subsegment results were higher year-over-year",
+        "strong ethanol backdrop",
+        "Vantage Corn Processors results were significantly higher year-over-year"
+      ],
+      "concerns": [],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [
+        "Flavors results were substantially higher than the prior year",
+        "Health Wellness showed favorable impact from revised commercial agreement with Spiber"
+      ],
+      "concerns": [
+        "Human Nutrition results were much lower than the third quarter of 2022",
+        "Specialty Ingredients results were much lower year-over-year due to lower market demand for plant-based proteins"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other Business",
+      "performance": "positive",
+      "drivers": [
+        "Improved ADM Investor Services earnings on higher net interest income"
+      ],
+      "concerns": [
+        "Captive insurance results were slightly lower on higher claim settlements"
+      ],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [
+    {
+      "name": "Spiritwood production facility",
+      "operator": "ADM",
+      "location_hint": "unknown",
+      "country_hint": "US",
+      "facility_type_hint": "biodiesel",
+      "context": "commissioning to serve growing demand for renewable green diesel"
+    },
+    {
+      "name": "Decatur",
+      "operator": "ADM",
+      "location_hint": "Decatur",
+      "country_hint": "US",
+      "facility_type_hint": "refinery",
+      "context": "Broadwing Energy project for lower carbon intensity power generation"
+    }
+  ],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Juan Luciano",
+      "role": "Chair of the Board and CEO",
+      "action": "appointed",
+      "effective_date": null
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "positive",
+  "polarity_intensity": 0.7,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers from Exhibit 99.1; cover sheet only had Item references. EPS figures are from the press release.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:45:04.352203Z",
+    "elapsed_sec": 80.3,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2023-10-24",
+      "accession": "000000708423000037"
+    }
+  }
+}

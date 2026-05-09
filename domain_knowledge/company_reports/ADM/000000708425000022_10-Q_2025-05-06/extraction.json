@@ -1,0 +1,32 @@
+{
+  "business_overview": {
+    "description": null,
+    "primary_segments": null,
+    "primary_commodities": null,
+    "geographic_focus": null
+  },
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": null,
+    "filing_type": "10-Q",
+    "filing_date": "2025-05-06",
+    "fiscal_period_end": null,
+    "fiscal_year": null,
+    "fiscal_quarter": null
+  },
+  "extraction_confidence": "low",
+  "extraction_notes": "The provided section only contains the table of contents for the consolidated financial statements and does not include any business overview information, segment details, commodity listings, or geographic focus data.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_10kq_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:20:13.252723Z",
+    "elapsed_sec": 24.4,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "10-Q",
+      "filing_date": "2025-05-06",
+      "accession": "000000708425000022"
+    }
+  }
+}

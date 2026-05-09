@@ -1,0 +1,76 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2024-12-02",
+    "report_date": "2024-12-02",
+    "items_disclosed": [
+      "7.01",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports Q3 2024 earnings with adjusted EPS of $1.09, down 28% year-over-year.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced its third quarter 2024 financial results, reporting adjusted earnings per share of $1.09, a 28% decline compared to the prior year. Total segment operating profit was $2.3 billion, down 33% year-over-year. Cash flow from operations before working capital was $3.2 billion, a 32% decrease from the prior year. The company also outlined strategic initiatives aimed at improving operational performance and returns."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q3 2024",
+    "period_end_date": "2024-09-30",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": 1.09,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": 3200
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [],
+      "concerns": [
+        "weaker market outlook"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Other",
+      "performance": "negative",
+      "drivers": [],
+      "concerns": [
+        "slower recovery"
+      ],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "negative",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; cover sheet only had Item references. Some financial figures were provided as ranges or percentages rather than absolute values.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:45:00.295136Z",
+    "elapsed_sec": 45.4,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-12-02",
+      "accession": "000119312524268996"
+    }
+  }
+}

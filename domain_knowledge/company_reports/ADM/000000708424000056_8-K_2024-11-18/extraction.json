@@ -1,0 +1,108 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2024-11-18",
+    "report_date": "2024-11-18",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports third quarter 2024 results with adjusted net earnings of $530 million.",
+    "narrative_summary": "Archer-Daniels-Midland Company (ADM) reported third quarter 2024 financial results, including net earnings of $18 million and adjusted net earnings of $530 million. The company also announced restated financial statements for fiscal year 2023 and the first and second quarters of 2024, noting that the restatement had no impact on consolidated financial results. Earnings per share were $0.04 on a GAAP basis and $1.09 adjusted, both down year-over-year. The company reported a non-cash impairment charge of $461 million related to its Wilmar equity investment."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q3 2024",
+    "period_end_date": "2024-09-30",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 18,
+      "adjusted_net_earnings_usd_mn": 530,
+      "eps_diluted_usd": 0.04,
+      "adjusted_eps_diluted_usd": 1.09,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": 2468
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "Improved segment volumes",
+        "Lower costs"
+      ],
+      "concerns": [
+        "Slower farmer selling",
+        "Higher logistics costs",
+        "Industry take-or-pay contracts",
+        "Lower margins"
+      ],
+      "quoted_metric": "Segment operating profit of $480 million, down (43)% versus the prior year quarter"
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "negative",
+      "drivers": [
+        "Strong starches and sweeteners volumes and margins",
+        "High utilization rates across the network"
+      ],
+      "concerns": [
+        "Lower margins in the EMEA region",
+        "Lower domestic ethanol margins"
+      ],
+      "quoted_metric": "Segment operating profit of $452 million, down (3)% versus the prior year period"
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [
+        "Cost optimization efforts",
+        "Lower input costs"
+      ],
+      "concerns": [
+        "Unplanned downtime at Decatur East",
+        "Lower texturants margins"
+      ],
+      "quoted_metric": "Segment operating profit of $105 million, down (19)% versus the prior year period"
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Juan Luciano",
+      "role": "Chair of the Board and CEO",
+      "action": "appointed",
+      "effective_date": null
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "negative",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers from Exhibit 99.1; cover sheet only had Item references. The filing includes detailed segment performance and financial highlights but no specific guidance changes or capital allocation details.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:09:22.352964Z",
+    "elapsed_sec": 71.0,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-11-18",
+      "accession": "000000708424000056"
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_date": "2024-01-22",
+    "report_date": "2024-01-19",
+    "items_disclosed": [
+      "2.02",
+      "5.02",
+      "7.01",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "ADM appoints Ismael Roig as interim CFO following Vikram Luthar's administrative leave.",
+    "narrative_summary": "Archer-Daniels-Midland Company announced the appointment of Ismael Roig as interim Chief Financial Officer, following the administrative leave of Vikram Luthar. Luthar's leave is pending an investigation into accounting practices related to the Nutrition reporting segment, initiated after a SEC document request. The company also delayed its fourth quarter 2023 earnings release and Form 10-K filing. ADM withdrew its forward-looking outlook for the Nutrition segment due to the ongoing investigation."
+  },
+  "earnings_release": {
+    "applicable": false,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [],
+      "concerns": [],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "AS&O",
+      "performance": "neutral",
+      "drivers": [],
+      "concerns": [],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "neutral",
+      "drivers": [],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [
+    "Securities and Exchange Commission (SEC)",
+    "SEC voluntary document request"
+  ],
+  "leadership_changes": [
+    {
+      "name": "Ismael Roig",
+      "role": "Interim Chief Financial Officer",
+      "action": "appointed",
+      "effective_date": "2024-01-19"
+    },
+    {
+      "name": "Vikram Luthar",
+      "role": "Chief Financial Officer and Senior Vice President",
+      "action": "departed",
+      "effective_date": "2024-01-19"
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Terry Crews",
+    "Juan Luciano",
+    "Ismael Roig"
+  ],
+  "polarity_overall": "negative",
+  "polarity_intensity": 0.6,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers from Exhibit 99.1; cover sheet only had Item references. Leadership change details and investigation context are clearly stated.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:40:34.569159Z",
+    "elapsed_sec": 55.3,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2024-01-22",
+      "accession": "000119312524011608"
+    }
+  }
+}

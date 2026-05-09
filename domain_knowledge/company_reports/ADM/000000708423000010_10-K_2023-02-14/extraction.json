@@ -1,0 +1,480 @@
+{
+  "business_overview": {
+    "description": "Archer-Daniels-Midland Company (ADM) is a global agricultural supply chain manager and processor, serving as a premier human and animal nutrition provider. The company offers a broad portfolio of food and beverage solutions, including staple foods like flour, oils, and sweeteners, as well as innovative alternatives such as plant-based meat and dairy. ADM also provides ingredients, flavors, and solutions for animal nutrition, health and well-being products including probiotics and supplements, and sustainable solutions to replace petroleum-based products. The company operates with a strong focus on sustainability, environmental responsibility, and innovation, leveraging its global origination, transportation, and processing network to meet demand driven by food security, health, and sustainability trends.",
+    "primary_segments": [
+      "Ag Services and Oilseeds",
+      "Carbohydrate Solutions",
+      "Nutrition"
+    ],
+    "primary_commodities": [
+      "corn",
+      "soybeans",
+      "wheat",
+      "peanuts",
+      "cottonseed",
+      "sunflower seed",
+      "canola",
+      "rapeseed",
+      "flaxseed",
+      "oils",
+      "protein meals"
+    ],
+    "geographic_focus": [
+      "North America",
+      "EMEA",
+      "APAC"
+    ]
+  },
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_type": "10-K",
+    "filing_date": "2023-02-14",
+    "fiscal_period_end": "2022-12-31",
+    "fiscal_year": 2022,
+    "fiscal_quarter": null
+  },
+  "extraction_confidence": "high",
+  "extraction_notes": "All required fields populated from the provided text. Segments, commodities, and geographic focus identified directly from the business description and segment breakdowns.",
+  "risk_factors_top": [
+    {
+      "title": "Operational Disruptions",
+      "category": "operational",
+      "summary": "The Company faces potential business disruption from equipment failure, raw material shortages, natural disasters, severe weather, accidents, and fires. These events could result in unplanned downtime, property damage, and business disruption that may not be fully covered by insurance."
+    },
+    {
+      "title": "Supply Chain and Transportation Disruptions",
+      "category": "operational",
+      "summary": "The Company's operations depend on dependable transportation services, with reliance on navigable rivers and waterways. Disruptions from weather, river conditions, supplier issues, or energy supply interruptions could impair material supply and product delivery."
+    },
+    {
+      "title": "Energy Price Volatility",
+      "category": "commodity",
+      "summary": "Fluctuations in energy prices affect operating costs and product selling prices. The Company's processing plants rely on electricity, natural gas, and coal, while transportation depends on diesel fuel, all of which are subject to price volatility and regulatory impacts."
+    },
+    {
+      "title": "Labor Shortages and Workforce Challenges",
+      "category": "operational",
+      "summary": "The Company may face insufficient skilled labor to support global operations. Labor availability has been strained by pandemic-related factors including childcare challenges and workforce shifts, potentially impacting manufacturing operations."
+    },
+    {
+      "title": "Growth Strategy Execution Risks",
+      "category": "strategic",
+      "summary": "Expanding into new geographies or executing acquisitions may result in increased costs, decreased revenues, and delayed synergies. Integration risks, partner identification difficulties, and management resource allocation challenges could impact growth strategy success."
+    },
+    {
+      "title": "Equity Investment and Joint Venture Risks",
+      "category": "financial",
+      "summary": "The Company has limited control over $5.5 billion in joint ventures and investments. Risks include partner financial strength, loss of revenues, management strategy implementation, and dispute resolution that may not be fully mitigated by existing controls."
+    },
+    {
+      "title": "Health Pandemic and Outbreak Risks",
+      "category": "geopolitical",
+      "summary": "Health epidemics and pandemics could materially impact operations through supply chain disruptions, contractual obligations, and increased costs. Demand for certain products may be affected by government-imposed restrictions during prolonged outbreaks."
+    },
+    {
+      "title": "Agricultural Commodity Price Volatility",
+      "category": "commodity",
+      "summary": "Agricultural commodity prices fluctuate due to weather, crop disease, government policies, climate change, and global demand. These factors can impact raw material costs and supply chain efficiency, affecting profitability."
+    },
+    {
+      "title": "Economic Downturns and Regional Volatility",
+      "category": "macro",
+      "summary": "Economic downturns and regional volatility in developed and emerging markets affect demand for products, credit availability, and operational conditions. Emerging markets face additional risks including logistics limitations, currency concerns, and political instability."
+    },
+    {
+      "title": "Industry Competition and Market Risks",
+      "category": "competitive",
+      "summary": "The Company faces significant competition across all business segments for inputs, transportation, workforce, and customers. Competitive pressures impact pricing, gross profit margins, and market share, particularly in highly price-competitive commodity markets."
+    },
+    {
+      "title": "Commodity price volatility",
+      "category": "commodity",
+      "summary": "The Company is exposed to fluctuations in agricultural commodity cash prices and derivative prices, which can significantly impact operating results. Changes in commodity prices, transportation costs, energy prices, and foreign currency exchange rates affect the Company's financial performance."
+    },
+    {
+      "title": "Economic and regulatory impacts on global operations",
+      "category": "regulatory",
+      "summary": "The Company faces risks from economic, product quality, feed safety, and other factors affecting livestock and poultry businesses, including disease outbreaks like African swine fever. Additionally, carbon emission regulations in multiple regions could increase costs and require additional investments in facilities and equipment."
+    },
+    {
+      "title": "Product safety and quality risks",
+      "category": "operational",
+      "summary": "Food or feed risks derived from quality issues, off-label product usage, occupational health and safety issues, and ineffective diversification programs may expose the Company to regulatory or reputational risks. The Company faces potential liability from product liability and food safety matters that may exceed insurance coverage."
+    },
+    {
+      "title": "Cybersecurity and geopolitical risks",
+      "category": "cyber",
+      "summary": "The Company faces increased cyber risk due to geopolitical conflicts, particularly with Russia, which is known for extensive cyber attack capabilities. The conflict in Ukraine has disrupted global supply chains, increased commodity and energy costs, and created risks related to trade receivables and supplier insolvency."
+    },
+    {
+      "title": "Access to financing and liquidity risks",
+      "category": "financial",
+      "summary": "Limitations on access to external financing could adversely affect the Company's operating results due to its capital-intensive nature. The Company requires significant capital to operate and fund growth, and access to credit markets depends on maintaining sufficient credit ratings."
+    },
+    {
+      "title": "Trade policy and tariff risks",
+      "category": "regulatory",
+      "summary": "Political instability and changes in trade policies, including tariffs and restrictive trade activities, could negatively impact the Company's financial results. The Company's ability to enter certain markets or maintain competitive pricing may be affected by international trade disputes and sanctions."
+    },
+    {
+      "title": "Climate and environmental regulation risks",
+      "category": "climate",
+      "summary": "The Company may be impacted by carbon emission regulations in multiple regions, including the United States, Canada, Mexico, the European Union, and China. Compliance with climate regulations may require additional investments in facilities and equipment, and could increase costs."
+    },
+    {
+      "title": "Operational and supply chain disruptions",
+      "category": "operational",
+      "summary": "The Company's operations could be subject to property damage and business disruption from geopolitical conflicts, acts of terrorism, and war. Supply chain disruptions due to sanctions, supplier insolvency, or restrictions on cross-border transactions may affect the Company's ability to obtain inputs and satisfy contractual obligations."
+    },
+    {
+      "title": "Cybersecurity breaches and data security risks",
+      "category": "cyber",
+      "summary": "The Company's IT systems, processes, and sites may suffer cybersecurity breaches that could expose the company to operational and regulatory risks. Despite implementing security measures, disaster recovery plans, and ongoing monitoring, a breach could lead to significant operational interruptions, data loss, legal actions, and reputational damage that may adversely impact revenues, operating results, and financial condition."
+    },
+    {
+      "title": "Global regulatory compliance risks",
+      "category": "regulatory",
+      "summary": "The Company operates globally across 190 countries and must comply with numerous laws and regulations from U.S. federal, state, local, and foreign authorities. Non-compliance or challenges with tax authorities regarding deductions, income allocation, and changing tax laws could result in fines, penalties, injunctions, and reputational damage."
+    },
+    {
+      "title": "Agricultural sector regulation impacts",
+      "category": "regulatory",
+      "summary": "Government policies, mandates, and regulations affecting agricultural production and trade flows can influence crop planting, production location, trade volumes, feedstock availability, and product viability. Changes in ethanol and biodiesel regulations, including the Renewable Fuel Standard program, can significantly impact operating results."
+    },
+    {
+      "title": "Trade policy and international regulatory risks",
+      "category": "geopolitical",
+      "summary": "International trade regulations can adversely affect agricultural commodity trade flows by limiting or disrupting trade between countries. Trade restrictions, tariffs, duties, and import/export limitations can impact the Company's ability to do business in existing and target markets and affect revenues and operating results."
+    }
+  ],
+  "facilities_named": [
+    {
+      "name": "Ag Services and Oilseeds Processing Facilities",
+      "city": null,
+      "state_or_region": "North America",
+      "country": "US",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 80,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Ag Services and Oilseeds Processing Facilities (in 1,000s metric tons)."
+    },
+    {
+      "name": "Ag Services and Oilseeds Processing Facilities",
+      "city": null,
+      "state_or_region": "South America",
+      "country": "BR",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 30,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Ag Services and Oilseeds Processing Facilities (in 1,000s metric tons)."
+    },
+    {
+      "name": "Ag Services and Oilseeds Processing Facilities",
+      "city": null,
+      "state_or_region": "Europe",
+      "country": "DE",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 49,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Ag Services and Oilseeds Processing Facilities (in 1,000s metric tons)."
+    },
+    {
+      "name": "Ag Services and Oilseeds Processing Facilities",
+      "city": null,
+      "state_or_region": "Asia",
+      "country": "CN",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 1,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Ag Services and Oilseeds Processing Facilities (in 1,000s metric tons)."
+    },
+    {
+      "name": "Carbohydrate Solutions Processing Plants",
+      "city": null,
+      "state_or_region": "North America",
+      "country": "US",
+      "facility_type": "grain_handling",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 89,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Carbohydrate Solutions Processing Plants (in 1,000s metric tons)."
+    },
+    {
+      "name": "Carbohydrate Solutions Processing Plants",
+      "city": null,
+      "state_or_region": "Europe",
+      "country": "DE",
+      "facility_type": "grain_handling",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 6,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Carbohydrate Solutions Processing Plants (in 1,000s metric tons)."
+    },
+    {
+      "name": "Nutrition Processing Plants",
+      "city": null,
+      "state_or_region": "North America",
+      "country": "US",
+      "facility_type": "nutrition",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 101,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Nutrition Processing Plants (in 1,000s metric tons)."
+    },
+    {
+      "name": "Nutrition Processing Plants",
+      "city": null,
+      "state_or_region": "South America",
+      "country": "BR",
+      "facility_type": "nutrition",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 3,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Nutrition Processing Plants (in 1,000s metric tons)."
+    },
+    {
+      "name": "Nutrition Processing Plants",
+      "city": null,
+      "state_or_region": "Europe",
+      "country": "DE",
+      "facility_type": "nutrition",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 10,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Nutrition Processing Plants (in 1,000s metric tons)."
+    },
+    {
+      "name": "Nutrition Processing Plants",
+      "city": null,
+      "state_or_region": "Asia",
+      "country": "CN",
+      "facility_type": "nutrition",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 3,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacity of the processing plants that the Company owns or leases is as follows: Nutrition Processing Plants (in 1,000s metric tons)."
+    }
+  ],
+  "segments": [
+    {
+      "name": "Ag Services and Oilseeds",
+      "revenue_usd_mn": 79563,
+      "operating_profit_usd_mn": 4386,
+      "operating_margin_pct": 55.16,
+      "yoy_revenue_change_pct": 19.0,
+      "yoy_op_profit_change_pct": 58.0,
+      "key_drivers": [
+        "Strong performances in destination marketing and global ocean freight",
+        "Robust protein and renewable diesel demand",
+        "Higher margins due to strong oils demand",
+        "Biodiesel margins benefited from direct sales compared to auction sales"
+      ],
+      "key_concerns": [
+        "Lower North American origination volumes",
+        "Temporarily idled facility in Paraguay due to crop failure",
+        "Weather-related challenges",
+        "Indefinite shutdown of a Ukraine facility since February 2022"
+      ],
+      "products_services": [
+        "Ag Services",
+        "Crushing",
+        "Refined Products and Other"
+      ]
+    },
+    {
+      "name": "Carbohydrate Solutions",
+      "revenue_usd_mn": 13961,
+      "operating_profit_usd_mn": 1360,
+      "operating_margin_pct": 9.74,
+      "yoy_revenue_change_pct": 26.0,
+      "yoy_op_profit_change_pct": 6.0,
+      "key_drivers": [
+        "Solid margins across sweeteners and starches",
+        "Strong contributions from corn co-products",
+        "Effective risk management",
+        "Revenue growth from biosolutions platform as demand for plant-based products expanded"
+      ],
+      "key_concerns": [
+        "Weaker ethanol margins",
+        "Loss of USD-grade industrial alcohol volumes from divested Peoria, Illinois facility"
+      ],
+      "products_services": [
+        "Starches and Sweeteners",
+        "Vantage Corn Processors"
+      ]
+    },
+    {
+      "name": "Nutrition",
+      "revenue_usd_mn": 7636,
+      "operating_profit_usd_mn": 736,
+      "operating_margin_pct": 9.64,
+      "yoy_revenue_change_pct": 14.0,
+      "yoy_op_profit_change_pct": 7.0,
+      "key_drivers": [
+        "Strength in amino acids",
+        "Strong sales growth in alternative proteins including contribution from Sojaprotein acquisition",
+        "Good demand for texturants",
+        "Probiotics including contribution from Deerland Probiotics and Enzymes acquisition",
+        "Robust demand for fiber and Vitamin E"
+      ],
+      "key_concerns": [
+        "Demand fulfillment challenges",
+        "Impact of strong U.S. dollar in EMEA",
+        "Softer demand in Asia Pacific",
+        "Higher costs in North America"
+      ],
+      "products_services": [
+        "Human Nutrition",
+        "Animal Nutrition"
+      ]
+    },
+    {
+      "name": "Other Business",
+      "revenue_usd_mn": 396,
+      "operating_profit_usd_mn": 167,
+      "operating_margin_pct": 42.17,
+      "yoy_revenue_change_pct": null,
+      "yoy_op_profit_change_pct": 568.0,
+      "key_drivers": [
+        "Higher short-term interest rates drove improved earnings in ADM Investor Services",
+        "Improved underwriting performance resulted in better captive insurance results"
+      ],
+      "key_concerns": [],
+      "products_services": [
+        "ADM Investor Services",
+        "Captive Insurance"
+      ]
+    }
+  ],
+  "capital_expenditures": {
+    "total_capex_usd_mn": 1300,
+    "capex_guidance_usd_mn_low": null,
+    "capex_guidance_usd_mn_high": null,
+    "capex_by_segment": {},
+    "major_projects": [
+      {
+        "project_name": "oilseed facility in Mainz, Germany",
+        "location": "Mainz, Germany",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-09-30",
+        "status": "in_progress"
+      },
+      {
+        "project_name": "Decatur, Illinois alternative protein production expansion",
+        "location": "Decatur, Illinois",
+        "estimated_cost_usd_mn": 300,
+        "expected_completion": "2025-03-31",
+        "status": "in_progress"
+      },
+      {
+        "project_name": "Marshall, Minnesota starch production expansion",
+        "location": "Marshall, Minnesota",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-12-31",
+        "status": "in_progress"
+      },
+      {
+        "project_name": "Science and Technology Center in China",
+        "location": "China",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2022-09-30",
+        "status": "completed"
+      },
+      {
+        "project_name": "New extrusion facility in Serbia",
+        "location": "Serbia",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2022-09-30",
+        "status": "completed"
+      },
+      {
+        "project_name": "North America Microbiology Laboratory in Decatur, Illinois",
+        "location": "Decatur, Illinois",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2022-11-30",
+        "status": "completed"
+      },
+      {
+        "project_name": "ScaleUp Bio joint venture",
+        "location": "Singapore",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2022-08-31",
+        "status": "completed"
+      },
+      {
+        "project_name": "GreenWise Lactic and LG Chem Illinois Biochem joint ventures",
+        "location": "Illinois",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2022-08-31",
+        "status": "completed"
+      },
+      {
+        "project_name": "New protein innovation center in Decatur, Illinois",
+        "location": "Decatur, Illinois",
+        "estimated_cost_usd_mn": 300,
+        "expected_completion": "2025-03-31",
+        "status": "in_progress"
+      }
+    ]
+  },
+  "commodity_exposures": [
+    {
+      "commodity": "corn",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "soybeans",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "wheat",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "palm oil",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "energy",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "freight",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    }
+  ],
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_10kq_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:37:22.673686Z",
+    "elapsed_sec": 435.0,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "10-K",
+      "filing_date": "2023-02-14",
+      "accession": "000000708423000010"
+    }
+  }
+}

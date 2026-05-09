@@ -1,0 +1,107 @@
+{
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "ARCHER-DANIELS-MIDLAND COMPANY",
+    "filing_date": "2025-02-04",
+    "report_date": "2025-02-04",
+    "items_disclosed": [
+      "2.02",
+      "9.01"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "ADM reports fourth quarter and full-year 2024 results with adjusted EPS of $4.74 and announces $500-$750 million in cost savings.",
+    "narrative_summary": "Archer-Daniels-Midland Company (ADM) reported fourth quarter and full-year 2024 financial results, with adjusted earnings per share of $4.74 for the year. The company noted a decline in earnings and operating profits across most segments, particularly in Ag Services and Oilseeds. In response to challenging market conditions, ADM announced targeted actions to deliver $500-$750 million in cost savings over several years. Additionally, the company increased its quarterly dividend by 2%."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "FY 2024",
+    "period_end_date": "2024-12-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": 1800,
+      "adjusted_net_earnings_usd_mn": 2300,
+      "eps_diluted_usd": 3.65,
+      "adjusted_eps_diluted_usd": 4.74,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": 2800
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Ag Services and Oilseeds",
+      "performance": "negative",
+      "drivers": [
+        "higher origination volumes and margins in North America",
+        "improved river conditions",
+        "positive timing impacts",
+        "higher destination marketing volumes and margins in Global Trade"
+      ],
+      "concerns": [
+        "increased industry run rates",
+        "higher manufacturing costs",
+        "biofuel and trade policy uncertainty",
+        "lower executed crush margins in North America",
+        "higher pre-treatment capacity",
+        "higher imports of used cooking oil",
+        "softer demand from food customers in North America"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Carbohydrate Solutions",
+      "performance": "mixed",
+      "drivers": [
+        "higher ethanol export volumes",
+        "improved ethanol margins"
+      ],
+      "concerns": [
+        "lower co-product values and margins in EMEA",
+        "higher industry production and inventory levels"
+      ],
+      "quoted_metric": null
+    },
+    {
+      "segment_name": "Nutrition",
+      "performance": "negative",
+      "drivers": [],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "dividend",
+      "counterparty": null,
+      "amount_usd_mn": null,
+      "description": "Announces 2% increase in quarterly dividend."
+    }
+  ],
+  "people_quoted": [
+    "Juan Luciano"
+  ],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.3,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers extracted from Exhibit 99.1; no guidance changes or facility mentions in the filing.",
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T10:10:30.026864Z",
+    "elapsed_sec": 67.7,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "8-K",
+      "filing_date": "2025-02-04",
+      "accession": "000000708425000005"
+    }
+  }
+}

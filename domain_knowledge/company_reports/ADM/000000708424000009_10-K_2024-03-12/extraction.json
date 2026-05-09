@@ -1,0 +1,563 @@
+{
+  "business_overview": {
+    "description": "Archer-Daniels-Midland Company (ADM) is a global agricultural supply chain manager and processor, serving as a premier human and animal nutrition provider. The company offers a broad portfolio of food and beverage solutions, including staple foods like flour, oils, and sweeteners, as well as innovative alternatives such as plant-based meat and dairy. ADM is also a leader in animal nutrition, providing ingredients and solutions to meet consumer demands for clean, healthy, and sustainable pet and livestock feed. Additionally, ADM focuses on health and well-being through probiotics, enzymes, and supplements, and is advancing sustainable solutions by replacing petroleum-based products with plant-based alternatives using precision fermentation. The company operates globally with a strong emphasis on sustainability, including commitments to reduce greenhouse gas emissions and improve resource efficiency.",
+    "primary_segments": [
+      "Ag Services and Oilseeds",
+      "Carbohydrate Solutions",
+      "Nutrition"
+    ],
+    "primary_commodities": [
+      "corn",
+      "soybeans",
+      "wheat",
+      "peanuts",
+      "cottonseed",
+      "sunflower seed",
+      "canola",
+      "rapeseed",
+      "flaxseed",
+      "oilseeds"
+    ],
+    "geographic_focus": [
+      "North America",
+      "EMEA",
+      "APAC"
+    ]
+  },
+  "filing_metadata": {
+    "company_ticker": "ADM",
+    "company_name": "Archer-Daniels-Midland Company",
+    "filing_type": "10-K",
+    "filing_date": "2024-03-12",
+    "fiscal_period_end": "2023-12-31",
+    "fiscal_year": 2023,
+    "fiscal_quarter": null
+  },
+  "extraction_confidence": "high",
+  "extraction_notes": "All required fields were clearly stated in the provided text. The segment descriptions and geographic focus were explicitly mentioned. The company name and ticker were identified from the context.",
+  "risk_factors_top": [
+    {
+      "title": "Operational disruptions from natural disasters and equipment failures",
+      "category": "operational",
+      "summary": "The Company faces potential business disruption due to unplanned downtime or property damage from events such as equipment failure, raw material shortages, natural disasters, severe weather, accidents, explosions, or fires. These risks may not be fully covered by insurance and could materially impact operating results."
+    },
+    {
+      "title": "Transportation and logistics constraints",
+      "category": "operational",
+      "summary": "The Company's operations depend on dependable transportation services, including access to navigable rivers and waterways. Disruptions in transportation due to weather, economic conditions, border closures, or supplier issues could impair the ability to supply materials and deliver products to customers."
+    },
+    {
+      "title": "Energy price and inflationary impacts",
+      "category": "financial",
+      "summary": "Operating costs and product pricing are sensitive to changes in energy prices, inflation, and logistic constraints. The Company's processing plants rely on electricity, natural gas, and coal, while transportation depends on diesel and petroleum-based products. Increases in these costs could adversely affect production and operating results."
+    },
+    {
+      "title": "Human capital availability and labor shortages",
+      "category": "operational",
+      "summary": "The Company may face challenges in staffing manufacturing facilities with skilled trade and production workers. Limited availability of qualified labor could negatively impact operations, particularly in the U.S. manufacturing industry."
+    },
+    {
+      "title": "Growth strategy execution risks",
+      "category": "operational",
+      "summary": "Expanding through organic and inorganic growth exposes the Company to increased costs, decreased revenues, and delayed synergies. Risks include volatile economic, political, and regulatory conditions in new geographies, integration challenges, and potential acquisition-related issues such as impairment charges and talent retention."
+    },
+    {
+      "title": "Equity investments and joint venture risks",
+      "category": "financial",
+      "summary": "The Company has limited control over $5.5 billion in joint ventures and investments. Risks include financial strength of partners, loss of revenues, inability to implement management strategies, dispute resolution, and potential unanticipated operating or compliance issues that could impact financial results."
+    },
+    {
+      "title": "Health epidemics and pandemics",
+      "category": "geopolitical",
+      "summary": "The Company could be materially impacted by severe variants of diseases like COVID-19, leading to disruptions in contractual obligations, supply chain issues, increased costs, and reduced demand for certain products, particularly in food services channels."
+    },
+    {
+      "title": "Geopolitical conflicts and sanctions",
+      "category": "geopolitical",
+      "summary": "International conflicts, terrorism, and war (e.g., Ukraine, Israel-Hamas) pose risks of property damage, business disruption, and expropriation. Sanctions and trade restrictions may affect supply availability, increase defaults on receivables, and impact the Company's ability to obtain inputs or transact in affected markets."
+    },
+    {
+      "title": "Political instability and trade policy changes",
+      "category": "regulatory",
+      "summary": "Changes in political, trade, fiscal, monetary, and environmental policies, including tariffs, currency fluctuations, and regulatory environments, could negatively impact the Company's financial results and ability to enter or compete in certain markets."
+    },
+    {
+      "title": "Investigation and litigation risks",
+      "category": "regulatory",
+      "summary": "Ongoing government investigations related to intersegment sales have led to management distraction, stock price volatility, securities litigation, potential financial restatements, and credit rating downgrades that could affect access to capital markets and working capital needs."
+    },
+    {
+      "title": "Government investigations and regulatory penalties",
+      "category": "regulatory",
+      "summary": "The Company faces ongoing government investigations related to its operations, which could result in material fines, injunctions, penalties, and adverse effects on business, results of operations, financial condition, and liquidity. The investigations may also impact the Company's ability to obtain insurance and could lead to additional litigation."
+    },
+    {
+      "title": "Internal control weaknesses",
+      "category": "operational",
+      "summary": "The Company identified a material weakness in its internal control over financial reporting related to intersegment sales accounting practices. This weakness could result in additional accounting errors, affect the accuracy and timeliness of financial reporting, and potentially lead to restatements of historical financial information."
+    },
+    {
+      "title": "Negative publicity and stock price impact",
+      "category": "reputational",
+      "summary": "Negative publicity resulting from investigations and related events could cause significant declines in the Company's common stock price, impact customer and supplier relationships, and affect employee morale and retention, potentially leading to reduced operational effectiveness."
+    },
+    {
+      "title": "Carbon emission regulations and climate change impacts",
+      "category": "climate",
+      "summary": "The Company may be impacted by carbon pricing programs and regulations in multiple regions including the U.S., EU, Canada, Mexico, China, and others. These regulations could increase energy, transportation, raw material, and administrative costs, and may require additional investments in facilities and equipment."
+    },
+    {
+      "title": "EU deforestation-free regulation compliance",
+      "category": "regulatory",
+      "summary": "Compliance with the EU deforestation-free regulation, effective December 2024, could result in civil, administrative, and criminal penalties, as well as reputational, business, cash flow, and operational impacts, particularly affecting soybean-related operations."
+    },
+    {
+      "title": "Product liability and food safety risks",
+      "category": "operational",
+      "summary": "The Company faces risks from quality issues, off-label product usage, occupational health and safety issues, and ineffective diversification programs, which could expose it to regulatory or reputational risks and potentially exceed available liability insurance coverage."
+    },
+    {
+      "title": "Sustainability reporting compliance costs",
+      "category": "regulatory",
+      "summary": "The Company faces increased compliance costs and regulatory reporting risks due to sustainability reporting requirements, including the upcoming Corporate Sustainability Reporting Directive (CSRD) and other global reporting standards, which may result in penalties and reputational impacts."
+    },
+    {
+      "title": "Access to external financing limitations",
+      "category": "financial",
+      "summary": "The Company's capital-intensive operations require significant access to credit markets. Credit rating downgrades or loss of investment grade status could restrict access to cost-competitive commercial paper markets and increase borrowing costs, potentially limiting growth opportunities and operational flexibility."
+    },
+    {
+      "title": "Agricultural commodity price volatility",
+      "category": "commodity",
+      "summary": "The Company's operations are subject to significant fluctuations in agricultural commodity prices due to factors beyond its control, including weather conditions, crop disease, government policies, climate change, and global demand, which could adversely affect operating results and working capital requirements."
+    },
+    {
+      "title": "Economic downturns and regional volatility",
+      "category": "macro",
+      "summary": "The Company's global operations are subject to economic downturns and regional volatilities across developed and emerging markets, which could adversely affect operating results and business expansion opportunities."
+    },
+    {
+      "title": "Commodity price volatility",
+      "category": "commodity",
+      "summary": "The Company's operating results are adversely affected by fluctuations in agricultural commodity cash prices, derivative prices, transportation costs, energy prices, and foreign currency exchange rates. These factors impact the Company's ability to generate and increase gross profit, particularly in competitive markets where pricing is dependent on industry processing capacity and global commodity prices."
+    },
+    {
+      "title": "Economic downturns and volatile market conditions",
+      "category": "macro",
+      "summary": "Economic downturns and volatile market conditions could adversely affect the Company's operating results and ability to execute long-term business strategies. While the nature of many of the Company's products (food and feed ingredients) is less sensitive to demand reductions, overall economic instability can still impact business performance."
+    },
+    {
+      "title": "Geopolitical and regulatory instability in emerging markets",
+      "category": "geopolitical",
+      "summary": "Emerging market areas are subject to volatile operating conditions including logistics limitations, labor-related challenges, epidemic outbreaks, economic recovery issues, trade flow limitations, local currency concerns, and political instability. Political fiscal instability could generate intrusive regulations, potentially creating unanticipated tax assessments, fees, and increased corruption risks."
+    },
+    {
+      "title": "Intense industry competition",
+      "category": "competitive",
+      "summary": "The Company faces significant competition in each of its businesses with numerous competitors across different segments. Competition impacts gross profit through factors such as pricing dependent on industry processing capacity, global commodity price competitiveness, exchange rate fluctuations, improved crop yields, and merger and acquisition activities that may result in greater cost competitiveness and global scale of certain players."
+    },
+    {
+      "title": "Regulatory and tax compliance risks",
+      "category": "regulatory",
+      "summary": "The Company is subject to numerous global laws, regulations, and mandates including accounting, income taxes, anti-corruption, global trade, privacy, environmental, product safety, and handling of regulated substances. Changes in tax rules, including OECD's Pillar Two initiative, and evolving interpretations of data privacy regulations could materially affect the Company's effective tax rate and expose it to penalties and reputational damage."
+    },
+    {
+      "title": "Product safety and quality risks",
+      "category": "operational",
+      "summary": "The Company faces risks related to product safety and quality, including disease outbreaks in livestock and poultry that could affect demand for products used as feed ingredients. Additionally, the Company's increased investment in flavors and ingredients businesses exposes it to risks from rapidly changing consumer preferences that could impact customer success."
+    },
+    {
+      "title": "Cybersecurity and IT system risks",
+      "category": "cyber",
+      "summary": "The Company's operations rely on key IT systems, some dependent on third parties, for critical functions including supplier ordering, risk management, inventory management, and regulatory compliance. IT systems are subject to interruptions, failures, and cybersecurity breaches that could result in operational disruptions, data loss, legal actions, and reputational damage."
+    },
+    {
+      "title": "Technology and legacy system risks",
+      "category": "operational",
+      "summary": "The Company's reliance on aging legacy IT systems poses risks of diminished performance, system failures, and reduced compatibility with modern software. While a new enterprise resource planning (ERP) system is being implemented to address these issues, legacy systems still present risks to business operations and growth initiatives."
+    },
+    {
+      "title": "Regulatory and compliance risks related to Generative AI",
+      "category": "regulatory",
+      "summary": "The Company faces risks from the complex and dynamic regulatory environment related to Generative AI, including data privacy and security vulnerabilities, unauthorized third-party usage of Company data for training models, and potential legal and ethical implications. The Company must navigate these risks through guidance for responsible use, technological development, and oversight mechanisms."
+    }
+  ],
+  "facilities_named": [
+    {
+      "name": "Ag Services and Oilseeds Processing Facilities",
+      "city": null,
+      "state_or_region": "North America",
+      "country": "US",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 85,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacities of the processing plants that the Company owns or leases are as follows."
+    },
+    {
+      "name": "Ag Services and Oilseeds Processing Facilities",
+      "city": null,
+      "state_or_region": "South America",
+      "country": "BR",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 32,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacities of the processing plants that the Company owns or leases are as follows."
+    },
+    {
+      "name": "Ag Services and Oilseeds Processing Facilities",
+      "city": null,
+      "state_or_region": "Europe",
+      "country": "DE",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 50,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacities of the processing plants that the Company owns or leases are as follows."
+    },
+    {
+      "name": "Ag Services and Oilseeds Processing Facilities",
+      "city": null,
+      "state_or_region": "Asia",
+      "country": "CN",
+      "facility_type": "oilseed_crush",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 1,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The Company has many plants strategically located in agricultural commodity producing areas, and the daily capacities of the processing plants that the Company owns or leases are as follows."
+    },
+    {
+      "name": "Carbohydrate Solutions Processing Plants",
+      "city": null,
+      "state_or_region": "North America",
+      "country": "US",
+      "facility_type": "ethanol",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 89,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The daily capacities of the processing plants that the Company owns or leases are as follows."
+    },
+    {
+      "name": "Carbohydrate Solutions Processing Plants",
+      "city": null,
+      "state_or_region": "Europe",
+      "country": "DE",
+      "facility_type": "ethanol",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 6,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The daily capacities of the processing plants that the Company owns or leases are as follows."
+    },
+    {
+      "name": "Nutrition Processing Plants",
+      "city": null,
+      "state_or_region": "North America",
+      "country": "US",
+      "facility_type": "nutrition",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 90,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The daily capacities of the processing plants that the Company owns or leases are as follows."
+    },
+    {
+      "name": "Nutrition Processing Plants",
+      "city": null,
+      "state_or_region": "South America",
+      "country": "BR",
+      "facility_type": "nutrition",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 3,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The daily capacities of the processing plants that the Company owns or leases are as follows."
+    },
+    {
+      "name": "Nutrition Processing Plants",
+      "city": null,
+      "state_or_region": "Europe",
+      "country": "DE",
+      "facility_type": "nutrition",
+      "owned_or_leased": "owned",
+      "operating_status": "active",
+      "capacity_value": 11,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The daily capacities of the processing plants that the Company owns or leases are as follows."
+    },
+    {
+      "name": "Nutrition Processing Plants",
+      "city": null,
+      "state_or_region": "Asia",
+      "country": "CN",
+      "facility_type": "nutrition",
+      "owned_or_leased": "leased",
+      "operating_status": "active",
+      "capacity_value": 3,
+      "capacity_unit": "1,000s metric tons/day",
+      "context": "The daily capacities of the processing plants that the Company owns or leases are as follows."
+    }
+  ],
+  "segments": [
+    {
+      "name": "Ag Services and Oilseeds",
+      "revenue_usd_mn": 73426,
+      "operating_profit_usd_mn": 4067,
+      "operating_margin_pct": 5.54,
+      "yoy_revenue_change_pct": -8.0,
+      "yoy_op_profit_change_pct": -8.0,
+      "key_drivers": [
+        "Significantly higher origination volumes and margins in South America due to a record Brazilian soybean crop",
+        "Historically strong global crush margins",
+        "Increasing global demand for fuel and food creating elevated margins in North America and Europe for refined oils and biodiesel"
+      ],
+      "key_concerns": [
+        "Decreased North American origination results from lower export demand and low water levels",
+        "Destination marketing, global ocean freight, and transportation results decreased due to less favorable timing effects and higher freight rates",
+        "Lower Argentine soybean crop driving tight soybean meal supply"
+      ],
+      "products_services": [
+        "Soybeans",
+        "Soybean meal",
+        "Soybean oil",
+        "Crushing services",
+        "Ag services"
+      ]
+    },
+    {
+      "name": "Carbohydrate Solutions",
+      "revenue_usd_mn": 12874,
+      "operating_profit_usd_mn": 1375,
+      "operating_margin_pct": 10.68,
+      "yoy_revenue_change_pct": -8.0,
+      "yoy_op_profit_change_pct": -2.7,
+      "key_drivers": [
+        "Solid demand for starches and sweeteners",
+        "Stronger overall margins due to specialty products pricing"
+      ],
+      "key_concerns": [
+        "Lower gasoline prices in 2023 were supportive of higher domestic gasoline consumption and ethanol demand",
+        "Lower ethanol exports"
+      ],
+      "products_services": [
+        "Starches",
+        "Sweeteners",
+        "Vantage Corn Processors"
+      ]
+    },
+    {
+      "name": "Nutrition",
+      "revenue_usd_mn": 7211,
+      "operating_profit_usd_mn": 427,
+      "operating_margin_pct": 5.93,
+      "yoy_revenue_change_pct": -6.0,
+      "yoy_op_profit_change_pct": -36.1,
+      "key_drivers": [
+        "Recovery in global poultry production",
+        "Softening raw material prices, predominantly in micro ingredients"
+      ],
+      "key_concerns": [
+        "Inflation drove lower demand especially in higher priced product categories in the food, beverage, and dietary supplement segment",
+        "Weaker overall market in Animal Nutrition with pressured farm gate prices in China and structurally decreasing European production",
+        "Amino acids market continued to be subdued with ample supply from China"
+      ],
+      "products_services": [
+        "Human Nutrition",
+        "Animal Nutrition",
+        "Flavors",
+        "Flavor systems",
+        "Emulsifiers",
+        "Bioactives",
+        "Alternative proteins"
+      ]
+    },
+    {
+      "name": "Refined Products and Other",
+      "revenue_usd_mn": 11986,
+      "operating_profit_usd_mn": 1306,
+      "operating_margin_pct": 10.9,
+      "yoy_revenue_change_pct": -9.5,
+      "yoy_op_profit_change_pct": 56.0,
+      "key_drivers": [
+        "Strong oil demand and elevated oil prices supported by biofuels demand",
+        "Historically low distillate fuel oil inventory drove diesel prices to all-time highs",
+        "U.S. renewable volume obligations and margins for food oil in Europe expanding year-over-year"
+      ],
+      "key_concerns": [
+        "Mediocre growth in mandated renewable volume obligations for 2023 to 2025 drove further market volatility"
+      ],
+      "products_services": [
+        "Refined oils",
+        "Biodiesel",
+        "Fuel products"
+      ]
+    },
+    {
+      "name": "Other Business",
+      "revenue_usd_mn": 396,
+      "operating_profit_usd_mn": 368,
+      "operating_margin_pct": null,
+      "yoy_revenue_change_pct": null,
+      "yoy_op_profit_change_pct": 125,
+      "key_drivers": [
+        "higher interest rates driving improved earnings in ADM Investor Services",
+        "improved captive insurance results from new premium programs"
+      ],
+      "key_concerns": [
+        "increased claim settlements in captive insurance"
+      ],
+      "products_services": [
+        "ADM Investor Services",
+        "Captive insurance"
+      ]
+    }
+  ],
+  "capital_expenditures": {
+    "total_capex_usd_mn": 1500,
+    "capex_guidance_usd_mn_low": 1300,
+    "capex_guidance_usd_mn_high": 1300,
+    "capex_by_segment": {},
+    "major_projects": [
+      {
+        "project_name": "new production facility in Valencia, Spain",
+        "location": "Valencia, Spain",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-02-01",
+        "status": "completed"
+      },
+      {
+        "project_name": "joint venture agreement with Marel",
+        "location": "Netherlands food valley at Wageningen Campus",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-03-01",
+        "status": "announced"
+      },
+      {
+        "project_name": "Customer Creation and Innovation Center in Manchester, England",
+        "location": "Manchester, England",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-06-01",
+        "status": "completed"
+      },
+      {
+        "project_name": "re:generations regenerative agriculture program",
+        "location": "18 U.S. states and Canada",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2025",
+        "status": "in_progress"
+      },
+      {
+        "project_name": "strategic partnership with Solugen",
+        "location": "Marshall, Minnesota",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-10-01",
+        "status": "announced"
+      },
+      {
+        "project_name": "Green Bison Soy Processing joint venture",
+        "location": "Findlay, Ohio",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-11-01",
+        "status": "completed"
+      },
+      {
+        "project_name": "Brazil regenerative agriculture program",
+        "location": "Brazil",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-11-01",
+        "status": "announced"
+      },
+      {
+        "project_name": "acquisition of controlling stake in Buckminster Qu mica",
+        "location": "Macatuba, S o Paulo, Brazil",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-11-01",
+        "status": "announced"
+      },
+      {
+        "project_name": "acquisition of D.C.A. Finance B.V.",
+        "location": "Netherlands",
+        "estimated_cost_usd_mn": null,
+        "expected_completion": "2023-12-01",
+        "status": "completed"
+      }
+    ]
+  },
+  "forward_guidance": [
+    {
+      "metric": "capital expenditures",
+      "period": "FY 2024",
+      "value_low": 1300,
+      "value_high": 1300,
+      "value_unit": "USD_mn",
+      "direction_vs_prior": "initiated"
+    },
+    {
+      "metric": "dividends",
+      "period": "FY 2024",
+      "value_low": 1000,
+      "value_high": 1000,
+      "value_unit": "USD_mn",
+      "direction_vs_prior": "initiated"
+    },
+    {
+      "metric": "share repurchases",
+      "period": "FY 2024",
+      "value_low": 2300,
+      "value_high": 2300,
+      "value_unit": "USD_mn",
+      "direction_vs_prior": "initiated"
+    }
+  ],
+  "commodity_exposures": [
+    {
+      "commodity": "corn",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "soybeans",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "wheat",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "palm oil",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "energy",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    },
+    {
+      "commodity": "freight",
+      "exposure_type": "both",
+      "hedging_practice": "futures contracts up to 12 months"
+    }
+  ],
+  "_provenance": {
+    "model": "qwen3-coder:30b",
+    "schema": "sec_10kq_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-07T09:58:16.354123Z",
+    "elapsed_sec": 656.3,
+    "filing_meta": {
+      "ticker": "ADM",
+      "form": "10-K",
+      "filing_date": "2024-03-12",
+      "accession": "000000708424000009"
+    }
+  }
+}
