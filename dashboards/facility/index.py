@@ -634,10 +634,75 @@ def render_new_facility():
         )
         # Bust caches
         list_facilities.clear()
-        st.success(f"Created `{facility_id}`. Opening detail page…")
-        st.query_params["facility"] = facility_id
-        if "new" in st.query_params: del st.query_params["new"]
-        st.rerun()
+        st.success(f"Created `{facility_id}`. Running on-boarding hook…")
+
+        # FIC Layer 3 — on-boarding hook
+        try:
+            sys_path = str(ROOT)
+            import sys as _sys
+            if sys_path not in _sys.path:
+                _sys.path.insert(0, sys_path)
+            from scripts.onboard_facility import onboard
+
+            with st.spinner("Computing geographic edges, seeding news queries, "
+                            "checking SEC ticker…"):
+                ob = onboard(facility_id)
+
+            st.markdown("### On-boarding result")
+            c1, c2 = st.columns(2)
+            with c1:
+                de = ob.get("distance_edges", {})
+                st.markdown(
+                    f"**Distance edges:** {de.get('status')}  ·  "
+                    f"{de.get('edges_added', 0)} added  "
+                    f"(radius {de.get('radius_miles', '?')} mi, "
+                    f"{de.get('peers_scanned', 0)} peers)"
+                )
+                if de.get("details"):
+                    st.code("\n".join(de["details"][:8]), language="text")
+
+                pe = ob.get("parent_edges", {})
+                st.markdown(
+                    f"**Parent-company edges:** {pe.get('status')}  ·  "
+                    f"{pe.get('edges_added', 0)} added"
+                )
+                if pe.get("siblings"):
+                    st.code("\n".join(pe["siblings"][:8]), language="text")
+            with c2:
+                ns = ob.get("news_source", {})
+                if ns.get("added"):
+                    st.markdown(f"**News source:** ✓ added  \n"
+                                f"`{ns['source_name']}`  \n"
+                                f"query: `{ns['query']}`")
+                else:
+                    st.markdown(f"**News source:** {ns.get('status')}  "
+                                f"({ns.get('reason', '')})")
+
+                sl = ob.get("sentiment_loop", {})
+                st.markdown(f"**Sentiment loop:** {sl.get('status')}")
+                st.caption(sl.get("note", ""))
+
+                pt = ob.get("public_ticker", {})
+                st.markdown(f"**Public ticker:** {pt.get('status')}"
+                            + (f" — `{pt['ticker']}`" if pt.get("ticker") else ""))
+                st.caption(pt.get("note", ""))
+
+            st.markdown("---")
+            if st.button("Open the new facility →", type="primary",
+                         key=f"open_new_{facility_id}"):
+                st.query_params["facility"] = facility_id
+                if "new" in st.query_params: del st.query_params["new"]
+                st.rerun()
+            return  # stay on this page so the user can read the on-boarding result
+        except Exception as ob_err:
+            st.warning(
+                f"Facility was created, but on-boarding hook failed: {ob_err}\n\n"
+                f"You can run it later: "
+                f"`python -m scripts.onboard_facility --facility-id {facility_id}`"
+            )
+            st.query_params["facility"] = facility_id
+            if "new" in st.query_params: del st.query_params["new"]
+            st.rerun()
     except psycopg2.IntegrityError as e:
         st.error(f"Insert failed (likely duplicate facility_id): {e}")
         get_conn().rollback()
