@@ -771,6 +771,129 @@ def render_relationships_tab(facility_id: str, all_facilities: pd.DataFrame):
 
 
 # ---------------------------------------------------------------------------
+# Due Diligence tab (FIC Layer 4)
+# ---------------------------------------------------------------------------
+
+@st.cache_data(ttl=30)
+def fetch_dd_history(facility_id: str) -> pd.DataFrame:
+    rows = query("""
+        SELECT id, generated_at, generated_by, model, prompt_version,
+               input_tokens, output_tokens, cost_usd, elapsed_sec
+        FROM silver.due_diligence_report
+        WHERE facility_id = %s
+        ORDER BY generated_at DESC
+    """, (facility_id,))
+    return pd.DataFrame(rows)
+
+
+@st.cache_data(ttl=30)
+def fetch_dd_report(report_id: int) -> dict | None:
+    rows = query("""
+        SELECT id, facility_id, generated_at, generated_by, model,
+               prompt_version, report_json, report_markdown,
+               input_summary, input_tokens, output_tokens, cost_usd,
+               elapsed_sec
+        FROM silver.due_diligence_report
+        WHERE id = %s
+    """, (report_id,))
+    return rows[0] if rows else None
+
+
+def render_due_diligence_tab(facility_id: str):
+    history = fetch_dd_history(facility_id)
+    n = len(history)
+
+    top = st.columns([3, 1, 1])
+    with top[0]:
+        st.markdown("### Due-Diligence Reports")
+        if n == 0:
+            st.caption("No reports generated yet for this facility.")
+        else:
+            st.caption(
+                f"{n} report{'s' if n != 1 else ''} on file. "
+                f"Most recent: {history.iloc[0]['generated_at'].strftime('%Y-%m-%d %H:%M')}"
+                f"  ·  ${float(history.iloc[0]['cost_usd'] or 0):.4f}"
+            )
+
+    with top[1]:
+        st.markdown("###")
+        gen_label = "Regenerate" if n > 0 else "Generate report"
+        if st.button(gen_label, type="primary", use_container_width=True,
+                     key=f"gen_{facility_id}"):
+            with st.spinner(
+                "Calling Claude…  pulls facility profile + edges + permits + "
+                "sentiment + recent news + operator's SEC filings (when public) "
+                "+ KG context. ~30-60 seconds."
+            ):
+                try:
+                    import sys as _sys
+                    _sys.path.insert(0, str(ROOT))
+                    from scripts.due_diligence_agent import generate_report, save_report
+                    result = generate_report(facility_id)
+                    save_report(result, generated_by="fic_user")
+                    fetch_dd_history.clear()
+                    st.success(
+                        f"Generated. ${result['cost_usd']:.4f}, "
+                        f"{result['elapsed_sec']:.1f}s, "
+                        f"{result['input_tokens']}↓ / {result['output_tokens']}↑ tokens."
+                    )
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Generation failed: {e}")
+
+    with top[2]:
+        st.markdown("###")
+        if n > 0:
+            if st.button("History", use_container_width=True,
+                         key=f"hist_{facility_id}"):
+                st.session_state[f"dd_show_history_{facility_id}"] = \
+                    not st.session_state.get(f"dd_show_history_{facility_id}", False)
+
+    if n == 0:
+        st.info(
+            "Click **Generate report** to produce a structured due-diligence "
+            "brief. The agent pulls every piece of intelligence we have on "
+            "this facility plus the operator's last 10 SEC filings (when "
+            "publicly traded), and asks Claude to synthesize a banker-grade "
+            "report covering exec summary, facility profile, operator overview, "
+            "market position, material events, risk factors, and recommendation."
+        )
+        return
+
+    # Optional history pane
+    if st.session_state.get(f"dd_show_history_{facility_id}"):
+        with st.expander("All reports for this facility", expanded=True):
+            display = history.copy()
+            display["generated_at"] = display["generated_at"].dt.strftime("%Y-%m-%d %H:%M")
+            display["cost_usd"] = display["cost_usd"].apply(
+                lambda x: f"${float(x):.4f}" if x is not None else "—"
+            )
+            st.dataframe(display, use_container_width=True, hide_index=True)
+
+    # Show the most recent report
+    latest_id = int(history.iloc[0]["id"])
+    rep = fetch_dd_report(latest_id)
+    if not rep:
+        st.error(f"Could not load report {latest_id}")
+        return
+
+    # Metadata strip
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Generated", rep["generated_at"].strftime("%Y-%m-%d %H:%M"))
+    m2.metric("Cost", f"${float(rep['cost_usd'] or 0):.4f}")
+    m3.metric("Tokens", f"{rep['input_tokens']}↓/{rep['output_tokens']}↑")
+    m4.metric("Elapsed", f"{float(rep['elapsed_sec'] or 0):.1f}s")
+
+    # Input summary (what fed the report)
+    with st.expander("Input data used to generate this report", expanded=False):
+        st.json(rep["input_summary"], expanded=True)
+
+    # The report itself
+    st.divider()
+    st.markdown(rep["report_markdown"])
+
+
+# ---------------------------------------------------------------------------
 # Detail view
 # ---------------------------------------------------------------------------
 
@@ -806,8 +929,10 @@ def render_detail(facility_id: str):
     h4.metric("Verified", "Yes" if fac.get("verified_at") else "No")
 
     # --- Tabs ---------------------------------------------------------------
-    tab_overview, tab_sentiment, tab_news, tab_permits, tab_edges, tab_raw = st.tabs(
-        ["Overview", "Sentiment", "News", "Permits", "Relationships", "Raw record"]
+    (tab_overview, tab_sentiment, tab_news, tab_permits, tab_edges,
+     tab_dd, tab_raw) = st.tabs(
+        ["Overview", "Sentiment", "News", "Permits", "Relationships",
+         "Due Diligence", "Raw record"]
     )
 
     with tab_overview:
@@ -820,6 +945,8 @@ def render_detail(facility_id: str):
         render_permits_tab(fac)
     with tab_edges:
         render_relationships_tab(facility_id, list_facilities())
+    with tab_dd:
+        render_due_diligence_tab(facility_id)
     with tab_raw:
         st.json(fac, expanded=False)
 
