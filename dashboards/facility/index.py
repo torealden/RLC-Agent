@@ -24,6 +24,7 @@ Layer 1 of the FIC vision (per chat 2026-05-09):
 from __future__ import annotations
 
 import os
+import re
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -753,8 +754,41 @@ def fetch_edges_for(facility_id: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     return pd.DataFrame(out), pd.DataFrame(inc)
 
 
+@st.cache_data(ttl=30)
+def fetch_exec_moves_for_operator(operator: str | None) -> pd.DataFrame:
+    if not operator:
+        return pd.DataFrame()
+    rows = query("""
+        SELECT id, person_name, role, from_operator, to_operator,
+               event_date, announced_date, source_type, source_url,
+               confidence, notes
+        FROM silver.executive_move
+        WHERE LOWER(from_operator) = LOWER(%s)
+           OR LOWER(to_operator) = LOWER(%s)
+        ORDER BY COALESCE(event_date, announced_date, extracted_at::date) DESC
+    """, (operator, operator))
+    return pd.DataFrame(rows)
+
+
+@st.cache_data(ttl=30)
+def fetch_shared_directors_for_operator(operator: str | None) -> pd.DataFrame:
+    if not operator:
+        return pd.DataFrame()
+    rows = query("""
+        SELECT operator_a_display, operator_b_display, person_name_a,
+               role_a, role_b, year_a, year_b, both_active
+        FROM gold.cross_company_director_links
+        WHERE LOWER(operator_a_display) = LOWER(%s)
+           OR LOWER(operator_b_display) = LOWER(%s)
+        ORDER BY both_active DESC, GREATEST(COALESCE(year_a, 0), COALESCE(year_b, 0)) DESC
+    """, (operator, operator))
+    return pd.DataFrame(rows)
+
+
 def render_relationships_tab(facility_id: str, all_facilities: pd.DataFrame):
     out_df, in_df = fetch_edges_for(facility_id)
+    fac_row = all_facilities[all_facilities["facility_id"] == facility_id]
+    operator = fac_row.iloc[0]["operator"] if len(fac_row) else None
 
     c1, c2 = st.columns(2)
     with c1:
@@ -847,6 +881,112 @@ def render_relationships_tab(facility_id: str, all_facilities: pd.DataFrame):
             st.error(f"Insert failed: {e}")
             try: get_conn().rollback()
             except Exception: pass
+
+    # ----- Exec moves involving this facility's operator ---------------------
+    st.divider()
+    st.markdown("### Personnel moves involving this operator")
+    if not operator:
+        st.caption("No operator set on this facility — can't search for personnel moves.")
+    else:
+        em = fetch_exec_moves_for_operator(operator)
+        if len(em) == 0:
+            st.caption(f"No executive moves recorded for `{operator}` yet. "
+                       f"Add one below.")
+        else:
+            for _, r in em.iterrows():
+                arrow = "→" if r['to_operator'] and r['to_operator'].lower() == operator.lower() \
+                       else "←" if r['from_operator'] and r['from_operator'].lower() == operator.lower() \
+                       else "↔"
+                date_str = (str(r.get('event_date') or r.get('announced_date'))[:10]
+                            if r.get('event_date') or r.get('announced_date') else "?")
+                src_label = ""
+                if r.get("source_url"):
+                    src_label = f"  ·  [source]({r['source_url']})"
+                st.markdown(
+                    f"- **{r['person_name']}** ({r.get('role') or 'role unknown'}): "
+                    f"`{r.get('from_operator') or '?'}` {arrow} "
+                    f"`{r.get('to_operator') or '?'}`  ·  *{date_str}*  "
+                    f"({r.get('source_type', '?')}){src_label}"
+                )
+                if r.get("notes"):
+                    st.caption(r["notes"])
+
+        # Add-exec-move form
+        with st.expander("➕ Record an executive move"):
+            with st.form(f"add_exec_move_{facility_id}"):
+                c1, c2 = st.columns(2)
+                with c1:
+                    em_person = st.text_input("Person name *", "")
+                    em_role = st.text_input("Role / title", "",
+                                            help="e.g. CFO, VP Origination")
+                    em_from = st.text_input("From operator", "",
+                                            help="Prior employer (string match)")
+                    em_to = st.text_input("To operator *",
+                                          value=operator or "",
+                                          help="New employer")
+                with c2:
+                    em_event_date = st.date_input("Event date (effective)",
+                                                  value=None, format="YYYY-MM-DD")
+                    em_announced_date = st.date_input("Announced date",
+                                                      value=None, format="YYYY-MM-DD")
+                    em_source_type = st.selectbox(
+                        "Source type",
+                        ["news_article", "press_release", "linkedin", "manual"],
+                        index=0,
+                    )
+                    em_source_url = st.text_input("Source URL", "")
+                em_notes = st.text_area("Notes", "", height=70)
+                em_submit = st.form_submit_button("Add move", type="primary")
+
+            if em_submit:
+                if not em_person or not em_to:
+                    st.error("Person name and 'to operator' are required.")
+                else:
+                    person_norm = re.sub(r"[^a-z]+", "_",
+                                         em_person.lower()).strip("_")
+                    try:
+                        execute("""
+                            INSERT INTO silver.executive_move (
+                                person_name, person_normalized, role,
+                                from_operator, to_operator,
+                                event_date, announced_date,
+                                source_type, source_url,
+                                confidence, notes,
+                                extracted_by
+                            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                      1.0, %s, 'fic_user')
+                        """, (
+                            em_person, person_norm, (em_role or None),
+                            (em_from or None), em_to,
+                            em_event_date, em_announced_date,
+                            em_source_type, (em_source_url or None),
+                            (em_notes or None),
+                        ))
+                        fetch_exec_moves_for_operator.clear()
+                        st.success(f"Recorded: {em_person} → {em_to}")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Insert failed: {e}")
+                        try: get_conn().rollback()
+                        except Exception: pass
+
+    # ----- Shared directors (board overlap) ----------------------------------
+    if operator:
+        sd = fetch_shared_directors_for_operator(operator)
+        if len(sd) > 0:
+            st.divider()
+            st.markdown(f"### Shared board members involving {operator}")
+            for _, r in sd.iterrows():
+                tag = "🟢 both active" if r["both_active"] else "🟡 historical"
+                other = (r["operator_b_display"]
+                         if r["operator_a_display"].lower() == operator.lower()
+                         else r["operator_a_display"])
+                st.markdown(
+                    f"- **{r['person_name_a']}**: serves on `{operator}` "
+                    f"({r.get('role_a') or 'director'}) "
+                    f"AND `{other}` ({r.get('role_b') or 'director'})  ·  {tag}"
+                )
+
 
 
 # ---------------------------------------------------------------------------
