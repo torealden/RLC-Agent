@@ -1,0 +1,47 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA (Bunge Global AG) (Bunge Global Ltd)",
+    "filing_date": "2024-12-09",
+    "report_date": null,
+    "items_disclosed": [
+      "3.02"
+    ]
+  },
+  "summary": {
+    "category": "other",
+    "headline": "Bunge Global SA updates articles of association and share capital policies.",
+    "narrative_summary": "The filing details amendments to Bunge Global SA's articles of association, including provisions for share capital increases and reductions within specified bands, as well as employee participation in conditional share issuances."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [
+    "RVO",
+    "RFS",
+    "45Z",
+    "EPA biofuel pathway",
+    "FDA labeling",
+    "EU CFD"
+  ],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": null,
+  "polarity_intensity": null,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers and dates are inferred from the context; specific financial metrics not provided in the filing.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:30:13.083371Z",
+    "elapsed_sec": 15.8,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-12-09",
+      "accession": "000199686224000299"
+    }
+  }
+}

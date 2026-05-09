@@ -1,0 +1,47 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2025-07-07",
+    "report_date": "2025-07-07",
+    "items_disclosed": [
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "debt_issuance",
+    "headline": "Bunge Global SA announces expiration and final results of exchange offers for its existing Viterra notes.",
+    "narrative_summary": "Bunge completed the exchange offers and consent solicitations for its existing Viterra notes, with 96.63% to 99.93% of the principal amount tendered."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "debt_issuance",
+      "counterparty": null,
+      "amount_usd_mn": 1950.0,
+      "description": "Exchange offers and consent solicitations for up to $1.95 billion aggregate principal amount of new notes."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.3,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers and details from the filing text; cover sheet only had Item references.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:39:58.876186Z",
+    "elapsed_sec": 19.1,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-07-07",
+      "accession": "000199686225000163"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2026-04-02",
+    "report_date": "2026-03-31",
+    "items_disclosed": [
+      "2.03"
+    ]
+  },
+  "summary": {
+    "category": "other",
+    "headline": "Bunge Global SA amended its existing trade receivables securitization program.",
+    "narrative_summary": "On March 31, 2026, Bunge Global SA and certain of its subsidiaries amended their existing trade receivables securitization program with a financial institution. The amendments increased the aggregate size of the program by $500 million to an aggregate total of $2 billion."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.3,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers and details from the amendment document; cover sheet only had Item references.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:17:03.821354Z",
+    "elapsed_sec": 15.5,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2026-04-02",
+      "accession": "000162828026023140"
+    }
+  }
+}

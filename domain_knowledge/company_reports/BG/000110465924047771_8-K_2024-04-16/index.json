@@ -1,0 +1,110 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "0001104659-24-047771-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "0001104659-24-047771-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "0001104659-24-047771.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "0001104659-24-047771-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "124567"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "bg-20240412.xsd",
+        "type": "text.gif",
+        "size": "3000"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "bg-20240412_lab.xml",
+        "type": "text.gif",
+        "size": "34240"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "bg-20240412_pre.xml",
+        "type": "text.gif",
+        "size": "22351"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1632"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "Financial_Report.xlsx",
+        "type": "text.gif",
+        "size": "5672"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "39000"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "38044"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2767"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1085"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "tm2411681d1_8k.htm",
+        "type": "text.gif",
+        "size": "34755"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "tm2411681d1_8k_htm.xml",
+        "type": "text.gif",
+        "size": "3537"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "tm2411681d1_ex10-1.htm",
+        "type": "text.gif",
+        "size": "567993"
+      },
+      {
+        "last-modified": "2024-04-16 16:05:42",
+        "name": "tm2411681d1_ex10-2.htm",
+        "type": "text.gif",
+        "size": "169475"
+      }
+    ],
+    "name": "/Archives/edgar/data/1996862/000110465924047771",
+    "parent-dir": "/Archives/edgar/data/1996862"
+  }
+}

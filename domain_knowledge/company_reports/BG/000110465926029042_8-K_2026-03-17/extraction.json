@@ -1,0 +1,52 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2026-03-17",
+    "report_date": "2026-03-17",
+    "items_disclosed": [
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "acquisition",
+    "headline": "Bunge Global SA completed the acquisition of Viterra Limited on July 2, 2025.",
+    "narrative_summary": "This filing provides financial statements and pro forma information for the acquired company, Viterra Limited."
+  },
+  "earnings": {
+    "revenue": null,
+    "net_income": -183,
+    "operating_cash_flow": 1141
+  },
+  "acquisition": {
+    "target_company": "Viterra Limited",
+    "acquisition_date": "2025-07-02"
+  },
+  "balance_sheet": {
+    "total_assets": 18016,
+    "total_liabilities": 18843,
+    "total_equity": 4804
+  },
+  "cash_flow": {
+    "net_cash_from_operating_activities": 874,
+    "net_cash_used_in_investing_activities": -124,
+    "net_cash_from_financing_activities": 20
+  },
+  "notes_to_financial_statements": [
+    "Corporate information",
+    "Accounting policies"
+  ],
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:04:48.713186Z",
+    "elapsed_sec": 18.2,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2026-03-17",
+      "accession": "000110465926029042"
+    }
+  }
+}

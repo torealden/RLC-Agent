@@ -1,0 +1,70 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2025-05-19",
+    "report_date": "2025-05-15",
+    "items_disclosed": [
+      "5.07"
+    ]
+  },
+  "summary": {
+    "category": "dividend_buyback",
+    "headline": "Bunge Announces Approval of Quarterly Dividends and Board Changes at Annual General Meeting",
+    "narrative_summary": "Bunge Global SA announced the approval of quarterly dividends and the appointment of Linda Jojo to its board of directors at the 2025 annual general meeting."
+  },
+  "earnings_release": {
+    "applicable": null,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Linda Jojo",
+      "role": "director",
+      "action": "appointed",
+      "effective_date": null
+    }
+  ],
+  "ma_or_capital_allocation": [
+    {
+      "type": "dividend",
+      "counterparty": null,
+      "amount_usd_mn": 280.0,
+      "description": "Approval of quarterly dividends in the amount of $2.80 per share, payable in four equal installments."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers are based on the dividend amount disclosed; other financial details not provided in the filing.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:38:30.008974Z",
+    "elapsed_sec": 27.4,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-05-19",
+      "accession": "000199686225000091"
+    }
+  }
+}

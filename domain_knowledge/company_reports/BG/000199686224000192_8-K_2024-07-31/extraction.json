@@ -1,0 +1,107 @@
+{
+  "company": "Bunge",
+  "reportType": "Quarterly Financial Report",
+  "period": "2024 Q2",
+  "revenue": {
+    "netSales": 31859,
+    "grossProfit": 2671,
+    "ebit": 1186
+  },
+  "segments": [
+    {
+      "name": "Agribusiness",
+      "revenue": {
+        "netSales": 19397,
+        "grossProfit": 743
+      },
+      "expenses": {
+        "sellingGeneralAndAdministrative": -305,
+        "foreignExchange": -101
+      },
+      "ebit": 416
+    },
+    {
+      "name": "Processing",
+      "revenue": {
+        "netSales": 2897,
+        "grossProfit": 676
+      },
+      "expenses": {},
+      "ebit": 676
+    },
+    {
+      "name": "Merchandising",
+      "revenue": {
+        "netSales": 114,
+        "grossProfit": 109
+      },
+      "expenses": {},
+      "ebit": 109
+    },
+    {
+      "name": "Refined Specialty Oils",
+      "revenue": {
+        "netSales": 6361,
+        "grossProfit": 674
+      },
+      "expenses": {
+        "sellingGeneralAndAdministrative": -200,
+        "foreignExchange": -13
+      },
+      "ebit": 411
+    },
+    {
+      "name": "Milling",
+      "revenue": {
+        "netSales": 782,
+        "grossProfit": 126
+      },
+      "expenses": {
+        "sellingGeneralAndAdministrative": -49,
+        "foreignExchange": -2
+      },
+      "ebit": 71
+    }
+  ],
+  "corporateAndOther": {
+    "revenue": {
+      "grossProfit": -5,
+      "otherIncomeExpense": 51
+    },
+    "expenses": {
+      "sellingGeneralAndAdministrative": -333,
+      "foreignExchange": 1
+    },
+    "ebit": -283
+  },
+  "nonCoreSegments": [
+    {
+      "name": "Sugar Bioenergy",
+      "revenue": {
+        "netSales": 92,
+        "grossProfit": 2
+      },
+      "expenses": {},
+      "ebit": 3
+    }
+  ],
+  "cashFlow": {
+    "operatingActivities": -480,
+    "adjustedFundsFromOperations": 895
+  },
+  "netIncome": 167,
+  "eps": 0.85,
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:27:56.995032Z",
+    "elapsed_sec": 30.4,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-07-31",
+      "accession": "000199686224000192"
+    }
+  }
+}

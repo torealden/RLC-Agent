@@ -1,0 +1,119 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2025-05-07",
+    "report_date": "2025-03-31",
+    "items_disclosed": [
+      "2.02"
+    ]
+  },
+  "summary": {
+    "category": "earnings_release",
+    "headline": "Bunge reports first quarter 2025 results with adjusted EPS of $1.81 vs $3.04 in the prior year",
+    "narrative_summary": "Bunge reported Q1 2025 financial results, showing a decline in GAAP diluted EPS to $1.48 from $1.68 and an adjusted EPS of $1.81 from $3.04. The company also announced agreements to divest regional corn milling and margarine businesses."
+  },
+  "earnings_release": {
+    "applicable": true,
+    "period_covered": "Q1 2025",
+    "period_end_date": "2025-03-31",
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": 201,
+      "eps_diluted_usd": 1.48,
+      "adjusted_eps_diluted_usd": 1.81,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": -285
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Agribusiness",
+      "performance": "negative",
+      "drivers": [
+        "Processing, though down from last year"
+      ],
+      "concerns": [],
+      "quoted_metric": "$270 Segment EBIT vs $278 in the prior year"
+    },
+    {
+      "segment_name": "Refined and Specialty Oils",
+      "performance": "negative",
+      "drivers": [
+        "A more balanced supply and demand environment, particularly in the U.S."
+      ],
+      "concerns": [],
+      "quoted_metric": "$123 Segment EBIT vs $226 in the prior year"
+    },
+    {
+      "segment_name": "Milling",
+      "performance": "negative",
+      "drivers": [
+        "Slightly higher results in North America were more than offset by lower results in South America where milling margins were pressured by a more competitive pricing environment."
+      ],
+      "concerns": [],
+      "quoted_metric": "$15 Segment EBIT vs $28 in the prior year"
+    },
+    {
+      "segment_name": "Corporate and Other",
+      "performance": "positive",
+      "drivers": [
+        "Lower corporate expenses primarily due to performance-based compensation."
+      ],
+      "concerns": [],
+      "quoted_metric": "$-76 Corporate EBIT vs $-104 in the prior year"
+    }
+  ],
+  "other_information": {
+    "outlook": {
+      "adjusted_eps_usd": 7.75,
+      "agribusiness": {
+        "performance": "negative",
+        "drivers": [
+          "Slightly lower than previous outlook and down from last year primarily due to lower results in Processing."
+        ],
+        "concerns": []
+      },
+      "refined_specialty_oils": {
+        "performance": "neutral",
+        "drivers": [
+          "Expected to be similar to the previous outlook and down from the prior year primarily driven by a more balanced supply and demand environment in North America."
+        ],
+        "concerns": []
+      },
+      "milling": {
+        "performance": "positive",
+        "drivers": [
+          "Expected to be similar to the previous outlook and up from last year."
+        ],
+        "concerns": []
+      },
+      "corporate_and_other": {
+        "performance": "positive",
+        "drivers": [
+          "Expected to be more favorable than the previous outlook and the prior year."
+        ],
+        "concerns": []
+      }
+    },
+    "capital_expenditures_usd_mn": 1500,
+    "depreciation_and_amortization_usd_mn": 490
+  },
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:37:45.088905Z",
+    "elapsed_sec": 45.8,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-05-07",
+      "accession": "000199686225000084"
+    }
+  }
+}

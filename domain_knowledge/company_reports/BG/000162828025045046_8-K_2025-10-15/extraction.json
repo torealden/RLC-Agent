@@ -1,0 +1,591 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2025-10-15",
+    "report_date": "2025-10-15",
+    "items_disclosed": [
+      "7.01"
+    ]
+  },
+  "summary": {
+    "category": "regulatory_disclosure",
+    "headline": "Bunge Global SA changes segment and volume reporting to align with value chain operating structure following Viterra merger.",
+    "narrative_summary": "Bunge Global SA announced changes in its segment and volume reporting to better reflect the combined company's operations post-merger with Viterra. The new segments include Soybean Processing and Refining, Softseed Processing and Refining, Other Oilseeds Processing and Refining, and Grain Merchandising and Milling."
+  },
+  "earnings_release": {
+    "applicable": null,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [
+      {
+        "metric": "adjusted_eps_2025",
+        "old_low": null,
+        "old_high": null,
+        "new_low": 7.3,
+        "new_high": 7.6
+      }
+    ],
+    "corporate_other_ebit_usd_mn": [
+      {
+        "period": "Q1 2024",
+        "value": -39
+      },
+      {
+        "period": "Q2 2024",
+        "value": -110
+      },
+      {
+        "period": "Q3 2024",
+        "value": -68
+      },
+      {
+        "period": "Q4 2024",
+        "value": -101
+      },
+      {
+        "period": "Total FY 2024",
+        "value": -318
+      },
+      {
+        "period": "Q1 2025",
+        "value": -44
+      },
+      {
+        "period": "Q2 2025",
+        "value": -80
+      }
+    ]
+  },
+  "segment_details": [
+    {
+      "name": "Soybean Processing and Refining",
+      "ebit_usd_mn": [
+        {
+          "period": "Q1 2024",
+          "value": 376
+        },
+        {
+          "period": "Q2 2024",
+          "value": 269
+        },
+        {
+          "period": "Q3 2024",
+          "value": 286
+        },
+        {
+          "period": "Q4 2024",
+          "value": 298
+        },
+        {
+          "period": "Total FY 2024",
+          "value": 1229
+        },
+        {
+          "period": "Q1 2025",
+          "value": 241
+        },
+        {
+          "period": "Q2 2025",
+          "value": 304
+        }
+      ]
+    },
+    {
+      "name": "Softseed Processing and Refining",
+      "ebit_usd_mn": [
+        {
+          "period": "Q1 2024",
+          "value": 210
+        },
+        {
+          "period": "Q2 2024",
+          "value": 147
+        },
+        {
+          "period": "Q3 2024",
+          "value": 133
+        },
+        {
+          "period": "Q4 2024",
+          "value": 75
+        },
+        {
+          "period": "Total FY 2024",
+          "value": 565
+        },
+        {
+          "period": "Q1 2025",
+          "value": 82
+        },
+        {
+          "period": "Q2 2025",
+          "value": 14
+        }
+      ]
+    },
+    {
+      "name": "Other Oilseeds Processing and Refining",
+      "ebit_usd_mn": [
+        {
+          "period": "Q1 2024",
+          "value": 38
+        },
+        {
+          "period": "Q2 2024",
+          "value": 50
+        },
+        {
+          "period": "Q3 2024",
+          "value": 63
+        },
+        {
+          "period": "Q4 2024",
+          "value": 26
+        },
+        {
+          "period": "Total FY 2024",
+          "value": 177
+        },
+        {
+          "period": "Q1 2025",
+          "value": 23
+        },
+        {
+          "period": "Q2 2025",
+          "value": 26
+        }
+      ]
+    },
+    {
+      "name": "Grain Merchandising and Milling",
+      "ebit_usd_mn": [
+        {
+          "period": "Q1 2024",
+          "value": 91
+        },
+        {
+          "period": "Q2 2024",
+          "value": 49
+        },
+        {
+          "period": "Q3 2024",
+          "value": 77
+        },
+        {
+          "period": "Q4 2024",
+          "value": 147
+        },
+        {
+          "period": "Total FY 2024",
+          "value": 364
+        },
+        {
+          "period": "Q1 2025",
+          "value": 60
+        },
+        {
+          "period": "Q2 2025",
+          "value": 29
+        }
+      ]
+    }
+  ],
+  "volume_highlights": [
+    {
+      "segment": "Soybean Processing and Refining",
+      "type": "oilseed_volumes_processed_crushed",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": null
+        },
+        {
+          "period": "Q2 2024",
+          "value": null
+        },
+        {
+          "period": "Q3 2024",
+          "value": null
+        },
+        {
+          "period": "Q4 2024",
+          "value": null
+        },
+        {
+          "period": "Total FY 2024",
+          "value": null
+        },
+        {
+          "period": "Q1 2025",
+          "value": null
+        },
+        {
+          "period": "Q2 2025",
+          "value": null
+        }
+      ]
+    },
+    {
+      "segment": "Soybean Processing and Refining",
+      "type": "merchandised_volumes",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": null
+        },
+        {
+          "period": "Q2 2024",
+          "value": null
+        },
+        {
+          "period": "Q3 2024",
+          "value": null
+        },
+        {
+          "period": "Q4 2024",
+          "value": null
+        },
+        {
+          "period": "Total FY 2024",
+          "value": null
+        },
+        {
+          "period": "Q1 2025",
+          "value": null
+        },
+        {
+          "period": "Q2 2025",
+          "value": null
+        }
+      ]
+    },
+    {
+      "segment": "Soybean Processing and Refining",
+      "type": "refined_oil_production_volume",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": null
+        },
+        {
+          "period": "Q2 2024",
+          "value": null
+        },
+        {
+          "period": "Q3 2024",
+          "value": null
+        },
+        {
+          "period": "Q4 2024",
+          "value": null
+        },
+        {
+          "period": "Total FY 2024",
+          "value": null
+        },
+        {
+          "period": "Q1 2025",
+          "value": null
+        },
+        {
+          "period": "Q2 2025",
+          "value": null
+        }
+      ]
+    },
+    {
+      "segment": "Softseed Processing and Refining",
+      "type": "oilseed_volumes_processed_crushed",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": null
+        },
+        {
+          "period": "Q2 2024",
+          "value": null
+        },
+        {
+          "period": "Q3 2024",
+          "value": null
+        },
+        {
+          "period": "Q4 2024",
+          "value": null
+        },
+        {
+          "period": "Total FY 2024",
+          "value": null
+        },
+        {
+          "period": "Q1 2025",
+          "value": null
+        },
+        {
+          "period": "Q2 2025",
+          "value": null
+        }
+      ]
+    },
+    {
+      "segment": "Softseed Processing and Refining",
+      "type": "merchandised_volumes",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": null
+        },
+        {
+          "period": "Q2 2024",
+          "value": null
+        },
+        {
+          "period": "Q3 2024",
+          "value": null
+        },
+        {
+          "period": "Q4 2024",
+          "value": null
+        },
+        {
+          "period": "Total FY 2024",
+          "value": null
+        },
+        {
+          "period": "Q1 2025",
+          "value": null
+        },
+        {
+          "period": "Q2 2025",
+          "value": null
+        }
+      ]
+    },
+    {
+      "segment": "Softseed Processing and Refining",
+      "type": "refined_oil_production_volume",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": null
+        },
+        {
+          "period": "Q2 2024",
+          "value": null
+        },
+        {
+          "period": "Q3 2024",
+          "value": null
+        },
+        {
+          "period": "Q4 2024",
+          "value": null
+        },
+        {
+          "period": "Total FY 2024",
+          "value": null
+        },
+        {
+          "period": "Q1 2025",
+          "value": null
+        },
+        {
+          "period": "Q2 2025",
+          "value": null
+        }
+      ]
+    },
+    {
+      "segment": "Other Oilseeds Processing and Refining",
+      "type": "sales_volumes_to_third_party_customers",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": null
+        },
+        {
+          "period": "Q2 2024",
+          "value": null
+        },
+        {
+          "period": "Q3 2024",
+          "value": null
+        },
+        {
+          "period": "Q4 2024",
+          "value": null
+        },
+        {
+          "period": "Total FY 2024",
+          "value": null
+        },
+        {
+          "period": "Q1 2025",
+          "value": null
+        },
+        {
+          "period": "Q2 2025",
+          "value": null
+        }
+      ]
+    },
+    {
+      "segment": "Grain Merchandising and Milling",
+      "type": "sales_volumes_to_third_party_customers",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": null
+        },
+        {
+          "period": "Q2 2024",
+          "value": null
+        },
+        {
+          "period": "Q3 2024",
+          "value": null
+        },
+        {
+          "period": "Q4 2024",
+          "value": null
+        },
+        {
+          "period": "Total FY 2024",
+          "value": null
+        },
+        {
+          "period": "Q1 2025",
+          "value": null
+        },
+        {
+          "period": "Q2 2025",
+          "value": null
+        }
+      ]
+    }
+  ],
+  "corporate_other_details": [
+    {
+      "name": "Corporate Other EBIT (a)",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": -39
+        },
+        {
+          "period": "Q2 2024",
+          "value": -110
+        },
+        {
+          "period": "Q3 2024",
+          "value": -68
+        },
+        {
+          "period": "Q4 2024",
+          "value": -101
+        },
+        {
+          "period": "Total FY 2024",
+          "value": -318
+        },
+        {
+          "period": "Q1 2025",
+          "value": -44
+        },
+        {
+          "period": "Q2 2025",
+          "value": -80
+        }
+      ]
+    },
+    {
+      "name": "Corporate EBIT (a)",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": -79
+        },
+        {
+          "period": "Q2 2024",
+          "value": -106
+        },
+        {
+          "period": "Q3 2024",
+          "value": -92
+        },
+        {
+          "period": "Q4 2024",
+          "value": -105
+        },
+        {
+          "period": "Total FY 2024",
+          "value": -382
+        },
+        {
+          "period": "Q1 2025",
+          "value": -56
+        },
+        {
+          "period": "Q2 2025",
+          "value": -82
+        }
+      ]
+    },
+    {
+      "name": "Other EBIT (a)",
+      "value": [
+        {
+          "period": "Q1 2024",
+          "value": null
+        },
+        {
+          "period": "Q2 2024",
+          "value": null
+        },
+        {
+          "period": "Q3 2024",
+          "value": null
+        },
+        {
+          "period": "Q4 2024",
+          "value": null
+        },
+        {
+          "period": "Total FY 2024",
+          "value": null
+        },
+        {
+          "period": "Q1 2025",
+          "value": null
+        },
+        {
+          "period": "Q2 2025",
+          "value": null
+        }
+      ]
+    }
+  ],
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:08:05.703526Z",
+    "elapsed_sec": 162.2,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-10-15",
+      "accession": "000162828025045046"
+    }
+  }
+}

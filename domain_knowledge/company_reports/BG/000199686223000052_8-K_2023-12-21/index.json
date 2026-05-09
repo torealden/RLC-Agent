@@ -1,0 +1,104 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "0001996862-23-000052-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "0001996862-23-000052-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "0001996862-23-000052.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "0001996862-23-000052-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "11388"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "bg-20231220.htm",
+        "type": "text.gif",
+        "size": "29324"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "bg-20231220.xsd",
+        "type": "text.gif",
+        "size": "2154"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "bg-20231220_def.xml",
+        "type": "text.gif",
+        "size": "2854"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "bg-20231220_htm.xml",
+        "type": "text.gif",
+        "size": "2690"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "bg-20231220_lab.xml",
+        "type": "text.gif",
+        "size": "25794"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "bg-20231220_pre.xml",
+        "type": "text.gif",
+        "size": "14122"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1658"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "Financial_Report.xlsx",
+        "type": "text.gif",
+        "size": "5724"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "18250"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "40009"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2767"
+      },
+      {
+        "last-modified": "2023-12-21 16:13:42",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1084"
+      }
+    ],
+    "name": "/Archives/edgar/data/1996862/000199686223000052",
+    "parent-dir": "/Archives/edgar/data/1996862"
+  }
+}

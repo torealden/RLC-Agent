@@ -1,0 +1,51 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-04-16",
+    "report_date": "2024-04-12",
+    "items_disclosed": [
+      "2.03",
+      "7.01"
+    ]
+  },
+  "summary": {
+    "category": "other",
+    "headline": "Bunge Limited Finance Corp. amended and restated its $1.1 billion 364-day Revolving Credit Agreement.",
+    "narrative_summary": "On April 12, 2024, Bunge Limited Finance Corp. (BLFC) amended and restated its existing $1.1 billion 364-day Revolving Credit Agreement to extend the maturity date from June 19, 2024 to April 11, 2025."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [
+    "$1.1 Billion 364-Day Revolving Credit Agreement",
+    "SOFR"
+  ],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "debt_issuance",
+      "counterparty": null,
+      "amount_usd_mn": 1100.0,
+      "description": "Amended and restated $1.1 billion 364-day Revolving Credit Agreement with Co peratieve Rabobank U.A., New York Branch, as administrative agent."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers and details from the filing text; cover sheet only had Item references.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:01:21.633127Z",
+    "elapsed_sec": 28.0,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-04-16",
+      "accession": "000110465924047771"
+    }
+  }
+}

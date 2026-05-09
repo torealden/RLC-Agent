@@ -1,0 +1,93 @@
+{
+  "company": "Bunge",
+  "reportType": "Quarterly Financial Report",
+  "period": "2023 Q4 and Full Year",
+  "financialHighlights": {
+    "netIncome": {
+      "2023Q4": 168,
+      "2022Q4": 157
+    },
+    "revenue": {
+      "2023Q4": 92512,
+      "2022Q4": 96471
+    },
+    "adjustedEBITDA": {
+      "2023Q4": 3823,
+      "2022Q4": 3545
+    }
+  },
+  "segmentPerformance": [
+    {
+      "name": "Agribusiness",
+      "revenue": {
+        "2023Q4": 42764,
+        "2022Q4": 47700
+      },
+      "EBIT": {
+        "2023Q4": 2786,
+        "2022Q4": 1715
+      }
+    },
+    {
+      "name": "Refined Specialty Oils",
+      "revenue": {
+        "2023Q4": 14603,
+        "2022Q4": 16850
+      },
+      "EBIT": {
+        "2023Q4": 865,
+        "2022Q4": 746
+      }
+    },
+    {
+      "name": "Milling",
+      "revenue": {
+        "2023Q4": 1896,
+        "2022Q4": 2388
+      },
+      "EBIT": {
+        "2023Q4": 66,
+        "2022Q4": 162
+      }
+    },
+    {
+      "name": "Corporate and Other",
+      "revenue": {
+        "2023Q4": -548,
+        "2022Q4": -397
+      },
+      "EBIT": {
+        "2023Q4": -398,
+        "2022Q4": -362
+      }
+    },
+    {
+      "name": "Sugar Bioenergy",
+      "revenue": {
+        "2023Q4": 235,
+        "2022Q4": 259
+      },
+      "EBIT": {
+        "2023Q4": 164,
+        "2022Q4": 105
+      }
+    }
+  ],
+  "notes": [
+    "Certain (gains) charges, Net income (loss) attributable to Bunge and Certain (gains) charges, Earnings per share are included in the segment EBIT calculations.",
+    "Adjusted EBITDA is not explicitly provided but can be derived from the data given."
+  ],
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:19:05.962601Z",
+    "elapsed_sec": 32.6,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-02-07",
+      "accession": "000199686224000002"
+    }
+  }
+}

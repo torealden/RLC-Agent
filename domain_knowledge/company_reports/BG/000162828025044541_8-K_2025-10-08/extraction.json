@@ -1,0 +1,40 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Limited Finance Corp.",
+    "filing_date": "2025-10-08",
+    "report_date": null,
+    "items_disclosed": [
+      "3.02"
+    ]
+  },
+  "summary": {
+    "category": "other",
+    "headline": "Bunge enters into a $4.2 billion revolving credit agreement.",
+    "narrative_summary": "Bunge Limited Finance Corp. entered into a new $4.2 billion revolving credit agreement with various financial institutions."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "medium",
+  "extraction_notes": "No earnings release or segment commentary found; filing primarily details a new credit agreement.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:05:23.534241Z",
+    "elapsed_sec": 13.6,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-10-08",
+      "accession": "000162828025044541"
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-05-16",
+    "report_date": "2024-05-15",
+    "items_disclosed": [
+      "2.02",
+      "5.02",
+      "5.07"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "Bunge Global SA approved the 2024 Long-Term Incentive Plan and re-elected directors at the Annual General Meeting.",
+    "narrative_summary": "At Bunge Global SA's annual general meeting, shareholders approved the company\u2019s new long-term incentive plan and re-elected several board members."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Eliane Aleixo Lustosa de Andrade",
+      "role": "Director",
+      "action": "reelected",
+      "effective_date": null
+    },
+    {
+      "name": "Sheila Bair",
+      "role": "Director",
+      "action": "reelected",
+      "effective_date": null
+    },
+    {
+      "name": "Carol M. Browner",
+      "role": "Director",
+      "action": "reelected",
+      "effective_date": null
+    },
+    {
+      "name": "Gregory A. Heckman",
+      "role": "Director",
+      "action": "reelected",
+      "effective_date": null
+    },
+    {
+      "name": "Bernardo Hees",
+      "role": "Director",
+      "action": "reelected",
+      "effective_date": null
+    },
+    {
+      "name": "Henry (Jay) Winship",
+      "role": "Director",
+      "action": "reelected",
+      "effective_date": null
+    },
+    {
+      "name": "Mark N. Zenuk",
+      "role": "Chair of the Board",
+      "action": "reelected",
+      "effective_date": null
+    },
+    {
+      "name": "Human Resources and Compensation Committee members",
+      "role": "re-elected",
+      "action": "re-elected",
+      "effective_date": null
+    }
+  ],
+  "other_changes": [
+    {
+      "description": "Approved the 2024 Long-Term Incentive Plan"
+    },
+    {
+      "description": "Passed an advisory vote to approve Named Executive Officers' compensation"
+    },
+    {
+      "description": "Passed an advisory vote on the Swiss Compensation Report"
+    },
+    {
+      "description": "Passed an advisory vote on the Swiss Statutory Non-Financial Matters Report"
+    }
+  ],
+  "exhibits": [
+    {
+      "number": "10.1",
+      "description": "Bunge 2024 Long-Term Incentive Plan"
+    }
+  ],
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:26:59.756149Z",
+    "elapsed_sec": 31.9,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-05-16",
+      "accession": "000199686224000127"
+    }
+  }
+}

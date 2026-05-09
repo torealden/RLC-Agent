@@ -1,0 +1,109 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-03-26",
+    "report_date": "2024-03-26",
+    "items_disclosed": [
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "divestiture",
+    "headline": "Bunge to divest 40% of its Spanish operating subsidiary, Bunge Iberica SA, to Repsol for $300 million in partnership to boost renewable fuels supply.",
+    "narrative_summary": "Bunge and Repsol have entered into a strategic agreement where Bunge will sell 40% of its Spanish operations to Repsol for $300 million. The partnership aims to develop new opportunities for lower carbon intensity feedstocks, aligning with both companies' goals in renewable fuels production."
+  },
+  "earnings_release": {
+    "applicable": null,
+    "period_covered": null,
+    "period_end_date": null,
+    "headline_numbers": {
+      "revenue_usd_mn": null,
+      "net_earnings_usd_mn": null,
+      "adjusted_net_earnings_usd_mn": null,
+      "eps_diluted_usd": null,
+      "adjusted_eps_diluted_usd": null,
+      "ebitda_usd_mn": null,
+      "operating_cash_flow_usd_mn": null
+    },
+    "guidance_changes": [],
+    "capex_guidance_usd_bn_low": null,
+    "capex_guidance_usd_bn_high": null
+  },
+  "segment_commentary": [
+    {
+      "segment_name": "Not specified",
+      "performance": null,
+      "drivers": [],
+      "concerns": [],
+      "quoted_metric": null
+    }
+  ],
+  "facilities_mentioned": [
+    {
+      "name": "Bunge Iberica SA",
+      "operator": "Koninklijke Bunge B.V.",
+      "location_hint": "Spain",
+      "country_hint": "ES",
+      "facility_type_hint": "unknown",
+      "context": "Part of the divestiture to Repsol"
+    },
+    {
+      "name": "Bilbao plant",
+      "operator": "Koninklijke Bunge B.V.",
+      "location_hint": "Spain",
+      "country_hint": "ES",
+      "facility_type_hint": "oilseed_crush",
+      "context": "Continued operation post-divestiture"
+    },
+    {
+      "name": "Barcelona plant",
+      "operator": "Koninklijke Bunge B.V.",
+      "location_hint": "Spain",
+      "country_hint": "ES",
+      "facility_type_hint": "oilseed_crush",
+      "context": "Continued operation post-divestiture"
+    },
+    {
+      "name": "Cartagena plant",
+      "operator": "Koninklijke Bunge B.V.",
+      "location_hint": "Spain",
+      "country_hint": "ES",
+      "facility_type_hint": "oilseed_crush",
+      "context": "Continued operation post-divestiture"
+    }
+  ],
+  "regulatory_or_policy_mentions": [
+    "European Union regulations on renewable fuels"
+  ],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "divestiture",
+      "counterparty": "Repsol SA",
+      "amount_usd_mn": 300,
+      "description": "Bunge to divest 40% of its Spanish operating subsidiary, Bunge Iberica SA, for $300 million."
+    }
+  ],
+  "people_quoted": [
+    "Juan Abascal, executive managing director for Industrial Transformation and Circular Economy at Repsol",
+    "Julio Garros, Co-President, Agribusiness at Bunge"
+  ],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers and specific financial details not provided in the filing.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:25:30.531474Z",
+    "elapsed_sec": 40.7,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-03-26",
+      "accession": "000199686224000075"
+    }
+  }
+}

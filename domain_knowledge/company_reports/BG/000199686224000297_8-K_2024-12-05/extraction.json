@@ -1,0 +1,55 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": null,
+    "filing_date": "2024-12-05",
+    "report_date": null,
+    "items_disclosed": [
+      "2.02"
+    ]
+  },
+  "summary": {
+    "category": "other",
+    "headline": "Bunge amended the Receivables Transfer Agreement to extend the Original Termination Date by an additional 364 days.",
+    "narrative_summary": "Bunge and other parties amended the Receivables Transfer Agreement, extending the Original Termination Date by 364 days. The amendment includes changes in definitions and representations."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [
+    "Ronald Posthumus",
+    "Jason Thimothy Duijn",
+    "Jeroen Kloet",
+    "Arrie de Lange",
+    "Rajat Gupta",
+    "Lisa Ware-Alexander",
+    "Huong Stive-Pham",
+    "Jop van der Sluis",
+    "Sytse van Ulsen",
+    "Edwin van Ankeren",
+    "Marie-Laure Lepont",
+    "Fr d ric Mazet",
+    "Gianluca Sannipoli",
+    "Baptiste Ranjard"
+  ],
+  "polarity_overall": null,
+  "polarity_intensity": null,
+  "extraction_confidence": "medium",
+  "extraction_notes": "The filing does not contain any financial or segment commentary, and the company name is not explicitly stated.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:29:57.206867Z",
+    "elapsed_sec": 19.2,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-12-05",
+      "accession": "000199686224000297"
+    }
+  }
+}

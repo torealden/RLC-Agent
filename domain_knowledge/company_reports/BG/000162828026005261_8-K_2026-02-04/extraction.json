@@ -1,0 +1,65 @@
+{
+  "company": "Bunge",
+  "reportType": "Quarterly and Annual Report",
+  "period": "2025",
+  "financialHighlights": {
+    "revenue": {
+      "totalRevenue": 1792,
+      "adjustedTotalEBIT": 2034
+    },
+    "profitability": {
+      "netIncome": 685,
+      "adjustedNetIncome": 727
+    },
+    "segments": [
+      {
+        "name": "Soybean Processing and Refining",
+        "revenue": 36313,
+        "segmentEBIT": 1225,
+        "adjustedSegmentEBIT": 1325
+      },
+      {
+        "name": "Softseed Processing and Refining",
+        "revenue": 11252,
+        "segmentEBIT": 521,
+        "adjustedSegmentEBIT": 580
+      },
+      {
+        "name": "Other Oilseeds Processing and Refining",
+        "revenue": 4633,
+        "segmentEBIT": 118,
+        "adjustedSegmentEBIT": 168
+      },
+      {
+        "name": "Grain Merchandising and Milling",
+        "revenue": 18128,
+        "segmentEBIT": 465,
+        "adjustedSegmentEBIT": 386
+      }
+    ],
+    "corporateAndOther": {
+      "revenue": -796,
+      "ebit": -796,
+      "adjustedEbit": -425
+    },
+    "cashFlows": {},
+    "balanceSheet": {}
+  },
+  "notes": [
+    "Adjusted EBIT and Net Income exclude certain (gains) charges, mark-to-market timing differences, and other income/expenses.",
+    "Segment results include the combined company's operations post-Viterra acquisition."
+  ],
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:09:59.676280Z",
+    "elapsed_sec": 22.3,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2026-02-04",
+      "accession": "000162828026005261"
+    }
+  }
+}

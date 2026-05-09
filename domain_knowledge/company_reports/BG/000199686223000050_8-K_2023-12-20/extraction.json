@@ -1,0 +1,40 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": null,
+    "filing_date": "2023-12-20",
+    "report_date": null,
+    "items_disclosed": [
+      "2.02"
+    ]
+  },
+  "summary": {
+    "category": "other",
+    "headline": "Bunge amends Receivables Transfer Agreement with new originators and purchaser groups.",
+    "narrative_summary": "Bunge amended its Receivables Transfer Agreement to include new Canadian, German, Mexican, and Polish originators as well as new purchasing agents and committed purchasers."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": null,
+  "polarity_intensity": null,
+  "extraction_confidence": "medium",
+  "extraction_notes": "No earnings or segment commentary provided; filing primarily about amendments to a receivables transfer agreement.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:18:16.270626Z",
+    "elapsed_sec": 13.5,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2023-12-20",
+      "accession": "000199686223000050"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-10-30",
+    "report_date": "2024-10-30",
+    "items_disclosed": [
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "dividend_buyback",
+    "headline": "Bunge extends expiration date of debt exchange offers and consent solicitations related to Viterra acquisition.",
+    "narrative_summary": "Bunge extended the expiration date for its debt exchange offers and consent solicitations, originally set for October 31, 2024, until January 2, 2025. This extension is contingent on the completion of Bunge's pending acquisition of Viterra."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "dividend",
+      "counterparty": null,
+      "amount_usd_mn": null,
+      "description": "Extension of debt exchange offers and consent solicitations related to Viterra acquisition."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers not provided in the filing; cover sheet only had Item references.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:03:37.634315Z",
+    "elapsed_sec": 17.9,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-10-30",
+      "accession": "000110465924112397"
+    }
+  }
+}

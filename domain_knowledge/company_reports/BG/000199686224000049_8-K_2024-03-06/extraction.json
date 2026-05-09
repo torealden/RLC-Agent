@@ -1,0 +1,47 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": null,
+    "filing_date": "2024-03-06",
+    "report_date": null,
+    "items_disclosed": [
+      "5.01"
+    ]
+  },
+  "summary": {
+    "category": "other",
+    "headline": "Bunge Limited Finance Corp. entered into a $3.2 billion revolving credit agreement.",
+    "narrative_summary": "Bunge Limited Finance Corp. executed a new $3.2 billion revolving credit agreement with various financial institutions, including JPMorgan Chase Bank, N.A., Sumitomo Mitsui Banking Corporation, and others."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "debt_issuance",
+      "counterparty": null,
+      "amount_usd_mn": 3200,
+      "description": "Bunge Limited Finance Corp. entered into a $3,200,000,000 revolving credit agreement."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": null,
+  "polarity_intensity": null,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers are in millions of USD; filing did not disclose company name or report date.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:24:49.840279Z",
+    "elapsed_sec": 17.0,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-03-06",
+      "accession": "000199686224000049"
+    }
+  }
+}

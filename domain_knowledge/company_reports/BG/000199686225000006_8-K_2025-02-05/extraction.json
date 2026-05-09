@@ -1,0 +1,60 @@
+{
+  "company": "Bunge",
+  "report_period": "2024 Full Year & Q4",
+  "revenue": {
+    "total_revenue": {
+      "previous_year": 137598,
+      "current_year": 136332
+    },
+    "segments": [
+      {
+        "segment_name": "Agribusiness",
+        "revenue_previous_year": 42764,
+        "revenue_current_year": 38598
+      },
+      {
+        "segment_name": "Refined and Specialty Oils",
+        "revenue_previous_year": 14603,
+        "revenue_current_year": 12771
+      },
+      {
+        "segment_name": "Milling",
+        "revenue_previous_year": 1896,
+        "revenue_current_year": 1555
+      }
+    ]
+  },
+  "profitability": {
+    "net_income_previous_year": 3247,
+    "net_income_current_year": 2056,
+    "ebit_margin_previous_year": 18.9,
+    "ebit_margin_current_year": 15.1
+  },
+  "cash_flow": {
+    "operating_cash_flow_previous_year": 3308,
+    "operating_cash_flow_current_year": 1900
+  },
+  "key_events": [
+    {
+      "event": "Completion of sale of BP Bunge Bioenergia interest",
+      "date": "2024-10-01"
+    }
+  ],
+  "notes": [
+    "Adjusted EBIT and other non-GAAP measures are provided for reference.",
+    "Certain (gains) charges include items such as mark-to-market timing differences, foreign exchange gains/losses, and other income/expenses."
+  ],
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:31:08.475433Z",
+    "elapsed_sec": 20.8,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-02-05",
+      "accession": "000199686225000006"
+    }
+  }
+}

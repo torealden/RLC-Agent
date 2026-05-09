@@ -1,0 +1,71 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2026-04-01",
+    "report_date": "2026-03-26",
+    "items_disclosed": [
+      "5.02"
+    ]
+  },
+  "summary": {
+    "category": "leadership_change",
+    "headline": "Bunge Global SA approved a special, one-time performance-based incentive program for senior officers.",
+    "narrative_summary": "The company's Board of Directors approved an Executive Integration Incentive Program to incentivize the execution of integration efforts and reward sustained executive focus over a multi-year period."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [
+    {
+      "name": "Gregory Heckman",
+      "role": "Chief Executive Officer",
+      "action": "appointed",
+      "effective_date": null
+    },
+    {
+      "name": "Christos Dimopoulos",
+      "role": "Executive Vice President, Global Markets & Chief Sustainability Officer",
+      "action": "appointed",
+      "effective_date": null
+    },
+    {
+      "name": "Julio Garros",
+      "role": "Chief Operating Officer",
+      "action": "appointed",
+      "effective_date": null
+    },
+    {
+      "name": "John Neppl",
+      "role": "Chief Financial Officer",
+      "action": "appointed",
+      "effective_date": null
+    },
+    {
+      "name": "Joseph Podwika",
+      "role": "Chief Legal Officer",
+      "action": "appointed",
+      "effective_date": null
+    }
+  ],
+  "ma_or_capital_allocation": [],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers and details of the incentive program are not provided in the cover sheet; more information may be available in the full filing.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:16:48.271518Z",
+    "elapsed_sec": 21.4,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2026-04-01",
+      "accession": "000162828026022783"
+    }
+  }
+}

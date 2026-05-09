@@ -1,0 +1,74 @@
+{
+  "company": "Bunge",
+  "reportType": "Quarterly Financial Report",
+  "period": "September 30, 2024",
+  "revenue": {
+    "netSales": 15689,
+    "grossProfit": 3722
+  },
+  "segments": [
+    {
+      "name": "Agribusiness",
+      "revenue": {
+        "netSales": 28689,
+        "grossProfit": 1135
+      },
+      "EBIT": 738
+    },
+    {
+      "name": "Refined and Specialty Oils",
+      "revenue": {
+        "netSales": 9519,
+        "grossProfit": 1012
+      },
+      "EBIT": 611
+    },
+    {
+      "name": "Milling",
+      "revenue": {
+        "netSales": 1189,
+        "grossProfit": 169
+      },
+      "EBIT": 88
+    }
+  ],
+  "corporateAndOther": {
+    "EBIT": -421
+  },
+  "nonCoreSegments": [
+    {
+      "name": "Sugar Bioenergy",
+      "revenue": {
+        "netSales": 130,
+        "grossProfit": 3
+      },
+      "EBIT": 9
+    }
+  ],
+  "cashFlow": {
+    "operatingActivities": 847
+  },
+  "notes": [
+    "Certain (gains) charges, Net income (loss) attributable to Bunge and Certain (gains) charges, Earnings per share are not provided in the summary.",
+    "Adjusted funds from operations was $1,283 million compared to $1,935 million in the prior year."
+  ],
+  "financialHighlights": {
+    "netSalesChange": -9.4,
+    "grossProfitChange": -20.7,
+    "EBITChange": -26.4
+  },
+  "summary": "Bunge reported a decline in net sales and gross profit across most segments, with the Agribusiness segment showing the largest decrease. The company's EBIT also declined significantly, particularly in the Sugar Bioenergy segment.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:28:58.222300Z",
+    "elapsed_sec": 24.8,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-10-30",
+      "accession": "000199686224000257"
+    }
+  }
+}

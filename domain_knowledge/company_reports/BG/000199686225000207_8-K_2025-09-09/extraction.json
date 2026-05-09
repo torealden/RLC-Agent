@@ -1,0 +1,47 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2025-09-09",
+    "report_date": "2025-09-03",
+    "items_disclosed": [
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "other",
+    "headline": "Bunge Limited Finance Corp. increased its unsecured corporate commercial paper program by $1 billion.",
+    "narrative_summary": "Bunge Global SA announced that Bunge Limited Finance Corp., a wholly-owned subsidiary, expanded its existing unsecured corporate commercial paper program from $2 billion to $3 billion."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "debt_issuance",
+      "counterparty": null,
+      "amount_usd_mn": 1000,
+      "description": "Bunge Limited Finance Corp. increased its unsecured corporate commercial paper program by $1 billion."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "high",
+  "extraction_notes": null,
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:41:09.749020Z",
+    "elapsed_sec": 15.9,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-09-09",
+      "accession": "000199686225000207"
+    }
+  }
+}

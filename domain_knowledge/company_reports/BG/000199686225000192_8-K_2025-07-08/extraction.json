@@ -1,0 +1,47 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": null,
+    "filing_date": "2025-07-08",
+    "report_date": null,
+    "items_disclosed": [
+      "3.01"
+    ]
+  },
+  "summary": {
+    "category": "other",
+    "headline": "Bunge Limited Finance Corp. issued a second supplemental indenture for its senior notes.",
+    "narrative_summary": "The filing details the terms and conditions of additional senior notes, including their issuance and terms."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "debt_issuance",
+      "counterparty": null,
+      "amount_usd_mn": null,
+      "description": "Issued additional senior notes with a total face value of $1,917,887,000."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": null,
+  "polarity_intensity": null,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers and details are inferred from the filing text; no specific earnings or segment commentary provided.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:40:15.570518Z",
+    "elapsed_sec": 16.7,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-07-08",
+      "accession": "000199686225000192"
+    }
+  }
+}

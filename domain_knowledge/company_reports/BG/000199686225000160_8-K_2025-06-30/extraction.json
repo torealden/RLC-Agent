@@ -1,0 +1,47 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2025-06-30",
+    "report_date": "2025-06-30",
+    "items_disclosed": [
+      "2.03"
+    ]
+  },
+  "summary": {
+    "category": "acquisition",
+    "headline": "Bunge entered into a Term Loan Agreement for $2 billion to fund its acquisition of Viterra Limited.",
+    "narrative_summary": "Bunge Global SA, through its subsidiary Bunge Limited Finance Corp., entered into a Term Loan Agreement with lenders including Sumitomo Mitsui Banking Corporation. The agreement provides term loans totaling $2 billion to finance the acquisition of Viterra Limited and cover related expenses."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "acquisition",
+      "counterparty": "Viterra Limited",
+      "amount_usd_mn": null,
+      "description": "Bunge is acquiring Viterra Limited."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.5,
+  "extraction_confidence": "high",
+  "extraction_notes": "Numbers and amounts are not provided in the filing, only the agreement details were extracted.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:39:39.743439Z",
+    "elapsed_sec": 18.9,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2025-06-30",
+      "accession": "000199686225000160"
+    }
+  }
+}

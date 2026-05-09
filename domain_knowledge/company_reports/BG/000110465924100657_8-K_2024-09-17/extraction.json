@@ -1,0 +1,58 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-09-17",
+    "report_date": "2024-09-17",
+    "items_disclosed": [
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "debt_issuance",
+    "headline": "Bunge Limited Finance Corp. issued $1.98 billion in Senior Notes to fund acquisition and general corporate purposes.",
+    "description": "Bunge Limited Finance Corp., a wholly-owned subsidiary of Bunge Global SA, issued $1.98 billion in Senior Notes to fund the acquisition of certain assets and for general corporate purposes."
+  },
+  "debt_issuance": {
+    "issuer": "Bunge Limited Finance Corp.",
+    "guarantor": "Bunge Global SA",
+    "total_amount": "1980000000",
+    "currency": "USD",
+    "purpose": [
+      "fund the acquisition of certain assets",
+      "general corporate purposes"
+    ],
+    "notes_details": {
+      "series": [
+        {
+          "name": "Series A",
+          "amount": 600000000,
+          "maturity_date": null
+        },
+        {
+          "name": "Series B",
+          "amount": 780000000,
+          "maturity_date": null
+        },
+        {
+          "name": "Series C",
+          "amount": 600000000,
+          "maturity_date": null
+        }
+      ]
+    }
+  },
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:02:42.620516Z",
+    "elapsed_sec": 19.8,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-09-17",
+      "accession": "000110465924100657"
+    }
+  }
+}

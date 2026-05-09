@@ -1,0 +1,49 @@
+{
+  "filing_metadata": {
+    "company_ticker": "BG",
+    "company_name": "Bunge Global SA",
+    "filing_date": "2024-10-07",
+    "report_date": "2024-10-07",
+    "items_disclosed": [
+      "8.01"
+    ]
+  },
+  "summary": {
+    "category": "divestiture",
+    "headline": "Bunge extends expiration date of exchange offers and consent solicitations for Viterra notes.",
+    "narrative_summary": "Bunge's wholly-owned subsidiary, Bunge Limited Finance Corp., extended the expiration date of its previously announced exchange offers and related consents for Viterra notes until October 31, 2024."
+  },
+  "earnings_release": null,
+  "segment_commentary": [],
+  "facilities_mentioned": [],
+  "regulatory_or_policy_mentions": [
+    "antitrust approvals"
+  ],
+  "leadership_changes": [],
+  "ma_or_capital_allocation": [
+    {
+      "type": "divestiture",
+      "counterparty": null,
+      "amount_usd_mn": null,
+      "description": "Extension of the expiration date for exchange offers and consent solicitations related to Viterra notes."
+    }
+  ],
+  "people_quoted": [],
+  "polarity_overall": "neutral",
+  "polarity_intensity": 0.35,
+  "extraction_confidence": "medium",
+  "extraction_notes": "Numbers and dates are inferred from the filing text; no specific financial metrics were provided.",
+  "_provenance": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "schema": "sec_8k_v1",
+    "schema_version": "1.0",
+    "extracted_at": "2026-05-09T10:03:19.663928Z",
+    "elapsed_sec": 18.2,
+    "filing_meta": {
+      "ticker": "BG",
+      "form": "8-K",
+      "filing_date": "2024-10-07",
+      "accession": "000110465924106474"
+    }
+  }
+}
