@@ -268,6 +268,9 @@ def step_parent_company_edges(cur, fac: dict, dry_run: bool) -> dict:
         return {"status": "dry-run", "edges_added": len(siblings),
                 "details": siblings[:10]}
 
+    market_id = "us_oilseed_crush" if fac.get("industry_code") == "oilseed_crush" \
+                else f"us_{fac.get('industry_code', 'unknown')}"
+
     n = 0
     for sib in siblings:
         for src, tgt in [(fac["facility_id"], sib), (sib, fac["facility_id"])]:
@@ -276,11 +279,11 @@ def step_parent_company_edges(cur, fac: dict, dry_run: bool) -> dict:
                 INSERT INTO reference.facility_edge_weights
                     (market_id, source_facility_id, target_facility_id,
                      edge_type, weight, notes, is_active, created_at, updated_at)
-                VALUES (NULL, %s, %s, 'parent_company', 1.0, %s,
+                VALUES (%s, %s, %s, 'parent_company', 1.0, %s,
                         TRUE, NOW(), NOW())
                 ON CONFLICT DO NOTHING
                 """,
-                (src, tgt, f"shared parent: {parent}"),
+                (market_id, src, tgt, f"shared parent: {parent}"),
             )
             if cur.rowcount > 0:
                 n += 1
