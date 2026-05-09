@@ -716,8 +716,22 @@ def render_new_facility():
 # Relationships (FIC Layer 1 — edit edges)
 # ---------------------------------------------------------------------------
 
-EDGE_TYPES = ["draw_region", "parent_company", "industry", "supply_chain",
-              "logistics", "competitive", "ownership", "other"]
+EDGE_TYPES = [
+    # Strong / structural
+    "parent_company",      # same operator group / corporate parent
+    "ownership",           # equity stake / JV partner
+    "draw_region",         # geographic catchment overlap
+    "industry",             # same industry classification
+    "supply_chain",        # buyer / seller relationship
+    "logistics",           # rail / barge / truck route shared
+    "competitive",         # direct rivalry for same customers
+    # Weak / informational (Slice 1: 2026-05-09 — exec & board ties)
+    "executive_move",      # person moved from operator A to operator B
+    "shared_director",     # board member sits on both companies' boards
+    "shared_advisor",      # consultant / banker / law firm shared
+    "supplier_relationship",  # documented supplier link (less direct than supply_chain)
+    "other",
+]
 
 
 @st.cache_data(ttl=30)
