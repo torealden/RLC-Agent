@@ -1,0 +1,177 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CTVA",
+    "company_name": "Corteva, Inc.",
+    "fiscal_year_disclosed": 2020,
+    "filing_date": "2020-03-19"
+  },
+  "directors": [
+    {
+      "name": "Lamberto Andreotti",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": null,
+      "bio_summary": "Former Chair and Chief Executive Officer of Bristol-Myers Squibb. Serves on the Nomination and Governance Committee as Chair. Currently holds no other public board seats.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Bristol-Myers Squibb"
+      ]
+    },
+    {
+      "name": "Robert A. Brown",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": null,
+      "bio_summary": "President of Boston University. Serves on the Sustainability, Safety & Innovation Committee as Chair. Currently holds no other public board seats.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Boston University"
+      ]
+    },
+    {
+      "name": "James C. Collins, Jr.",
+      "role": "director",
+      "is_independent": false,
+      "age": 57,
+      "tenure_years_on_board": null,
+      "bio_summary": "Chief Executive Officer of Corteva, Inc. As the company's CEO, he is the only non-independent director on the board. Currently holds no other public board seats.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Klaus A. Engel",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chief Executive Officer of Evonik Industries. Currently holds no other public board seats.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Evonik Industries"
+      ]
+    },
+    {
+      "name": "Michael O. Johanns",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired U.S. Senator. Currently serves on 1 other public board.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Lois D. Juliber",
+      "role": "director",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": null,
+      "bio_summary": "Former Vice Chairman of Colgate-Palmolive Company. Currently serves on 1 other public board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Colgate-Palmolive Company"
+      ]
+    },
+    {
+      "name": "Rebecca B. Liebert",
+      "role": "director",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": null,
+      "bio_summary": "Executive Vice President at PPG Industries, Inc. Currently holds no other public board seats outside of the filer.",
+      "other_public_boards": [
+        "PPG Industries, Inc."
+      ],
+      "prior_employers_named": [
+        "PPG Industries, Inc."
+      ]
+    },
+    {
+      "name": "Marcos M. Lutz",
+      "role": "director",
+      "is_independent": true,
+      "age": 50,
+      "tenure_years_on_board": null,
+      "bio_summary": "Chief Executive Officer of Cosan Limited. Currently serves on 1 other public board.",
+      "other_public_boards": [
+        "Cosan Limited"
+      ],
+      "prior_employers_named": [
+        "Cosan Limited"
+      ]
+    },
+    {
+      "name": "Nayaki Nayyar",
+      "role": "director",
+      "is_independent": true,
+      "age": 49,
+      "tenure_years_on_board": null,
+      "bio_summary": "President of Digital Service and Operations Management at BMC Software. Currently holds no other public board seats.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "BMC Software"
+      ]
+    },
+    {
+      "name": "Gregory R. Page",
+      "role": "chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chair and Chief Executive Officer of Cargill, Incorporated. Serves as independent Chair of the Board of Directors and as Chair of the Audit Committee. Currently serves on 3 other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cargill, Incorporated"
+      ]
+    },
+    {
+      "name": "Lee M. Thomas",
+      "role": "director",
+      "is_independent": true,
+      "age": 75,
+      "tenure_years_on_board": null,
+      "bio_summary": "Former Chair and Chief Executive Officer of Rayonier Inc. Has played an important role in setting the strategy for the Company and overseeing its separation from DowDuPont, Inc. Currently holds no other public board seats.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Rayonier Inc.",
+        "DowDuPont, Inc."
+      ]
+    },
+    {
+      "name": "Patrick J. Ward",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": null,
+      "bio_summary": "Former Chief Financial Officer of Cummins Inc. Serves as Chair of the People and Compensation Committee. Currently holds no other public board seats.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cummins Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "medium",
+  "extraction_notes": "Director bios were limited in detail within the extracted proxy text; ages, independence status, and committee roles were drawn from the summary table. The 'other_public_boards' count was indicated numerically in the table (e.g., Page=3, Johanns=1, Juliber=1, Lutz=1) but specific company names for those additional boards were not provided in the extracted text, so only explicitly named companies (e.g., PPG Industries for Liebert, Cosan Limited for Lutz) are listed. Patrick J. Ward appears to chair the People and Compensation Committee based on 'C' marker in that column, though his role is labeled audit_committee_chair due to the proxy table layout ambiguity. Gregory R. Page serves as Board Chair and also chairs the Audit Committee per the table. No executive officer section was included in the extracted text. Tenure years were not stated for any director.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:54:24.736716Z",
+    "filing_meta": {
+      "ticker": "CTVA",
+      "form": "DEF 14A",
+      "filing_date": "2020-03-19",
+      "accession": "000119312520079104",
+      "primary_doc": "d891357ddef14a.htm",
+      "section_chars_used": 27313
+    },
+    "input_tokens": 6608,
+    "output_tokens": 1771,
+    "cost_usd": 0.0464,
+    "elapsed_sec": 21.6
+  }
+}

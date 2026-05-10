@@ -1,0 +1,180 @@
+{
+  "filing_metadata": {
+    "company_ticker": "AGCO",
+    "company_name": "AGCO Corporation",
+    "fiscal_year_disclosed": 2022,
+    "filing_date": "2022-03-28"
+  },
+  "directors": [
+    {
+      "name": "Michael C. Arnold",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Former President and CEO of Ryerson Inc., where he led a transformation and IPO in 2014. Previously held various senior management positions at The Timken Company from 1979 to 2010. Brings expertise in M&A, capital allocation, manufacturing, supply chain, and international operations.",
+      "other_public_boards": [
+        "Kaiser Aluminum Corporation"
+      ],
+      "prior_employers_named": [
+        "Ryerson Inc.",
+        "The Timken Company",
+        "Gardner Denver, Inc."
+      ]
+    },
+    {
+      "name": "Sondra L. Barbour",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Former Executive Vice President of Information Systems Global Solutions at Lockheed Martin Corporation, where she spent 30 years. Previously served as Executive Vice President at Leidos Holdings, Inc. from August 2016 to January 2017. Brings expertise in information technology, internal controls, and international experience.",
+      "other_public_boards": [
+        "Nisource, Inc.",
+        "Perspecta Inc."
+      ],
+      "prior_employers_named": [
+        "Leidos Holdings, Inc.",
+        "Lockheed Martin Corporation",
+        "3M Company"
+      ]
+    },
+    {
+      "name": "Suzanne P. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Chief Executive Officer of the U.S. Chamber of Commerce since March 2021, previously its President since June 2019 and former COO. Formerly led Potomac Research Group from 2010 through September 2014 and served as President of National Journal Group at Atlantic Media Company. Brings expertise in policy, regulation, trade, and commerce.",
+      "other_public_boards": [
+        "TransUnion"
+      ],
+      "prior_employers_named": [
+        "U.S. Chamber of Commerce",
+        "Potomac Research Group",
+        "Atlantic Media Company"
+      ]
+    },
+    {
+      "name": "Bob De Lange",
+      "role": "director",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Group President, Services, Distribution and Digital at Caterpillar Inc., responsible for the Caterpillar brand and distribution network. Has held various leadership positions since joining Caterpillar in 1993, including Group President of Construction Industries. Brings expertise in digitalization, dealer capability, supply chain, manufacturing, and global distribution.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Caterpillar Inc."
+      ]
+    },
+    {
+      "name": "Eric P. Hansotia",
+      "role": "chair",
+      "is_independent": false,
+      "age": 53,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Chairman, President and Chief Executive Officer of AGCO since January 1, 2021, having previously served as Senior Vice President and Chief Operating Officer. Prior to joining AGCO, held several senior positions at John Deere including Senior Vice President, Global Harvesting, from 2012 to 2013. Brings nearly 30 years of agricultural equipment industry experience.",
+      "other_public_boards": [
+        "Toro Co."
+      ],
+      "prior_employers_named": [
+        "John Deere"
+      ]
+    },
+    {
+      "name": "George E. Minnich",
+      "role": "director",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Former Senior Vice President and Chief Financial Officer of ITT Corporation from 2005 to 2007, and previously held senior finance roles at United Technologies Corporation. Spent his early career at Price Waterhouse (now PricewaterhouseCoopers LLP) from 1971 to 1993, serving as an audit partner from 1984 to 1993. Brings expertise in capital structure, accounting, internal controls, and risk management.",
+      "other_public_boards": [
+        "Belden Inc.",
+        "Kaman Corporation"
+      ],
+      "prior_employers_named": [
+        "ITT Corporation",
+        "United Technologies Corporation",
+        "Otis Elevator",
+        "Carrier Corporation",
+        "Price Waterhouse"
+      ]
+    },
+    {
+      "name": "Niels P\u00f6rksen",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Chief Executive Officer at S\u00fcdzucker AG since 2020, one of the world's largest sugar producers. Formerly held executive positions at Nufarm, Nordzucker, and BASF in Germany. Brings deep expertise in agricultural chemicals, commodities, strategy, and international agricultural markets.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "S\u00fcdzucker AG",
+        "Nufarm",
+        "Nordzucker",
+        "Industrieverbrand Agrar",
+        "BASF"
+      ]
+    },
+    {
+      "name": "David Sagehorn",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Former Executive Vice President and Chief Financial Officer of Oshkosh Corporation, serving as CFO for 13 years. Held various other management positions at Oshkosh from 2000 to 2007, including Vice President and Treasurer and Vice President of Business Development. Is a Certified Public Accountant and brings finance, accounting, and global compliance expertise.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Oshkosh Corporation"
+      ]
+    },
+    {
+      "name": "Mallika Srinivasan",
+      "role": "director",
+      "is_independent": false,
+      "age": 62,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Chairman and Managing Director of Tractors and Farm Equipment Limited (TAFE), the second largest agricultural tractor manufacturer in India, since December 2019, with progressive roles at TAFE since 1986. Serves as Director and Chair of the Nomination and Remuneration Committee of Tata Steel Limited. Brings extensive agricultural farm machinery, distribution, and international market expertise.",
+      "other_public_boards": [
+        "Tata Steel Limited"
+      ],
+      "prior_employers_named": [
+        "Tractors and Farm Equipment Limited"
+      ]
+    },
+    {
+      "name": "Matthew Tsien",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Former Executive Vice President and Chief Technology Officer of General Motors, where he spent a 40-year career. Previously served as President of General Motors China from 2014 to 2020 and President of General Motors Ventures from 2020 to 2021. Brings expertise in engineering, electrification, connectivity, manufacturing, supply chain, and international operations.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "General Motors"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated based on director since dates relative to the 2022 Annual Meeting. David Sagehorn joined in March 2022 so tenure is listed as 0 (less than 1 year). The proxy text uses 'Niels P\u00f6rksen' but the rendering in the document appears as 'Niels P rksen' due to character encoding; full name normalized. Mallika Srinivasan is noted as not independent due to TAFE commercial relationships. Eric Hansotia is noted as not independent as he is the company's CEO. The executive officers section was not separately detailed in the provided text excerpt, so it is left empty. Perspecta Inc. is listed as a current public board for Barbour per the bio; note that Perspecta was acquired by SAIC in 2021, but the proxy states it as current so it is included.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:43:24.395087Z",
+    "filing_meta": {
+      "ticker": "AGCO",
+      "form": "DEF 14A",
+      "filing_date": "2022-03-28",
+      "accession": "000088026622000012",
+      "primary_doc": "a2022agcodef14a.htm",
+      "section_chars_used": 23325
+    },
+    "input_tokens": 5720,
+    "output_tokens": 2133,
+    "cost_usd": 0.0492,
+    "elapsed_sec": 37.1
+  }
+}

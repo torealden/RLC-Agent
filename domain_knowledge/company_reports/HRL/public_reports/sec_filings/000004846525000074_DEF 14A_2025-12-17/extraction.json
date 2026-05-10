@@ -1,0 +1,200 @@
+{
+  "filing_metadata": {
+    "company_ticker": "HRL",
+    "company_name": "Hormel Foods Corporation",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2025-12-17"
+  },
+  "directors": [
+    {
+      "name": "D. Scott Aakre",
+      "role": "director",
+      "is_independent": false,
+      "age": 61,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Aakre is the Company's Group Vice President and Chief Marketing Officer for Retail since July 2023, and expects to retire in early 2026. He joined Hormel in 1990 and has held various management roles including Senior Vice President of Brand Fuel and Vice President of Corporate Innovation and New Product Development.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Gary C. Bhojwani",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. Bhojwani is Chief Executive Officer of CNO Financial Group, Inc. (NYSE: CNO) since January 2018. Previously, he served as Chairman and CEO of Allianz Life Insurance Company of North America, President of Commercial Business at Fireman's Fund Insurance Company, and CEO of Lincoln General Insurance Company.",
+      "other_public_boards": [
+        "CNO Financial Group, Inc."
+      ],
+      "prior_employers_named": [
+        "Allianz Life Insurance Company of North America",
+        "Allianz SE",
+        "Fireman's Fund Insurance Company",
+        "Lincoln General Insurance Company",
+        "Avalon Risk Management",
+        "Trade Insurance Services"
+      ]
+    },
+    {
+      "name": "Jeffrey M. Ettinger",
+      "role": "director",
+      "is_independent": false,
+      "age": 67,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Ettinger is Interim Chief Executive Officer of Hormel Foods since July 14, 2025, and previously served the Company as Chairman and CEO from 2006 to 2016. He also served as Interim President of the University of Minnesota from June 2023 to June 2024.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "University of Minnesota"
+      ]
+    },
+    {
+      "name": "John F. Ghingo",
+      "role": "director",
+      "is_independent": false,
+      "age": 53,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Ghingo is President of Hormel Foods since July 14, 2025, having previously served as Executive Vice President Retail and President of Applegate Farms LLC. From January 2022 to August 2024, he served as CEO of Whisps Acquisition Corporation, a better-for-you snacking company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Whisps Acquisition Corporation"
+      ]
+    },
+    {
+      "name": "Stephen M. Lacy",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Mr. Lacy retired from Meredith Corporation in November 2020, where he served in various roles including Chairman of the Board and CEO. He is currently a member of the Board of Directors of First Interstate BancSystem, Inc. (NASDAQ: FIBK).",
+      "other_public_boards": [
+        "First Interstate BancSystem, Inc."
+      ],
+      "prior_employers_named": [
+        "Meredith Corporation"
+      ]
+    },
+    {
+      "name": "Elsa A. Murano, Ph.D.",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 19,
+      "bio_summary": "Dr. Murano serves Texas A&M University as Director of the Norman Borlaug Institute for International Agriculture and as Professor in the Department of Animal Science. She previously served as President of Texas A&M University and as Undersecretary for Food Safety at the U.S. Department of Agriculture.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Texas A&M University",
+        "U.S. Department of Agriculture"
+      ]
+    },
+    {
+      "name": "William A. Newlands",
+      "role": "chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Newlands is President and CEO of Constellation Brands, Inc. (NYSE: STZ) since March 2019. He previously held senior roles at Constellation Brands and at Beam Inc. and Beam Global Spirits & Wine, Inc.",
+      "other_public_boards": [
+        "Constellation Brands, Inc."
+      ],
+      "prior_employers_named": [
+        "Beam Inc.",
+        "Beam Global Spirits & Wine, Inc."
+      ]
+    },
+    {
+      "name": "Christopher J. Policinski",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Mr. Policinski is CEO of CJP Leadership Partners, LLC since February 2021, and was previously CEO of VitaKey, Inc. He retired from Land O'Lakes, Inc. in 2018 after serving as President and CEO from 2005 to 2018, and has prior experience at Kraft General Foods, Bristol-Myers Squibb, and Pillsbury Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "VitaKey, Inc.",
+        "Land O'Lakes, Inc.",
+        "Kraft General Foods Corporation",
+        "Bristol-Myers Squibb Co.",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Debbra L. Schoneman",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Ms. Schoneman is President of Piper Sandler Companies (NYSE: PIPR) since 2018, having previously served the firm as CFO and Treasurer. She brings extensive expertise in finance, corporate development, and investment banking.",
+      "other_public_boards": [
+        "Piper Sandler Companies"
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Sally J. Smith",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Ms. Smith retired from Buffalo Wild Wings, Inc. in February 2018, where she served as President and CEO from 1996 to 2018. She previously served as CFO of Dahlberg, Inc. and began her career at KPMG LLP.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Buffalo Wild Wings, Inc.",
+        "Dahlberg, Inc.",
+        "KPMG LLP"
+      ]
+    },
+    {
+      "name": "Steven A. White",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. White retired from Comcast Corporation (NASDAQ: CMCSA) in December 2024 after serving as President, Special Counsel to CEO Comcast Cable and previously as President, Comcast West Division. He also held roles at AT&T Broadband and Telecommunications, Inc., and earlier in his career at Colgate-Palmolive Company.",
+      "other_public_boards": [
+        "W.W. Grainger, Inc."
+      ],
+      "prior_employers_named": [
+        "Comcast Corporation",
+        "AT&T Broadband, LLC",
+        "Telecommunications, Inc.",
+        "Colgate-Palmolive Company"
+      ]
+    },
+    {
+      "name": "Michael P. Zechmeister",
+      "role": "director",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Mr. Zechmeister is former CFO of C.H. Robinson Worldwide, Inc. (NASDAQ: CHRW), a position he held from September 2019 to August 2024. He previously served as CFO of United Natural Foods, Inc. and held various finance roles at General Mills, Inc. over a 25-year career.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "C.H. Robinson Worldwide, Inc.",
+        "United Natural Foods, Inc.",
+        "General Mills, Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Roles for committee chairs were inferred from committee membership tables (Sally J. Smith = Audit Committee Chair, Stephen M. Lacy = Compensation Committee Chair, Gary C. Bhojwani = Governance/Nominating Committee Chair, William A. Newlands = Chairman of the Board). Jeffrey M. Ettinger is listed as Interim CEO and director; John F. Ghingo is listed as President and director; D. Scott Aakre is listed as Group VP/CMO and director \u2014 all three are non-independent employee directors. Tenure years are approximate, calculated from 'director since' year to 2025. Executive officers section was not included in the provided text excerpt, so that array is empty.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:04:37.896028Z",
+    "filing_meta": {
+      "ticker": "HRL",
+      "form": "DEF 14A",
+      "filing_date": "2025-12-17",
+      "accession": "000004846525000074",
+      "primary_doc": "hrl-20251216.htm",
+      "section_chars_used": 46842
+    },
+    "input_tokens": 11353,
+    "output_tokens": 2519,
+    "cost_usd": 0.0718,
+    "elapsed_sec": 33.9
+  }
+}

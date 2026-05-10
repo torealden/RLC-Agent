@@ -323,7 +323,10 @@ def pull_one_ticker(ticker: str, ticker_map: dict, forms: list[str],
     cik_padded = info["cik_padded"]
     cik_int = info["cik_str"]
 
-    out_root = REPORTS_DIR / ticker
+    # Per the per-company folder convention (see
+    # domain_knowledge/company_reports/README.md), SEC filings live at
+    # <TICKER>/public_reports/sec_filings/<accession>_<form>_<date>/
+    out_root = REPORTS_DIR / ticker / "public_reports" / "sec_filings"
     out_root.mkdir(parents=True, exist_ok=True)
 
     print(f"[{ticker}] CIK={cik_int}  ({info['title']})")

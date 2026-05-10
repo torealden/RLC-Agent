@@ -1,0 +1,192 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CF",
+    "company_name": "CF Industries Holdings, Inc.",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2026-03-17"
+  },
+  "directors": [
+    {
+      "name": "Javed Ahmed",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Former CEO of Tate & Lyle PLC (2009\u20132018), a global food and beverage ingredients provider. Previously spent 17 years with Benckiser NV/Reckitt Benckiser Group plc in senior roles, and began his career at The Procter & Gamble Company before five years at Bain & Co.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tate & Lyle PLC",
+        "Benckiser NV",
+        "Reckitt Benckiser Group plc",
+        "The Procter & Gamble Company",
+        "Bain & Co."
+      ]
+    },
+    {
+      "name": "Robert C. Arzbaecher",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 21,
+      "bio_summary": "Former CEO and chairman of Actuant Corporation (2000\u20132014, interim CEO 2015\u20132016), a diversified industrial manufacturer. Previously held financial roles at Applied Power, Inc., Grabill Aerospace Industries Ltd., Farley Industries Inc., and Grant Thornton LLP.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Actuant Corporation",
+        "Applied Power, Inc.",
+        "Grabill Aerospace Industries Ltd.",
+        "Farley Industries Inc.",
+        "Grant Thornton LLP"
+      ]
+    },
+    {
+      "name": "Christopher D. Bohn",
+      "role": "director",
+      "is_independent": false,
+      "age": 58,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Current president and CEO of CF Industries since January 2026, having previously served as EVP and COO, EVP and CFO, and various other senior roles at CF Industries over more than 15 years. Prior to CF Industries, served as CFO of Hess Print Solutions and as VP of global financial planning and analysis at Merisant Worldwide, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Hess Print Solutions",
+        "Merisant Worldwide, Inc."
+      ]
+    },
+    {
+      "name": "Deborah L. DeHaas",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Retired vice chairman and managing partner of Deloitte's Center for Board Effectiveness in September 2020 after 18 years, having also served as chief inclusion officer, regional managing partner, and Chicago office managing partner. Since November 2020, she has served as CEO of Corporate Leadership Center, and she is currently a director of Dover Corporation.",
+      "other_public_boards": [
+        "Dover Corporation"
+      ],
+      "prior_employers_named": [
+        "Deloitte",
+        "Arthur Andersen LLP"
+      ]
+    },
+    {
+      "name": "John W. Eaves",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Former executive chairman (2020\u20132024) and president and CEO (2012\u20132020) of Arch Resources, Inc., a top coal producer. He has more than 30 years of experience in the coal industry, also having held roles at Diamond Shamrock Coal Company and Natomas Coal Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Arch Resources, Inc.",
+        "Diamond Shamrock Coal Company",
+        "Natomas Coal Company"
+      ]
+    },
+    {
+      "name": "Susan A. Ellerbusch",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Former CEO of Air Liquide North America LLC (2019\u20132022) and previously president of Air Liquide Large Industries U.S. (2015\u20132019). Prior to Air Liquide, she held roles of increasing responsibility at British Petroleum (BP), most recently as President of BP Biofuels North America (2008\u20132015).",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Air Liquide North America LLC",
+        "British Petroleum"
+      ]
+    },
+    {
+      "name": "Jesus Madrazo",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Current CEO and president of Reiter Affiliated Companies, a privately held fresh multi-berry producer, since November 2023. Previously EVP of public affairs and sustainability at Bayer AG's Crop Science division, and held numerous leadership positions over 19 years at Monsanto Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Reiter Affiliated Companies",
+        "Bayer AG",
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Anne P. Noonan",
+      "role": "chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Former president and CEO of Summit Materials, Inc. (2020\u20132025) and former president and CEO of OMNOVA Solutions Inc. (2016\u20132020). Previously held executive roles at Chemtura Corporation for nearly 27 years; since November 2025 serves on the board of Qnity, a DuPont spin-off.",
+      "other_public_boards": [
+        "Qnity Electronics"
+      ],
+      "prior_employers_named": [
+        "Summit Materials, Inc.",
+        "OMNOVA Solutions Inc.",
+        "Chemtura Corporation"
+      ]
+    },
+    {
+      "name": "Michael J. Toelle",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Owner of T & T Farms, a diversified farming company, and a director of Nationwide Mutual Insurance Company since 2013. Former board chairman and longtime board member of CHS Inc. and a former board member of Cenex, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "CHS Inc.",
+        "Cenex, Inc."
+      ]
+    },
+    {
+      "name": "Theresa E. Wagler",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Current CFO and executive vice president of Steel Dynamics, Inc. since 2007 and 2009, respectively, where she also oversees IT, cybersecurity, human resources, and other functions. Prior to Steel Dynamics, she served as assistant corporate controller for Fort Wayne National Bank and as a CPA with Ernst & Young LLP.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Steel Dynamics, Inc.",
+        "Fort Wayne National Bank",
+        "Ernst & Young LLP"
+      ]
+    },
+    {
+      "name": "Celso L. White",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Former global chief supply chain officer at Molson Coors Brewing Company (2013\u20132019) and former VP and general manager of Concentrate Operations at Pepsi Cola (2004\u20132010). Co-founded Igniting Business Growth LLC, a consultancy, from 2020 to 2024, and currently serves on the board of Armada Acquisition Corp. III.",
+      "other_public_boards": [
+        "Armada Acquisition Corp. III"
+      ],
+      "prior_employers_named": [
+        "Molson Coors Brewing Company",
+        "Pepsi Cola",
+        "Igniting Business Growth LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All 11 director nominees were extracted from the proxy's director nominee biographies section. Armada Acquisition Corp. II ended in August 2025 and Armada Acquisition Corp. I ended in August 2024, so only Armada Acquisition Corp. III is listed as a current public board for Celso White. Arch Resources, Inc. ended in 2024 for John Eaves and Summit Materials ended in 2025 for Ellerbusch and Noonan, so those are excluded from current directorships. Stephen J. Hagge (retiring chair) was not nominated for re-election and does not appear as a nominee, so he is excluded from this list. No executive officers section was included in the provided text; that section was left empty. Tenure years were calculated based on 'Director Since' year subtracted from 2026.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:53:23.585354Z",
+    "filing_meta": {
+      "ticker": "CF",
+      "form": "DEF 14A",
+      "filing_date": "2026-03-17",
+      "accession": "000110465926029482",
+      "primary_doc": "tm261459-1_def14a.htm",
+      "section_chars_used": 49582
+    },
+    "input_tokens": 10865,
+    "output_tokens": 2434,
+    "cost_usd": 0.0691,
+    "elapsed_sec": 41.4
+  }
+}

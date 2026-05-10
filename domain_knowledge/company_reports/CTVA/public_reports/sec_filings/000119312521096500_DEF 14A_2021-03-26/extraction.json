@@ -1,0 +1,184 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CTVA",
+    "company_name": "Corteva, Inc.",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2021-03-26"
+  },
+  "directors": [
+    {
+      "name": "Lamberto Andreotti",
+      "role": "director",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chair and Chief Executive Officer of Bristol-Myers Squibb. Serves as Chair of the Nomination and Governance Committee. Currently serves on 1 other public board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Bristol-Myers Squibb"
+      ]
+    },
+    {
+      "name": "James C. Collins, Jr.",
+      "role": "director",
+      "is_independent": false,
+      "age": 58,
+      "tenure_years_on_board": null,
+      "bio_summary": "Chief Executive Officer of Corteva, Inc. Currently serves on no other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Klaus A. Engel, Ph.D.",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chief Executive Officer of Evonik Industries. Currently serves on no other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Evonik Industries"
+      ]
+    },
+    {
+      "name": "David C. Everitt",
+      "role": "director",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Agricultural and Turf Division President of Deere & Company. Currently serves on 3 other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Deere & Company"
+      ]
+    },
+    {
+      "name": "Janet P. Giesselman",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired President and General Manager of Dow Oil & Gas. Currently serves on 4 other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Dow Oil & Gas"
+      ]
+    },
+    {
+      "name": "Karen H. Grimes",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Senior Managing Director and Partner at Wellington Management. Currently serves on 2 other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Wellington Management"
+      ]
+    },
+    {
+      "name": "Michael O. Johanns",
+      "role": "director",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired U.S. Senator and U.S. Secretary of Agriculture. Currently serves on 1 other public board.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Rebecca B. Liebert, Ph.D.",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": null,
+      "bio_summary": "Executive Vice President at PPG Industries, Inc. Serves as Chair of the Audit Committee. Currently serves on no other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "PPG Industries, Inc."
+      ]
+    },
+    {
+      "name": "Marcos M. Lutz",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chief Executive Officer of Cosan Limited. Currently serves on 1 other public board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cosan Limited"
+      ]
+    },
+    {
+      "name": "Nayaki Nayyar",
+      "role": "director",
+      "is_independent": true,
+      "age": 50,
+      "tenure_years_on_board": null,
+      "bio_summary": "Executive Vice President and Chief Product Officer at Ivanti, Inc. Currently serves on 1 other public board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ivanti, Inc."
+      ]
+    },
+    {
+      "name": "Gregory R. Page",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chair and Chief Executive Officer of Cargill, Incorporated. Serves as Chair of the People and Compensation Committee. Currently serves on 3 other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cargill, Incorporated"
+      ]
+    },
+    {
+      "name": "Kerry J. Preete",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Executive Vice President and Chief Strategy Officer of Monsanto Company. Currently serves on 2 other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Patrick J. Ward",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chief Financial Officer of Cummins Inc. Serves as Chair of the Sustainability, Safety & Innovation Committee. Currently serves on no other public boards.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cummins Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "medium",
+  "extraction_notes": "Tenure years on board were not explicitly stated in the provided text; average tenure of 1.3 years is noted for the slate but individual tenures are not given. The 'Other Current Public Boards' column shows numeric counts but does not name the specific companies, so those fields are left as empty lists. Committee chair roles were inferred from the 'C' designations in the summary table (Andreotti=Nomination and Governance Chair, Liebert=Audit Chair, Page=People and Compensation Chair, Ward=Sustainability/Safety/Innovation Chair). No executive officer section was included in the provided text.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:54:49.942851Z",
+    "filing_meta": {
+      "ticker": "CTVA",
+      "form": "DEF 14A",
+      "filing_date": "2021-03-26",
+      "accession": "000119312521096500",
+      "primary_doc": "d50599ddef14a.htm",
+      "section_chars_used": 12888
+    },
+    "input_tokens": 3791,
+    "output_tokens": 1776,
+    "cost_usd": 0.038,
+    "elapsed_sec": 25.2
+  }
+}

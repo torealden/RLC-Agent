@@ -1,0 +1,142 @@
+{
+  "filing_metadata": {
+    "company_ticker": "DAR",
+    "company_name": "Darling Ingredients Inc.",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2026-03-19"
+  },
+  "directors": [
+    {
+      "name": "Randall C. Stuewe",
+      "role": "chair",
+      "is_independent": false,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Randall C. Stuewe serves as Chairman of the Board and Chief Executive Officer of Darling Ingredients Inc. pursuant to his employment agreement. He serves as the primary voice to articulate the Company's strategy of sustainable responsible growth.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Gary W. Mize",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Gary W. Mize serves as the independent Lead Director of the Board, elected annually by the independent members. He chairs the nominating and corporate governance committee and regularly speaks with the CEO regarding business and affairs of the Company.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Charles Adair",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Charles Adair is an independent director serving as Chairman of the audit committee. He also serves on the nominating and corporate governance committee and has been designated as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Robert Aspell",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Robert Aspell was appointed to the Board in February 2026. He has been determined to meet the independence requirements of the NYSE and the SEC and serves on the audit committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Larry A. Barden",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Larry A. Barden is an independent director who serves on the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Celeste A. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Celeste A. Clark is an independent director who serves on the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Linda Goodspeed",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Linda Goodspeed is an independent director serving as Chairwoman of the compensation committee. She also serves on the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Enderson Guimaraes",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Enderson Guimaraes is an independent director who serves on both the audit committee and the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Randy L. Hill",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Randy L. Hill is an independent director who serves on the audit committee and has been designated as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Soren Schroder",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Soren Schroder is an independent director who serves on both the audit committee and the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Kurt Stoffel",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Kurt Stoffel is an independent director who serves on the audit committee and has been designated as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "medium",
+  "extraction_notes": "The provided proxy text excerpt does not include full biographical sections for individual directors, so ages, tenure, prior employers, and other public board memberships could not be extracted. Beth Albright's term expired immediately following the 2025 annual meeting and she is not included as a current director. Committee memberships and roles were inferred from committee composition descriptions in the corporate governance section. The executive officers section was not included in the provided text excerpt.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:59:38.558326Z",
+    "filing_meta": {
+      "ticker": "DAR",
+      "form": "DEF 14A",
+      "filing_date": "2026-03-19",
+      "accession": "000119312526116042",
+      "primary_doc": "d84781ddef14a.htm",
+      "section_chars_used": 29202
+    },
+    "input_tokens": 6148,
+    "output_tokens": 1468,
+    "cost_usd": 0.0405,
+    "elapsed_sec": 18.5
+  }
+}

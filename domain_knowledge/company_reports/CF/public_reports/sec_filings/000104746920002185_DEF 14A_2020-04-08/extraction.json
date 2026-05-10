@@ -1,0 +1,190 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CF",
+    "company_name": "CF Industries Holdings, Inc.",
+    "fiscal_year_disclosed": 2020,
+    "filing_date": "2020-04-08"
+  },
+  "directors": [
+    {
+      "name": "Javed Ahmed",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Served as CEO of Tate & Lyle PLC from October 2009 until April 2018, a global food and beverage ingredients company. Prior to that, he spent 17 years with Benckiser NV (later Reckitt Benckiser Group plc) in senior roles, and began his career with Procter & Gamble before spending five years with Bain & Co.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tate & Lyle PLC",
+        "Benckiser NV",
+        "Reckitt Benckiser Group plc",
+        "Procter & Gamble",
+        "Bain & Co."
+      ]
+    },
+    {
+      "name": "Robert C. Arzbaecher",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Served as CEO of Actuant Corporation from 2000 until January 2014 and as interim president and CEO from August 2015 until March 2016, also serving as chairman from 2001 until March 2016. Previously held financial positions at Applied Power, Inc., Grabill Aerospace, Farley Industries, and Grant Thornton. He is a certified public accountant.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Actuant Corporation",
+        "Applied Power, Inc.",
+        "Grabill Aerospace",
+        "Farley Industries",
+        "Grant Thornton"
+      ]
+    },
+    {
+      "name": "William Davisson",
+      "role": "director",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Served as CEO of GROWMARK, Inc., a large agricultural cooperative, from 1998 through 2010, having worked in the GROWMARK system from 1970 through 2010. He also served as CFO and vice president of member services at GROWMARK and is a certified public accountant.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "GROWMARK, Inc."
+      ]
+    },
+    {
+      "name": "John W. Eaves",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Has served as president and CEO of Arch Coal, Inc. since 2012 and has been a board member since 2006, with more than 30 years of experience in the coal industry. Previously held roles including president and COO, senior vice president of marketing, and various other positions at Arch Coal after joining in 1987 from Diamond Shamrock Coal Company and Natomas Coal Company.",
+      "other_public_boards": [
+        "Arch Coal, Inc."
+      ],
+      "prior_employers_named": [
+        "Arch Coal, Inc.",
+        "Diamond Shamrock Coal Company",
+        "Natomas Coal Company"
+      ]
+    },
+    {
+      "name": "Stephen A. Furbacher",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Served as president and COO of Dynegy Inc. from August 2005 until December 2007, and previously as executive vice president of Dynegy's natural gas liquids business segment from September 1996 to August 2005. Before Dynegy, he served as president of Warren Petroleum Company (Chevron's natural gas liquids division), having started his career with Chevron in 1973. Currently serves as CEO and president of GTBC, LLC, which operates Grand Teton Brewing Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Dynegy Inc.",
+        "Warren Petroleum Company",
+        "Chevron U.S.A."
+      ]
+    },
+    {
+      "name": "Stephen J. Hagge",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Served as president and CEO of AptarGroup, Inc. from 2012 until January 2017, and previously as COO, CFO, and executive vice president of AptarGroup. He served as a director of AptarGroup from 2001 to 2019 and has served as a director of Crown Holdings Inc. since 2019.",
+      "other_public_boards": [
+        "Crown Holdings Inc."
+      ],
+      "prior_employers_named": [
+        "AptarGroup, Inc."
+      ]
+    },
+    {
+      "name": "Anne P. Noonan",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Has served as president, CEO, and director of OMNOVA Solutions Inc. since December 2016, previously serving as OMNOVA's president, performance chemicals, from 2014 to December 2016. Prior to OMNOVA, she held positions of increasing responsibility at Chemtura Corporation from 1987 through 2014.",
+      "other_public_boards": [
+        "OMNOVA Solutions Inc."
+      ],
+      "prior_employers_named": [
+        "OMNOVA Solutions Inc.",
+        "Chemtura Corporation"
+      ]
+    },
+    {
+      "name": "Michael J. Toelle",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Owner of T & T Farms, a diversified farming company, and a board member of Nationwide Mutual Insurance Company since 2013. He is a former board chairman and longtime board member of CHS, and previously served as a board member for Cenex, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "CHS",
+        "Cenex, Inc."
+      ]
+    },
+    {
+      "name": "Theresa E. Wagler",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 49,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Has served as CFO and executive vice president of Steel Dynamics, Inc. since 2007 and 2009 respectively, also serving as principal accounting officer with oversight of safety, human resources, and business development. Prior to Steel Dynamics, she served as assistant corporate controller for Fort Wayne National Bank and as a certified public accountant with Ernst & Young LLP.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Steel Dynamics, Inc.",
+        "Fort Wayne National Bank",
+        "Ernst & Young LLP"
+      ]
+    },
+    {
+      "name": "Celso L. White",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Served as global chief supply chain officer at Molson Coors Brewing Company from January 2013 to December 2019, and previously as vice president of international supply chain at Molson Coors from September 2010 to January 2013. Prior to Molson Coors, he was Pepsi Cola's vice president and general manager of Concentrate Operations from 2004 to 2010. In January 2020, he co-founded Igniting Business Growth LLC.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Molson Coors Brewing Company",
+        "Pepsi Cola"
+      ]
+    },
+    {
+      "name": "W. Anthony Will",
+      "role": "director",
+      "is_independent": false,
+      "age": 54,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Has served as president and CEO of CF Industries and as a Board member since January 2014, previously holding roles including senior vice president of manufacturing and distribution and vice president of corporate development at CF Industries. Before joining CF Industries, he was a partner at Accenture Ltd., and earlier held positions at Sears, Roebuck and Company, Fort James Corporation, and the Boston Consulting Group.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Accenture Ltd.",
+        "Sears, Roebuck and Company",
+        "Fort James Corporation",
+        "Boston Consulting Group"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All eleven director nominees were extracted from the proxy statement biographies. John D. Johnson is mentioned as retiring from the Board at the 2020 Annual Meeting and not standing for re-election; he was not included as a nominee. The 'other_public_boards' field lists only companies where the director currently serves at the time of filing (April 8, 2020). Terra Nitrogen Company, L.P. is listed in Will's bio as a past directorship ending January 2017 and was therefore excluded. No executive officer section was present in the extracted text, so executive_officers is empty. Stephen A. Furbacher holds the role of Chairman of the Board and Lead Independent Director; 'lead_independent' was used as the closest matching role.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:49:19.132834Z",
+    "filing_meta": {
+      "ticker": "CF",
+      "form": "DEF 14A",
+      "filing_date": "2020-04-08",
+      "accession": "000104746920002185",
+      "primary_doc": "a2241107zdef14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 12980,
+    "output_tokens": 2518,
+    "cost_usd": 0.0767,
+    "elapsed_sec": 42.7
+  }
+}

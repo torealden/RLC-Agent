@@ -17,14 +17,16 @@ domain_knowledge/company_reports/
 │   │   ├── soyinfo_adm_andreas_1884_2020.pdf
 │   │   ├── soyinfo_adm_entries.json
 │   │   └── soyinfo_adm_full_text.txt
-│   ├── sec_filings/              SEC EDGAR — 10-K, 8-K, DEF 14A, 10-Q
-│   │   └── (one folder per filing accession#)
 │   ├── extracts/                 Our curated markdown / structured extracts
 │   │   └── adm_deep_history.md
-│   ├── public_reports/           Annual reports, sustainability reports
+│   ├── public_reports/           Annual reports, sustainability, SEC filings
+│   │   └── sec_filings/          SEC EDGAR — 10-K, 8-K, DEF 14A, 10-Q
+│   │       └── (one folder per filing accession#)
 │   ├── climate/                  Climate / sustainability / ESG documents
 │   ├── news/                     Press releases, media articles
-│   └── permits/                  Air, water, hazwaste permits (per facility)
+│   ├── permits/                  Air, water, hazwaste permits (per facility)
+│   ├── manifest.csv              Inventory of pulled SEC filings
+│   └── extractions_manifest.csv  Inventory of LLM extraction.json outputs
 ├── AGP/                          Private cooperative
 │   └── (same structure)
 ├── CARGILL/                      Private — no ticker
@@ -82,7 +84,7 @@ Quick lookup if someone hands us a document:
 
 | Document type | Location |
 |---|---|
-| 10-K / 10-Q / 8-K / DEF 14A | `<TICKER>/sec_filings/<accession#>/` |
+| 10-K / 10-Q / 8-K / DEF 14A | `<TICKER>/public_reports/sec_filings/<accession#>/` |
 | Annual glossy report | `<TICKER>/public_reports/` |
 | Sustainability / ESG / TCFD / GHG | `<TICKER>/climate/` |
 | Climate Change policy doc | `<TICKER>/climate/` |
@@ -92,6 +94,7 @@ Quick lookup if someone hands us a document:
 | Title V air permit | `<TICKER>/permits/` AND `data/raw/state_air_permits/<state>/<facility_id>/` |
 | Press release / news article | `<TICKER>/news/` |
 | Our curated markdown summary | `<TICKER>/extracts/` |
+| SEC filings inventory CSV | `<TICKER>/manifest.csv` (kept at ticker root for fast scan) |
 
 ## Currently populated
 

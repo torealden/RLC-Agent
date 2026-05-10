@@ -254,13 +254,23 @@ def discover_def14a_filings(tickers: list[str] | None = None,
                             all_tickers: bool = False) -> list[Path]:
     out = []
     if all_tickers:
-        scan = [d for d in REPORTS_DIR.iterdir() if d.is_dir()]
+        ticker_roots = [d for d in REPORTS_DIR.iterdir() if d.is_dir()]
     else:
-        scan = [REPORTS_DIR / t for t in (tickers or []) if (REPORTS_DIR / t).exists()]
-    for tdir in scan:
-        for sub in sorted(tdir.iterdir()):
-            if sub.is_dir() and DIR_RE.match(sub.name):
-                out.append(sub)
+        ticker_roots = [REPORTS_DIR / t for t in (tickers or []) if (REPORTS_DIR / t).exists()]
+    for tdir in ticker_roots:
+        # New layout: <TICKER>/public_reports/sec_filings/.
+        # Legacy: <TICKER>/ directly. Scan both so unmigrated tickers
+        # still work.
+        scan_dirs = [
+            tdir / "public_reports" / "sec_filings",
+            tdir,  # legacy fallback
+        ]
+        for scan in scan_dirs:
+            if not scan.exists():
+                continue
+            for sub in sorted(scan.iterdir()):
+                if sub.is_dir() and DIR_RE.match(sub.name):
+                    out.append(sub)
     return out
 
 
@@ -408,14 +418,23 @@ def load_to_db(extractions_dir: Path = REPORTS_DIR) -> dict:
     for tdir in extractions_dir.iterdir():
         if not tdir.is_dir():
             continue
-        for sub in tdir.iterdir():
-            if not sub.is_dir():
+        # Walk both <TICKER>/public_reports/sec_filings/ (new layout)
+        # and <TICKER>/ directly (legacy).
+        scan_dirs = [
+            tdir / "public_reports" / "sec_filings",
+            tdir,
+        ]
+        for scan in scan_dirs:
+            if not scan.exists():
                 continue
-            if not DIR_RE.match(sub.name):
-                continue
-            ext = sub / "extraction.json"
-            if ext.exists():
-                files.append((tdir.name, sub.name, ext))
+            for sub in scan.iterdir():
+                if not sub.is_dir():
+                    continue
+                if not DIR_RE.match(sub.name):
+                    continue
+                ext = sub / "extraction.json"
+                if ext.exists():
+                    files.append((tdir.name, sub.name, ext))
 
     with get_connection() as conn:
         cur = conn.cursor()

@@ -1,0 +1,171 @@
+{
+  "filing_metadata": {
+    "company_ticker": "GPRE",
+    "company_name": "Green Plains Inc.",
+    "fiscal_year_disclosed": 2022,
+    "filing_date": "2022-03-25"
+  },
+  "directors": [
+    {
+      "name": "Farha Aslam",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Managing Partner of Crescent House Capital with previous experience as Managing Director at Stephens Inc. leading the Food and Agribusiness equity research team, and prior roles as vice president at Merrill Lynch and risk management advisor at UBS. She holds an MBA from Columbia University and a BA in Economics from the University of California.",
+      "other_public_boards": [
+        "Pilgrim's Pride Corporation",
+        "Calavo Growers, Inc.",
+        "AdvanSix Inc."
+      ],
+      "prior_employers_named": [
+        "Stephens Inc.",
+        "Merrill Lynch",
+        "UBS"
+      ]
+    },
+    {
+      "name": "Martin Salinas Jr.",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 50,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Former Chief Financial Officer of Energy Transfer Partners, LP from 2008 to 2015, having previously served as their controller and vice president of finance from 2004 to 2008. He began his career at KPMG and holds a Bachelor's Degree in Business Administration from the University of Texas in San Antonio.",
+      "other_public_boards": [
+        "NuStar Energy L.P."
+      ],
+      "prior_employers_named": [
+        "Energy Transfer Partners, LP",
+        "KPMG"
+      ]
+    },
+    {
+      "name": "Jim Anderson",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Chief Executive Officer of Moly-Cop since November 2017, previously served as Managing Director and Operating Partner at CHAMP Private Equity, and as President and CEO of The Gavilon Group, LLC. Earlier roles included CEO of United Malt Holdings, COO/EVP of CT Malt (a ConAgra Foods/Tiger Brands joint venture), and Senior Vice President and President of ConAgra Grain Companies.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Moly-Cop",
+        "CHAMP Private Equity",
+        "The Gavilon Group, LLC",
+        "United Malt Holdings",
+        "CT Malt",
+        "ConAgra Foods, Inc.",
+        "Ferruzzi USA",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Wayne Hoovestol",
+      "role": "chair",
+      "is_independent": false,
+      "age": 63,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Chairman of the Board of Green Plains Inc. since October 2008, having previously served as the company's CEO from February 2007 to December 2008 and Chief Strategy Officer from March 2009 to November 2009. He also operates Hoovestol Inc., a trucking company, and is President of Lone Mountain Truck Leasing, which he founded in 2005.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Green Plains Inc.",
+        "Hoovestol Inc.",
+        "Lone Mountain Truck Leasing"
+      ]
+    },
+    {
+      "name": "Ejnar Knudsen",
+      "role": "director",
+      "is_independent": false,
+      "age": 53,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Founder and CEO of AGR Partners, overseeing investments totaling over $400 million in food processors, manufacturers and agribusinesses. Previously served as co-portfolio manager of Passport Capital's Agriculture Fund from 2009 to 2012, as EVP of Western Milling, and spent 10 years with Rabobank managing loan portfolios and venture capital investments.",
+      "other_public_boards": [
+        "Ridley Corporation Limited"
+      ],
+      "prior_employers_named": [
+        "Passport Capital",
+        "Western Milling",
+        "Rabobank"
+      ]
+    },
+    {
+      "name": "Kimberly Wagner",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Founder of TBGD Partners, a boutique firm providing expertise to early and mid-stage ventures in agribusiness, food/nutrition and life sciences. Former Venture Partner at Flagship Pioneering and President and COO of CiBO Technologies, and previously a Partner at McKinsey & Co. and Senior Partner and Managing Director at The Boston Consulting Group, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Flagship Pioneering",
+        "CiBO Technologies",
+        "McKinsey & Co.",
+        "The Boston Consulting Group, Inc."
+      ]
+    },
+    {
+      "name": "Todd Becker",
+      "role": "director",
+      "is_independent": false,
+      "age": 56,
+      "tenure_years_on_board": 13,
+      "bio_summary": "President and Chief Executive Officer of Green Plains Inc. since January 2009, and also serves as President, CEO and director of the general partner of Green Plains Partners LP since March 2015. Previously served as CEO of VBV LLC from May 2007 to October 2008, as Executive Vice President of Sales and Trading at Global Ethanol, and worked ten years at ConAgra Foods, Inc. in various management positions.",
+      "other_public_boards": [
+        "Green Plains Partners LP"
+      ],
+      "prior_employers_named": [
+        "VBV LLC",
+        "Global Ethanol",
+        "ConAgra Foods, Inc."
+      ]
+    },
+    {
+      "name": "Brian Peterson",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 17,
+      "bio_summary": "President and Chief Executive Officer of Whiskey Creek Enterprises, previously served as Green Plains' Executive Vice President in charge of site development from 2005 to October 2008. He was the sole founder and owner of Superior Ethanol LLC, which was acquired by Green Plains in 2006, and has owned and operated grain farming entities for over twenty years.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Green Plains Inc.",
+        "Superior Ethanol LLC"
+      ]
+    },
+    {
+      "name": "Alain Treuer",
+      "role": "director",
+      "is_independent": true,
+      "age": 49,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Co-Founder of VBV LLC, a joint venture formed in 2006 to develop and expand ethanol production in the U.S. that merged with Green Plains in 2008. He is also Co-Founder and Executive Chairman of Local Ocean France, Chairman of Trivon AG, and Chairman and CEO of Tellac Reuert Partners (TRP SA), a global investment firm, since 2005. He previously founded and sold TIGC, a global telecommunications company, in 2001.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "VBV LLC",
+        "TIGC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Executive officers section was not included in the provided proxy text. Director tenure years were calculated based on 'Director Since' year subtracted from 2022. Independence for Ejnar Knudsen was noted as non-independent per the proxy's explicit statement that Hoovestol and Knudsen do not meet independence requirements. Other public boards for Farha Aslam include only those listed under 'Current Public Company Directorships'; PSSI and Saffron Road mentioned in her Background section were excluded as they appear to be private companies. All other public company directorships were captured as stated.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:01:46.497763Z",
+    "filing_meta": {
+      "ticker": "GPRE",
+      "form": "DEF 14A",
+      "filing_date": "2022-03-25",
+      "accession": "000120677422000867",
+      "primary_doc": "gpre4008721-def14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14393,
+    "output_tokens": 2135,
+    "cost_usd": 0.0752,
+    "elapsed_sec": 38.4
+  }
+}

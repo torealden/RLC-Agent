@@ -1,0 +1,152 @@
+{
+  "filing_metadata": {
+    "company_ticker": "DAR",
+    "company_name": "Darling Ingredients Inc.",
+    "fiscal_year_disclosed": 2025,
+    "filing_date": "2025-03-20"
+  },
+  "directors": [
+    {
+      "name": "Randall C. Stuewe",
+      "role": "chair",
+      "is_independent": false,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Randall C. Stuewe serves as Chairman of the Board and Chief Executive Officer of Darling Ingredients Inc. He holds the combined role of Chairman and CEO pursuant to his employment agreement, subject to continued election by stockholders.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Gary W. Mize",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Gary W. Mize serves as the independent Lead Director of Darling Ingredients Inc., elected annually by the independent members of the Board. He chairs the nominating and corporate governance committee and actively engages with the CEO and other members of management.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Charles Adair",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Charles Adair is an independent director who chairs the audit committee and also serves on the nominating and corporate governance committee. He has been designated as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Beth Albright",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Beth Albright is an independent director serving on the audit committee and the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Larry A. Barden",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Larry A. Barden is an independent director serving on the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Celeste A. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Celeste A. Clark is an independent director serving on the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Linda Goodspeed",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Linda Goodspeed is an independent director who chairs the compensation committee and also serves on the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Enderson Guimaraes",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Enderson Guimaraes is an independent director serving on the audit committee and the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Randy L. Hill",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Randy L. Hill is an independent director serving on the audit committee and has been designated as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Michael E. Rescoe",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Michael E. Rescoe is an independent director who served during the fiscal year ended December 28, 2024.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Kurt Stoffel",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Kurt Stoffel is an independent director serving on the audit committee and has been designated as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Soren Schroder",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Soren Schroder was appointed to the Board in February 2025 and serves on the audit committee and the compensation committee. He has been determined to meet the independence requirements of the NYSE and the SEC.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "medium",
+  "extraction_notes": "The provided proxy text excerpt covers corporate governance sections but does not include full director bios, ages, tenure, or executive officer listings. Director roles were inferred from committee membership and leadership structure descriptions. No age, tenure, or prior employer data was available in the provided text. Michael E. Rescoe's committee memberships were not specified in the excerpt beyond his independence determination. Executive officers section could not be populated as that portion of the proxy was not included in the provided text.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:59:20.054565Z",
+    "filing_meta": {
+      "ticker": "DAR",
+      "form": "DEF 14A",
+      "filing_date": "2025-03-20",
+      "accession": "000119312525058955",
+      "primary_doc": "d855268ddef14a.htm",
+      "section_chars_used": 29537
+    },
+    "input_tokens": 6207,
+    "output_tokens": 1584,
+    "cost_usd": 0.0424,
+    "elapsed_sec": 21.4
+  }
+}

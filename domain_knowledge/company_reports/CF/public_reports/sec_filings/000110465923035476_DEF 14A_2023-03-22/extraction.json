@@ -1,0 +1,198 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CF",
+    "company_name": "CF Industries Holdings, Inc.",
+    "fiscal_year_disclosed": 2023,
+    "filing_date": "2023-03-22"
+  },
+  "directors": [
+    {
+      "name": "Javed Ahmed",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Former CEO of Tate & Lyle PLC (2009\u20132018), a global food and beverage ingredients provider. Previously held senior roles at Benckiser NV/Reckitt Benckiser Group plc for 17 years, and began his career at The Procter & Gamble Company before spending five years at Bain & Co.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tate & Lyle PLC",
+        "Benckiser NV",
+        "Reckitt Benckiser Group plc",
+        "The Procter & Gamble Company",
+        "Bain & Co."
+      ]
+    },
+    {
+      "name": "Robert C. Arzbaecher",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 18,
+      "bio_summary": "Former CEO of Actuant Corporation (2000\u20132014) and interim president and CEO (2015\u20132016), a diversified industrial manufacturer. Previously held financial positions at Applied Power, Inc., Grabill Aerospace Industries Ltd., Farley Industries Inc., and Grant Thornton LLP; is a certified public accountant.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Actuant Corporation",
+        "Applied Power, Inc.",
+        "Grabill Aerospace Industries Ltd.",
+        "Farley Industries Inc.",
+        "Grant Thornton LLP"
+      ]
+    },
+    {
+      "name": "Deborah L. DeHaas",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Retired vice chairman and managing partner of the Center for Board Effectiveness at Deloitte after 18 years, having served in numerous leadership roles including first chief inclusion officer and regional managing partner. Since November 2020, she has served as CEO of Corporate Leadership Center; she is also a certified public accountant and previously was a partner at Arthur Andersen LLP.",
+      "other_public_boards": [
+        "Dover Corporation"
+      ],
+      "prior_employers_named": [
+        "Deloitte",
+        "Arthur Andersen LLP",
+        "Corporate Leadership Center"
+      ]
+    },
+    {
+      "name": "John W. Eaves",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Executive chairman of Arch Resources, Inc. (formerly Arch Coal) and former president and CEO (2012\u20132020), with more than 30 years in the coal industry. Earlier in his career he held positions at Diamond Shamrock Coal Company and Natomas Coal Company.",
+      "other_public_boards": [
+        "Arch Resources, Inc."
+      ],
+      "prior_employers_named": [
+        "Arch Resources, Inc.",
+        "Diamond Shamrock Coal Company",
+        "Natomas Coal Company"
+      ]
+    },
+    {
+      "name": "Stephen J. Hagge",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Former president and CEO of AptarGroup, Inc. (2012\u20132017), a global dispensing systems supplier, and also served as its CFO and COO. He currently serves as a director of Crown Holdings, Inc. and became CF Industries' Board chair and lead independent director effective January 1, 2022.",
+      "other_public_boards": [
+        "Crown Holdings, Inc."
+      ],
+      "prior_employers_named": [
+        "AptarGroup, Inc."
+      ]
+    },
+    {
+      "name": "Jesus Madrazo",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Former executive vice president of public affairs and sustainability of Bayer AG's Crop Science division (2018\u20132019) and prior to that held numerous leadership positions during 19 years at Monsanto Company, including EVP of operations across multiple global regions. He is also founder and chairman of Kompali Farms, a wine venture in Mexico.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Bayer AG",
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Anne P. Noonan",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 8,
+      "bio_summary": "President and CEO of Summit Materials, Inc. since September 2020, a vertically integrated construction materials company. Previously served as president and CEO of OMNOVA Solutions Inc. (2016\u20132020) and held executive positions at Chemtura Corporation for nearly 27 years.",
+      "other_public_boards": [
+        "Summit Materials, Inc."
+      ],
+      "prior_employers_named": [
+        "Summit Materials, Inc.",
+        "OMNOVA Solutions Inc.",
+        "Chemtura Corporation"
+      ]
+    },
+    {
+      "name": "Michael J. Toelle",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Owner of T & T Farms, a diversified farming company, and a member of the board of Nationwide Mutual Insurance Company since 2013. He is a former board chairman and longtime board member of CHS Inc., a diversified global agribusiness cooperative.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "CHS Inc.",
+        "Cenex, Inc."
+      ]
+    },
+    {
+      "name": "Theresa E. Wagler",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": 9,
+      "bio_summary": "CFO and executive vice president of Steel Dynamics, Inc. since 2007 and 2009 respectively, one of the largest U.S. steel producers, where she also oversees IT, cybersecurity, HR, and ESG initiatives. Prior to Steel Dynamics, she served as assistant corporate controller for Fort Wayne National Bank and as a CPA with Ernst & Young LLP.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Steel Dynamics, Inc.",
+        "Fort Wayne National Bank",
+        "Ernst & Young LLP"
+      ]
+    },
+    {
+      "name": "Celso L. White",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Former global chief supply chain officer at Molson Coors Brewing Company (2013\u20132019), responsible for all aspects of the supply chain worldwide. Prior to Molson Coors, he was Pepsi Cola's VP and general manager of Concentrate Operations for the Americas and parts of Asia (2004\u20132010), and in 2020 co-founded Igniting Business Growth LLC.",
+      "other_public_boards": [
+        "Armada Acquisition Corp. I"
+      ],
+      "prior_employers_named": [
+        "Molson Coors Brewing Company",
+        "Pepsi Cola"
+      ]
+    },
+    {
+      "name": "W. Anthony Will",
+      "role": "director",
+      "is_independent": false,
+      "age": 57,
+      "tenure_years_on_board": 9,
+      "bio_summary": "President and CEO of CF Industries since January 2014, having previously served in various senior roles at CF Industries including SVP of manufacturing and distribution. Before joining CF Industries, he was a partner at Accenture Ltd. and held VP roles at Sears, Roebuck and Co. and Fort James Corporation, and was a manager at Boston Consulting Group.",
+      "other_public_boards": [
+        "Olin Corporation"
+      ],
+      "prior_employers_named": [
+        "Accenture Ltd.",
+        "Sears, Roebuck and Co.",
+        "Fort James Corporation",
+        "Boston Consulting Group"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All eleven director nominees were identified from the proxy's Director Nominee Biographies section. Tenure years were calculated based on 'Director Since' year subtracted from 2023. The proxy text provided did not include a separate executive officers section in the supplied text, so that array is empty. Stephen J. Hagge is listed as both chair and lead independent director per the proxy; role is normalized to 'lead_independent' as the proxy states the independent chair also serves as lead independent director. Armada Acquisition Corp. I is listed as a public-company board for Celso L. White based on the proxy's description, though it is a SPAC/acquisition company. For Javed Ahmed, Tate & Lyle PLC directorship ended in 2018, so it is not included as a current public board.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:51:09.932004Z",
+    "filing_meta": {
+      "ticker": "CF",
+      "form": "DEF 14A",
+      "filing_date": "2023-03-22",
+      "accession": "000110465923035476",
+      "primary_doc": "tm231975d4_def14a.htm",
+      "section_chars_used": 49042
+    },
+    "input_tokens": 10709,
+    "output_tokens": 2456,
+    "cost_usd": 0.069,
+    "elapsed_sec": 37.6
+  }
+}

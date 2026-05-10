@@ -1,0 +1,38 @@
+{
+  "filing_metadata": {
+    "company_ticker": "IPI",
+    "company_name": "Intrepid Potash, Inc.",
+    "fiscal_year_disclosed": 2020,
+    "filing_date": "2020-06-30"
+  },
+  "directors": [],
+  "executive_officers": [
+    {
+      "name": "Kyle R. Smith",
+      "title": "Vice President, General Counsel and Secretary",
+      "tenure_years": null,
+      "prior_employers_named": []
+    }
+  ],
+  "extraction_confidence": "low",
+  "extraction_notes": "This DEF 14A is a Special Meeting proxy statement focused solely on a reverse stock split and authorized shares reduction. It does not contain a director biography section or a board of directors roster. No director names, ages, tenures, independence status, or biographical information are disclosed in the provided text. The only named individual is Kyle R. Smith, identified as VP, General Counsel and Secretary who signed the proxy. The directors array is therefore empty.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:12:34.199769Z",
+    "filing_meta": {
+      "ticker": "IPI",
+      "form": "DEF 14A",
+      "filing_date": "2020-06-30",
+      "accession": "000114036120015110",
+      "primary_doc": "nc10012412x3_def14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14135,
+    "output_tokens": 257,
+    "cost_usd": 0.0463,
+    "elapsed_sec": 6.6
+  }
+}

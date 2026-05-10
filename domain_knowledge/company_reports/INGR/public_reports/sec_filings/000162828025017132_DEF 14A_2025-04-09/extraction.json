@@ -1,0 +1,190 @@
+{
+  "filing_metadata": {
+    "company_ticker": "INGR",
+    "company_name": "Ingredion Incorporated",
+    "fiscal_year_disclosed": 2025,
+    "filing_date": "2025-04-09"
+  },
+  "directors": [
+    {
+      "name": "David B. Fischer",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Mr. Fischer served as CEO and director of Greif, Inc. from November 2011 to October 2015, and as President from October 2007 to October 2015. He also serves as chairman and co-founder of 10x Engineered Materials LLC and chairman of Flexible Products and Services. He currently serves as a director of Balchem Corporation, a publicly traded manufacturer.",
+      "other_public_boards": [
+        "Balchem Corporation"
+      ],
+      "prior_employers_named": [
+        "Greif, Inc."
+      ]
+    },
+    {
+      "name": "Rhonda L. Jordan",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Ms. Jordan served as President, Global Health & Wellness, and Sustainability of Kraft Foods Inc. from September 2009 to March 2012, and previously held roles as President of Kraft's Cheese and Dairy and Grocery business units. She currently serves as a director of ESAB Corporation and is lead director of Bush Brothers & Company (private).",
+      "other_public_boards": [
+        "ESAB Corporation"
+      ],
+      "prior_employers_named": [
+        "Kraft Foods Inc."
+      ]
+    },
+    {
+      "name": "Gregory B. Kenny",
+      "role": "chair",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 20,
+      "bio_summary": "Mr. Kenny served as President and CEO of General Cable Corporation from August 2001 to June 2015. He is the non-executive Chairman of Cardinal Health, Inc. and previously served as a director of AK Steel Holding Corporation and the Cincinnati Branch of the Federal Reserve Bank of Cleveland, among others.",
+      "other_public_boards": [
+        "Cardinal Health, Inc."
+      ],
+      "prior_employers_named": [
+        "General Cable Corporation"
+      ]
+    },
+    {
+      "name": "Charles V. Magro",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Magro currently serves as CEO and director of Corteva Agriscience since November 2021. Prior to that, he served as President and CEO of Nutrien Ltd. from January 2018 to April 2021, and as a self-employed consultant from April 2021 to November 2021.",
+      "other_public_boards": [
+        "Corteva Agriscience"
+      ],
+      "prior_employers_named": [
+        "Nutrien Ltd."
+      ]
+    },
+    {
+      "name": "Victoria J. Reich",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Ms. Reich served as Senior Vice President and CFO of Essendant Inc. (formerly United Stationers Inc.) from June 2007 to July 2011. She currently serves as a director of H&R Block, Inc. and Ecolab Inc., chairing the audit committee of H&R Block.",
+      "other_public_boards": [
+        "H&R Block, Inc.",
+        "Ecolab Inc."
+      ],
+      "prior_employers_named": [
+        "Essendant Inc."
+      ]
+    },
+    {
+      "name": "Catherine A. Suever",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Ms. Suever served as Executive Vice President - Finance and Administration and CFO of Parker-Hannifin Corporation from April 2017 until her retirement in December 2020. She currently serves as a director and audit committee member of Hexcel Corporation.",
+      "other_public_boards": [
+        "Hexcel Corporation"
+      ],
+      "prior_employers_named": [
+        "Parker-Hannifin Corporation"
+      ]
+    },
+    {
+      "name": "Stephan B. Tanda",
+      "role": "director",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. Tanda has served as President and CEO and director of AptarGroup, Inc. since February 2017. He previously served as a director of Patheon NV (until August 2017) and Semperit AG Holding (until February 2017).",
+      "other_public_boards": [
+        "AptarGroup, Inc."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Jorge A. Uribe",
+      "role": "director",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. Uribe served as Global Productivity and Organization Transformation Officer of The Procter & Gamble Company from December 2012 to July 2015, and spent more than 33 years with Procter & Gamble in various international roles. He currently serves as a director of General Mills, Inc. and Grupo Argos, S.A.",
+      "other_public_boards": [
+        "General Mills, Inc.",
+        "Grupo Argos, S.A."
+      ],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Patricia Verduin",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Dr. Verduin served as Chief Technology Officer, Global Technology, for Colgate-Palmolive Company from February 2009 to January 2023. She currently serves as a director of Avient Corporation and FMC Corporation.",
+      "other_public_boards": [
+        "Avient Corporation",
+        "FMC Corporation"
+      ],
+      "prior_employers_named": [
+        "Colgate-Palmolive Company"
+      ]
+    },
+    {
+      "name": "Dwayne A. Wilson",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Mr. Wilson served as Senior Vice President of Fluor Corporation from June 2014 to June 2016, and previously as President and CEO of Savannah River Nuclear Solutions, LLC from October 2011 to June 2014. He currently serves as a director of Crown Holdings, Inc., DT Midstream, Inc., and Sterling Construction Company, Inc.",
+      "other_public_boards": [
+        "Crown Holdings, Inc.",
+        "DT Midstream, Inc.",
+        "Sterling Construction Company, Inc."
+      ],
+      "prior_employers_named": [
+        "Fluor Corporation",
+        "Savannah River Nuclear Solutions, LLC"
+      ]
+    },
+    {
+      "name": "James P. Zallie",
+      "role": "director",
+      "is_independent": false,
+      "age": 63,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. Zallie has served as President and CEO of Ingredion since January 1, 2018, having held various executive roles at Ingredion since 2010. He previously served as President and CEO of National Starch LLC from January 2007 to September 2010 before its acquisition by Ingredion. He currently serves as a director of Sylvamo Corporation.",
+      "other_public_boards": [
+        "Sylvamo Corporation"
+      ],
+      "prior_employers_named": [
+        "National Starch LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director tenure calculated from director-since dates to 2025 (the record date year). Executive officers section was not included in the provided proxy text excerpt, so that array is empty. Grupo Argos, S.A. is listed as a Colombian multi-national holding company; its exchange listing status is not explicitly stated as NYSE/public in the bio, but it is described in context with other public company boards and is a publicly traded company on the Colombian Stock Exchange, so it is included. All other public board memberships are explicitly described as NYSE-listed or publicly traded.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:12:01.984985Z",
+    "filing_meta": {
+      "ticker": "INGR",
+      "form": "DEF 14A",
+      "filing_date": "2025-04-09",
+      "accession": "000162828025017132",
+      "primary_doc": "ingr-20250403.htm",
+      "section_chars_used": 42876
+    },
+    "input_tokens": 10564,
+    "output_tokens": 2151,
+    "cost_usd": 0.064,
+    "elapsed_sec": 30.5
+  }
+}

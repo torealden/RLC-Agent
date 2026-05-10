@@ -1,0 +1,221 @@
+{
+  "filing_metadata": {
+    "company_ticker": "TSN",
+    "company_name": "Tyson Foods, Inc.",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2023-12-21"
+  },
+  "directors": [
+    {
+      "name": "John H. Tyson",
+      "role": "chair",
+      "is_independent": false,
+      "age": 70,
+      "tenure_years_on_board": 39,
+      "bio_summary": "John H. Tyson has been Chairman of the Board since 1998 and served as CEO from 2000 to 2006. He has devoted his professional career to Tyson Foods and has been a Board member since 1984. He also has a substantial personal interest in the Company through his association with the Tyson Limited Partnership.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Les R. Baledge",
+      "role": "director",
+      "is_independent": false,
+      "age": 66,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Les R. Baledge is a private investor who served as Executive Vice President and General Counsel of Tyson Foods from 1999 to 2004. Prior to joining Tyson, he practiced corporate and finance law advising private and public entities. He has been a Board member since February 2020 but lost independent status on November 16, 2023 upon appointment as a trustee of the Donald J. Tyson Revocable Trust.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tyson Foods"
+      ]
+    },
+    {
+      "name": "Mike Beebe",
+      "role": "director",
+      "is_independent": true,
+      "age": 76,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mike Beebe currently serves on the Governors' Council of the Bipartisan Policy Center. He previously served as Governor of Arkansas from 2007 to 2015 and as the state's Attorney General from 2003 to 2007. The Board waived the Retirement Age By-law for his nomination.",
+      "other_public_boards": [
+        "Home BancShares, Inc."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Maria Claudia Borras",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Maria Claudia Borras is Executive Vice President, Oilfield Services & Equipment, at Baker Hughes Company, a position she has held since 2017. Prior to that she served as Chief Commercial Officer for GE Oil & Gas, and before 2015 held various executive roles at Baker Hughes Incorporated since 1994. She has been a Board member since February 2021.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Baker Hughes Company",
+        "GE Oil & Gas",
+        "Baker Hughes Incorporated"
+      ]
+    },
+    {
+      "name": "David J. Bronczek",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 3,
+      "bio_summary": "David J. Bronczek previously served as President and Chief Operating Officer of FedEx Corporation until his retirement in 2019, having worked at FedEx for more than 40 years. He served for 17 years as President and CEO of FedEx Express. He has been a Board member since May 2020.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "FedEx Corporation",
+        "FedEx Express"
+      ]
+    },
+    {
+      "name": "Mikel A. Durham",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mikel A. Durham most recently served as CEO of American Seafoods until February 2022, and has over 25 years of business experience with 20 years in food and beverages. She has previously held executive roles at PepsiCo, Cadbury Schweppes, and Diageo. She has been a Board member since 2015.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "American Seafoods",
+        "PepsiCo",
+        "Cadbury Schweppes",
+        "Diageo"
+      ]
+    },
+    {
+      "name": "Donnie King",
+      "role": "director",
+      "is_independent": false,
+      "age": 61,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Donnie King has served as President and Chief Executive Officer of Tyson Foods since June 2021, after serving as Chief Operating Officer and in other senior roles. He was initially employed by Valmac Industries in 1982, which was acquired by Tyson Foods in 1984, and was self-employed from 2017 to 2019 before returning. He has been a Board member since 2022.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Valmac Industries"
+      ]
+    },
+    {
+      "name": "Jonathan D. Mariner",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Jonathan D. Mariner is founder and president of TaxDay, LLC, and previously served as Chief Administrative Officer of Enjoy Technologies and as Head of Regional Sports Networks for Walt Disney Company on an interim basis in 2019. He spent much of his career in professional sports, including as EVP and CFO of Major League Baseball from 2002 to 2014. He has been a Board member since 2019.",
+      "other_public_boards": [
+        "Rocket Companies, Inc.",
+        "Five9"
+      ],
+      "prior_employers_named": [
+        "Enjoy Technologies",
+        "Walt Disney Company",
+        "Major League Baseball",
+        "Florida Marlins Baseball Club",
+        "Florida Panthers Hockey Club"
+      ]
+    },
+    {
+      "name": "Kevin M. McNamara",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Kevin M. McNamara is the founding principal of McNamara Family Ventures, a family investment office focused on health care companies. He previously served as CEO of SignifyHealth from 2015 to June 2018 and as a director there until March 2023. He has been a Board member since 2007 and Lead Independent Director since September 2019.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "SignifyHealth"
+      ]
+    },
+    {
+      "name": "Cheryl S. Miller",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Cheryl S. Miller most recently served as CFO of West Marine from January 2022 to October 2022, and previously as EVP and CFO of JM Family Enterprises. She also served as President and CEO of AutoNation, Inc. from July 2019 to April 2020, having previously been its EVP and CFO since 2014. She has been a Board member since 2016.",
+      "other_public_boards": [
+        "Celsius Holdings"
+      ],
+      "prior_employers_named": [
+        "West Marine",
+        "JM Family Enterprises",
+        "AutoNation, Inc."
+      ]
+    },
+    {
+      "name": "Kate B. Quinn",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": null,
+      "bio_summary": "Kate B. Quinn has been Vice Chair and Chief Administrative Officer of U.S. Bancorp since 2017, having joined in 2013. Prior to U.S. Bancorp, she served as SVP and Chief Marketing Officer at Anthem and previously held leadership roles at The Hartford, CIGNA, and PacifiCare Health Systems. She is a new director nominee and not yet serving on the Board.",
+      "other_public_boards": [
+        "Rite Aid"
+      ],
+      "prior_employers_named": [
+        "U.S. Bancorp",
+        "Anthem",
+        "The Hartford",
+        "CIGNA",
+        "PacifiCare Health Systems"
+      ]
+    },
+    {
+      "name": "Jeffrey K. Schomburger",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Jeffrey K. Schomburger retired as Global Sales Officer for The Procter & Gamble Company in 2019, having held that position since 2015. He joined P&G in 1984 and held numerous leadership positions, including President of P&G's global Walmart team from 2005 to 2015. He has been a Board member since 2016.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Barbara A. Tyson",
+      "role": "director",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 35,
+      "bio_summary": "Barbara A. Tyson served as Vice President of Tyson Foods until 2002, when she retired and became a consultant to the Company until 2011. She has been a Board member since 1988 and has a substantial personal interest in the Company as sole income beneficiary of the BT 2015 Fund. The Board waived the Retirement Age By-law for her nomination.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tyson Foods"
+      ]
+    },
+    {
+      "name": "Noel White",
+      "role": "executive_chair",
+      "is_independent": false,
+      "age": 65,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Noel White has served as Executive Vice Chairman of the Board since October 2020, prior to which he served as CEO from September 2018 to October 2020 and as President from September 2018 to December 2019. He has more than 40 years of experience in the food industry with Tyson Foods and IBP, inc., which was acquired by the Company in 2001. He has been a Board member since October 2018.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "IBP, inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated from Director Since year to fiscal year 2023 (annual meeting year 2024). Kate B. Quinn is a new nominee not yet serving on the Board, so tenure_years_on_board is null. Noel White's role is listed as Executive Vice Chairman; mapped to executive_chair as closest match. Mr. Baledge's independence changed to non-independent on November 16, 2023. The proxy text provided did not include an executive officers section, so executive_officers is empty. Jonathan Mariner's role as Audit Committee Chairperson is reflected in his role field. David Bronczek's board service at Yellowstone Acquisition Group appears to be a past or private/SPAC directorship and is excluded from other_public_boards. Marine Stewardship Council (Durham) appears to be a non-public organization and is excluded.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:23:01.835959Z",
+    "filing_meta": {
+      "ticker": "TSN",
+      "form": "DEF 14A",
+      "filing_date": "2023-12-21",
+      "accession": "000010049323000136",
+      "primary_doc": "tsn-20231221.htm",
+      "section_chars_used": 30361
+    },
+    "input_tokens": 7252,
+    "output_tokens": 2897,
+    "cost_usd": 0.0652,
+    "elapsed_sec": 49.6
+  }
+}

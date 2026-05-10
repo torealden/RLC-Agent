@@ -1,0 +1,222 @@
+{
+  "filing_metadata": {
+    "company_ticker": "HRL",
+    "company_name": "Hormel Foods Corporation",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2023-12-20"
+  },
+  "directors": [
+    {
+      "name": "Prama Bhatt",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Ms. Bhatt is Chief Digital Officer of Ulta Beauty, Inc., having held that role since December 2019. She previously served as Vice President, eCommerce at Kenneth Cole Productions and held various management positions at Toys 'R' Us. Her prior experience includes management consulting at Booz Allen Hamilton and roles at Ford Motor Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ulta Beauty, Inc.",
+        "Kenneth Cole Productions, Inc.",
+        "Toys \"R\" Us, Inc.",
+        "Booz Allen Hamilton, Inc.",
+        "Ford Motor Company"
+      ]
+    },
+    {
+      "name": "Gary C. Bhojwani",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Mr. Bhojwani is CEO of CNO Financial Group, Inc. since January 2018, previously serving as its President. He was Chairman and CEO of Allianz Life Insurance Company of North America and has held executive roles at Fireman's Fund Insurance Company, Lincoln General Insurance Company, and Avalon Risk Management.",
+      "other_public_boards": [
+        "CNO Financial Group, Inc."
+      ],
+      "prior_employers_named": [
+        "CNO Financial Group, Inc.",
+        "Allianz Life Insurance Company of North America",
+        "Allianz SE",
+        "Fireman's Fund Insurance Company",
+        "Lincoln General Insurance Company",
+        "Avalon Risk Management",
+        "Trade Insurance Services"
+      ]
+    },
+    {
+      "name": "Stephen M. Lacy",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Mr. Lacy retired from Meredith Corporation in November 2020, having served as Chairman of the Board and CEO, among other roles dating back to 1998. He currently serves on the board of First Interstate BancSystem, Inc.",
+      "other_public_boards": [
+        "First Interstate BancSystem, Inc."
+      ],
+      "prior_employers_named": [
+        "Meredith Corporation"
+      ]
+    },
+    {
+      "name": "Elsa A. Murano, Ph.D.",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Dr. Murano serves as Director of the Norman Borlaug Institute for International Agriculture at Texas A&M AgriLife and is President Emerita of Texas A&M University. She previously served as Undersecretary for Food Safety at the U.S. Department of Agriculture from 2001 to 2004.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Texas A&M University",
+        "U.S. Department of Agriculture"
+      ]
+    },
+    {
+      "name": "William A. Newlands",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Newlands is President and CEO of Constellation Brands, Inc. since March 2019, having previously served in various executive roles at Constellation Brands. He was Senior Vice President and President, North America at Beam Inc. and Beam Global Spirits & Wine.",
+      "other_public_boards": [
+        "Constellation Brands, Inc."
+      ],
+      "prior_employers_named": [
+        "Constellation Brands, Inc.",
+        "Beam Inc.",
+        "Beam Global Spirits & Wine, Inc."
+      ]
+    },
+    {
+      "name": "Christopher J. Policinski",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. Policinski is CEO of CJP Leadership Partners, LLC since February 2021, and previously served as CEO of VitaKey, Inc. and as President and CEO of Land O'Lakes, Inc. from 2005 to 2018. His prior experience includes management positions at Kraft General Foods Corporation, Bristol-Myers Squibb Co., and Pillsbury Company.",
+      "other_public_boards": [
+        "Xcel Energy, Inc."
+      ],
+      "prior_employers_named": [
+        "CJP Leadership Partners, LLC",
+        "VitaKey, Inc.",
+        "Land O'Lakes, Inc.",
+        "Kraft General Foods Corporation",
+        "Bristol-Myers Squibb Co.",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Jose Luis Prado",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Prado is Executive Chairman of Palmex Alimentos and Chairman and interim CEO of Tropicale Foods, LLC. He previously served as Chairman and CEO of Evans Food Group Ltd. and held various senior roles at PepsiCo, Inc., including President of Quaker Oats North America.",
+      "other_public_boards": [
+        "Northern Trust Corporation"
+      ],
+      "prior_employers_named": [
+        "Palmex Alimentos, S.A. de C.V.",
+        "Tropicale Foods, LLC",
+        "Evans Food Group Ltd.",
+        "PepsiCo, Inc."
+      ]
+    },
+    {
+      "name": "Sally J. Smith",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Ms. Smith retired from Buffalo Wild Wings, Inc. in February 2018, where she served as President and CEO from 1996 to 2018. She previously served as CFO and Controller at Dahlberg, Inc. and began her career at KPMG LLP.",
+      "other_public_boards": [
+        "Digi International Inc."
+      ],
+      "prior_employers_named": [
+        "Buffalo Wild Wings, Inc.",
+        "Dahlberg, Inc.",
+        "KPMG LLP"
+      ]
+    },
+    {
+      "name": "James P. Snee",
+      "role": "chair",
+      "is_independent": false,
+      "age": 56,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. Snee is Chairman of the Board, President and CEO of Hormel Foods Corporation since November 2017, having held various executive roles at the Company over a 34-year career. He previously served as President and CEO, President and COO, and Group Vice President of Hormel Foods International Corporation.",
+      "other_public_boards": [
+        "Republic Services, Inc."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Steven A. White",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Mr. White is President, Special Counsel to CEO Comcast Cable at Comcast Corporation since December 2020, having previously served as President of Comcast West Division from 2009 to 2020. He also held regional vice president roles at AT&T Broadband and Telecommunications, Inc., and earlier marketing positions at Colgate-Palmolive Company.",
+      "other_public_boards": [
+        "W.W. Grainger, Inc."
+      ],
+      "prior_employers_named": [
+        "Comcast Corporation",
+        "AT&T Broadband, LLC",
+        "Telecommunications, Inc.",
+        "Colgate-Palmolive Company"
+      ]
+    },
+    {
+      "name": "Raymond G. Young",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Young retired from Archer-Daniels-Midland Company in December 2022, having served as Vice Chairman and CFO. Prior to ADM, he spent over 20 years at General Motors Company, serving as CFO and President of the Mercosur Region of South America.",
+      "other_public_boards": [
+        "International Paper Company",
+        "Marsh & McLennan Companies, Inc."
+      ],
+      "prior_employers_named": [
+        "Archer-Daniels-Midland Company",
+        "General Motors Company"
+      ]
+    },
+    {
+      "name": "Michael P. Zechmeister",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Zechmeister is CFO of C.H. Robinson Worldwide, Inc. since September 2019, and previously served as CFO of United Natural Foods, Inc. from 2015 to 2019. He spent 25 years at General Mills, Inc. in various finance executive roles.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "C.H. Robinson Worldwide, Inc.",
+        "United Natural Foods, Inc.",
+        "General Mills, Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years for Young and Zechmeister are recorded as 0 since they joined the Board in March 2023 (less than one full year). Sally J. Smith is listed as Audit Committee Chair in the Audit Committee Report signature block; Gary C. Bhojwani is listed as Audit Committee Chair in the committee membership table from March 27, 2023 onward \u2014 both are noted as audit_committee_chair; Smith's role is assigned as audit_committee_chair based on her signing the Audit Committee report. Bhojwani is assigned audit_committee_chair based on the committee table. To avoid duplication, Smith is assigned audit_committee_chair and Bhojwani is also assigned audit_committee_chair as both held that role. No executive officer section was present in the provided text. The filing covers the annual meeting to be held in January/February 2024 for fiscal year 2023; fiscal_year_disclosed is set to 2024 as that is the year of the annual meeting.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:07:37.151928Z",
+    "filing_meta": {
+      "ticker": "HRL",
+      "form": "DEF 14A",
+      "filing_date": "2023-12-20",
+      "accession": "000110465923127508",
+      "primary_doc": "tm2328093d4_def14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14927,
+    "output_tokens": 2771,
+    "cost_usd": 0.0863,
+    "elapsed_sec": 37.8
+  }
+}

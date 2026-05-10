@@ -1,0 +1,118 @@
+{
+  "filing_metadata": {
+    "company_ticker": "IPI",
+    "company_name": "Intrepid Potash, Inc.",
+    "fiscal_year_disclosed": 2023,
+    "filing_date": "2023-04-05"
+  },
+  "directors": [
+    {
+      "name": "Robert P. Jornayvaz III",
+      "role": "executive_chair",
+      "is_independent": false,
+      "age": 64,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Mr. Jornayvaz has served as Executive Chairman of the Board since 2010 and CEO since 2014, having led the company since its formation in 2007. He is the sole owner of Intrepid Production Corporation and together with IPC beneficially owns 18.9% of common stock. He has over 20 years in the potash mining industry and over 30 years in the oil and gas industry.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Intrepid Mining LLC"
+      ]
+    },
+    {
+      "name": "William M. Zisch",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Zisch is an independent consultant with over 40 years of experience in the mining and natural resources sector. He most recently served as Chief Operating Officer at Argonaut Gold from 2016 to 2019, and previously held roles as President and CEO of Midway Gold, VP of Operations at Royal Gold Inc., and various roles at Newmont Mining and FMC Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Argonaut Gold",
+        "Midway Gold",
+        "Royal Gold Inc.",
+        "Newmont Mining",
+        "FMC Company"
+      ]
+    },
+    {
+      "name": "Lori A. Lancaster",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Ms. Lancaster is a senior executive with nearly 20 years of experience in natural resources investment banking, having served as Managing Director at UBS Securities LLC, Goldman Sachs & Co., and Nomura Securities. She currently serves as an independent director for Vital Energy, Inc. and Precision Drilling Corporation.",
+      "other_public_boards": [
+        "Vital Energy, Inc.",
+        "Precision Drilling Corporation"
+      ],
+      "prior_employers_named": [
+        "UBS Securities LLC",
+        "Goldman, Sachs & Co.",
+        "Nomura Securities"
+      ]
+    },
+    {
+      "name": "Chris A. Elliott",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Mr. Elliott is the President and CEO of Mitigation Investment Holdings LLC and owner of Belle Prairie Investments LLC, both privately held companies. From 2007 to 2017 he was CEO of AgCoA, a privately held agriculture real estate company, and has over 25 years of experience in the agriculture industry.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "AgCoA"
+      ]
+    },
+    {
+      "name": "Mary E. McBride",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Ms. McBride is a senior banking executive with over 30 years of experience in commercial banking, most recently serving as President of CoBank, ACB from 2013 to 2016. Prior to CoBank, she worked for First Interstate Bank of Denver and the First National Bank of Boston.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "CoBank, ACB",
+        "First Interstate Bank of Denver",
+        "First National Bank of Boston"
+      ]
+    },
+    {
+      "name": "Barth E. Whitham",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Mr. Whitham has served as President and CEO of Enduring Resources, LLC, a privately held upstream energy company, since 2005. From 1991 to 2005 he served as President and COO of Westport Resources Corp., a publicly traded oil and gas company, and currently serves on the board of Ensign Energy Services Inc.",
+      "other_public_boards": [
+        "Ensign Energy Services Inc."
+      ],
+      "prior_employers_named": [
+        "Enduring Resources, LLC",
+        "Westport Resources Corp."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated from 'Director Since' year to 2023 annual meeting year. No executive officer section was included in the provided text beyond the CEO who also serves as a director. William Zisch's Colorado School of Mines Foundation Board of Governors is a non-public-company board and was excluded from other_public_boards.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:13:39.011701Z",
+    "filing_meta": {
+      "ticker": "IPI",
+      "form": "DEF 14A",
+      "filing_date": "2023-04-05",
+      "accession": "000114036123016755",
+      "primary_doc": "ny20007130x1_def14a.htm",
+      "section_chars_used": 15012
+    },
+    "input_tokens": 3973,
+    "output_tokens": 1341,
+    "cost_usd": 0.032,
+    "elapsed_sec": 23.6
+  }
+}

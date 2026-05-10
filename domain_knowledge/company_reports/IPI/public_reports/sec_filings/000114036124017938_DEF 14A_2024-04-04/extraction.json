@@ -1,0 +1,122 @@
+{
+  "filing_metadata": {
+    "company_ticker": "IPI",
+    "company_name": "Intrepid Potash, Inc.",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2024-04-04"
+  },
+  "directors": [
+    {
+      "name": "Chris A. Elliott",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Chris A. Elliott has over 30 years of business experience in the agricultural industry, including expertise in agricultural markets, regulatory processes, manufacturing, and real estate. He has served as President and CEO of Mitigation Investment Holdings LLC since 2018, a privately held environmental restoration investment company. Previously, he was CEO of AgCoA from 2007 through 2017, a privately held agricultural real estate company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Mitigation Investment Holdings LLC",
+        "AgCoA"
+      ]
+    },
+    {
+      "name": "Lori A. Lancaster",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Lori A. Lancaster is a former Managing Director at UBS Securities LLC with nearly 20 years of investment banking experience in natural resources and global energy industries, having executed over $60 billion in energy deals. She previously served as Managing Director at Nomura Securities and Goldman Sachs & Co. in their energy investment banking groups. Since 2017, she has served as an independent consultant and non-executive director to the energy sector.",
+      "other_public_boards": [
+        "Vital Energy, Inc.",
+        "Precision Drilling Corporation"
+      ],
+      "prior_employers_named": [
+        "UBS Securities LLC",
+        "Nomura Securities",
+        "Goldman Sachs & Co."
+      ]
+    },
+    {
+      "name": "Mary E. McBride",
+      "role": "director",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mary E. McBride is a senior banking executive with over 30 years of experience in commercial banking, including work with companies in agricultural production, fertilizer, and oil and gas industries. She served as President of CoBank, ACB from 2013 to 2016, having joined CoBank in 1993 and held numerous leadership roles. Prior to CoBank, she served at First Interstate Bank of Denver, N.A. and First National Bank of Boston.",
+      "other_public_boards": [
+        "Ellington Residential Mortgage REIT"
+      ],
+      "prior_employers_named": [
+        "CoBank, ACB",
+        "First Interstate Bank of Denver, N.A.",
+        "First National Bank of Boston"
+      ]
+    },
+    {
+      "name": "Barth E. Whitham",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Barth E. Whitham has over 30 years of experience in the energy, banking, and extractive resources industries. Since 2004, he has served as President, CEO, and board member of Enduring Resources, LLC, a privately held energy assets company. From 1991 to 2004, he served as President, COO, and board member of Westport Resources Corp., a publicly traded oil and gas exploration and production company.",
+      "other_public_boards": [
+        "Ensign Energy Services Inc."
+      ],
+      "prior_employers_named": [
+        "Enduring Resources, LLC",
+        "Westport Resources Corp."
+      ]
+    },
+    {
+      "name": "Robert P. Jornayvaz III",
+      "role": "executive_chair",
+      "is_independent": false,
+      "age": 65,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Robert P. Jornayvaz III has over 35 years of management experience, including over 24 years in the potash mining industry and over 40 years in oil, gas, and extractive commodities industries. He has served as Executive Chairman of the Board since 2010 and as Chief Executive Officer since August 2014. He previously served as Chairman and CEO from 2008 to 2010 and as President from 2014 to August 2021, and was a manager of the predecessor company Intrepid Mining LLC from 2000 until its dissolution in 2008.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Intrepid Mining LLC"
+      ]
+    },
+    {
+      "name": "William M. Zisch",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 1,
+      "bio_summary": "William M. Zisch has over 40 years of business experience in the mining industry and is currently a Professor of Practice and Department Head of the Mining Department at the Colorado School of Mines since April 2023. He previously served as COO at Argonaut Gold from 2016 to 2019, as President and CEO of Midway Gold, VP of Operations at Royal Gold Inc., and held executive roles at Newmont Mining and FMC Company. He has also worked as an independent consultant from 2019 to 2023.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Colorado School of Mines",
+        "Argonaut Gold",
+        "Midway Gold",
+        "Royal Gold Inc.",
+        "Newmont Mining",
+        "FMC Company"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director tenure years calculated from 'Director Since' dates relative to 2024 filing date. Barth E. Whitham's board membership at Ensign Energy Services Inc. is listed as a current public company directorship; Jonah Energy appears to be private and was excluded from other_public_boards. No executive officers section was provided in the supplied text. Robert P. Jornayvaz III serves as both Executive Chairman and CEO; role normalized to executive_chair.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:14:07.387482Z",
+    "filing_meta": {
+      "ticker": "IPI",
+      "form": "DEF 14A",
+      "filing_date": "2024-04-04",
+      "accession": "000114036124017938",
+      "primary_doc": "ny20020861x1_def14a.htm",
+      "section_chars_used": 19115
+    },
+    "input_tokens": 4850,
+    "output_tokens": 1582,
+    "cost_usd": 0.0383,
+    "elapsed_sec": 28.4
+  }
+}

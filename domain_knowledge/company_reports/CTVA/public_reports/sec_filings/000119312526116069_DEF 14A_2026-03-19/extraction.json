@@ -1,0 +1,229 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CTVA",
+    "company_name": "Corteva, Inc.",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2026-03-19"
+  },
+  "directors": [
+    {
+      "name": "Klaus A. Engel",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Dr. Engel is the retired Chief Executive Officer of Evonik Industries AG, a specialty chemical manufacturer, serving from 2009 to 2017, and previously was CEO of Degussa AG from 2006 to 2009. He also served as CEO of Brenntag AG/M\u00fclheim since 2001 and held senior positions at Chemische Werke H\u00fcls, VEBA AG, and Stinnes AG earlier in his career. He chairs the Sustainability and Innovation Committee at Corteva.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Evonik Industries AG",
+        "Degussa AG",
+        "Brenntag AG",
+        "Chemische Werke H\u00fcls",
+        "VEBA AG",
+        "Stinnes AG"
+      ]
+    },
+    {
+      "name": "David C. Everitt",
+      "role": "director",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Everitt had an extensive career at Deere & Company from 1975 until retirement in 2012, serving in multiple executive roles including President of the agricultural and turf division. He currently serves as lead independent director of Brunswick Corporation and as a director of Allison Transmission Holdings, Inc. He previously served as lead independent director and non-executive chairman of Enviri Corporation.",
+      "other_public_boards": [
+        "Brunswick Corporation",
+        "Allison Transmission Holdings, Inc."
+      ],
+      "prior_employers_named": [
+        "Deere & Company"
+      ]
+    },
+    {
+      "name": "Janet P. Giesselman",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Ms. Giesselman held senior leadership positions at The Dow Chemical Company from 2001 to 2010, including President and General Manager of Dow Oil & Gas, and previously worked at Rohm and Haas Company from 1981 to 2001 in various sales, marketing, and strategic planning roles. She brings expertise in the agricultural and chemicals industry, innovation, and crop protection regulation. She serves as Chair of the Governance and Compliance Committee at Corteva.",
+      "other_public_boards": [
+        "Twin Disc, Inc."
+      ],
+      "prior_employers_named": [
+        "The Dow Chemical Company",
+        "Rohm and Haas Company"
+      ]
+    },
+    {
+      "name": "Jean-Marc Gilson",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": null,
+      "bio_summary": "Mr. Gilson is the current President and Chief Executive Officer and board member of Westlake Corporation, a global manufacturer of vinyl, polymers and building products, since July 2024. Previously he was President and CEO of Mitsubishi Chemical Holdings Corporation from April 2021 to June 2024, and held CEO roles at Roquette Fr\u00e8res and Avantor Performance Materials, Inc. Earlier in his career he held key leadership positions at Dow Corning Corporation.",
+      "other_public_boards": [
+        "Westlake Corporation"
+      ],
+      "prior_employers_named": [
+        "Westlake Corporation",
+        "Mitsubishi Chemical Holdings Corporation",
+        "Roquette Fr\u00e8res",
+        "NuSil Technology LLC",
+        "Avantor Performance Materials, Inc.",
+        "Dow Corning Corporation"
+      ]
+    },
+    {
+      "name": "Karen H. Grimes",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Ms. Grimes was senior managing director, partner, and equity portfolio manager at Wellington Management Company LLP from January 2008 through December 2018, and previously held roles at Wilmington Trust Company, First Atlanta Corporation, and Butcher and Singer. She began her career as a field engineer at IBM after serving three years in the U.S. Army. She currently serves as a director of Toll Brothers, Inc.",
+      "other_public_boards": [
+        "Toll Brothers, Inc."
+      ],
+      "prior_employers_named": [
+        "Wellington Management Company LLP",
+        "Wilmington Trust Company",
+        "First Atlanta Corporation",
+        "Butcher and Singer",
+        "IBM"
+      ]
+    },
+    {
+      "name": "Marcos M. Lutz",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Lutz was appointed Chairman of the board of Ultrapar Participa\u00e7\u00f5es S.A. in April 2025, having previously served as its CEO from January 2022 to April 2025. He also served as CEO of Cosan Limited from April 2015 to April 2020, and held senior leadership roles at Companhia Sider\u00fargica Nacional and Ultracargo S.A. He currently serves as chairman of Hidrovias do Brasil S.A. and as a board member of Ita\u00fa Unibanco S.A.",
+      "other_public_boards": [
+        "Ultrapar Participa\u00e7\u00f5es S.A.",
+        "Hidrovias do Brasil S.A.",
+        "Ita\u00fa Unibanco S.A."
+      ],
+      "prior_employers_named": [
+        "Ultrapar Participa\u00e7\u00f5es S.A.",
+        "Cosan Limited",
+        "Companhia Sider\u00fargica Nacional (CSN) SA",
+        "Ultracargo S.A."
+      ]
+    },
+    {
+      "name": "Charles V. Magro",
+      "role": "director",
+      "is_independent": false,
+      "age": 56,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Magro has served as Chief Executive Officer and director of Corteva since November 2021. Prior to Corteva, he was President and CEO of Nutrien Ltd. from 2018 to April 2021, and previously President and CEO of Agrium Inc. from 2014 to 2018. Earlier in his career he held various leadership roles at Agrium Inc. and NOVA Chemicals Corp.",
+      "other_public_boards": [
+        "Ingredion Inc."
+      ],
+      "prior_employers_named": [
+        "Nutrien Ltd.",
+        "Agrium Inc.",
+        "NOVA Chemicals Corp."
+      ]
+    },
+    {
+      "name": "Nayaki R. Nayyar",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Ms. Nayyar was appointed CEO and board member of Siteimprove A/S in February 2025, and previously served as CEO of Securonix, Inc. from December 2022 to July 2024, and as President and Chief Product Officer of Ivanti, Inc. until October 2022. She held prior roles at BMC Software, Inc., SAP SE, and Valero Energy Corporation. She currently serves as a director of TD SYNNEX Corporation.",
+      "other_public_boards": [
+        "TD SYNNEX Corporation"
+      ],
+      "prior_employers_named": [
+        "Siteimprove A/S",
+        "Securonix, Inc.",
+        "Ivanti, Inc.",
+        "BMC Software, Inc.",
+        "SAP SE",
+        "Valero Energy Corporation"
+      ]
+    },
+    {
+      "name": "Gregory R. Page",
+      "role": "chair",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Page is the retired Chairman and CEO of Cargill, Incorporated, where he served as CEO from June 2007 to December 2013 and executive chairman from December 2013 to September 2015, having joined Cargill in 1974. He currently serves as non-executive chair of Eaton Corporation plc and as a board member of Deere & Company. He serves as Board Chair of Corteva.",
+      "other_public_boards": [
+        "Eaton Corporation plc",
+        "Deere & Company"
+      ],
+      "prior_employers_named": [
+        "Cargill, Incorporated"
+      ]
+    },
+    {
+      "name": "Christopher J. Policinski",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": null,
+      "bio_summary": "Mr. Policinski is the former President and CEO of Land O'Lakes, Inc., a privately held agricultural cooperative, from 2005 to 2018, having joined the company in 1997 and held various leadership positions. He currently serves on the board of directors of Hormel Foods Corp. since 2012 and previously served on the board of Xcel Energy Inc. from 2009 to 2025.",
+      "other_public_boards": [
+        "Hormel Foods Corp."
+      ],
+      "prior_employers_named": [
+        "Land O'Lakes, Inc."
+      ]
+    },
+    {
+      "name": "Kerry J. Preete",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Preete had an extensive career at Monsanto Company for over thirty years, most recently serving as Executive Vice President and Chief Strategy Officer from 2010 until retirement in June 2018, and stayed on as an employee of Bayer AG through December 2018 following Monsanto's acquisition. He serves as Chair of the People and Compensation Committee at Corteva. He currently serves on the board of Avient Corporation.",
+      "other_public_boards": [
+        "Avient Corporation"
+      ],
+      "prior_employers_named": [
+        "Monsanto Company",
+        "Bayer AG"
+      ]
+    },
+    {
+      "name": "Patrick J. Ward",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Ward served as Chief Financial Officer of Cummins Inc. from May 2008 until March 2019, having joined Cummins in 1987 and holding a broad range of financial leadership positions. He currently serves on the board of directors of Flex, Ltd. since January 2022 and on the board of Solstice Advanced Materials Inc. since October 2025. He serves as Chair of the Audit Committee at Corteva.",
+      "other_public_boards": [
+        "Flex, Ltd.",
+        "Solstice Advanced Materials Inc."
+      ],
+      "prior_employers_named": [
+        "Cummins Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Board tenure years calculated from Director Since dates to 2026. Michael O. Johanns and Lamberto Andreotti appeared in committee membership tables but were not included as director nominees for 2026 (not listed among the 12 nominees), so they are excluded from the directors array. Jean-Marc Gilson and Christopher J. Policinski are new nominees with no stated tenure. Executive officers section was not provided in the supplied proxy text; only director information was included. Marcos Lutz's other public boards include Ultrapar, Hidrovias do Brasil, and Ita\u00fa Unibanco as explicitly stated as current directorships; Hidrovias do Brasil is noted as publicly traded. Role assignments for committee chairs follow the schema's available options: Janet Giesselman as nominating_committee_chair (Governance and Compliance Committee Chair), Kerry Preete as compensation_committee_chair (People and Compensation Committee Chair), Patrick Ward as audit_committee_chair, Gregory Page as chair (Board Chair).",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:57:15.890939Z",
+    "filing_meta": {
+      "ticker": "CTVA",
+      "form": "DEF 14A",
+      "filing_date": "2026-03-19",
+      "accession": "000119312526116069",
+      "primary_doc": "ctva-20260319.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14327,
+    "output_tokens": 3196,
+    "cost_usd": 0.0909,
+    "elapsed_sec": 43.9
+  }
+}

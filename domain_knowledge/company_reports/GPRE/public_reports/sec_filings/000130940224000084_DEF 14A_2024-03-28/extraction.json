@@ -1,0 +1,160 @@
+{
+  "filing_metadata": {
+    "company_ticker": "GPRE",
+    "company_name": "Green Plains Inc.",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2024-03-28"
+  },
+  "directors": [
+    {
+      "name": "James D. Anderson",
+      "role": "chair",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Mr. Anderson has served as Chief Executive Officer of Molycop since November 2017. He previously served as Managing Director and Operating Partner at CHAMP Private Equity, and as President and CEO of The Gavilon Group, LLC. His commodity experience and agribusiness knowledge provide the Board with relevant operational understanding.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Molycop",
+        "CHAMP Private Equity",
+        "The Gavilon Group, LLC",
+        "United Malt Holdings",
+        "CT Malt",
+        "ConAgra Foods, Inc.",
+        "Ferruzzi USA",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Todd A. Becker",
+      "role": "director",
+      "is_independent": false,
+      "age": 58,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Mr. Becker has served as President and CEO of Green Plains Inc. since January 2009. He previously served as CEO of VBV LLC and held positions at Global Ethanol and ConAgra Foods, Inc. He brings extensive commodity processing, risk management, and supply chain experience to the Board.",
+      "other_public_boards": [
+        "Core Scientific Inc."
+      ],
+      "prior_employers_named": [
+        "Green Plains Holdings LLC",
+        "VBV LLC",
+        "Global Ethanol",
+        "ConAgra Foods, Inc."
+      ]
+    },
+    {
+      "name": "Ejnar A. Knudsen III",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. Knudsen is Founder and CEO of AGR Partners, overseeing investments totaling over $400 million in food processors and agribusinesses. He previously co-managed Passport Capital's Agriculture Fund and served as EVP of Western Milling, and spent 10 years with Rabobank. His operating company and finance experience provide the Board with agribusiness industry knowledge.",
+      "other_public_boards": [
+        "Ridley Corporation Limited"
+      ],
+      "prior_employers_named": [
+        "Passport Capital",
+        "Western Milling",
+        "Rabobank"
+      ]
+    },
+    {
+      "name": "Brian Peterson",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 19,
+      "bio_summary": "Mr. Peterson is President and CEO of Whiskey Creek Enterprises. He previously served as Green Plains' Executive Vice President in charge of site development and was the sole founder of Superior Ethanol LLC, which was acquired by Green Plains in 2006. He has over twenty years of experience owning and operating grain farming entities.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Green Plains Inc.",
+        "Superior Ethanol LLC"
+      ]
+    },
+    {
+      "name": "Alain Treuer",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Mr. Treuer is Chairman and CEO of Tellac Reuert Partners (TRP SA), a global investment firm he has led since 2005, and Co-Founder and Executive Chairman of Local Ocean France. He previously founded and led TIGC, a global telecommunications company, from 1992 until its sale in 2001. He brings approximately 36 years of entrepreneurial experience across various global industries.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tellac Reuert Partners",
+        "Local Ocean France",
+        "Trivon AG",
+        "TIGC"
+      ]
+    },
+    {
+      "name": "Kimberly Wagner",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Ms. Wagner is Founder of TBGD Partners, a boutique firm providing expertise to early and mid-stage ventures in agribusiness, food/nutrition, and life sciences. She previously served as Venture Partner at Flagship Pioneering, President and COO of CiBO Technologies, and Partner at McKinsey & Co. and The Boston Consulting Group. She is a scientist and entrepreneur with over two decades of experience advising on strategy and operational improvement.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Flagship Pioneering",
+        "CiBO Technologies",
+        "McKinsey & Co.",
+        "The Boston Consulting Group, Inc."
+      ]
+    },
+    {
+      "name": "Farha Aslam",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Ms. Aslam is Managing Partner of Crescent House Capital. She previously served as Managing Director at Stephens Inc. leading the food and agribusiness equity research team, and held positions as vice president at Merrill Lynch and risk management advisor at UBS. Her extensive knowledge of agriculture and ethanol industries provides the Board with valued industry experience.",
+      "other_public_boards": [
+        "Pilgrim's Pride Corporation",
+        "Calavo Growers, Inc.",
+        "AdvanSix Inc."
+      ],
+      "prior_employers_named": [
+        "Stephens Inc.",
+        "Merrill Lynch",
+        "UBS"
+      ]
+    },
+    {
+      "name": "Martin Salinas Jr.",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Salinas is the former Chief Financial Officer of Energy Transfer Partners, LP, one of the largest publicly traded master limited partnerships, where he served from 2008 to 2015 after serving as controller and vice president of finance. He began his career at KPMG and also serves on the board of NuStar Energy L.P. His financial expertise qualifies him as an audit committee financial expert.",
+      "other_public_boards": [
+        "NuStar Energy L.P."
+      ],
+      "prior_employers_named": [
+        "Energy Transfer Partners, LP",
+        "KPMG"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All eight directors were identified with ages, tenure, committee roles, and biographical details. Executive officers section was not included in the provided proxy text excerpt, so executive_officers is returned as an empty array. Tenure years calculated from 'Director Since' year subtracted from 2024 filing year. Kimberly Wagner's board at Frontier Co-Op is noted as a co-op (not a public company) and SmithFoods is listed as a former directorship, so neither appears in other_public_boards. Alain Treuer's chairmanship of Trivon AG and Local Ocean France appear to be private companies and are excluded from other_public_boards. James Anderson's United Malt Holdings is listed as a past directorship only.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:02:51.661396Z",
+    "filing_meta": {
+      "ticker": "GPRE",
+      "form": "DEF 14A",
+      "filing_date": "2024-03-28",
+      "accession": "000130940224000084",
+      "primary_doc": "gpre-20240328.htm",
+      "section_chars_used": 35437
+    },
+    "input_tokens": 8921,
+    "output_tokens": 1958,
+    "cost_usd": 0.0561,
+    "elapsed_sec": 34.9
+  }
+}

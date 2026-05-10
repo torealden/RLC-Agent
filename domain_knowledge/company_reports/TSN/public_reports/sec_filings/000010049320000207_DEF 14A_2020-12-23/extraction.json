@@ -1,0 +1,235 @@
+{
+  "filing_metadata": {
+    "company_ticker": "TSN",
+    "company_name": "Tyson Foods, Inc.",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2020-12-23"
+  },
+  "directors": [
+    {
+      "name": "John H. Tyson",
+      "role": "chair",
+      "is_independent": false,
+      "age": 67,
+      "tenure_years_on_board": 36,
+      "bio_summary": "John H. Tyson has served as Chairman of the Board since 1998 and as a board member since 1984, previously serving as CEO from 2000 to 2006. He has devoted his professional career to the Company and has a substantial personal interest through the Tyson Limited Partnership and individual shareholding.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Les R. Baledge",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Les R. Baledge is a private investor who previously served as executive vice president and general counsel of Tyson Foods from 1999 until his retirement in 2004. Prior to joining the Company, he practiced corporate and finance law with Kutak Rock LLP and Rose Law Firm in Little Rock, Arkansas.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Kutak Rock LLP",
+        "Rose Law Firm"
+      ]
+    },
+    {
+      "name": "Gaurdie E. Banister Jr.",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Gaurdie E. Banister Jr. is the founder and CEO of Different Points of View, a family global executive advisory and consulting firm. He previously served as President and CEO of Aera Energy LLC from 2007 to 2015, and held various executive positions with Shell prior to that.",
+      "other_public_boards": [
+        "Dow Inc."
+      ],
+      "prior_employers_named": [
+        "Aera Energy LLC",
+        "Shell"
+      ]
+    },
+    {
+      "name": "Dean Banks",
+      "role": "director",
+      "is_independent": false,
+      "age": 47,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Dean Banks has served as the Company's President and Chief Executive Officer since October 3, 2020, having previously assumed the role of President in December 2019 and joining the board in 2017. Prior to joining Tyson, he was a Project Lead and on the Leadership Team at X (formerly Google X), an Alphabet Inc. company, and before that was a managing partner and interim CEO at SEED Ventures.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "X (formerly Google X)",
+        "Alphabet Inc.",
+        "SEED Ventures",
+        "IntraCelluar Technologies",
+        "Cleveland Clinic Innovations",
+        "Highland Capital Partners",
+        "Cytyc Corporation",
+        "Ethicon Endo-Surgery"
+      ]
+    },
+    {
+      "name": "Mike Beebe",
+      "role": "director",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mike Beebe currently serves as a member of the Governors' Council of the Bipartisan Policy Center. He previously served as Governor of the State of Arkansas from 2007 to 2015 and as the state's Attorney General from 2003 to 2007.",
+      "other_public_boards": [
+        "Home BancShares, Inc."
+      ],
+      "prior_employers_named": [
+        "Bipartisan Policy Center"
+      ]
+    },
+    {
+      "name": "Maria Claudia Borras",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": null,
+      "bio_summary": "Maria Claudia Borras is Executive Vice President, Oilfield Services at Baker Hughes Company, a position she has held since 2017. Prior to this role, she served as Chief Commercial Officer for General Electric Company's Oil and Gas operations since 2015, and previously held various executive roles at Baker Hughes Inc. since 1994.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Baker Hughes Company",
+        "General Electric Company",
+        "Baker Hughes Inc."
+      ]
+    },
+    {
+      "name": "David J. Bronczek",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 1,
+      "bio_summary": "David J. Bronczek previously served as president and chief operating officer of FedEx Corporation until his retirement in 2019, having worked at FedEx for more than 40 years in roles including president and CEO of FedEx Express. He has been a member of the Board since May 2020.",
+      "other_public_boards": [
+        "Yellowstone Acquisition Co."
+      ],
+      "prior_employers_named": [
+        "FedEx Corporation"
+      ]
+    },
+    {
+      "name": "Mikel A. Durham",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mikel A. Durham is Chief Executive Officer of American Seafoods Group, a private company, having served in that capacity since 2017. She previously served as Chief Commercial Officer of CSM Bakery Solutions LLC from 2014 to 2016.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "American Seafoods Group",
+        "CSM Bakery Solutions LLC"
+      ]
+    },
+    {
+      "name": "Jonathan D. Mariner",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Jonathan D. Mariner has been the Chief Administrative Officer of Enjoy Technologies since December 1, 2020, and is the founder and president of TaxDay, LLC. He previously served as chief investment officer and chief financial officer for Major League Baseball and, on an interim basis in 2019, as Head of Regional Sports Networks for the Walt Disney Company.",
+      "other_public_boards": [
+        "Rocket Companies, Inc."
+      ],
+      "prior_employers_named": [
+        "Enjoy Technologies",
+        "Walt Disney Company",
+        "Major League Baseball",
+        "Florida Marlins Baseball Club",
+        "Florida Panthers Hockey Club"
+      ]
+    },
+    {
+      "name": "Kevin M. McNamara",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Kevin M. McNamara is the founding principal of McNamara Family Ventures, a family investment office providing venture and growth capital to health care companies. He currently serves as a director at SignifyHealth, having served as its CEO from 2015 to June 2018, and has served as Lead Independent Director since September 2019 and Vice Chairman since February 2020.",
+      "other_public_boards": [
+        "Luminex Corporation"
+      ],
+      "prior_employers_named": [
+        "SignifyHealth"
+      ]
+    },
+    {
+      "name": "Cheryl S. Miller",
+      "role": "director",
+      "is_independent": true,
+      "age": 48,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Cheryl S. Miller will become the Executive Vice President and CFO of JM Family Enterprises effective January 4, 2021. She previously served as President and CEO of AutoNation, Inc. from July 2019 to April 2020, and as its Executive Vice President and CFO since 2014.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "JM Family Enterprises",
+        "AutoNation, Inc."
+      ]
+    },
+    {
+      "name": "Jeffrey K. Schomburger",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Jeffrey K. Schomburger retired as Global Sales Officer, Customer Business Development, for The Procter & Gamble Company in 2019, a position he held since 2015. He joined P&G in 1984 and held numerous leadership positions, including President of P&G's global Walmart team from 2005 to 2015.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Robert Thurber",
+      "role": "director",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Robert Thurber is currently retired, having served as Vice President of purchasing for Sysco Corporation from 1987 to 2007. He has been a member of the Board since 2009.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Sysco Corporation"
+      ]
+    },
+    {
+      "name": "Barbara A. Tyson",
+      "role": "director",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": 32,
+      "bio_summary": "Barbara A. Tyson served as Vice President of Tyson Foods until 2002 when she retired and became a consultant to the Company, ceasing that role in 2011. She has been a member of the Board since 1988 and has a substantial personal interest in the Company as the sole income beneficiary of the BT 2015 Fund.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Noel White",
+      "role": "executive_chair",
+      "is_independent": false,
+      "age": 62,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Noel White has served as Executive Vice Chairman of the Board since October 3, 2020, prior to which he served as Chief Executive Officer from September 2018 to October 3, 2020. He has more than 35 years of experience in the food industry with Tyson Foods and IBP, inc., which was acquired by the Company in 2001.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "IBP, inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated from year first joined board through 2020. Noel White's role is listed as Executive Vice Chairman; mapped to executive_chair as closest schema match. Barbara A. Tyson is listed as independent per the Board's determination despite being a non-independent nominee by family relation. Dean Banks's Vergent Bioscience board seat appears to be a private company and is excluded from other_public_boards. Russell Reynolds Associates (Banister) is private and excluded. Church Brothers, LLC (Thurber) is private and excluded. SignifyHealth (McNamara) is listed as a current directorship but appears private; excluded from other_public_boards. No executive officer section was included in the provided text.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:20:43.222852Z",
+    "filing_meta": {
+      "ticker": "TSN",
+      "form": "DEF 14A",
+      "filing_date": "2020-12-23",
+      "accession": "000010049320000207",
+      "primary_doc": "proxystatement-2020.htm",
+      "section_chars_used": 28564
+    },
+    "input_tokens": 6791,
+    "output_tokens": 2843,
+    "cost_usd": 0.063,
+    "elapsed_sec": 49.3
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "filing_metadata": {
+    "company_ticker": "INGR",
+    "company_name": "Ingredion Incorporated",
+    "fiscal_year_disclosed": 2022,
+    "filing_date": "2022-04-07"
+  },
+  "directors": [
+    {
+      "name": "David B. Fischer",
+      "role": "director",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Mr. Fischer served as Chief Executive Officer and director of Greif, Inc. from November 2011 to October 2015, and as President from October 2007 to October 2015. He also held roles including Chief Operating Officer and Senior Vice President at Greif. He currently serves as a director of Balchem Corporation and co-founder/chairman of privately held 10x Engineered Materials LLC.",
+      "other_public_boards": [
+        "Balchem Corporation"
+      ],
+      "prior_employers_named": [
+        "Greif, Inc."
+      ]
+    },
+    {
+      "name": "Paul Hanrahan",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Mr. Hanrahan served as CEO of Hygo Energy Transitions Ltd. until its acquisition by New Fortress Energy in April 2021, and previously as CEO of Globeleq Advisors Limited and CEO of American Capital Energy & Infrastructure Management, LLC. He also served as President, CEO, and director of The AES Corporation from 2002 to 2011.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Hygo Energy Transitions Ltd.",
+        "Globeleq Advisors Limited",
+        "American Capital Energy & Infrastructure Management, LLC",
+        "The AES Corporation",
+        "AES China Generating Co., Ltd."
+      ]
+    },
+    {
+      "name": "Rhonda L. Jordan",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Ms. Jordan served as President, Global Health & Wellness, and Sustainability of Kraft Foods Inc. from September 2009 to March 2012, and previously held roles including President of the Cheese and Dairy business unit and President of the Grocery business unit at Kraft. She will serve as a director of ESAB Corporation following its spin-off from Colfax Corporation.",
+      "other_public_boards": [
+        "Colfax Corporation"
+      ],
+      "prior_employers_named": [
+        "Kraft Foods Inc."
+      ]
+    },
+    {
+      "name": "Gregory B. Kenny",
+      "role": "chair",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Mr. Kenny served as President and CEO of General Cable Corporation from August 2001 to June 2015, and held various senior roles there since 1992. He currently serves as non-executive Chairman of Cardinal Health, Inc.",
+      "other_public_boards": [
+        "Cardinal Health, Inc."
+      ],
+      "prior_employers_named": [
+        "General Cable Corporation"
+      ]
+    },
+    {
+      "name": "Charles V. Magro",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Magro currently serves as CEO and director of Corteva Agriscience since November 2021, and previously served as President and CEO of Nutrien Ltd. from January 2018 to April 2021 and President and CEO of Agrium Inc. from 2014 to 2018. He joined Agrium in 2009 after a sixteen-year career with NOVA Chemicals Corporation.",
+      "other_public_boards": [
+        "Corteva Agriscience"
+      ],
+      "prior_employers_named": [
+        "Corteva Agriscience",
+        "Nutrien Ltd.",
+        "Agrium Inc.",
+        "NOVA Chemicals Corporation"
+      ]
+    },
+    {
+      "name": "Victoria J. Reich",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Ms. Reich served as Senior Vice President and CFO of Essendant Inc. from June 2007 to July 2011, and previously spent ten years at Brunswick Corporation including as President of Brunswick European Group and CFO. She also spent 17 years at General Electric Company in financial management roles.",
+      "other_public_boards": [
+        "H&R Block, Inc.",
+        "Ecolab Inc."
+      ],
+      "prior_employers_named": [
+        "Essendant Inc.",
+        "Brunswick Corporation",
+        "General Electric Company"
+      ]
+    },
+    {
+      "name": "Catherine A. Suever",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Ms. Suever served as Executive Vice President Finance and Administration and CFO of Parker-Hannifin Corporation from April 2017 until her retirement in December 2020, having joined the company in 1987. She began her career at PricewaterhouseCoopers in audit roles and currently serves as a director and audit committee member of Hexcel Corporation.",
+      "other_public_boards": [
+        "Hexcel Corporation"
+      ],
+      "prior_employers_named": [
+        "Parker-Hannifin Corporation",
+        "PricewaterhouseCoopers"
+      ]
+    },
+    {
+      "name": "Stephan B. Tanda",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Tanda has served as President, CEO, and director of AptarGroup, Inc. since February 2017. Prior to that, he served as an executive managing board director at Royal DSM NV and held various leadership roles at DuPont and Freudenberg Nonwovens Group.",
+      "other_public_boards": [
+        "AptarGroup, Inc."
+      ],
+      "prior_employers_named": [
+        "Royal DSM NV",
+        "DuPont",
+        "Freudenberg Nonwovens Group"
+      ]
+    },
+    {
+      "name": "Jorge A. Uribe",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Uribe served as Global Productivity and Organization Transformation Officer of The Procter & Gamble Company from December 2012 to July 2015, after more than 33 years with the company including as Group President, Latin America. He currently serves as a director of General Mills, Inc. and Grupo Argos, S.A.",
+      "other_public_boards": [
+        "General Mills, Inc.",
+        "Grupo Argos, S.A."
+      ],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Dwayne A. Wilson",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Mr. Wilson served as Senior Vice President of Fluor Corporation from June 2014 to June 2016, and previously as President and CEO of Savannah River Nuclear Solutions, LLC, and in various other roles at Fluor since 1980. He currently serves as a director and audit committee member of Crown Holdings, Inc.",
+      "other_public_boards": [
+        "Crown Holdings, Inc."
+      ],
+      "prior_employers_named": [
+        "Fluor Corporation",
+        "Savannah River Nuclear Solutions, LLC"
+      ]
+    },
+    {
+      "name": "James P. Zallie",
+      "role": "director",
+      "is_independent": false,
+      "age": 60,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Zallie has served as President and CEO of Ingredion since January 1, 2018, having previously held several executive vice president roles within the company. He worked for National Starch for more than 27 years before it was acquired by Ingredion in October 2010, and currently serves as a director of Sylvamo Corporation.",
+      "other_public_boards": [
+        "Sylvamo Corporation"
+      ],
+      "prior_employers_named": [
+        "National Starch LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated from director-since dates to the 2022 annual meeting year. Charles V. Magro was appointed effective May 1, 2022, so tenure is listed as 0. The proxy text provided did not include a dedicated executive officers section beyond the CEO (James P. Zallie), so executive_officers is left empty. Rhonda L. Jordan's role is set to compensation_committee_chair as she chairs the People, Culture and Compensation Committee. Gregory B. Kenny's role is set to chair as he is the non-executive Chairman of the Board. Victoria J. Reich's role is set to audit_committee_chair as she chairs the Audit Committee.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:10:17.826184Z",
+    "filing_meta": {
+      "ticker": "INGR",
+      "form": "DEF 14A",
+      "filing_date": "2022-04-07",
+      "accession": "000119312522098924",
+      "primary_doc": "d282732ddef14a.htm",
+      "section_chars_used": 46782
+    },
+    "input_tokens": 10766,
+    "output_tokens": 2303,
+    "cost_usd": 0.0668,
+    "elapsed_sec": 37.4
+  }
+}

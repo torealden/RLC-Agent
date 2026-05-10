@@ -1,0 +1,208 @@
+{
+  "filing_metadata": {
+    "company_ticker": "TSN",
+    "company_name": "Tyson Foods, Inc.",
+    "fiscal_year_disclosed": 2025,
+    "filing_date": "2024-12-18"
+  },
+  "directors": [
+    {
+      "name": "John H. Tyson",
+      "role": "chair",
+      "is_independent": false,
+      "age": 71,
+      "tenure_years_on_board": 40,
+      "bio_summary": "John H. Tyson has been a Board member since 1984 and has served as Chairman since 1998. He served as CEO from 2000 to 2006 and has devoted his professional career to the Company. He has a substantial personal interest in the Company through the Tyson Limited Partnership and individual shareholdings.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Les R. Baledge",
+      "role": "director",
+      "is_independent": false,
+      "age": 67,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Les R. Baledge is a private investor who served as Executive Vice President and General Counsel of Tyson Foods from 1999 to 2004. Prior to joining the Company, he practiced corporate and finance law as an advisor to private and public entities. He previously served on the boards of BMP Sunstone Corp. and Fairfield Communities, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tyson Foods, Inc."
+      ]
+    },
+    {
+      "name": "Mike Beebe",
+      "role": "director",
+      "is_independent": true,
+      "age": 77,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Mike Beebe served as Governor of Arkansas from 2007 to 2015, and previously as the state's Attorney General from 2003 to 2007 and as a state senator for 20 years. He currently serves on the board of Home BancShares, Inc. The Board waived the Retirement Age By-law to nominate him.",
+      "other_public_boards": [
+        "Home BancShares, Inc."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Maria Claudia Borras",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Maria Claudia Borras was appointed Chief Growth & Experience Officer at Baker Hughes Company in September 2024, having previously served as Executive Vice President, Oilfield Services & Equipment from 2022 to 2024 and Executive Vice President, Oilfield Services from 2017 to 2022. She also served as Chief Commercial Officer for GE Oil & Gas and held various executive roles at Baker Hughes Incorporated beginning in 1994. She has deep experience in industrial manufacturing and oilfield services.",
+      "other_public_boards": [
+        "Baker Hughes Company"
+      ],
+      "prior_employers_named": [
+        "Baker Hughes Company",
+        "GE Oil & Gas",
+        "Baker Hughes Incorporated"
+      ]
+    },
+    {
+      "name": "David J. Bronczek",
+      "role": "director",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": 4,
+      "bio_summary": "David J. Bronczek previously served as President and Chief Operating Officer of FedEx Corporation until his retirement in 2019, having worked at FedEx for more than 40 years. He served as President and CEO of FedEx Express for 17 years and held leadership roles across international regions. He has served on the board of Yellowstone Acquisition Group since October 2020.",
+      "other_public_boards": [
+        "Yellowstone Acquisition Group"
+      ],
+      "prior_employers_named": [
+        "FedEx Corporation",
+        "FedEx Express"
+      ]
+    },
+    {
+      "name": "Donnie King",
+      "role": "director",
+      "is_independent": false,
+      "age": 62,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Donnie King has served as President and CEO of Tyson Foods since June 2021, previously serving as Chief Operating Officer and Group President Poultry. He was initially employed by Valmac Industries in 1982, which was acquired by Tyson Foods in 1984, and was self-employed from 2017 to 2019 before returning. He has more than 39 years of experience in the food industry.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Valmac Industries"
+      ]
+    },
+    {
+      "name": "Maria N. Martinez",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Maria N. Martinez retired from Cisco Systems, Inc. after serving as Executive Vice President and Chief Operating Officer from 2021 to 2024. She previously held senior executive roles at Salesforce, Inc. and managed the global services business for Microsoft Corporation, and held leadership positions at Motorola, Inc., AT&T Inc., and served as CEO of Embrace Networks, Inc. She has served on the board of McKesson Corporation since 2019.",
+      "other_public_boards": [
+        "McKesson Corporation"
+      ],
+      "prior_employers_named": [
+        "Cisco Systems, Inc.",
+        "Salesforce, Inc.",
+        "Microsoft Corporation",
+        "Motorola, Inc.",
+        "AT&T Inc.",
+        "Embrace Networks, Inc."
+      ]
+    },
+    {
+      "name": "Kevin M. McNamara",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Kevin M. McNamara is the founding principal of McNamara Family Ventures and has served as Lead Independent Director since September 2019 and Vice Chairman of the Board since February 2020. He currently serves as Executive Chairman of Harmony Cares (since March 2024) and previously served as CEO of SignifyHealth (formerly CenseoHealth) from 2015 to June 2018. He qualifies as an audit committee financial expert under SEC regulations.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "SignifyHealth",
+        "CenseoHealth"
+      ]
+    },
+    {
+      "name": "Cheryl S. Miller",
+      "role": "director",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Cheryl S. Miller most recently served as CFO of West Marine from January 2022 to October 2022, and previously as Executive VP and CFO of JM Family Enterprises. She served as President and CEO of AutoNation, Inc. from July 2019 to April 2020 and as its EVP and CFO since 2014. She currently serves on the boards of Celsius Holdings (as audit committee chair) and Old Dominion Freight Line.",
+      "other_public_boards": [
+        "Celsius Holdings",
+        "Old Dominion Freight Line"
+      ],
+      "prior_employers_named": [
+        "West Marine",
+        "JM Family Enterprises",
+        "AutoNation, Inc."
+      ]
+    },
+    {
+      "name": "Kate B. Quinn",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Kate B. Quinn served as Vice Chair and Chief Administrative Officer of U.S. Bancorp from 2017 to 2023. Prior to that she served as SVP and Chief Marketing Officer at Anthem and held leadership roles at The Hartford, CIGNA, and PacifiCare Health Systems. She previously served on the boards of Rite Aid, Ontrak, Inc., and Taylor Communications. She is nominated to serve as Chair of the Audit Committee effective as of the Annual Meeting.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "U.S. Bancorp",
+        "Anthem",
+        "The Hartford",
+        "CIGNA",
+        "PacifiCare Health Systems"
+      ]
+    },
+    {
+      "name": "Jeffrey K. Schomburger",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Jeffrey K. Schomburger retired as Global Sales Officer for The Procter & Gamble Company in 2019, a position he held since 2015. He joined P&G in 1984 and held numerous leadership positions including President of P&G's global Walmart team from 2005 to 2015. He brings deep experience in branded consumer packaged goods.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Barbara A. Tyson",
+      "role": "director",
+      "is_independent": true,
+      "age": 75,
+      "tenure_years_on_board": 36,
+      "bio_summary": "Barbara A. Tyson served as Vice President of Tyson Foods until 2002 and then as a consultant to the Company until 2011. She has been a Board member since 1988 and has a substantial personal interest in the Company as the sole income beneficiary of the BT 2015 Fund. The Board waived the Retirement Age By-law to nominate her. She is the aunt of John H. Tyson.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Noel White",
+      "role": "director",
+      "is_independent": false,
+      "age": 66,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Noel White served as Executive Vice Chairman of the Board from October 2020 to December 2023, and previously as CEO from September 2018 to October 2020. He has more than 40 years of experience in the food industry with Tyson Foods and IBP, inc., which was acquired by Tyson in 2001. He has held various senior leadership roles including Group President Fresh Meats and International and Chief Operations Officer.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "IBP, inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director tenure years calculated from 'Director Since' year to 2024. Maria N. Martinez and Kate B. Quinn joined in 2024 so tenure is listed as 0. The proxy text provided did not include a separate executive officers section, so that array is empty. David J. Bronczek's listing on the board of Yellowstone Acquisition Group is included as a current public company board per the bio text, though it may be a SPAC. Barbara A. Tyson's listing on Arkansas Children's Hospital Northwest is excluded as it appears to be a non-profit/private entity. Kevin M. McNamara's role of 'lead_independent' reflects his Lead Independent Director designation. Noel White's independence status is listed as false as he is not listed among the independent directors named in the proxy.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:23:45.688510Z",
+    "filing_meta": {
+      "ticker": "TSN",
+      "form": "DEF 14A",
+      "filing_date": "2024-12-18",
+      "accession": "000010049324000195",
+      "primary_doc": "tsn-20241218.htm",
+      "section_chars_used": 28701
+    },
+    "input_tokens": 6913,
+    "output_tokens": 2799,
+    "cost_usd": 0.0627,
+    "elapsed_sec": 43.8
+  }
+}

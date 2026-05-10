@@ -1,0 +1,239 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CTVA",
+    "company_name": "Corteva, Inc.",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2024-03-15"
+  },
+  "directors": [
+    {
+      "name": "Lamberto Andreotti",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Andreotti is the former chairman and chief executive officer of Bristol-Myers Squibb Company, serving as CEO from 2010 to 2015 and chairman from 2015 to 2017. He also served as a director of DowDuPont Inc. from September 2017 until joining Corteva's Board in June 2019. He has served on the board of UniCredit S.p.A. since April 2018, though he is retiring from that board effective April 17, 2024.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Bristol-Myers Squibb Company",
+        "DowDuPont Inc."
+      ]
+    },
+    {
+      "name": "Klaus A. Engel",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Dr. Engel is the former chief executive officer of Evonik Industries AG (2009\u20132017) and previously CEO of Degussa AG and Brenntag AG. He also held senior positions at Chemische Werke H\u00fcls, VEBA AG, and Stinnes AG earlier in his career.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Evonik Industries AG",
+        "Degussa AG",
+        "Brenntag AG",
+        "Chemische Werke H\u00fcls",
+        "VEBA AG",
+        "Stinnes AG"
+      ]
+    },
+    {
+      "name": "David C. Everitt",
+      "role": "director",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Everitt had an extensive career at Deere & Company from 1975 until his retirement in 2012, most recently as president of the agricultural and turf division. He also served as interim president and CEO of Harsco Corporation from February to July 2014 and currently serves as lead independent director of Enviri Corporation.",
+      "other_public_boards": [
+        "Enviri Corporation",
+        "Allison Transmission Holdings, Inc.",
+        "Brunswick Corporation"
+      ],
+      "prior_employers_named": [
+        "Deere & Company",
+        "Harsco Corporation"
+      ]
+    },
+    {
+      "name": "Janet P. Giesselman",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Ms. Giesselman held several senior leadership positions at The Dow Chemical Company from 2001 to 2010, including president and general manager of Dow Oil & Gas, and previously held sales, marketing, and strategic planning roles at Rohm and Haas Company from 1981 to 2001. She currently chairs the board of Ag Growth International, Inc. and serves on the boards of Twin Disc, Inc. and McCain Foods Ltd.",
+      "other_public_boards": [
+        "Twin Disc, Inc.",
+        "Ag Growth International, Inc."
+      ],
+      "prior_employers_named": [
+        "The Dow Chemical Company",
+        "Rohm and Haas Company"
+      ]
+    },
+    {
+      "name": "Karen H. Grimes",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Ms. Grimes was a senior managing director, partner, and equity portfolio manager at Wellington Management Company LLP from 2008 through 2018, and previously held positions at Wilmington Trust Company, First Atlanta Corporation, and Butcher and Singer. She currently serves as a director of Toll Brothers, Inc. and TEGNA, Inc.",
+      "other_public_boards": [
+        "Toll Brothers, Inc.",
+        "TEGNA, Inc."
+      ],
+      "prior_employers_named": [
+        "Wellington Management Company LLP",
+        "Wilmington Trust Company",
+        "First Atlanta Corporation",
+        "Butcher and Singer",
+        "IBM"
+      ]
+    },
+    {
+      "name": "Michael O. Johanns",
+      "role": "director",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Johanns served as a U.S. Senator from Nebraska from 2009 to 2015, as U.S. Secretary of Agriculture from 2005 to 2007, and was twice elected Governor of Nebraska from 1999 to 2005. He currently serves on the board of Deere & Company.",
+      "other_public_boards": [
+        "Deere & Company"
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Rebecca B. Liebert",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Dr. Liebert became president and CEO of The Lubrizol Corporation in October 2022. Prior to that, she was an executive vice president at PPG Industries from 2019 to 2022, and before that spent a decade at Honeywell in senior roles including president and CEO of Honeywell UOP. She also served as president of Reynolds Food Packaging at Alcoa and started her career at NOVA Chemicals.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "The Lubrizol Corporation",
+        "PPG Industries",
+        "Honeywell",
+        "Alcoa",
+        "NOVA Chemicals"
+      ]
+    },
+    {
+      "name": "Marcos M. Lutz",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Lutz has been chief executive officer of Ultrapar Participa\u00e7\u00f5es S.A. since January 2022, and previously served as CEO of Cosan Limited from 2015 to 2020. He also held senior leadership roles at Companhia Siderurgica Nacional (CSN) SA and was chief operating officer of Ultracargo S.A.",
+      "other_public_boards": [
+        "Ultrapar Participa\u00e7\u00f5es S.A."
+      ],
+      "prior_employers_named": [
+        "Ultrapar Participa\u00e7\u00f5es S.A.",
+        "Cosan Limited",
+        "Companhia Siderurgica Nacional (CSN) SA",
+        "Ultracargo S.A."
+      ]
+    },
+    {
+      "name": "Charles V. Magro",
+      "role": "director",
+      "is_independent": false,
+      "age": 54,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Magro was appointed CEO and director of Corteva on November 1, 2021. Prior to Corteva, he served as president and CEO of Nutrien Ltd. from 2018 to 2021 and as president and CEO of Agrium Inc. from 2014 to 2018. He also held various leadership positions at NOVA Chemicals earlier in his career.",
+      "other_public_boards": [
+        "Ingredion Inc."
+      ],
+      "prior_employers_named": [
+        "Nutrien Ltd.",
+        "Agrium Inc.",
+        "NOVA Chemicals"
+      ]
+    },
+    {
+      "name": "Nayaki R. Nayyar",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Ms. Nayyar has been CEO and director of Securonix, Inc. since December 2022, and previously served as president and chief product officer of Ivanti, Inc. and president of digital services management at BMC Software, Inc. She also held senior roles at SAP SE and Valero Energy Corporation.",
+      "other_public_boards": [
+        "TD SYNNEX Corporation"
+      ],
+      "prior_employers_named": [
+        "Securonix, Inc.",
+        "Ivanti, Inc.",
+        "BMC Software, Inc.",
+        "SAP SE",
+        "Valero Energy Corporation"
+      ]
+    },
+    {
+      "name": "Gregory R. Page",
+      "role": "chair",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Page is the retired chairman and CEO of Cargill, Incorporated, where he served as CEO from 2007 to 2013, executive chairman from 2013 to 2015, and executive director from 2015 to 2016, having joined Cargill in 1974. He currently serves on the boards of Eaton Corporation plc (as lead independent director), Deere & Company, and 3M.",
+      "other_public_boards": [
+        "Eaton Corporation plc",
+        "Deere & Company",
+        "3M"
+      ],
+      "prior_employers_named": [
+        "Cargill, Incorporated"
+      ]
+    },
+    {
+      "name": "Kerry J. Preete",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Preete spent over thirty years at Monsanto Company, most recently as executive vice president and chief strategy officer from 2010 until his retirement in June 2018, and briefly as an employee of Bayer AG after Monsanto's acquisition through December 2018. He currently serves on the board of Avient Corporation.",
+      "other_public_boards": [
+        "Avient Corporation"
+      ],
+      "prior_employers_named": [
+        "Monsanto Company",
+        "Bayer AG"
+      ]
+    },
+    {
+      "name": "Patrick J. Ward",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Ward served as chief financial officer of Cummins Inc. from May 2008 until March 2019, having joined Cummins in 1987 and held various financial leadership roles. He also served as a director of DowDuPont, Inc. from September 2017 until joining Corteva's Board in June 2019, and currently serves as a director of Flex, Ltd.",
+      "other_public_boards": [
+        "Flex, Ltd."
+      ],
+      "prior_employers_named": [
+        "Cummins Inc.",
+        "DowDuPont, Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director ages and tenure were calculated based on information provided in the proxy (director since dates and ages as of proxy date). Tenure years are approximate based on appointment year vs. 2024. UniCredit S.p.A. (Andreotti) was excluded from other_public_boards as the bio states he will retire from that board effective April 17, 2024, and Votorantim SA (Lutz) was excluded as it appears to be a private company. McCain Foods Ltd. (Giesselman) was excluded as it is described as privately held. No executive officers section was included in the provided text excerpt.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:56:31.929481Z",
+    "filing_meta": {
+      "ticker": "CTVA",
+      "form": "DEF 14A",
+      "filing_date": "2024-03-15",
+      "accession": "000119312524069255",
+      "primary_doc": "d543319ddef14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 13966,
+    "output_tokens": 3068,
+    "cost_usd": 0.0879,
+    "elapsed_sec": 48.0
+  }
+}

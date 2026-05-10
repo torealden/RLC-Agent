@@ -1,0 +1,217 @@
+{
+  "filing_metadata": {
+    "company_ticker": "MOS",
+    "company_name": "The Mosaic Company",
+    "fiscal_year_disclosed": 2020,
+    "filing_date": "2020-04-08"
+  },
+  "directors": [
+    {
+      "name": "Cheryl K. Beebe",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Ms. Beebe served as Executive Vice President and Chief Financial Officer of Ingredion Incorporated from 2004 until her retirement in January 2014, having previously served in various finance leadership roles at Ingredion since 1997. She brings extensive financial expertise, international business experience, and risk management skills.",
+      "other_public_boards": [
+        "Packaging Corporation of America"
+      ],
+      "prior_employers_named": [
+        "Ingredion Incorporated"
+      ]
+    },
+    {
+      "name": "Oscar P. Bernardes",
+      "role": "director",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Mr. Bernardes has been managing partner at Yguapor Consultoria e Empreendimentos Ltda, a consulting and investment firm in S\u00e3o Paulo, Brazil, since 1999. From 2004 to 2011, he was also a managing partner at Integra Associados, specializing in financial restructuring and governance.",
+      "other_public_boards": [
+        "Localiza Rent a Car S.A."
+      ],
+      "prior_employers_named": [
+        "Integra Associados - Reestruturacao Empresarial Ltda."
+      ]
+    },
+    {
+      "name": "Nancy E. Cooper",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Ms. Cooper served as Executive Vice President and Chief Financial Officer of CA Technologies from August 2006 until her retirement in May 2011, and previously as CFO for IMS Health Incorporated from 2001 to 2006. She brings extensive financial leadership, technology, ethics, and risk management expertise.",
+      "other_public_boards": [
+        "Aptiv Corporation",
+        "Brunswick Corporation",
+        "Teradata Corporation"
+      ],
+      "prior_employers_named": [
+        "CA Technologies",
+        "IMS Health Incorporated"
+      ]
+    },
+    {
+      "name": "Gregory L. Ebel",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. Ebel has served as Chairman of Enbridge, Inc. since its merger with Spectra Energy Corp in February 2017, having previously served as Chairman, President and CEO of Spectra Energy from 2014 to 2017 and as its President and CEO from 2009 to 2014. He also held senior finance and operations roles at Duke Energy Corporation.",
+      "other_public_boards": [
+        "Baker Hughes, a GE company",
+        "Enbridge, Inc."
+      ],
+      "prior_employers_named": [
+        "Spectra Energy Corp",
+        "Duke Energy Corporation"
+      ]
+    },
+    {
+      "name": "Timothy S. Gitzel",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Gitzel has been President and CEO of Cameco Corporation, a uranium producer, since July 2011, having previously served as President from 2010 to 2011 and as Senior Vice President and COO from 2007 to 2010. He brings over 20 years of senior management experience in Canadian and international uranium and mining activities.",
+      "other_public_boards": [
+        "Cameco Corporation"
+      ],
+      "prior_employers_named": [
+        "Cameco Corporation"
+      ]
+    },
+    {
+      "name": "Denise C. Johnson",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Ms. Johnson is the Group President of Resources Industries at Caterpillar, Incorporated, a position she has held since February 2016 after rising through various vice president and officer roles at Caterpillar. She began her career at General Motors Corporation and continued at General Motors Company from 1989 through 2011.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Caterpillar, Incorporated",
+        "General Motors Corporation",
+        "General Motors Company"
+      ]
+    },
+    {
+      "name": "Emery N. Koenig",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. Koenig is the retired Vice Chairman and Chief Risk Officer of Cargill, Incorporated, having served in various senior executive roles at Cargill from December 2009 until his retirement in February 2016. He brings extensive experience in agricultural commodity trading, global business management, and risk management.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cargill, Incorporated"
+      ]
+    },
+    {
+      "name": "James (\"Joc\") C. O'Rourke",
+      "role": "director",
+      "is_independent": false,
+      "age": 59,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. O'Rourke was appointed President and CEO of The Mosaic Company in August 2015, having previously served as its EVP-Operations and COO and EVP-Operations since 2009. Prior to Mosaic, he was President, Australia Pacific for Barrick Gold Corporation from 2006 to 2008.",
+      "other_public_boards": [
+        "The Toro Company"
+      ],
+      "prior_employers_named": [
+        "Barrick Gold Corporation"
+      ]
+    },
+    {
+      "name": "David T. Seaton",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": null,
+      "bio_summary": "Mr. Seaton is the former Chairman and CEO of Fluor Corporation, having been elected chairman in February 2012 and serving as CEO from February 2011 until his departure, with prior roles as COO and Senior Group President at Fluor since joining in 1984. He rejoined the Mosaic Board in September 2019 after previously serving from April 2009 to May 2019.",
+      "other_public_boards": [
+        "ConocoPhillips Company"
+      ],
+      "prior_employers_named": [
+        "Fluor Corporation"
+      ]
+    },
+    {
+      "name": "Steven M. Seibert",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Mr. Seibert is a land use and environmental attorney and Florida Supreme Court-certified mediator who has operated The Seibert Law Firm since January 2003 and co-founded triSect, LLC in 2013. He previously served as Senior Vice President and Director of Strategic Visioning for the Collins Center for Public Policy from 2008 to 2011 and as interim Executive Director of the Florida Humanities Council beginning December 2016.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Collins Center for Public Policy",
+        "Florida Humanities Council"
+      ]
+    },
+    {
+      "name": "Luciano Siani Pires",
+      "role": "director",
+      "is_independent": false,
+      "age": 50,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Mr. Siani Pires has been Chief Financial Officer of Vale, S.A., a global mining company, since July 2012, having previously held leadership positions in strategic planning and human resources at Vale from 2008 to 2012. Earlier, he served in various roles at Brazil's National Development Bank from 2001 to 2008.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Vale, S.A.",
+        "Brazil's National Development Bank"
+      ]
+    },
+    {
+      "name": "Gretchen H. Watkins",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": null,
+      "bio_summary": "Ms. Watkins joined Shell Oil Company in May 2018 as President and Executive Vice President Global Shales, and previously served as CEO of Maersk Oil and Gas from October 2016 to May 2018 and as its COO beginning January 2014. She also held various officer positions at Marathon Oil Company from June 2008 to September 2013.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Maersk Oil and Gas",
+        "Marathon Oil Company"
+      ]
+    },
+    {
+      "name": "Kelvin R. Westbrook",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Westbrook has been President and CEO of KRW Advisors, LLC, a strategic and business consulting firm, since September 2007, and previously founded and led Millennium Digital Media Systems, LLC from 1997 to 2007. He brings extensive executive leadership, legal, media, marketing, and corporate governance expertise.",
+      "other_public_boards": [
+        "Archer Daniel Midland Company",
+        "T-Mobile US Inc.",
+        "Camden Property Trust",
+        "Stifel Financial Corp."
+      ],
+      "prior_employers_named": [
+        "Millennium Digital Media Systems, LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated from 'Director Since' year to 2020 filing year. David T. Seaton's tenure is listed as null because he had a break in service (April 2009 to May 2019, then again from September 2019), making a simple calculation ambiguous. Gretchen H. Watkins is listed as a nominee and not a current director, so tenure is null. The proxy did not include a dedicated executive officers section in the extracted text; therefore executive_officers is an empty array. Other public boards reflect only current boards as explicitly stated in the proxy; prior boards within five years were not included per instructions.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:15:51.498470Z",
+    "filing_meta": {
+      "ticker": "MOS",
+      "form": "DEF 14A",
+      "filing_date": "2020-04-08",
+      "accession": "000124378620000044",
+      "primary_doc": "a2020proxystatement.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14368,
+    "output_tokens": 2788,
+    "cost_usd": 0.0849,
+    "elapsed_sec": 46.8
+  }
+}

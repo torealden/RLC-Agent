@@ -1,0 +1,172 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CALM",
+    "company_name": "Cal-Maine Foods, Inc.",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2024-08-22"
+  },
+  "directors": [
+    {
+      "name": "Adolphus B. Baker",
+      "role": "chair",
+      "is_independent": false,
+      "age": 67,
+      "tenure_years_on_board": 33,
+      "bio_summary": "Adolphus B. Baker serves as Chairman of the Board of Cal-Maine Foods, having joined the company in 1986 and served as CEO from 2010 to 2022 and President from 2010 to 2018. He guided Cal-Maine's growth as the largest U.S. producer and distributor of fresh shell eggs, overseeing 25 acquisitions and the company's 1996 IPO. He currently serves on the boards of Trustmark Corporation and Eggland's Best.",
+      "other_public_boards": [
+        "Trustmark Corporation",
+        "Trustmark National Bank"
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Max P. Bowman",
+      "role": "director",
+      "is_independent": false,
+      "age": 64,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Max P. Bowman has served as Vice President and Chief Financial Officer of Cal-Maine Foods since October 2018. Prior to joining Cal-Maine, he served as CFO of Southern States Utility Trailer Sales and H&P Leasing, co-founded Tenax LLC (Tenax Aerospace), and served as CFO of ChemFirst, Inc. He began his career at Arthur Andersen & Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Southern States Utility Trailer Sales",
+        "H&P Leasing",
+        "Tenax, LLC",
+        "Tenax Aerospace",
+        "ChemFirst, Inc.",
+        "Arthur Andersen & Company"
+      ]
+    },
+    {
+      "name": "Letitia C. Hughes",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 23,
+      "bio_summary": "Letitia C. Hughes is a retired Senior Vice President and Manager of Private Banking at Trustmark National Bank, where she worked for more than forty years before retiring in 2014. She specialized in private wealth management, financial analysis, and compliance, and also served as a credit analyst and relationship manager during her career. She brings extensive audit, finance, and banking experience to the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Trustmark National Bank"
+      ]
+    },
+    {
+      "name": "Sherman L. Miller",
+      "role": "director",
+      "is_independent": false,
+      "age": 49,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Sherman L. Miller has served as President and CEO of Cal-Maine Foods since September 2022, having joined the company in 1996 and worked his way up through operations roles to COO in 2011 and President in 2018. He brings deep expertise in animal protein, commodity sourcing, regulatory compliance, food safety, and operational logistics. He is recognized as a leading industry expert and serves as Distinguished Fellow for the Department of Poultry Science at Mississippi State University.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "James E. Poole",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 75,
+      "tenure_years_on_board": 20,
+      "bio_summary": "James E. Poole is a retired CPA who co-founded GranthamPoole, a public accounting firm, in 1999 and served as a Principal until his retirement in 2013. Prior to that, he founded James E. Poole, CPA in 1985 and co-founded Mississippi Mortgage Company. He brings extensive audit, financial, and risk management expertise to the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "GranthamPoole",
+        "James E. Poole, CPA",
+        "Mississippi Mortgage Company"
+      ]
+    },
+    {
+      "name": "Steve W. Sanders",
+      "role": "director",
+      "is_independent": true,
+      "age": 78,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Steve W. Sanders is a retired CPA who served as Managing Partner of the Ernst & Young LLP Jackson, Mississippi office for more than 30 years before retiring in 2002. He subsequently served as a Lecturer at Mississippi State University's Richard C. Adkerson School of Accountancy from 2003 to 2017. He brings extensive audit, accounting, merger and acquisition, and human capital management experience.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ernst & Young LLP",
+        "Mississippi State University"
+      ]
+    },
+    {
+      "name": "Camille S. Young",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Camille S. Young currently serves as Principal and Director of Cornerstone Government Affairs, a bipartisan consulting firm specializing in government relations and public affairs, which she joined in 2011. Previously, she served as a government affairs representative at Watkins Ludlam Winter & Stennis from 2001 to 2011 and in various roles at the Mississippi Farm Bureau Federation and the U.S. Department of Agriculture. She serves on the public board of Mississippi Power Company.",
+      "other_public_boards": [
+        "Mississippi Power Company"
+      ],
+      "prior_employers_named": [
+        "Cornerstone Government Affairs",
+        "Watkins Ludlam Winter & Stennis",
+        "Mississippi Farm Bureau Federation",
+        "United States Department of Agriculture"
+      ]
+    }
+  ],
+  "executive_officers": [
+    {
+      "name": "Adolphus B. Baker",
+      "title": "Chairman of the Board",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Sherman L. Miller",
+      "title": "President, Chief Executive Officer and Director",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Max P. Bowman",
+      "title": "Vice President, Chief Financial Officer, Treasurer and Secretary and Director",
+      "tenure_years": null,
+      "prior_employers_named": [
+        "Southern States Utility Trailer Sales",
+        "H&P Leasing",
+        "Tenax, LLC",
+        "Tenax Aerospace",
+        "ChemFirst, Inc.",
+        "Arthur Andersen & Company"
+      ]
+    },
+    {
+      "name": "Robert L. Holladay, Jr.",
+      "title": "Vice President - General Counsel",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Michael T. Walters",
+      "title": "Vice President - Operations and Chief Operating Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Scott D. Hull",
+      "title": "Vice President - Sales",
+      "tenure_years": null,
+      "prior_employers_named": []
+    }
+  ],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years on board calculated as 2024 minus the 'Director Since' year provided. Executive officer tenure years not explicitly stated in the proxy text. Trustmark National Bank is listed separately from Trustmark Corporation in Baker's directorships header but is a subsidiary; both are included as stated. Mississippi Power Company is noted as a subsidiary of Southern Company but listed as a public board directorship as stated in the proxy.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:47:19.026758Z",
+    "filing_meta": {
+      "ticker": "CALM",
+      "form": "DEF 14A",
+      "filing_date": "2024-08-22",
+      "accession": "000114036124038234",
+      "primary_doc": "ny20031163x3_def14a.htm",
+      "section_chars_used": 24382
+    },
+    "input_tokens": 6015,
+    "output_tokens": 2052,
+    "cost_usd": 0.0488,
+    "elapsed_sec": 27.3
+  }
+}

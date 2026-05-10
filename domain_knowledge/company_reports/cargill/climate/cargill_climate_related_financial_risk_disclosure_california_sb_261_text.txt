@@ -1,0 +1,208 @@
+
+=== PAGE 1 ===
+Climate Related Financial Risk Disclosure  
+California SB 261 
+ 
+Overview 
+Cargill, Incorporated ("Cargill" or the "Company") provides this disclosure to comply with California Health and 
+Safety Code (“H&SC”) § 38533 pertaining to climate-related financial risk reporting. Cargill is a family-owned 
+company providing food, ingredients, agricultural solutions, industrial products, and financial services to 
+customers worldwide. Pursuant to H&SC § 38533(b)(2), this report is submitted on behalf of Cargill and its 
+subsidiaries that are subject to climate-related financial risk reporting requirements.  
+This disclosure has been prepared using the Task Force on Climate-related Financial Disclosures (TCFD) 
+framework. This disclosure addresses all four elements of the TCFD framework:   
+1. Governance   
+2. Strategy   
+3. Risk Management   
+4. Metrics and Targets  
+ 
+1. Governance 
+ 
+Board and management oversight of climate related risks and opportunities   
+Overall responsibility for sustainability and ESG rests with the CEO, who also serves as Board Chair on Cargill’s 
+Board of Directors (BOD). The CEO collaborates closely with the Chief Sustainability Officer (CSO) to evaluate 
+and address ESG risks, opportunities, and impacts, guiding the company’s overarching business strategy and 
+reporting practices. Reporting to the CEO, our CSO is entrusted with leading Cargill’s comprehensive ESG 
+strategy and monitoring progress against ESG goals and targets. To fortify ESG governance and accountability, 
+Cargill also has an executive-level ESG Governance Committee, chaired by the CSO, that monitors progress and 
+assists in strategic planning and alignment across the company.   
+The Environmental, Social, Governance (“ESG”) Committee seeks to assist the Cargill Executive Team in fulfilling 
+its leadership and oversight of responsibilities related to, but not limited to, social and environmental sustainability, 
+corporate responsibility, ESG governance, community relations and review of implications of public policy matters 
+related to ESG topics (collectively “ESG matters”). The ESG Committee is a cross-functional management 
+committee of the Company that includes the Chief Executive Officer, Chief Sustainability Officer, Chief Financial 
+Officer, General Counsel and Vice President of Corporate Audit. It assists the Company’s executive leadership 
+team in:  
+a) Ongoing oversight of corporate and enterprise-level ESG strategies to ensure a collective approach, as 
+well as protect the company’s brand, reputation and license to operate.  
+b) Assess and approve or reject proposed ESG hurdle criteria embedded in the approval processes for 
+organic and inorganic investments over certain thresholds (CapEx, MADJV, etc.).   
+=== PAGE 2 ===
+ 
+ 
+Climate Related Financial Risk Disclosure California (SB 261) 
+2025   
+2 
+c) Evaluate progress against the company’s ESG goals and strategic priorities and identify opportunities to 
+address performance gaps and barriers.  
+d) Monitor current or emerging regulatory, customer and science-based ESG matters or trends that may 
+affect the business, operations, reputation or performance of the Company, and advise on how to adapt 
+policies, practices and communications in response to those trends.  
+e) Ensure appropriate systems are in place to monitor and address ESG risks and impacts across the 
+Company’s operations and supply chains.  
+f) Consider and recommend new policies, programs, practices and/or external disclosures that align with 
+and help advance the Company’s ESG strategy.  
+Finally, Cargill’s Enterprise Risk Management (ERM) program strengthens governance by integrating a company -
+wide approach to identifying, assessing, and managing significant risks that could impact strategic objectives. It 
+promotes accountability, with risk ownership embedded across businesses and regular reviews by leadership and 
+the BOD. The program applies a holistic view of internal and external risks, prioritizes significant risks through 
+assessments. By integrating risk insights into strategy and decision-making, ERM enables leaders to balance risk 
+and opportunity and drive growth.  
+2. Strategy 
+Climate change presents both physical and transition risks to Cargill’s global operations and supply chains. To 
+prepare for these challenges, Cargill assesses how a range of climate scenarios could affect its business through 
+2050. The Company’s resilient portfolio of agricultural assets and supply chains is managed with a long -term 
+view, and climate considerations increasingly inform decisions on operations, supply chains, product 
+development, services, and investments in research and innovation.  
+ 
+Climate-related risks and opportunities the organization has identified over the short, medium, and long 
+term   
+Cargill evaluates climate risks across three (3) time horizons – short term (0 - 3 years), medium term (4 - 10 
+years), and long term (11 - 30 years) – aligned with the Company’s strategic priorities and asset lifespans. Cargill 
+analyzes both low-warming and high-warming scenarios to understand transition and physical risks across its 
+global footprint (see Risk Management section for more detail).  
+Short-Term Risks   
+Limited physical risks have been identified from climate change in the short term.Existing business continuity 
+plans are considered sufficient, though chronic water stress – particularly within the protein business – remains a 
+key area of concern.  For more information on Cargill’s water strategy, please see Land and Water chapter in 
+Cargill’s Impact Report.  
+Transition risks are primarily regulatory, driven by carbon reduction schemes and evolving disclosure 
+requirements. To address these, Cargill has established robust compliance processes at local, national, and 
+global levels, while also working with customers on climate solutions. 
+Medium-Term Risks   
+Over the medium term, exposure to climate-related physical risks increases across all scenarios, with the most 
+significant expansion under a high-warming (RCP 8.5) pathway affecting regions such as Europe and Southeast 
+Asia. Chronic water stress remains a central driver of climate risk, with regional variations under different 
+scenarios. For more information on Cargill’s water strategy, please see Land and Water chapter in Cargill’s 
+=== PAGE 3 ===
+ 
+ 
+Climate Related Financial Risk Disclosure California (SB 261) 
+2025   
+3 
+Impact Report.  
+Transition risks in this period are shaped by new regulations and reputational considerations. These risks are 
+managed by cross-functional teams – including Government Relations, Corporate Responsibility, and 
+Communications – that work with business leaders to develop processes aligned to local priorities and 
+stakeholder expectations.  
+Long-Term Risks   
+By 2050, climate-related risks intensify further, particularly in North America and Brazil, where temperature rise 
+and escalating water stress are expected to be most pronounced. Transition risks include evolving market 
+dynamics, tightening regulatory frameworks, and operational challenges related to commodity sourcing, financing, 
+insurance, and shifting consumer preferences. Given their long-term nature, these risks are managed at the 
+global level through Cargill’s enterprise risk management program, integrating climate considerations into 
+strategic planning alongside other critical business risks. Our sustainability team works directly with our business 
+leaders to integrate critical mitigation actions related to climate risk into business processes. Learn more about 
+our organizational resiliency efforts below. Regulatory outcomes will vary depending on mitigation pathways: 
+aggressive action could accelerate decarbonization requirements, while moderate pathways may increase 
+adaptation needs and physical impacts.  
+Opportunities  
+Climate change also creates opportunities. Shifting consumer preferences are driving demand for sustainable 
+solutions, and Cargill’s strategy leverages technology, digitalization, and improved farming practices to enhance 
+productivity and resilience. Cargill’s global R&D network, enterprises, and sustainability team supports product 
+innovation, methane-reduction solutions like SilvAir™ and Reach4Reduction, and scalable technologies that 
+improve farmer resilience and customer outcomes. To learn more about opportunities, see Cargill’s Impact 
+Report.  
+Impact of climate-related risks and opportunities on the organization’s businesses, strategy, and financial 
+planning  
+ 
+Cargill’s sustainability strategy is anchored around three priorities: climate, land and water, and people. The 
+Company aims to reduce the footprint of its products, provide feedstocks for lower-carbon fuels, and deliver 
+solutions to help customers meet their own climate goals. For example, Cargill is scaling feed technologies that 
+reduce methane emissions, enabling greenhouse gas reductions alongside improved farmer productivity.   
+ 
+Organizational Resilience  
+Cargill’s operational resilience strategy includes corporate and site-level risk assessments, physical adaptation of 
+assets, business continuity planning, and financial contingency measures. Insurance forms a key component of 
+these contingency measures, acting as a financial risk transfer mechanism for physical climate risks. It provides 
+liquidity and supports recovery following acute events such as floods, storms, or wildfires, helping to stabilize 
+operations and cash flow.    
+Recognizing that climate risks are often location-and region-specific, Cargill’s local businesses embed climate 
+resilience into their business strategies and risk management processes. This includes incorporating significant 
+climate risk into capital allocation and long-term planning decisions. Site-specific adaptation projects, 
+improvements to structural standards for existing assets, and supply chain diversification are implemented to 
+reduce vulnerability to extreme weather events. By combining financial risk transfer with proactive adaptation 
+=== PAGE 4 ===
+ 
+ 
+Climate Related Financial Risk Disclosure California (SB 261) 
+2025   
+4 
+actions, the Company aims to maintain resilience under a range of climate scenarios and safeguard business 
+performance over the long term.   
+3. Risk Management 
+Cargill employs a scenario-based approach to identify and assess climate-related risks, using three 
+Representative Concentration Pathways (RCP 2.5, 4.5, and 8.5) to model outcomes ranging from aggressive 
+mitigation to a high-emissions trajectory. Risks are evaluated across three (3) time horizons – short term (0–3 
+years), medium term (4–10 years), and long term (11–30 years) – to understand immediate vulnerabilities, 
+emerging risks through 2030, and long-term impacts that could shape investment decisions, infrastructure 
+resilience, and overall business sustainability. This structured framework enables systematic assessment of both 
+physical and transition risks, supporting informed decision-making and long-term resilience planning.  
+Process for identifying and assessing climate-related risks  
+Cargill classifies climate-related risks into three categories: physical acute, physical chronic, and transition risks. 
+Our approach is tailored to the unique exposures of operations, supply chains, and investments.   
+• Physical risks: operational sites are screened against global climate indicators. High-value facilities 
+undergo detailed assessments for acute risks (extreme heat, floods, severe weather) and chronic risks 
+(temperature rise, water stress, sea level rise). Results are embedded into asset management, continuity 
+planning, and capital investment. In the supply chain, the Company focuses on vulnerabilities in key 
+commodities and regions. Water depletion is a particular concern, addressed through a water resiliency 
+strategy in priority regions to safeguard continuity.  
+• Transition risks: Cargill assesses exposure across the full value chain, from suppliers to downstream 
+markets. These include evolving climate policies, carbon pricing, technological disruption, shifting market 
+dynamics, and reputational challenges. Assessments help anticipate financial, operational, and 
+stakeholder impacts, allowing the Company to proactively manage risks and capture opportunities 
+associated with the low-carbon transition.  
+Risk Assessment Methodology  
+Cargill prioritizes risks using three criteria: level of exposure, potential impact, and our ability to influence 
+outcomes. Operational sites are screened for climate and natural hazards, with high -value facilities undergoing in-
+depth assessments and tailored adaptation plans. Agricultural commodities are screened for water stress and 
+ecosystem health, with actions prioritized where Cargill can make the most impact. This ensures resources are 
+focused on the most significant risks across operations and supply chains.  
+Process for managing climate-related risks  
+Cargill’s risk management approach combines mitigation, adaptation, and control measures:   
+• Mitigation: Setting science-aligned climate targets and integrates emissions reduction plans into 
+operational strategies.  
+• Adaptation: Investing in resilience initiatives such as improving soil health, optimizing water use, and 
+enhancing farm productivity to buffer against climate variability.  
+• Control measures: Reducing dependency on climate-sensitive regions by diversifying sourcing and 
+building supply chain flexibility.  
+Together, these measures provide a balanced response that safeguards long-term business continuity while 
+contributing to environmental stewardship.  
+=== PAGE 5 ===
+ 
+ 
+Climate Related Financial Risk Disclosure California (SB 261) 
+2025   
+5 
+Integration into overall risk management  
+Cargill also integrates sustainability-related risks into its enterprise risk management (ERM) program through a 
+structured risk assessment process. The Cargill sustainability team utilizes insights from several detailed risk 
+assessment activities. The results of these assessments help identify and prioritize ESG risks, which are 
+incorporated into Cargill’s Corporate Risk Register. As part of the ERM oversight process, ESG risks may be 
+escalated to the Board of Directors dependent on their overall risk exposure and impact.  
+4. Metrics and Targets 
+Cargill’s climate goals are aligned with the Greenhouse Gas (GHG) Protocol and cover Scope 1, Scope 2, and 
+Scope 3 emissions across the Company’s global operations and supply chain. For more information, please see 
+Cargill’s Impact Report.  
+Appendix   
+This disclosure document will be updated biennially and posted on Cargill’s website, in accordance with Cal. 
+H&SC § 38533.   
+See link here: https://www.cargill.com/sustainability/reporting-hub   
+This disclosure and Cargill’s public reports contain forward-looking statements, including but not limited to 
+strategies, plans, progress, and goals. All forward-looking statements are subject to external and internal 
+uncertainties and risks and opportunities that could change future strategy or goals. The Company assumes no 
+obligation to amend or update any forward-looking statements found in this year’s disclosure or public reports 
+should any future conditions change.   
+The document history is recorded below.   
+October 2025  California Climate Related Financial Risk Act Disclosure (SB 261)  
+ 

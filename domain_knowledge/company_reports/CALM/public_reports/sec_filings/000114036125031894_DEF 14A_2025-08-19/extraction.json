@@ -1,0 +1,193 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CALM",
+    "company_name": "Cal-Maine Foods, Inc.",
+    "fiscal_year_disclosed": 2025,
+    "filing_date": "2025-08-19"
+  },
+  "directors": [
+    {
+      "name": "Adolphus B. Baker",
+      "role": "chair",
+      "is_independent": false,
+      "age": 68,
+      "tenure_years_on_board": 34,
+      "bio_summary": "Adolphus B. Baker serves as Board Chair, having been elected to that role in 2012. He previously served as CEO from 2010 to 2022, President from 2010 to 2018, and COO from 1997 to 2010, joining Cal-Maine Foods in 1986. He guided the Company's growth as the largest U.S. producer and distributor of fresh shell eggs and was instrumental in the Company's 1996 IPO.",
+      "other_public_boards": [
+        "Trustmark Corporation",
+        "Trustmark National Bank"
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Melanie Boulden",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Melanie Boulden was appointed to the Board as an independent director in 2025. She formerly served as Group President of Prepared Foods and Executive Vice President, Chief Growth Officer at Tyson Foods, Inc. through May 2025, and previously held senior roles at The Coca-Cola Company, Reebok International, Crayola LLC, Kraft Foods Group Inc., and Henkel Consumer Goods, USA.",
+      "other_public_boards": [
+        "Adobe Inc."
+      ],
+      "prior_employers_named": [
+        "Tyson Foods, Inc.",
+        "The Coca-Cola Company",
+        "Reebok International, Ltd.",
+        "Crayola LLC",
+        "Kraft Foods Group Inc.",
+        "Henkel Consumer Goods, USA"
+      ]
+    },
+    {
+      "name": "Max P. Bowman",
+      "role": "director",
+      "is_independent": false,
+      "age": 65,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Max P. Bowman has served as Company Vice President and Chief Financial Officer since October 2018, when he joined the Board. Prior to Cal-Maine, he served as CFO of Southern States Utility Trailer Sales and H&P Leasing, co-founded Tenax, LLC (including Tenax Aerospace), and served as CFO of ChemFirst, Inc. He began his career at Arthur Andersen & Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Southern States Utility Trailer Sales",
+        "H&P Leasing",
+        "Tenax, LLC",
+        "Tenax Aerospace",
+        "ChemFirst, Inc.",
+        "DuPont Co",
+        "Arthur Andersen & Company"
+      ]
+    },
+    {
+      "name": "Letitia C. Hughes",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 24,
+      "bio_summary": "Letitia C. Hughes was elected to the Board as an independent director in 2001 and appointed as lead independent director on July 22, 2025. She retired in 2014 as Senior Vice President and Manager of Private Banking at Trustmark National Bank after more than forty years of service, specializing in private wealth management, credit analysis, and compliance. She brings broad audit, finance, and banking experience to the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Trustmark National Bank"
+      ]
+    },
+    {
+      "name": "Sherman L. Miller",
+      "role": "director",
+      "is_independent": false,
+      "age": 50,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Sherman L. Miller has served as President since 2018 and was elected CEO on September 30, 2022, having joined Cal-Maine Foods in 1996. He previously served as COO from 2011 to March 2023 and has spent his entire professional career with the Company. He is a widely recognized animal protein industry expert focused on long-term growth and value creation.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "James E. Poole",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 76,
+      "tenure_years_on_board": 21,
+      "bio_summary": "James E. Poole was elected to the Board as an independent director in 2004. He is a CPA who retired in 2013 as a Principal of GranthamPoole PLLC, a regional public accounting firm he co-founded in 1999, and previously founded James E. Poole, CPA in 1985. He also co-founded Mississippi Mortgage Company and built other businesses including real estate and oil and gas ventures.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "GranthamPoole PLLC",
+        "James E. Poole, CPA",
+        "Mississippi Mortgage Company"
+      ]
+    },
+    {
+      "name": "Steve W. Sanders",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 79,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Steve W. Sanders was elected to the Board as an independent director in 2009. He is a CPA who retired in 2002 as Managing Partner of the Ernst & Young LLP Jackson, Mississippi office after more than 30 years of service, with extensive audit, M&A accounting, and valuation-advisory experience. He also served as a Lecturer at Mississippi State University's Adkerson School of Accountancy from 2003 to 2017.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ernst & Young LLP",
+        "Mississippi State University"
+      ]
+    },
+    {
+      "name": "Camille S. Young",
+      "role": "director",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Camille S. Young was elected to the Board as an independent director in 2021. She currently serves as Principal and Director of Cornerstone Government Affairs, a bipartisan consulting firm specializing in government relations and public affairs, which she joined in 2011. Previously, she worked in government affairs at Watkins Ludlam Winter & Stennis and served the Mississippi Farm Bureau Federation and the U.S. Department of Agriculture.",
+      "other_public_boards": [
+        "Mississippi Power Company"
+      ],
+      "prior_employers_named": [
+        "Watkins Ludlam Winter & Stennis",
+        "Mississippi Farm Bureau Federation",
+        "United States Department of Agriculture"
+      ]
+    }
+  ],
+  "executive_officers": [
+    {
+      "name": "Adolphus B. Baker",
+      "title": "Board Chair",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Sherman L. Miller",
+      "title": "President, Chief Executive Officer and Director",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Max P. Bowman",
+      "title": "Vice President, Chief Financial Officer, Treasurer and Secretary and Director",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Robert L. Holladay, Jr.",
+      "title": "Vice President - General Counsel",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Michael T. Walters",
+      "title": "Vice President - Operations and Chief Operating Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Scott D. Hull",
+      "title": "Vice President - Sales",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Keira L. Lombardo",
+      "title": "Chief Strategy Officer",
+      "tenure_years": null,
+      "prior_employers_named": [
+        "Dairy MAX Inc.",
+        "Smithfield Foods, Inc."
+      ]
+    }
+  ],
+  "extraction_confidence": "high",
+  "extraction_notes": "Letitia C. Hughes is listed with the role of audit_committee_chair and was also appointed lead independent director on July 22, 2025; the schema does not have a combined role so audit_committee_chair was used as her primary committee leadership role. Tenure years are calculated from the 'Director Since' year through 2025. Melanie Boulden was appointed in 2025 so tenure is listed as 0. Mississippi Power Company is noted as a subsidiary of Southern Company but is listed explicitly as a public board directorship in the proxy.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:48:02.510145Z",
+    "filing_meta": {
+      "ticker": "CALM",
+      "form": "DEF 14A",
+      "filing_date": "2025-08-19",
+      "accession": "000114036125031894",
+      "primary_doc": "ny20050542x1_def14a.htm",
+      "section_chars_used": 29609
+    },
+    "input_tokens": 7160,
+    "output_tokens": 2356,
+    "cost_usd": 0.0568,
+    "elapsed_sec": 43.5
+  }
+}

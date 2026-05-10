@@ -1,0 +1,956 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "0001309402-24-000084-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "0001309402-24-000084-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "0001309402-24-000084.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "0001309402-24-000084-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "13737572"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "7919"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328.htm",
+        "type": "text.gif",
+        "size": "1345002"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328.xsd",
+        "type": "text.gif",
+        "size": "3418"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_def.xml",
+        "type": "text.gif",
+        "size": "4302"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g1.jpg",
+        "type": "image2.gif",
+        "size": "3061926"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g10.jpg",
+        "type": "image2.gif",
+        "size": "7438"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g100.jpg",
+        "type": "image2.gif",
+        "size": "90064"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g101.jpg",
+        "type": "image2.gif",
+        "size": "148372"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g102.jpg",
+        "type": "image2.gif",
+        "size": "43003"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g103.jpg",
+        "type": "image2.gif",
+        "size": "80748"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g104.jpg",
+        "type": "image2.gif",
+        "size": "91231"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g105.jpg",
+        "type": "image2.gif",
+        "size": "23742"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g106.jpg",
+        "type": "image2.gif",
+        "size": "1081"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g107.jpg",
+        "type": "image2.gif",
+        "size": "1096"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g108.jpg",
+        "type": "image2.gif",
+        "size": "1078"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g109.jpg",
+        "type": "image2.gif",
+        "size": "1055"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g11.jpg",
+        "type": "image2.gif",
+        "size": "51363"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g110.jpg",
+        "type": "image2.gif",
+        "size": "647275"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g111.jpg",
+        "type": "image2.gif",
+        "size": "216625"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g112.jpg",
+        "type": "image2.gif",
+        "size": "820918"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g113.jpg",
+        "type": "image2.gif",
+        "size": "41490"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g114.jpg",
+        "type": "image2.gif",
+        "size": "46160"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g115.jpg",
+        "type": "image2.gif",
+        "size": "48566"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g116.jpg",
+        "type": "image2.gif",
+        "size": "47699"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g117.jpg",
+        "type": "image2.gif",
+        "size": "47328"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g118.jpg",
+        "type": "image2.gif",
+        "size": "46595"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g119.jpg",
+        "type": "image2.gif",
+        "size": "45495"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g12.jpg",
+        "type": "image2.gif",
+        "size": "36253"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g120.jpg",
+        "type": "image2.gif",
+        "size": "45207"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g121.jpg",
+        "type": "image2.gif",
+        "size": "44760"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g122.jpg",
+        "type": "image2.gif",
+        "size": "72465"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g123.jpg",
+        "type": "image2.gif",
+        "size": "39838"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g124.jpg",
+        "type": "image2.gif",
+        "size": "42477"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g125.jpg",
+        "type": "image2.gif",
+        "size": "42986"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g126.jpg",
+        "type": "image2.gif",
+        "size": "42218"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g127.jpg",
+        "type": "image2.gif",
+        "size": "51614"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g128.jpg",
+        "type": "image2.gif",
+        "size": "53547"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g129.jpg",
+        "type": "image2.gif",
+        "size": "40162"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g13.jpg",
+        "type": "image2.gif",
+        "size": "36475"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g130.jpg",
+        "type": "image2.gif",
+        "size": "43744"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g131.jpg",
+        "type": "image2.gif",
+        "size": "31591"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g132.jpg",
+        "type": "image2.gif",
+        "size": "6249"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g133.jpg",
+        "type": "image2.gif",
+        "size": "6208"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g134.jpg",
+        "type": "image2.gif",
+        "size": "8465"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g135.jpg",
+        "type": "image2.gif",
+        "size": "128963"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g136.jpg",
+        "type": "image2.gif",
+        "size": "135413"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g137.jpg",
+        "type": "image2.gif",
+        "size": "154757"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g138.jpg",
+        "type": "image2.gif",
+        "size": "168868"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g139.jpg",
+        "type": "image2.gif",
+        "size": "8505"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g14.jpg",
+        "type": "image2.gif",
+        "size": "53433"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g140.jpg",
+        "type": "image2.gif",
+        "size": "682832"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g141.jpg",
+        "type": "image2.gif",
+        "size": "1140031"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g142.jpg",
+        "type": "image2.gif",
+        "size": "869915"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g15.jpg",
+        "type": "image2.gif",
+        "size": "48199"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g16.jpg",
+        "type": "image2.gif",
+        "size": "50447"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g17.jpg",
+        "type": "image2.gif",
+        "size": "35199"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g18.jpg",
+        "type": "image2.gif",
+        "size": "51887"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g19.jpg",
+        "type": "image2.gif",
+        "size": "49739"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g2.jpg",
+        "type": "image2.gif",
+        "size": "2704921"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g20.jpg",
+        "type": "image2.gif",
+        "size": "53448"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g21.jpg",
+        "type": "image2.gif",
+        "size": "36185"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g22.jpg",
+        "type": "image2.gif",
+        "size": "36399"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g23.jpg",
+        "type": "image2.gif",
+        "size": "54781"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g24.jpg",
+        "type": "image2.gif",
+        "size": "35142"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g25.jpg",
+        "type": "image2.gif",
+        "size": "1310"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g26.jpg",
+        "type": "image2.gif",
+        "size": "1555"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g27.jpg",
+        "type": "image2.gif",
+        "size": "77055"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g28.jpg",
+        "type": "image2.gif",
+        "size": "51253"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g29.jpg",
+        "type": "image2.gif",
+        "size": "53616"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g3.jpg",
+        "type": "image2.gif",
+        "size": "41446"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g30.jpg",
+        "type": "image2.gif",
+        "size": "44073"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g31.jpg",
+        "type": "image2.gif",
+        "size": "5216"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g32.jpg",
+        "type": "image2.gif",
+        "size": "31722"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g33.jpg",
+        "type": "image2.gif",
+        "size": "5950"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g34.jpg",
+        "type": "image2.gif",
+        "size": "30218"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g35.jpg",
+        "type": "image2.gif",
+        "size": "13934"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g36.jpg",
+        "type": "image2.gif",
+        "size": "30261"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g37.jpg",
+        "type": "image2.gif",
+        "size": "15606"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g38.jpg",
+        "type": "image2.gif",
+        "size": "6036"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g39.jpg",
+        "type": "image2.gif",
+        "size": "29976"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g4.jpg",
+        "type": "image2.gif",
+        "size": "58733"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g40.jpg",
+        "type": "image2.gif",
+        "size": "4234"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g41.jpg",
+        "type": "image2.gif",
+        "size": "5196"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g42.jpg",
+        "type": "image2.gif",
+        "size": "40370"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g43.jpg",
+        "type": "image2.gif",
+        "size": "31142"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g44.jpg",
+        "type": "image2.gif",
+        "size": "5030"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g45.jpg",
+        "type": "image2.gif",
+        "size": "30167"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g46.jpg",
+        "type": "image2.gif",
+        "size": "5779"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g47.jpg",
+        "type": "image2.gif",
+        "size": "28836"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g48.jpg",
+        "type": "image2.gif",
+        "size": "10102"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g49.jpg",
+        "type": "image2.gif",
+        "size": "30167"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g5.jpg",
+        "type": "image2.gif",
+        "size": "26624"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g50.jpg",
+        "type": "image2.gif",
+        "size": "47475"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g51.jpg",
+        "type": "image2.gif",
+        "size": "46796"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g52.jpg",
+        "type": "image2.gif",
+        "size": "49810"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g53.jpg",
+        "type": "image2.gif",
+        "size": "53248"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g54.jpg",
+        "type": "image2.gif",
+        "size": "43768"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g55.jpg",
+        "type": "image2.gif",
+        "size": "46926"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g56.jpg",
+        "type": "image2.gif",
+        "size": "49878"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g57.jpg",
+        "type": "image2.gif",
+        "size": "45826"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g58.jpg",
+        "type": "image2.gif",
+        "size": "35019"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g59.jpg",
+        "type": "image2.gif",
+        "size": "38834"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g6.jpg",
+        "type": "image2.gif",
+        "size": "19248"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g60.jpg",
+        "type": "image2.gif",
+        "size": "44080"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g61.jpg",
+        "type": "image2.gif",
+        "size": "2625"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g62.jpg",
+        "type": "image2.gif",
+        "size": "2183"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g63.jpg",
+        "type": "image2.gif",
+        "size": "25549"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g64.jpg",
+        "type": "image2.gif",
+        "size": "24743"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g65.jpg",
+        "type": "image2.gif",
+        "size": "30273"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g66.jpg",
+        "type": "image2.gif",
+        "size": "32060"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g67.jpg",
+        "type": "image2.gif",
+        "size": "22591"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g68.jpg",
+        "type": "image2.gif",
+        "size": "28619"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g69.jpg",
+        "type": "image2.gif",
+        "size": "73555"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g7.jpg",
+        "type": "image2.gif",
+        "size": "10577"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g70.jpg",
+        "type": "image2.gif",
+        "size": "22880"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g71.jpg",
+        "type": "image2.gif",
+        "size": "134743"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g72.jpg",
+        "type": "image2.gif",
+        "size": "24926"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g73.jpg",
+        "type": "image2.gif",
+        "size": "1260"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g74.jpg",
+        "type": "image2.gif",
+        "size": "38600"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g75.jpg",
+        "type": "image2.gif",
+        "size": "87631"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g76.jpg",
+        "type": "image2.gif",
+        "size": "692610"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g77.jpg",
+        "type": "image2.gif",
+        "size": "23922"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g78.jpg",
+        "type": "image2.gif",
+        "size": "400871"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g79.jpg",
+        "type": "image2.gif",
+        "size": "44201"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g8.jpg",
+        "type": "image2.gif",
+        "size": "25624"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g80.jpg",
+        "type": "image2.gif",
+        "size": "38827"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g81.jpg",
+        "type": "image2.gif",
+        "size": "36879"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g82.jpg",
+        "type": "image2.gif",
+        "size": "139997"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g83.jpg",
+        "type": "image2.gif",
+        "size": "35135"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g84.jpg",
+        "type": "image2.gif",
+        "size": "36713"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g85.jpg",
+        "type": "image2.gif",
+        "size": "36901"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g86.jpg",
+        "type": "image2.gif",
+        "size": "35930"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g87.jpg",
+        "type": "image2.gif",
+        "size": "35091"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g88.jpg",
+        "type": "image2.gif",
+        "size": "37256"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g89.jpg",
+        "type": "image2.gif",
+        "size": "36270"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g9.jpg",
+        "type": "image2.gif",
+        "size": "11249"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g90.jpg",
+        "type": "image2.gif",
+        "size": "31087"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g91.jpg",
+        "type": "image2.gif",
+        "size": "36801"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g92.jpg",
+        "type": "image2.gif",
+        "size": "70546"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g93.jpg",
+        "type": "image2.gif",
+        "size": "239617"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g94.jpg",
+        "type": "image2.gif",
+        "size": "80117"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g95.jpg",
+        "type": "image2.gif",
+        "size": "76564"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g96.jpg",
+        "type": "image2.gif",
+        "size": "67090"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g97.jpg",
+        "type": "image2.gif",
+        "size": "51221"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g98.jpg",
+        "type": "image2.gif",
+        "size": "66303"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_g99.jpg",
+        "type": "image2.gif",
+        "size": "91916"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_htm.xml",
+        "type": "text.gif",
+        "size": "112218"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_lab.xml",
+        "type": "text.gif",
+        "size": "6088"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "gpre-20240328_pre.xml",
+        "type": "text.gif",
+        "size": "3326"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "182706"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "10841"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "R2.htm",
+        "type": "text.gif",
+        "size": "139335"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2768"
+      },
+      {
+        "last-modified": "2024-03-28 16:13:30",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1086"
+      }
+    ],
+    "name": "/Archives/edgar/data/1309402/000130940224000084",
+    "parent-dir": "/Archives/edgar/data/1309402"
+  }
+}

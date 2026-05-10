@@ -1,0 +1,212 @@
+{
+  "filing_metadata": {
+    "company_ticker": "TSN",
+    "company_name": "Tyson Foods, Inc.",
+    "fiscal_year_disclosed": 2023,
+    "filing_date": "2022-12-21"
+  },
+  "directors": [
+    {
+      "name": "John H. Tyson",
+      "role": "chair",
+      "is_independent": false,
+      "age": 69,
+      "tenure_years_on_board": 38,
+      "bio_summary": "John H. Tyson has been Chairman of the Board since 1998 and served as Chief Executive Officer from 2000 to 2006, having devoted his entire professional career to Tyson Foods. He has been a board member since 1984 and holds substantial personal interest in the Company through the Tyson Limited Partnership and individual shareholdings.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Les R. Baledge",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Les R. Baledge is a private investor who previously served as Executive Vice President and General Counsel of Tyson Foods from 1999 to 2004. Prior to that he practiced corporate and finance law, advising numerous private and public entities, and began assisting the Company with legal matters in 1982.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tyson Foods"
+      ]
+    },
+    {
+      "name": "Mike Beebe",
+      "role": "director",
+      "is_independent": true,
+      "age": 75,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mike Beebe currently serves as a member of the Governors' Council of the Bipartisan Policy Center in Washington, D.C. He previously served as Governor of the State of Arkansas from 2007 to 2015 and as the state's Attorney General from 2003 to 2007.",
+      "other_public_boards": [
+        "Home BancShares, Inc."
+      ],
+      "prior_employers_named": [
+        "Bipartisan Policy Center"
+      ]
+    },
+    {
+      "name": "Maria Claudia Borras",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Maria Claudia Borras is Executive Vice President, Oilfield Services Equipment, at Baker Hughes Company, a position she has held since 2017. Prior to that she served as Chief Commercial Officer for General Electric Company's Oil and Gas operations, and before 2015 held various executive roles at Baker Hughes Incorporated since 1994.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Baker Hughes Company",
+        "General Electric Company",
+        "Baker Hughes Incorporated"
+      ]
+    },
+    {
+      "name": "David J. Bronczek",
+      "role": "director",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 2,
+      "bio_summary": "David J. Bronczek previously served as President and Chief Operating Officer of FedEx Corporation until his retirement in 2019, having worked at FedEx for more than 40 years in roles including President and CEO of FedEx Express for 17 years. He currently serves on the board of Yellowstone Acquisition Co. and previously served on the board of International Paper from 2006 to 2019.",
+      "other_public_boards": [
+        "Yellowstone Acquisition Co."
+      ],
+      "prior_employers_named": [
+        "FedEx Corporation",
+        "FedEx Express",
+        "International Paper"
+      ]
+    },
+    {
+      "name": "Mikel A. Durham",
+      "role": "director",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mikel A. Durham most recently served as CEO of American Seafoods, a privately held company, and has held executive roles at PepsiCo, Cadbury Schweppes, and Diageo across packaged goods, foodservice, and supply chain functions. She has been a Board member of Tyson Foods since 2015.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "American Seafoods",
+        "PepsiCo",
+        "Cadbury Schweppes",
+        "Diageo"
+      ]
+    },
+    {
+      "name": "Donnie King",
+      "role": "director",
+      "is_independent": false,
+      "age": 60,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Donnie King has served as President and Chief Executive Officer of Tyson Foods since June 2021, having previously held roles including Chief Operating Officer and Group President Poultry within the Company. He was initially employed by Valmac Industries in 1982, which was acquired by Tyson Foods in 1984.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Valmac Industries"
+      ]
+    },
+    {
+      "name": "Jonathan D. Mariner",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Jonathan D. Mariner is the founder and president of TaxDay, LLC and previously served as Chief Administrative Officer of Enjoy Technologies and, on an interim basis in 2019, as Head of Regional Sports Networks for the Walt Disney Company. He spent much of his career as Executive Vice President and CFO of Major League Baseball from 2002 to 2014 and as its Chief Investment Officer from 2015 to 2016.",
+      "other_public_boards": [
+        "Rocket Companies, Inc."
+      ],
+      "prior_employers_named": [
+        "Enjoy Technologies",
+        "Walt Disney Company",
+        "Major League Baseball",
+        "Florida Marlins Baseball Club",
+        "Florida Panthers Hockey Club",
+        "Dolphins Stadium",
+        "Ultimate Software",
+        "McGraw Hill Education"
+      ]
+    },
+    {
+      "name": "Kevin M. McNamara",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Kevin M. McNamara is the founding principal of McNamara Family Ventures, a family investment office focused on health care companies, and currently serves as a director at SignifyHealth where he previously served as CEO from 2015 to June 2018. He has been a Board member since 2007, Lead Independent Director since September 2019, and Vice Chairman since February 2020.",
+      "other_public_boards": [
+        "SignifyHealth"
+      ],
+      "prior_employers_named": [
+        "SignifyHealth"
+      ]
+    },
+    {
+      "name": "Cheryl S. Miller",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 50,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Cheryl S. Miller most recently served as CFO of West Marine from January 2022 to October 2022 and previously served as President and CEO of AutoNation, Inc. from July 2019 to April 2020, and as its EVP and CFO since 2014. She currently serves on the board and as audit committee chair of Celsius Holdings.",
+      "other_public_boards": [
+        "Celsius Holdings"
+      ],
+      "prior_employers_named": [
+        "West Marine",
+        "JM Family Enterprises",
+        "AutoNation, Inc."
+      ]
+    },
+    {
+      "name": "Jeffrey K. Schomburger",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Jeffrey K. Schomburger retired as Global Sales Officer for The Procter & Gamble Company in 2019, a position he held since 2015. He joined P&G in 1984 and held numerous leadership roles including President of P&G's global Walmart team from 2005 to 2015.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Barbara A. Tyson",
+      "role": "director",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 34,
+      "bio_summary": "Barbara A. Tyson served as Vice President of Tyson Foods until 2002 when she retired and became a consultant to the Company, ceasing that role in 2011. She has been a Board member since 1988 and also serves on the Board of Arkansas Children's Hospital Northwest since July 2017.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tyson Foods"
+      ]
+    },
+    {
+      "name": "Noel White",
+      "role": "executive_chair",
+      "is_independent": false,
+      "age": 64,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Noel White has served as Executive Vice Chairman of the Board since October 2020, prior to which he served as CEO from September 2018 to October 2020 and President from September 2018 to December 2019. He has more than 35 years of experience in the food industry with Tyson Foods and IBP, inc., which was acquired by Tyson Foods in 2001.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "IBP, inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director tenure years were calculated based on year joined the board as stated in bios relative to the 2022 filing date (approximate). Donnie King joined in 2022 so tenure is listed as 0. The proxy text provided does not include a separate executive officers section, so that array is empty. Barbara A. Tyson and Les R. Baledge are listed as independent per the Board's determination despite family/historical ties. Noel White's role is listed as executive_chair as the closest match to 'Executive Vice Chairman' in the schema. Cheryl S. Miller's role as compensation_committee_chair is inferred from her serving as chairperson of the Compensation and Leadership Development Committee since November 18, 2021.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:22:12.206784Z",
+    "filing_meta": {
+      "ticker": "TSN",
+      "form": "DEF 14A",
+      "filing_date": "2022-12-21",
+      "accession": "000010049322000129",
+      "primary_doc": "a2022proxystatement.htm",
+      "section_chars_used": 29030
+    },
+    "input_tokens": 6819,
+    "output_tokens": 2604,
+    "cost_usd": 0.0595,
+    "elapsed_sec": 44.4
+  }
+}

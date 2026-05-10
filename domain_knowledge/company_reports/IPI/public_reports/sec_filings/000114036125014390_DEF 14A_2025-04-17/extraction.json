@@ -1,0 +1,164 @@
+{
+  "filing_metadata": {
+    "company_ticker": "IPI",
+    "company_name": "Intrepid Potash, Inc.",
+    "fiscal_year_disclosed": 2025,
+    "filing_date": "2025-04-17"
+  },
+  "directors": [
+    {
+      "name": "Mary E. McBride",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Ms. McBride is a senior banking executive with over 30 years of experience in commercial banking. She served as President of CoBank, ACB from 2013 to 2016, and held various senior roles at CoBank from 1993 to 2013. Earlier in her career she held positions at First Interstate Bank of Denver and First National Bank of Boston.",
+      "other_public_boards": [
+        "Ellington Residential Mortgage REIT"
+      ],
+      "prior_employers_named": [
+        "CoBank, ACB",
+        "First Interstate Bank of Denver, N.A.",
+        "First National Bank of Boston"
+      ]
+    },
+    {
+      "name": "Barth E. Whitham",
+      "role": "chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Mr. Whitham has over 30 years of experience in the energy, banking, and extractive resources industries. He has served as CEO, President, and Director of Enduring Resources, LLC since 2004, and previously served as President, COO, and Director of Westport Resources Corporation, a public upstream energy company that merged with Kerr McGee/Anadarko.",
+      "other_public_boards": [
+        "Ensign Energy Services, Inc."
+      ],
+      "prior_employers_named": [
+        "Enduring Resources, LLC",
+        "Westport Resources, Corporation"
+      ]
+    },
+    {
+      "name": "Kevin S. Crutchfield",
+      "role": "director",
+      "is_independent": false,
+      "age": 64,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Crutchfield has over three decades of global mining experience and serves as CEO and Director of Intrepid Potash since December 2024. He previously served as CEO, President, and Director of Compass Minerals International, Inc. and as CEO and Director of Contura Energy, Inc. (formerly Alpha Metallurgical Resources), and as CEO of Alpha Natural Resources, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Compass Minerals International, Inc.",
+        "Contura Energy, Inc.",
+        "Alpha Natural Resources, Inc."
+      ]
+    },
+    {
+      "name": "Hugh E. Harvey, Jr.",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Harvey has over 15 years of experience in the potash mining industry and over 30 years in the oil and gas industry. He co-founded Intrepid Mining, the predecessor to Intrepid Potash, and held various senior roles at Intrepid including COO, CTO, and Executive Vice Chair of the Board through 2022. He also founded Intrepid Oil and Gas, LLC.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Intrepid Potash, Inc.",
+        "Intrepid Mining",
+        "Intrepid Oil and Gas, LLC"
+      ]
+    },
+    {
+      "name": "William M. Zisch",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Zisch has over 40 years of business experience and in-depth knowledge of the mining industry, currently serving as Professor of Practice and Department Head of the Mining Department at Colorado School of Mines. He previously served as COO of Argonaut Gold, Inc., and held senior roles at Royal Gold, Inc. and Newmont Mining Corporation.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Colorado School of Mines",
+        "Argonaut Gold, Inc.",
+        "Midway Gold US, Inc.",
+        "Royal Gold, Inc.",
+        "Newmont Mining Corporation"
+      ]
+    },
+    {
+      "name": "Gonzalo M. Avendano",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Avendano has over 30 years of experience in finance and wealth management industries. He currently serves as Investment Advisor at Clearway Capital Management and previously held roles at UBS AG, Deutsche Bank AG, and Lehman Brothers, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Clearway Capital Management",
+        "Silver Mills, LLC",
+        "UBS AG",
+        "Deutsche Bank AG",
+        "Lehman Brothers, Inc."
+      ]
+    },
+    {
+      "name": "Chris A. Elliott",
+      "role": "director",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Mr. Elliott has over 30 years of business experience in the agricultural industry. He currently serves as CEO and President of Naturion, LLC, a private company that invests in environmental restoration, and previously served as CEO of AgCoA, a private agricultural real estate company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Naturion, LLC",
+        "AgCoA"
+      ]
+    },
+    {
+      "name": "Lori A. Lancaster",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Ms. Lancaster has a 20-year investment banking career advising public and private companies in natural resources and global energy industries, having executed over $60 billion of merger and acquisition transactions. She previously held Managing Director roles at UBS Securities, Nomura Securities, and Goldman Sachs & Co.",
+      "other_public_boards": [
+        "Vital Energy, Inc.",
+        "Precision Drilling Corporation"
+      ],
+      "prior_employers_named": [
+        "UBS Securities, LLC",
+        "Nomura Securities",
+        "Goldman Sachs & Co."
+      ]
+    }
+  ],
+  "executive_officers": [
+    {
+      "name": "Kevin S. Crutchfield",
+      "title": "Chief Executive Officer and Director",
+      "tenure_years": 1,
+      "prior_employers_named": [
+        "Compass Minerals International, Inc.",
+        "Contura Energy, Inc.",
+        "Alpha Natural Resources, Inc."
+      ]
+    }
+  ],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years on board calculated from the stated 'since' year relative to the 2025 annual meeting. Gonzalo M. Avendano joined in January 2025, so tenure is listed as 0 full years. The proxy does not include a separate executive officers section beyond what is described in director bios; only Kevin Crutchfield is identified as both director and CEO. Hugh Harvey's independent director status is listed as 'since April 2024' per the proxy text.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:14:38.583291Z",
+    "filing_meta": {
+      "ticker": "IPI",
+      "form": "DEF 14A",
+      "filing_date": "2025-04-17",
+      "accession": "000114036125014390",
+      "primary_doc": "ny20043638x771_def14a.htm",
+      "section_chars_used": 22469
+    },
+    "input_tokens": 5859,
+    "output_tokens": 1930,
+    "cost_usd": 0.0465,
+    "elapsed_sec": 31.2
+  }
+}

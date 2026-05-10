@@ -1,0 +1,177 @@
+{
+  "filing_metadata": {
+    "company_ticker": "AGCO",
+    "company_name": "AGCO Corporation",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2021-03-22"
+  },
+  "directors": [
+    {
+      "name": "Roy V. Armes",
+      "role": "director",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Former Executive Chairman, President and CEO of Cooper Tire and Rubber Company from 2007 to 2016. Previously held various executive positions with Whirlpool Corporation from 1975 to 2006. Currently serves on the Boards of Directors of The Manitowoc Company, Inc. and Tenneco Inc.",
+      "other_public_boards": [
+        "The Manitowoc Company, Inc.",
+        "Tenneco Inc."
+      ],
+      "prior_employers_named": [
+        "Cooper Tire and Rubber Company",
+        "Whirlpool Corporation"
+      ]
+    },
+    {
+      "name": "Michael C. Arnold",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Former President and Chief Executive Officer of Ryerson Inc. Previously held various senior management positions with The Timken Company from 1979 to 2010. Former member of the Board of Directors of Gardner Denver, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ryerson Inc.",
+        "The Timken Company",
+        "Gardner Denver, Inc."
+      ]
+    },
+    {
+      "name": "Sondra L. Barbour",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Former Executive Vice President of Information Systems Global Solutions at Lockheed Martin Corporation, where she spent 30 years in various leadership roles from 1986 to 2016. Also served briefly as Executive Vice President of Leidos Holdings, Inc. from August 2016 to January 2017. Currently a member of the Board of Directors of Perspecta Inc.",
+      "other_public_boards": [
+        "Perspecta Inc."
+      ],
+      "prior_employers_named": [
+        "Leidos Holdings, Inc.",
+        "Lockheed Martin Corporation"
+      ]
+    },
+    {
+      "name": "P. George Benson, Ph.D",
+      "role": "director",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Professor of Decision Sciences at College of Charleston since 2014 and Former President of College of Charleston from 2007 to 2014. Former Dean of the Terry College of Business at the University of Georgia and the Rutgers Business School. Currently serves as Lead Director and Chairman of the Corporate Governance Committee for Primerica, Inc.",
+      "other_public_boards": [
+        "Primerica, Inc."
+      ],
+      "prior_employers_named": [
+        "College of Charleston",
+        "University of Georgia",
+        "Rutgers University",
+        "University of Minnesota"
+      ]
+    },
+    {
+      "name": "Suzanne P. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Chief Executive Officer of the U.S. Chamber of Commerce since March 2021, having previously served as President and Chief Operating Officer of the Chamber. Also previously led Potomac Research Group from 2010 to 2014 and served as President of the National Journal Group at Atlantic Media Company. Currently a member of the Board of Directors and Audit Committee of TransUnion.",
+      "other_public_boards": [
+        "TransUnion"
+      ],
+      "prior_employers_named": [
+        "U.S. Chamber of Commerce",
+        "Potomac Research Group",
+        "Atlantic Media Company"
+      ]
+    },
+    {
+      "name": "Bob De Lange",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Group President, Services, Distribution and Digital at Caterpillar Inc., responsible for management of the Caterpillar brand and distribution network. Has held various leadership positions since joining Caterpillar in 1993, including Group President of Construction Industries and Vice President of the Excavation Division.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Caterpillar Inc."
+      ]
+    },
+    {
+      "name": "Eric P. Hansotia",
+      "role": "chair",
+      "is_independent": false,
+      "age": 52,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Chairman, President and Chief Executive Officer of AGCO since January 1, 2021, having previously served as Senior Vice President and Chief Operating Officer of AGCO from January 2019 to December 2020. Prior to joining AGCO, held several senior positions at John Deere including Senior Vice President, Global Harvesting.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "John Deere"
+      ]
+    },
+    {
+      "name": "George E. Minnich",
+      "role": "director",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Former Senior Vice President and Chief Financial Officer of ITT Corporation from 2005 to 2007. Previously held several senior finance positions at United Technologies Corporation, including CFO roles at Otis Elevator and Carrier Corporation. Earlier served as an audit partner at Price Waterhouse (now PricewaterhouseCoopers LLP). Currently serves on the Boards and Audit Committees of Belden Inc. and Kaman Corporation, chairing the Audit Committee at Belden Inc.",
+      "other_public_boards": [
+        "Belden Inc.",
+        "Kaman Corporation"
+      ],
+      "prior_employers_named": [
+        "ITT Corporation",
+        "United Technologies Corporation",
+        "Price Waterhouse"
+      ]
+    },
+    {
+      "name": "Mallika Srinivasan",
+      "role": "director",
+      "is_independent": false,
+      "age": 61,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Chairman and Managing Director of Tractors and Farm Equipment Limited (TAFE), the second largest agricultural tractor manufacturer in India, since December 2019, having held various positions at TAFE since 1986. Currently serves as Director and Chair of the Nomination and Remuneration Committee at Tata Steel Limited (India).",
+      "other_public_boards": [
+        "Tata Steel Limited"
+      ],
+      "prior_employers_named": [
+        "Tractors and Farm Equipment Limited"
+      ]
+    },
+    {
+      "name": "Matthew Tsien",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Executive Vice President and Chief Technology Officer at General Motors and President of General Motors Ventures. Has held various leadership positions since joining General Motors in 1976, including Executive Vice President and President of GM China.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "General Motors"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated from 'Director since' year relative to 2021 Annual Meeting year. Bob De Lange joined in January 2021 so tenure is listed as 0 (less than 1 full year). Matthew Tsien also joined in January 2021, tenure listed as 0. Sondra Barbour is listed as chair of the Audit Committee per the committee membership table. Mallika Srinivasan is noted as non-independent due to TAFE's commercial relationships with AGCO. No executive officers section was provided in the extracted text beyond the director bios.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:42:47.300249Z",
+    "filing_meta": {
+      "ticker": "AGCO",
+      "form": "DEF 14A",
+      "filing_date": "2021-03-22",
+      "accession": "000088026621000013",
+      "primary_doc": "a2020agcodef14a.htm",
+      "section_chars_used": 23614
+    },
+    "input_tokens": 5824,
+    "output_tokens": 2115,
+    "cost_usd": 0.0492,
+    "elapsed_sec": 33.8
+  }
+}

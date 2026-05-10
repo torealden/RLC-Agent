@@ -1,0 +1,122 @@
+{
+  "filing_metadata": {
+    "company_ticker": "DAR",
+    "company_name": "Darling Ingredients Inc.",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2021-03-24"
+  },
+  "directors": [
+    {
+      "name": "Randall C. Stuewe",
+      "role": "chair",
+      "is_independent": false,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Randall C. Stuewe serves as Chairman of the Board and Chief Executive Officer of Darling Ingredients Inc. He holds the combined role pursuant to his employment agreement and is subject to continued election by stockholders.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Gary W. Mize",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Gary W. Mize serves as the independent Lead Director of Darling Ingredients Inc. He chairs the nominating and corporate governance committee and also sits on the audit committee. He regularly engages with the CEO and other management on strategic and governance matters.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Charles Adair",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Charles Adair is an independent director of Darling Ingredients Inc. and serves on the audit committee, where he has been designated as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Beth Albright",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Beth Albright is an independent director of Darling Ingredients Inc. and serves on the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Linda Goodspeed",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Linda Goodspeed is an independent director of Darling Ingredients Inc. and serves as Chairwoman of the compensation committee. She also serves on the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Mary R. Korby",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Mary R. Korby is an independent director of Darling Ingredients Inc. and serves on both the compensation committee and the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Dirk Kloosterboer",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Dirk Kloosterboer is an independent director of Darling Ingredients Inc. who served during the fiscal year ended January 2, 2021.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Michael E. Rescoe",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Michael E. Rescoe is an independent director of Darling Ingredients Inc. and serves on the audit committee, where he has been designated as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Nicole M. Ringenberg",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Nicole M. Ringenberg is an independent director of Darling Ingredients Inc. and serves as Chairwoman of the audit committee, where she has been designated as an audit committee financial expert. She also serves on the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "medium",
+  "extraction_notes": "The provided proxy text excerpt covers corporate governance narrative but does not include individual director biography sections with ages, tenure, or detailed prior employment history. Director roles were inferred from committee membership descriptions within the governance section. D. Eugene Ewing and Cynthia Pharr Lee retired from the Board on May 5, 2020 and Charles Macaluso passed away in February 2021; these individuals are not listed as current directors. No executive officer section was present in the provided text. Ages and tenure years are null throughout due to absence of bio tables in the excerpt.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:57:57.060039Z",
+    "filing_meta": {
+      "ticker": "DAR",
+      "form": "DEF 14A",
+      "filing_date": "2021-03-24",
+      "accession": "000119312521092596",
+      "primary_doc": "d135685ddef14a.htm",
+      "section_chars_used": 24311
+    },
+    "input_tokens": 5430,
+    "output_tokens": 1357,
+    "cost_usd": 0.0366,
+    "elapsed_sec": 17.4
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "filing_metadata": {
+    "company_ticker": "GPRE",
+    "company_name": "Green Plains Inc.",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2026-04-24"
+  },
+  "directors": [
+    {
+      "name": "James D. Anderson",
+      "role": "chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 18,
+      "bio_summary": "Mr. Anderson has served as Chief Executive Officer of Molycop since November 2017 and previously served as Managing Director and Operating Partner at CHAMP Private Equity. He also served as President and CEO of The Gavilon Group, LLC and as CEO of United Malt Holdings, bringing extensive commodity and agribusiness experience to the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Molycop",
+        "CHAMP Private Equity",
+        "The Gavilon Group, LLC",
+        "United Malt Holdings",
+        "CT Malt",
+        "ConAgra Foods, Inc.",
+        "Tiger Brands",
+        "Ferruzzi USA",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Farha Aslam",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Ms. Aslam has been Managing Partner of Crescent House Capital since October 2019, and previously served as Managing Director at Stephens Inc. leading the Food and Agribusiness equity research team, as well as vice president at Merrill Lynch and risk management advisor at UBS. She brings extensive knowledge of the agriculture and ethanol industries along with investor and financial expertise.",
+      "other_public_boards": [
+        "Pilgrim's Pride Corporation",
+        "Calavo Growers, Inc."
+      ],
+      "prior_employers_named": [
+        "Stephens Inc.",
+        "Merrill Lynch",
+        "UBS"
+      ]
+    },
+    {
+      "name": "Steven Furcich",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Furcich has been a Partner at Tillridge Global Agribusiness Fund since 2016, serving as a director for portfolio companies in the Tillridge and NGP Agribusiness Follow-on Funds. He previously served as President of Archer Daniels Midland Company's Nutrition and Malting divisions from 2002 to 2009, and as Vice President and Director of Group Operations for Oilseeds from 2000 to 2002.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tillridge Global Agribusiness Fund",
+        "Archer Daniels Midland Company"
+      ]
+    },
+    {
+      "name": "Carl Grassi",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Grassi is a former Senior Counsel and former Chairman of McDonald Hopkins, LLC, where he held various leadership roles including President and Chairman from 2007 to 2016. He has extensive legal and accounting experience, serving as corporate counsel and business advisor to numerous public and middle-market companies since July 1992.",
+      "other_public_boards": [
+        "Regional Brands, Inc."
+      ],
+      "prior_employers_named": [
+        "McDonald Hopkins, LLC"
+      ]
+    },
+    {
+      "name": "Chris Osowski",
+      "role": "director",
+      "is_independent": false,
+      "age": 47,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Osowski has served as President and Chief Executive Officer of Green Plains since August 2025, having previously served as Executive Vice President - Operations and Technology from January 2022. Prior to joining Green Plains, he held various senior roles at ADM including Vice President Global Technology and General Director of an ADM joint venture in Moscow, and held senior positions at Tate & Lyle.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "ADM",
+        "Tate & Lyle",
+        "Renewable Energy Group",
+        "Poet"
+      ]
+    },
+    {
+      "name": "Brian Peterson",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 21,
+      "bio_summary": "Mr. Peterson has been President and Chief Executive Officer of Whiskey Creek Enterprises since 1986 and was the sole founder and owner of Superior Ethanol LLC, which was acquired by Green Plains in 2006. He has extensive ethanol and grain industry experience, including over twenty years of owning and operating grain farming entities and a cattle feedlot.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Whiskey Creek Enterprises",
+        "Superior Ethanol LLC"
+      ]
+    },
+    {
+      "name": "Martin Salinas Jr.",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Salinas is the former Chief Financial Officer of Energy Transfer Partners, LP, one of the largest publicly traded master limited partnerships, where he served from 2008 to 2015, having previously served as controller and vice president of finance from 2004 to 2008. He began his career at KPMG and has served on the boards of multiple public companies.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Energy Transfer Partners, LP",
+        "KPMG"
+      ]
+    },
+    {
+      "name": "Patrick Sweeney",
+      "role": "director",
+      "is_independent": true,
+      "age": 36,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Sweeney serves as Director and Portfolio Manager at Ancora Holdings Group LLC, where he manages the firm's activist strategy in the Alternatives Group. Prior to joining Ancora in 2013, he worked as a Corporate Banking Analyst at PNC Financial Services in the healthcare and public finance group.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ancora Holdings Group LLC",
+        "PNC Financial Services"
+      ]
+    },
+    {
+      "name": "Kimberly Wagner",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Ms. Wagner is the Founder and Managing Partner of TBGD Partners since January 2018, and previously served as Venture Partner at Flagship Pioneering, President and COO of CiBO Technologies, Equity Partner at McKinsey & Company, and Senior Partner and Managing Director at The Boston Consulting Group where she founded the Global Agriculture Practice Area. She brings extensive strategy, governance and operational experience in agribusiness, food/nutrition and life science sectors.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Flagship Pioneering",
+        "CiBO Technologies",
+        "McKinsey & Company",
+        "The Boston Consulting Group, Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All nine director nominees were identified with ages, tenure, and biographical information as stated in the proxy. Tenure years were calculated based on 'Director Since' year subtracted from 2026. Steven Furcich's current directorships (Wilmar Nutrition and Furst-McNess/Devenish Nutrition) are listed as subsidiaries of public companies, not standalone public companies, so they were excluded from other_public_boards. Kimberly Wagner's directorship at Frontier National Products (Frontier Co-Op) appears to be a private/cooperative entity and was excluded. Executive officers section is empty as the proxy text provided did not include a separate executive officers section beyond the CEO who is also a director. Brian Peterson's role is listed as compensation_committee_chair based on his committee chair designation. Martin Salinas Jr.'s past public company directorships (Noble Midstream Partners, NuStar Energy, Green Plains Partners LP) were excluded from other_public_boards as they are past, not current.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:04:03.967184Z",
+    "filing_meta": {
+      "ticker": "GPRE",
+      "form": "DEF 14A",
+      "filing_date": "2026-04-24",
+      "accession": "000130940226000050",
+      "primary_doc": "gpre-20260424.htm",
+      "section_chars_used": 35484
+    },
+    "input_tokens": 8854,
+    "output_tokens": 2158,
+    "cost_usd": 0.0589,
+    "elapsed_sec": 39.5
+  }
+}

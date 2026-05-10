@@ -1,0 +1,104 @@
+{
+  "filing_metadata": {
+    "company_ticker": "IPI",
+    "company_name": "Intrepid Potash, Inc.",
+    "fiscal_year_disclosed": 2022,
+    "filing_date": "2022-04-05"
+  },
+  "directors": [
+    {
+      "name": "Mary E. McBride",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Mary McBride is a senior banking executive with over 30 years of experience in commercial banking. She served as President of CoBank, ACB from 2013 to 2016, and previously held roles as chief operating officer and chief banking officer there. Prior to CoBank, she worked for First Interstate Bank of Denver and the First National Bank of Boston.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "CoBank, ACB",
+        "First Interstate Bank of Denver",
+        "First National Bank of Boston"
+      ]
+    },
+    {
+      "name": "Barth E. Whitham",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Barth E. Whitham has served as President and CEO of Enduring Resources, LLC, a privately held upstream energy company, since 2005. From 1991 to 2005, he served as President and COO of Westport Resources Corp., a publicly traded oil and gas exploration and production company. He also currently serves on the board of Ensign Energy Services Inc.",
+      "other_public_boards": [
+        "Ensign Energy Services Inc."
+      ],
+      "prior_employers_named": [
+        "Enduring Resources, LLC",
+        "Westport Resources Corp."
+      ]
+    },
+    {
+      "name": "Lori A. Lancaster",
+      "role": "director",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Lori A. Lancaster is a senior executive with nearly 20 years of investment banking experience covering natural resources and global energy. She most recently served as Managing Director at UBS Securities LLC from 2013 to 2016, and previously held Managing Director roles at Nomura Securities and Goldman Sachs & Co. She currently serves as a director for Laredo Petroleum.",
+      "other_public_boards": [
+        "Laredo Petroleum"
+      ],
+      "prior_employers_named": [
+        "UBS Securities LLC",
+        "Nomura Securities",
+        "Goldman Sachs & Co."
+      ]
+    },
+    {
+      "name": "Chris A. Elliott",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Chris A. Elliott is President and CEO of Mitigation Investment Holdings LLC and owner of Belle Prairie Investments LLC, both privately held companies. From 2007 through 2017, he was CEO of AgCoA, a privately held agricultural real estate company. He has over 25 years of business experience in the agriculture industry.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "AgCoA",
+        "Mitigation Investment Holdings LLC",
+        "Belle Prairie Investments LLC"
+      ]
+    },
+    {
+      "name": "Robert P. Jornayvaz III",
+      "role": "executive_chair",
+      "is_independent": false,
+      "age": 63,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Robert P. Jornayvaz III has served as Executive Chairman of the Board since 2010 and as Chief Executive Officer since 2014. He also served as President from 2014 to August 2021 and previously as Chairman and CEO from the company's formation in 2007 until 2010. He served as a manager of predecessor Intrepid Mining LLC from 2000 until its dissolution at the time of the 2008 IPO.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Intrepid Mining LLC",
+        "Intrepid Production Corporation"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Executive officers section was not included in the provided proxy text. Director tenure years calculated from 'Director Since' dates relative to the 2022 filing date. Robert P. Jornayvaz III is both Executive Chairman and CEO, normalized to 'executive_chair'. Lori Lancaster's previous directorships at HighPoint Resources and Energen Corporation were noted as past, not current, and excluded from other_public_boards.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:13:15.420079Z",
+    "filing_meta": {
+      "ticker": "IPI",
+      "form": "DEF 14A",
+      "filing_date": "2022-04-05",
+      "accession": "000114036122013152",
+      "primary_doc": "ny20002974x1_def14a.htm",
+      "section_chars_used": 14115
+    },
+    "input_tokens": 3745,
+    "output_tokens": 1208,
+    "cost_usd": 0.0294,
+    "elapsed_sec": 16.0
+  }
+}

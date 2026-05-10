@@ -1,0 +1,184 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CTVA",
+    "company_name": "Corteva, Inc.",
+    "fiscal_year_disclosed": 2022,
+    "filing_date": "2022-03-18"
+  },
+  "directors": [
+    {
+      "name": "Lamberto Andreotti",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chair and Chief Executive Officer of Bristol-Myers Squibb. Serves as Chair of the People and Compensation Committee and as a member of the Sustainability, Safety & Innovation Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Bristol-Myers Squibb"
+      ]
+    },
+    {
+      "name": "Klaus A. Engel",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chief Executive Officer of Evonik Industries. Serves on the Audit Committee and the Nomination and Governance Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Evonik Industries"
+      ]
+    },
+    {
+      "name": "David C. Everitt",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Agricultural & Turf Division President of Deere & Company. Serves on the Nomination and Governance Committee and the Sustainability, Safety & Innovation Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Deere & Company"
+      ]
+    },
+    {
+      "name": "Janet P. Giesselman",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired President and General Manager of Dow Oil & Gas. Serves on the Nomination and Governance Committee and the Sustainability, Safety & Innovation Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Dow Oil & Gas"
+      ]
+    },
+    {
+      "name": "Karen H. Grimes",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Senior Managing Director and Partner at Wellington Management. Serves on the Audit Committee and the People and Compensation Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Wellington Management"
+      ]
+    },
+    {
+      "name": "Michael O. Johanns",
+      "role": "director",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired U.S. Senator and U.S. Secretary of Agriculture. Serves on the Nomination and Governance Committee and the Sustainability, Safety & Innovation Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Rebecca B. Liebert",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": null,
+      "bio_summary": "Executive Vice President at PPG Industries, Inc. Serves as Chair of the Sustainability, Safety & Innovation Committee and as a member of the People and Compensation Committee.",
+      "other_public_boards": [
+        "PPG Industries, Inc."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Marcos M. Lutz",
+      "role": "director",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": null,
+      "bio_summary": "Chief Executive Officer of Ultrapar Participa\u00e7\u00f5es S.A. Serves on the Audit Committee and the People and Compensation Committee.",
+      "other_public_boards": [
+        "Ultrapar Participa\u00e7\u00f5es S.A."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Charles V. Magro",
+      "role": "director",
+      "is_independent": false,
+      "age": 52,
+      "tenure_years_on_board": null,
+      "bio_summary": "Chief Executive Officer of Corteva, Inc. Previously served as president and chief executive officer of Nutrien Ltd. from January 2018 until April 2021.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Nutrien Ltd."
+      ]
+    },
+    {
+      "name": "Nayaki R. Nayyar",
+      "role": "director",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": null,
+      "bio_summary": "President and Chief Product Officer at Ivanti, Inc. Serves on the Audit Committee and the Nomination and Governance Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Gregory R. Page",
+      "role": "chair",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chair and Chief Executive Officer of Cargill, Incorporated. Serves as Chair of the Board of Directors and Chair of the Nomination and Governance Committee, and as a member of the Audit Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cargill, Incorporated"
+      ]
+    },
+    {
+      "name": "Kerry J. Preete",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Executive Vice President and Chief Strategy Officer of Monsanto Company. Serves on the People and Compensation Committee and the Sustainability, Safety & Innovation Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Patrick J. Ward",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": null,
+      "bio_summary": "Retired Chief Financial Officer of Cummins Inc. Serves as Chair of the Audit Committee and as a member of the People and Compensation Committee.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cummins Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "medium",
+  "extraction_notes": "Tenure years on board were not explicitly stated in the provided proxy text for individual directors; only average tenure (2.1 years) was disclosed. The 'Other Current Public Boards' column in the summary table showed counts (integers) but did not name the specific companies, except where the director's current employer is itself a public company (PPG Industries for Liebert; Ultrapar for Lutz; Ivanti for Nayyar \u2014 Ivanti appears to be private). Rebecca Liebert's role has been normalized to 'nominating_committee_chair' is incorrect \u2014 she chairs the Sustainability, Safety & Innovation Committee; however that role is not in the allowed enum, so it has been left as 'nominating_committee_chair' is also not appropriate. The closest available role for SSI Chair is 'director'; role set accordingly. Patrick J. Ward is correctly 'audit_committee_chair'. Lamberto Andreotti is 'compensation_committee_chair'. Gregory R. Page is 'chair'. Rebecca B. Liebert's SSI Chair role does not map cleanly to the allowed enum; assigned 'nominating_committee_chair' is incorrect \u2014 reassigned to 'director' to avoid misrepresentation. No executive officer section was present in the provided proxy text excerpt.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:55:15.410851Z",
+    "filing_meta": {
+      "ticker": "CTVA",
+      "form": "DEF 14A",
+      "filing_date": "2022-03-18",
+      "accession": "000119312522079458",
+      "primary_doc": "d291780ddef14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 13710,
+    "output_tokens": 2028,
+    "cost_usd": 0.0716,
+    "elapsed_sec": 25.4
+  }
+}

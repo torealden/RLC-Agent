@@ -1,0 +1,210 @@
+{
+  "filing_metadata": {
+    "company_ticker": "INGR",
+    "company_name": "Ingredion Incorporated",
+    "fiscal_year_disclosed": 2023,
+    "filing_date": "2023-04-05"
+  },
+  "directors": [
+    {
+      "name": "David B. Fischer",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. Fischer served as Chief Executive Officer and a director of Greif, Inc. from November 2011 to October 2015, and as President of Greif, Inc. from October 2007 to October 2015. He also co-founded 10x Engineered Materials LLC and serves on several private company and not-for-profit boards. He currently serves as a director of Balchem Corporation, a publicly traded manufacturer.",
+      "other_public_boards": [
+        "Balchem Corporation"
+      ],
+      "prior_employers_named": [
+        "Greif, Inc."
+      ]
+    },
+    {
+      "name": "Paul Hanrahan",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Mr. Hanrahan served as Chief Executive Officer of Hygo Energy Transitions Ltd. until its acquisition by New Fortress Energy in April 2021, and previously as CEO of Globeleq Advisors Limited from September 2017 to December 2019. He currently serves as a director of Excelerate Energy, Inc., a publicly traded integrated floating LNG solutions provider, among other private company boards.",
+      "other_public_boards": [
+        "Excelerate Energy, Inc."
+      ],
+      "prior_employers_named": [
+        "Hygo Energy Transitions Ltd.",
+        "Globeleq Advisors Limited"
+      ]
+    },
+    {
+      "name": "Rhonda L. Jordan",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Ms. Jordan served as President, Global Health & Wellness, and Sustainability of Kraft Foods Inc. from September 2009 to March 2012, and previously held positions as President of Kraft's Cheese and Dairy and Grocery business units. She currently serves as a director of ESAB Corporation, a NYSE-listed global manufacturing and engineering company.",
+      "other_public_boards": [
+        "ESAB Corporation"
+      ],
+      "prior_employers_named": [
+        "Kraft Foods Inc."
+      ]
+    },
+    {
+      "name": "Gregory B. Kenny",
+      "role": "chair",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": 18,
+      "bio_summary": "Mr. Kenny served as President and Chief Executive Officer of General Cable Corporation from August 2001 to June 30, 2015. He is the non-executive Chairman of Cardinal Health, Inc., a NYSE-listed Fortune 15 company, and previously served as a director of AK Steel Holding Corporation and IDEX Corporation.",
+      "other_public_boards": [
+        "Cardinal Health, Inc."
+      ],
+      "prior_employers_named": [
+        "General Cable Corporation"
+      ]
+    },
+    {
+      "name": "Charles V. Magro",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Magro currently serves as Chief Executive Officer and a director of Corteva Agriscience, a NYSE-listed global agriculture company, since November 2021. Prior to that, he served as President and CEO of Nutrien Ltd. from January 2018 to April 2021.",
+      "other_public_boards": [
+        "Corteva Agriscience"
+      ],
+      "prior_employers_named": [
+        "Corteva Agriscience",
+        "Nutrien Ltd."
+      ]
+    },
+    {
+      "name": "Victoria J. Reich",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Ms. Reich served as Senior Vice President and Chief Financial Officer of Essendant Inc. (formerly United Stationers Inc.) from June 2007 to July 2011. She currently serves as a director and audit committee chair of NYSE-listed H&R Block, Inc. and NYSE-listed Ecolab Inc.",
+      "other_public_boards": [
+        "H&R Block, Inc.",
+        "Ecolab Inc."
+      ],
+      "prior_employers_named": [
+        "Essendant Inc."
+      ]
+    },
+    {
+      "name": "Catherine A. Suever",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Ms. Suever served as Executive Vice President - Finance and Administration and Chief Financial Officer of Parker-Hannifin Corporation from April 2017 until her retirement in December 2020. She currently serves as a director and audit committee member of Hexcel Corporation, a NYSE-listed global leader in advanced composites technology.",
+      "other_public_boards": [
+        "Hexcel Corporation"
+      ],
+      "prior_employers_named": [
+        "Parker-Hannifin Corporation"
+      ]
+    },
+    {
+      "name": "Stephan B. Tanda",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Tanda has served as President and Chief Executive Officer and as a director of AptarGroup, Inc., a NYSE-listed global leader in consumer dispensing, active packaging and drug delivery solutions, since February 1, 2017. His career spans 30 years in leadership roles across seven countries, and he previously served as a director of Patheon NV and Semperit AG Holding.",
+      "other_public_boards": [
+        "AptarGroup, Inc."
+      ],
+      "prior_employers_named": [
+        "AptarGroup, Inc.",
+        "Patheon NV",
+        "Semperit AG Holding"
+      ]
+    },
+    {
+      "name": "Jorge A. Uribe",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. Uribe served as the Global Productivity and Organization Transformation Officer of The Procter & Gamble Company from December 2012 to July 2015, having spent more than 33 years with Procter & Gamble in various international roles. He currently serves as a director of General Mills, Inc., a NYSE-listed global food company, and Grupo Argos, S.A., a Colombian multi-national holding company.",
+      "other_public_boards": [
+        "General Mills, Inc.",
+        "Grupo Argos, S.A."
+      ],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Patricia Verduin",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": null,
+      "bio_summary": "Dr. Verduin served as Chief Technology Officer, Global Technology, for Colgate-Palmolive Company from February 2009 to January 2023. She currently serves as a director of Avient Corporation, a NYSE-listed global manufacturer of specialized polymer materials, and previously served as a director of the Monsanto Company prior to its acquisition by Bayer AG.",
+      "other_public_boards": [
+        "Avient Corporation"
+      ],
+      "prior_employers_named": [
+        "Colgate-Palmolive Company",
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Dwayne A. Wilson",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Mr. Wilson served as Senior Vice President of Fluor Corporation from June 2014 to June 2016, and previously as President and CEO of Savannah River Nuclear Solutions, LLC from October 2011 to June 2014. He currently serves as a director of Crown Holdings, Inc., DT Midstream, Inc., and Sterling Construction Company, Inc., all NYSE-listed public companies.",
+      "other_public_boards": [
+        "Crown Holdings, Inc.",
+        "DT Midstream, Inc.",
+        "Sterling Construction Company, Inc."
+      ],
+      "prior_employers_named": [
+        "Fluor Corporation",
+        "Savannah River Nuclear Solutions, LLC"
+      ]
+    },
+    {
+      "name": "James P. Zallie",
+      "role": "director",
+      "is_independent": false,
+      "age": 61,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. Zallie has been President and Chief Executive Officer of Ingredion since January 1, 2018, having previously held several executive roles within Ingredion including Executive Vice President, Global Specialties and President, Americas. He previously served as President and CEO of National Starch LLC from January 2007 to September 2010, before National Starch was acquired by Ingredion. He currently serves as a director of Sylvamo Corporation, an NYSE-listed global producer of uncoated papers.",
+      "other_public_boards": [
+        "Sylvamo Corporation"
+      ],
+      "prior_employers_named": [
+        "National Starch LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated based on 'Director since' year subtracted from 2023. Patricia Verduin is a new nominee with no prior board tenure at Ingredion. The proxy text provided did not include a separate executive officers section; only director bios were present in the supplied text. James P. Zallie is the only non-independent director as the sitting CEO. Gregory B. Kenny's role is listed as non-executive Chairman of the Board (chair). Rhonda L. Jordan chairs the People, Culture, and Compensation Committee (mapped to compensation_committee_chair). Victoria J. Reich chairs the Audit Committee (mapped to audit_committee_chair). Gregory B. Kenny also chairs the Corporate Governance and Nominating Committee per the table, but his primary role is Board Chair.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:10:59.361425Z",
+    "filing_meta": {
+      "ticker": "INGR",
+      "form": "DEF 14A",
+      "filing_date": "2023-04-05",
+      "accession": "000119312523092212",
+      "primary_doc": "d27251ddef14a.htm",
+      "section_chars_used": 40973
+    },
+    "input_tokens": 9227,
+    "output_tokens": 2557,
+    "cost_usd": 0.066,
+    "elapsed_sec": 41.5
+  }
+}

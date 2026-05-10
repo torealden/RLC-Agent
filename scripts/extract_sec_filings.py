@@ -623,9 +623,14 @@ def update_extract_manifest(ticker_dir: Path, rows: list[dict]):
 # --- CLI ----------------------------------------------------------------------
 
 def discover_filings_for_ticker(ticker: str, form_filter: list[str] | None) -> list[Path]:
-    tdir = REPORTS_DIR / ticker
+    # Filings live at <TICKER>/public_reports/sec_filings/. Fall back
+    # to legacy top-level layout if the nested dir doesn't exist (for
+    # tickers that haven't been migrated yet).
+    tdir = REPORTS_DIR / ticker / "public_reports" / "sec_filings"
     if not tdir.exists():
-        return []
+        tdir = REPORTS_DIR / ticker
+        if not tdir.exists():
+            return []
     out = []
     for sub in sorted(tdir.iterdir()):
         if not sub.is_dir():

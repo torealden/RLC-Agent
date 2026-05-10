@@ -1,0 +1,578 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "0000880266-26-000023-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "0000880266-26-000023-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "0000880266-26-000023.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "0000880266-26-000023-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "6214460"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311.htm",
+        "type": "text.gif",
+        "size": "1683421"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311.xsd",
+        "type": "text.gif",
+        "size": "924"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g1.jpg",
+        "type": "image2.gif",
+        "size": "36807"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g10.jpg",
+        "type": "image2.gif",
+        "size": "1491"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g11.jpg",
+        "type": "image2.gif",
+        "size": "45796"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g12.jpg",
+        "type": "image2.gif",
+        "size": "50927"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g13.jpg",
+        "type": "image2.gif",
+        "size": "205709"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g14.jpg",
+        "type": "image2.gif",
+        "size": "40039"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g15.jpg",
+        "type": "image2.gif",
+        "size": "40900"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g16.jpg",
+        "type": "image2.gif",
+        "size": "40382"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g17.jpg",
+        "type": "image2.gif",
+        "size": "41523"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g18.jpg",
+        "type": "image2.gif",
+        "size": "34202"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g19.jpg",
+        "type": "image2.gif",
+        "size": "201812"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g2.jpg",
+        "type": "image2.gif",
+        "size": "2878"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g20.jpg",
+        "type": "image2.gif",
+        "size": "131516"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g21.jpg",
+        "type": "image2.gif",
+        "size": "39190"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g22.jpg",
+        "type": "image2.gif",
+        "size": "2007"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g23.jpg",
+        "type": "image2.gif",
+        "size": "22459"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g24.jpg",
+        "type": "image2.gif",
+        "size": "24409"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g25.jpg",
+        "type": "image2.gif",
+        "size": "22246"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g26.jpg",
+        "type": "image2.gif",
+        "size": "23373"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g27.jpg",
+        "type": "image2.gif",
+        "size": "15928"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g28.jpg",
+        "type": "image2.gif",
+        "size": "19339"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g29.jpg",
+        "type": "image2.gif",
+        "size": "15163"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g3.jpg",
+        "type": "image2.gif",
+        "size": "3302"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g30.jpg",
+        "type": "image2.gif",
+        "size": "14873"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g31.jpg",
+        "type": "image2.gif",
+        "size": "17746"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g32.jpg",
+        "type": "image2.gif",
+        "size": "44221"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g33.jpg",
+        "type": "image2.gif",
+        "size": "43602"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g34.jpg",
+        "type": "image2.gif",
+        "size": "47359"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g35.jpg",
+        "type": "image2.gif",
+        "size": "57565"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g36.jpg",
+        "type": "image2.gif",
+        "size": "43887"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g37.jpg",
+        "type": "image2.gif",
+        "size": "36276"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g38.jpg",
+        "type": "image2.gif",
+        "size": "43660"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g39.jpg",
+        "type": "image2.gif",
+        "size": "44848"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g4.jpg",
+        "type": "image2.gif",
+        "size": "2662"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g40.jpg",
+        "type": "image2.gif",
+        "size": "41189"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g41.jpg",
+        "type": "image2.gif",
+        "size": "15191"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g42.jpg",
+        "type": "image2.gif",
+        "size": "90853"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g43.jpg",
+        "type": "image2.gif",
+        "size": "14080"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g44.jpg",
+        "type": "image2.gif",
+        "size": "59215"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g45.jpg",
+        "type": "image2.gif",
+        "size": "14492"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g46.jpg",
+        "type": "image2.gif",
+        "size": "61437"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g47.jpg",
+        "type": "image2.gif",
+        "size": "104224"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g48.jpg",
+        "type": "image2.gif",
+        "size": "69044"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g49.jpg",
+        "type": "image2.gif",
+        "size": "67571"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g5.jpg",
+        "type": "image2.gif",
+        "size": "2128"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g50.jpg",
+        "type": "image2.gif",
+        "size": "66892"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g51.jpg",
+        "type": "image2.gif",
+        "size": "27460"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g52.jpg",
+        "type": "image2.gif",
+        "size": "29860"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g53.jpg",
+        "type": "image2.gif",
+        "size": "42610"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g54.jpg",
+        "type": "image2.gif",
+        "size": "40204"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g55.jpg",
+        "type": "image2.gif",
+        "size": "1780927"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g56.jpg",
+        "type": "image2.gif",
+        "size": "283126"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g57.jpg",
+        "type": "image2.gif",
+        "size": "118648"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g58.jpg",
+        "type": "image2.gif",
+        "size": "198094"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g59.jpg",
+        "type": "image2.gif",
+        "size": "168116"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g6.jpg",
+        "type": "image2.gif",
+        "size": "2997"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g60.jpg",
+        "type": "image2.gif",
+        "size": "32288"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g61.jpg",
+        "type": "image2.gif",
+        "size": "170636"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g62.jpg",
+        "type": "image2.gif",
+        "size": "32395"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g63.jpg",
+        "type": "image2.gif",
+        "size": "1780927"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g64.jpg",
+        "type": "image2.gif",
+        "size": "29945"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g65.jpg",
+        "type": "image2.gif",
+        "size": "170615"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g66.jpg",
+        "type": "image2.gif",
+        "size": "29948"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g67.jpg",
+        "type": "image2.gif",
+        "size": "170897"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g68.jpg",
+        "type": "image2.gif",
+        "size": "42755"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g69.jpg",
+        "type": "image2.gif",
+        "size": "24798"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g7.jpg",
+        "type": "image2.gif",
+        "size": "2297"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g70.jpg",
+        "type": "image2.gif",
+        "size": "973"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g71.jpg",
+        "type": "image2.gif",
+        "size": "786"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g72.jpg",
+        "type": "image2.gif",
+        "size": "83116"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g73.jpg",
+        "type": "image2.gif",
+        "size": "16763"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g74.jpg",
+        "type": "image2.gif",
+        "size": "13533"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g75.jpg",
+        "type": "image2.gif",
+        "size": "13594"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g76.jpg",
+        "type": "image2.gif",
+        "size": "13573"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g77.jpg",
+        "type": "image2.gif",
+        "size": "71049"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g78.jpg",
+        "type": "image2.gif",
+        "size": "67025"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g79.jpg",
+        "type": "image2.gif",
+        "size": "1572791"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g8.jpg",
+        "type": "image2.gif",
+        "size": "16168"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g80.jpg",
+        "type": "image2.gif",
+        "size": "1275832"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_g9.jpg",
+        "type": "image2.gif",
+        "size": "41445"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "agco-20260311_htm.xml",
+        "type": "text.gif",
+        "size": "127241"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "6358"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "207047"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "10821"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "R2.htm",
+        "type": "text.gif",
+        "size": "184747"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "R3.htm",
+        "type": "text.gif",
+        "size": "12673"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "R4.htm",
+        "type": "text.gif",
+        "size": "4370"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2767"
+      },
+      {
+        "last-modified": "2026-03-12 08:35:16",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1085"
+      }
+    ],
+    "name": "/Archives/edgar/data/880266/000088026626000023",
+    "parent-dir": "/Archives/edgar/data/880266"
+  }
+}

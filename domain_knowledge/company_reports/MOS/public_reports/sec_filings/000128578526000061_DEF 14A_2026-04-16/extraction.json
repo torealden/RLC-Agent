@@ -1,0 +1,213 @@
+{
+  "filing_metadata": {
+    "company_ticker": "MOS",
+    "company_name": "The Mosaic Company",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2026-04-16"
+  },
+  "directors": [
+    {
+      "name": "Cheryl K. Beebe",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Ms. Beebe served as Chief Financial Officer and Executive Vice President of Ingredion Incorporated (formerly Corn Products International, Inc.) from 2004 until her retirement in January 2014. She also held roles as Vice President, Finance, Vice President, and Treasurer at Ingredion prior to becoming CFO.",
+      "other_public_boards": [
+        "Packaging Corporation of America",
+        "Goldman Sachs Asset Management (GS Trust, GS Trust II, GS ETF Trust, GS ETF Trust II, GS Real Estate Diversified Income Trust, GS Variable Insurance Trust)"
+      ],
+      "prior_employers_named": [
+        "Ingredion Incorporated"
+      ]
+    },
+    {
+      "name": "Bruce M. Bodine",
+      "role": "director",
+      "is_independent": false,
+      "age": 54,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Bodine was appointed President and CEO of The Mosaic Company in January 2024, having previously served in various senior vice president roles at Mosaic since 2013. He has held positions overseeing North America, Phosphates, Potash, Supply Chain, and Operations Business Development throughout his career at Mosaic since its formation in 2004.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Gregory L. Ebel",
+      "role": "chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Mr. Ebel has served as President and CEO of Enbridge, Inc. since January 2023, and previously served as Chair of Enbridge following its merger with Spectra Energy Corp in 2017. He served as Chair, President and CEO of Spectra Energy from April 2014 to February 2017, and earlier held roles at Union Gas Limited and Duke Energy Corporation.",
+      "other_public_boards": [
+        "Enbridge, Inc."
+      ],
+      "prior_employers_named": [
+        "Enbridge, Inc.",
+        "Spectra Energy Corp",
+        "Union Gas Limited",
+        "Duke Energy Corporation"
+      ]
+    },
+    {
+      "name": "Timothy S. Gitzel",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Mr. Gitzel has been President and CEO of Cameco Corporation, a uranium producer, since July 2011. He previously served as President of Cameco from May 2010 to July 2011 and as Senior Vice President and Chief Operating Officer from January 2007 to May 2010.",
+      "other_public_boards": [
+        "Cameco Corporation"
+      ],
+      "prior_employers_named": [
+        "Cameco Corporation"
+      ]
+    },
+    {
+      "name": "Emery N. Koenig",
+      "role": "director",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Mr. Koenig is the retired Vice Chair and Chief Risk Officer of Cargill, Incorporated, where he also served as a member of the Corporate Leadership Team and board of directors until his retirement in February 2016. He previously led Cargill's Agricultural Supply Chain Platform and held various senior leadership roles at Cargill.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cargill, Incorporated"
+      ]
+    },
+    {
+      "name": "Jody L. Kuzenko",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Ms. Kuzenko has served as President and CEO of Torex Gold Resources, Inc. since June 2020, having joined Torex as Chief Operating Officer in October 2018. Prior to Torex, she held various roles at Vale Canada Limited (formerly Inco Limited) from 2004 to 2018.",
+      "other_public_boards": [
+        "Torex Gold Resources Inc."
+      ],
+      "prior_employers_named": [
+        "Torex Gold Resources, Inc.",
+        "Vale Canada Limited"
+      ]
+    },
+    {
+      "name": "Sonya C. Little",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Ms. Little is President and Chief Operating Officer of COI Energy Services, Inc., an energy technology company, having joined in July 2025. Prior to that, she served as Executive Vice President and Chief Administrative Officer of Strategic Property Partners, LLC from 2019 to 2024, and as Chief Financial Officer for the City of Tampa from 2011 to 2019. She previously held roles at Public Resources Advisory Group and RBC Capital Markets.",
+      "other_public_boards": [
+        "Hancock Whitney"
+      ],
+      "prior_employers_named": [
+        "Strategic Property Partners, LLC",
+        "Public Resources Advisory Group",
+        "RBC Capital Markets"
+      ]
+    },
+    {
+      "name": "David T. Seaton",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Mr. Seaton is the former Chair and CEO of Fluor Corporation, a professional services firm, where he served as chairman from February 2012 and CEO from February 2011 until May 2019. He joined Fluor in 1984 and held numerous positions in operations and sales globally before becoming CEO.",
+      "other_public_boards": [
+        "ConocoPhillips Company",
+        "Newmont Corporation"
+      ],
+      "prior_employers_named": [
+        "Fluor Corporation"
+      ]
+    },
+    {
+      "name": "Kathleen M. Shanahan",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Ms. Shanahan is currently CEO and Owner of Renaissance Outdoor Advertising, Inc. and serves as Senior Advisor to Turtle & Hughes, Inc., where she previously served as Co-CEO and then CEO from 2018 to 2024. She also previously served as Chair and CEO of Ground Works Solutions from 2011 to 2016 and WRS Infrastructure & Environment Inc. from 2005 to 2011, and earlier held senior roles at PaineWebber and as consultant to former NYSE CEO John Thain.",
+      "other_public_boards": [
+        "HireQuest, Inc. (HQI)",
+        "Great Lakes Dredge & Dock (GLDD)",
+        "Turning Pt Brands (TPB)"
+      ],
+      "prior_employers_named": [
+        "Turtle & Hughes, Inc.",
+        "Ground Works Solutions",
+        "WRS Infrastructure & Environment Inc.",
+        "PaineWebber"
+      ]
+    },
+    {
+      "name": "Jo\u00e3o Roberto Gon\u00e7alves Teixeira",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Teixeira is the former CEO of Copersucar S.A., a Brazilian sugar, ethanol and logistics corporation, serving from December 2018 until 2022. He previously served as CEO and Head of Wholesale Banking at Banco Votorantim S.A. from 2011 to 2016, held executive positions at Santander Group in Brazil, and was Head of Investment Banking - Brazil for Dresdner Kleinwort Wasserstein from 1995 to 2002.",
+      "other_public_boards": [
+        "XP Inc."
+      ],
+      "prior_employers_named": [
+        "Copersucar S.A.",
+        "Inviste",
+        "Banco Votorantim S.A.",
+        "Santander Group",
+        "Dresdner Kleinwort Wasserstein"
+      ]
+    },
+    {
+      "name": "Gretchen H. Watkins",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Ms. Watkins served as President of Shell USA, Inc. from May 2018 until her retirement in May 2025, also serving as Executive Vice President of Shell's Global Shales business. Prior to Shell, she served as CEO and then COO of Maersk Oil and Gas from 2014 to 2018, held corporate officer positions at Marathon Oil Company from 2008 to 2013, and held executive roles at BP plc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Shell USA, Inc.",
+        "Maersk Oil and Gas",
+        "Marathon Oil Company",
+        "BP plc"
+      ]
+    },
+    {
+      "name": "Kelvin R. Westbrook",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. Westbrook has been President and CEO of KRW Advisors, LLC, a strategic and business consulting services provider in telecommunications, media and other industries, since September 2007. He previously founded Millennium Digital Media Systems, LLC in 1997 and served in various leadership roles there until September 2007.",
+      "other_public_boards": [
+        "Archer Daniel Midland Company",
+        "Camden Property Trust"
+      ],
+      "prior_employers_named": [
+        "Millennium Digital Media Systems, LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director tenure years calculated from 'Director Since' year to 2026 annual meeting year. For David Seaton, tenure counted from 2009 initial appointment per proxy note. The proxy text for Kathleen Shanahan states age 66 in her bio section despite the summary table showing 67; 66 used from the detailed bio section. The proxy did not include a separate executive officers section in the provided text, so executive_officers is left empty. 'Jo\u00e3o Roberto Gon\u00e7alves Teixeira' name normalized from garbled OCR text 'Jo o Roberto Gon alves Teixeira'. For Shanahan's other public boards, HireQuest, Great Lakes Dredge & Dock, and Turning Pt Brands are listed under 'Current' in her bio. For Sonya Little, Hancock Whitney is listed as current. The proxy notes for Seaton that he served April 2009\u2013May 2019 and returned September 2019; tenure calculated from 2009.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:19:20.208170Z",
+    "filing_meta": {
+      "ticker": "MOS",
+      "form": "DEF 14A",
+      "filing_date": "2026-04-16",
+      "accession": "000128578526000061",
+      "primary_doc": "mos-20260415.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14818,
+    "output_tokens": 2901,
+    "cost_usd": 0.088,
+    "elapsed_sec": 43.8
+  }
+}

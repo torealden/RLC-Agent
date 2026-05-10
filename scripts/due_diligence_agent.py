@@ -232,9 +232,13 @@ def fetch_sec_extractions(ticker: str, max_filings: int = 10) -> list[dict]:
     """Read the most recent extraction.json files for this ticker."""
     if not ticker:
         return []
-    tdir = REPORTS_DIR / ticker
+    # New layout: filings under <TICKER>/public_reports/sec_filings/.
+    # Fall back to legacy top-level for unmigrated tickers.
+    tdir = REPORTS_DIR / ticker / "public_reports" / "sec_filings"
     if not tdir.exists():
-        return []
+        tdir = REPORTS_DIR / ticker
+        if not tdir.exists():
+            return []
     out = []
     for sub in sorted(tdir.iterdir(), reverse=True):
         if not sub.is_dir():

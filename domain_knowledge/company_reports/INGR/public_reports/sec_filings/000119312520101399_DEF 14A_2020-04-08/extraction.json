@@ -1,0 +1,195 @@
+{
+  "filing_metadata": {
+    "company_ticker": "INGR",
+    "company_name": "Ingredion Incorporated",
+    "fiscal_year_disclosed": 2020,
+    "filing_date": "2020-04-08"
+  },
+  "directors": [
+    {
+      "name": "Luis Aranguren-Trellez",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Executive President and director of Arancia, S.A. de C.V. and Arancia Industrial, S.A. de C.V. since 2011 and 2000 respectively, holding companies with interests in food, enzyme, and other industries. Previously served as Operations Director of CPIngredientes, S.A. de C.V. (Ingredion's Mexican subsidiary) from 1996 to 2000.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "CPIngredientes, S.A. de C.V."
+      ]
+    },
+    {
+      "name": "David B. Fischer",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Former President and CEO of Greif, Inc., a manufacturer and provider of industrial packaging and services, from 2007 to 2015. Also served as COO and in other senior roles at Greif from 2004 to 2011.",
+      "other_public_boards": [
+        "Balchem Corporation"
+      ],
+      "prior_employers_named": [
+        "Greif, Inc."
+      ]
+    },
+    {
+      "name": "Paul Hanrahan",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Former CEO of Globeleq Advisors Limited (2017\u20132019) and American Capital Energy & Infrastructure Management, LLC (2012\u20132016), and previously President and CEO of The AES Corporation (2002\u20132011). Currently a nonexecutive director of Globeleq Advisors Limited.",
+      "other_public_boards": [
+        "AquaVenture Holdings Limited"
+      ],
+      "prior_employers_named": [
+        "Globeleq Advisors Limited",
+        "American Capital Energy & Infrastructure Management, LLC",
+        "The AES Corporation",
+        "AES China Generating Co., Ltd."
+      ]
+    },
+    {
+      "name": "Rhonda L. Jordan",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Former President, Global Health & Wellness, and Sustainability of Kraft Foods Inc. (2009\u20132012), where she also led the Cheese and Dairy and Grocery business units. She brings 25 years of operating and marketing experience from Kraft.",
+      "other_public_boards": [
+        "Colfax Corporation"
+      ],
+      "prior_employers_named": [
+        "Kraft Foods Inc."
+      ]
+    },
+    {
+      "name": "Gregory B. Kenny",
+      "role": "chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Former President and CEO of General Cable Corporation (2001\u20132015) and non-executive Chairman of Ingredion since August 2018. Currently serves as non-executive chairman of Cardinal Health, Inc.",
+      "other_public_boards": [
+        "Cardinal Health, Inc.",
+        "AK Steel Holding Corporation"
+      ],
+      "prior_employers_named": [
+        "General Cable Corporation"
+      ]
+    },
+    {
+      "name": "Barbara A. Klein",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Former Senior Vice President and CFO of CDW Corporation (2002\u20132008), and previously CFO of Dean Foods Company and VP/Corporate Controller of Ameritech Corporation. She has over 30 years of financial and accounting experience.",
+      "other_public_boards": [
+        "Cabot Microelectronics Corporation"
+      ],
+      "prior_employers_named": [
+        "CDW Corporation",
+        "Dean Foods Company",
+        "Ameritech Corporation"
+      ]
+    },
+    {
+      "name": "Victoria J. Reich",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Former Senior Vice President and CFO of Essendant Inc. (2007\u20132011) and previously held CFO, Controller, and President roles at Brunswick Corporation and various financial management positions at General Electric Company. She has 32 years of corporate financial and accounting experience.",
+      "other_public_boards": [
+        "H&R Block, Inc.",
+        "Ecolab Inc."
+      ],
+      "prior_employers_named": [
+        "Essendant Inc.",
+        "Brunswick Corporation",
+        "General Electric Company"
+      ]
+    },
+    {
+      "name": "Stephan B. Tanda",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 0,
+      "bio_summary": "President and CEO of AptarGroup, Inc. since February 2017, a NYSE-listed global leader in consumer dispensing, active packaging and drug delivery solutions. Previously served as executive managing board director at Royal DSM NV and held leadership roles at DuPont and Freudenberg Nonwovens Group.",
+      "other_public_boards": [
+        "AptarGroup, Inc."
+      ],
+      "prior_employers_named": [
+        "Royal DSM NV",
+        "DuPont",
+        "Freudenberg Nonwovens Group"
+      ]
+    },
+    {
+      "name": "Jorge A. Uribe",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Former Global Productivity and Organization Transformation Officer of The Procter & Gamble Company (2012\u20132015), where he also served as Group President, Latin America and in other senior roles for over 33 years. He has extensive international operating and marketing experience.",
+      "other_public_boards": [
+        "General Mills, Inc.",
+        "Grupo Argos"
+      ],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Dwayne A. Wilson",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Former Senior Vice President of Fluor Corporation (2014\u20132016) and previously President and CEO of Savannah River Nuclear Solutions, LLC (2011\u20132014) and Group President, Industrial of Fluor Corporation. He has over 36 years of project management and general management experience.",
+      "other_public_boards": [
+        "AK Steel Holding Corporation"
+      ],
+      "prior_employers_named": [
+        "Fluor Corporation",
+        "Savannah River Nuclear Solutions, LLC"
+      ]
+    },
+    {
+      "name": "James P. Zallie",
+      "role": "director",
+      "is_independent": false,
+      "age": 58,
+      "tenure_years_on_board": 2,
+      "bio_summary": "President and CEO of Ingredion Incorporated since January 2018, having previously served in several Executive Vice President roles within Ingredion. He worked for National Starch for more than 27 years before it was acquired by Ingredion in October 2010.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "National Starch LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated from director-since year to 2020 annual meeting year. Stephan B. Tanda joined in August 2019, so tenure is less than 1 full year (recorded as 0). Jorge Uribe's board listing of Carvajal S.A. was omitted from other_public_boards as it is described as a Colombian multi-national but not explicitly stated to be a publicly listed company; Grupo Argos is described as a 'Colombian multi-national holding company' without explicit public listing confirmation but included given context. No executive officers section was present in the extracted text.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:09:33.428247Z",
+    "filing_meta": {
+      "ticker": "INGR",
+      "form": "DEF 14A",
+      "filing_date": "2020-04-08",
+      "accession": "000119312520101399",
+      "primary_doc": "d897654ddef14a.htm",
+      "section_chars_used": 51004
+    },
+    "input_tokens": 11583,
+    "output_tokens": 2106,
+    "cost_usd": 0.0663,
+    "elapsed_sec": 37.0
+  }
+}

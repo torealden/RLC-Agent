@@ -1,0 +1,165 @@
+{
+  "filing_metadata": {
+    "company_ticker": "AGCO",
+    "company_name": "AGCO Corporation",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2026-03-12"
+  },
+  "directors": [
+    {
+      "name": "Michael C. Arnold",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Former President and CEO of Ryerson Inc., Mr. Arnold previously held various senior management positions at The Timken Company from 1979 to 2010. He brings expertise in manufacturing, distribution, supply chain, mergers & acquisitions, and capital allocation.",
+      "other_public_boards": [
+        "Kaiser Aluminum Corporation"
+      ],
+      "prior_employers_named": [
+        "Ryerson Inc.",
+        "The Timken Company",
+        "Gardner Denver, Inc."
+      ]
+    },
+    {
+      "name": "Sondra L. Barbour",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Former Executive Vice President of Information Systems & Global Solutions at Lockheed Martin Corporation, where she spent 30 years in various leadership roles including Chief Information Officer and VP of Corporate Internal Audit. She also briefly served as Executive Vice President at Leidos Holdings.",
+      "other_public_boards": [
+        "NiSource, Inc."
+      ],
+      "prior_employers_named": [
+        "Leidos Holdings, Inc.",
+        "Lockheed Martin Corporation"
+      ]
+    },
+    {
+      "name": "Suzanne P. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Chief Executive Officer of the U.S. Chamber of Commerce since March 2021, previously serving as its President and COO. She also previously led Potomac Research Group and served as President of the National Journal Group at Atlantic Media Company.",
+      "other_public_boards": [
+        "TransUnion"
+      ],
+      "prior_employers_named": [
+        "Potomac Research Group",
+        "Atlantic Media Company"
+      ]
+    },
+    {
+      "name": "James C. Collins, Jr.",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Former Chief Executive Officer and Board Member of Corteva Agriscience, with prior leadership roles at DowDuPont and DuPont in agriculture from 2003 to 2019. He brings 37 years of executive leadership experience in global agriculture, food science innovation, and M&A.",
+      "other_public_boards": [
+        "Archer-Daniels-Midland Company"
+      ],
+      "prior_employers_named": [
+        "Corteva Agriscience",
+        "DowDuPont",
+        "DuPont"
+      ]
+    },
+    {
+      "name": "Bob De Lange",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Group President, Digital, Technology & Distribution of Caterpillar Inc., having joined Caterpillar in 1993 and held various leadership positions including Group President of Construction Industries and Vice President of the Excavation Division. He brings expertise in digitalization, dealer capability, supply chain, and manufacturing.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Caterpillar Inc."
+      ]
+    },
+    {
+      "name": "Zhanna Golodryga",
+      "role": "director",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Recently retired Executive Vice President, Emerging Energy and Sustainability at Phillips 66, where she was responsible for Energy Transition and Decarbonization. Prior to Phillips 66, she served as Chief Information Officer at Hess Corporation and at BHP Billiton Petroleum.",
+      "other_public_boards": [
+        "Regions Financial Corporation"
+      ],
+      "prior_employers_named": [
+        "Phillips 66",
+        "Hess Corporation",
+        "BHP Billiton Petroleum"
+      ]
+    },
+    {
+      "name": "Eric P. Hansotia",
+      "role": "chair",
+      "is_independent": false,
+      "age": 57,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Chairman, President & CEO of AGCO since January 2021, having joined AGCO in 2013 and previously serving as COO and in various senior vice president roles. Before AGCO, he held several positions at Deere & Company including Senior Vice President, Global Harvesting.",
+      "other_public_boards": [
+        "The Toro Company"
+      ],
+      "prior_employers_named": [
+        "Deere & Company"
+      ]
+    },
+    {
+      "name": "Niels P\u00f6rksen",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Chairman and Chief Executive Officer at S\u00fcdzucker AG since 2020, one of the world's largest sugar producers. He previously served as a Group Executive at Nufarm and held various leadership positions at BASF in multiple countries.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "S\u00fcdzucker AG",
+        "Nufarm",
+        "Nordzucker",
+        "BASF"
+      ]
+    },
+    {
+      "name": "David Sagehorn",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Former Executive Vice President and Chief Financial Officer of Oshkosh Corporation, where he also served in various roles including VP and Treasurer, VP Business Development, and VP Defense Segment. He brings extensive finance, accounting, and global compliance expertise.",
+      "other_public_boards": [
+        "Chart Industries, Inc."
+      ],
+      "prior_employers_named": [
+        "Oshkosh Corporation"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director tenure years calculated from the 'Director since' dates relative to the 2026 filing date. James C. Collins, Jr. joined the board in April 2026 per the text, so tenure is listed as 0. Niels P\u00f6rksen's name contains special characters that may have been garbled in the source text. The proxy text did not include a separate executive officers section, so that array is empty. Bob De Lange's role is listed as lead_independent based on his 'Lead Director since January 2026' designation. Eric Hansotia's role is listed as 'chair' as he holds the Chairman, President & CEO title. David Sagehorn is listed as audit_committee_chair based on his committee chairmanship. CropEnergies AG and AGRANA Beteiligungs-AG for Niels P\u00f6rksen are subsidiaries/controlled entities rather than independent public companies where he is a board member in the traditional sense; they are omitted from other_public_boards. Vestaron Corporation and Pivot Bio for Collins are noted as non-public in the text and are omitted.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:45:27.745222Z",
+    "filing_meta": {
+      "ticker": "AGCO",
+      "form": "DEF 14A",
+      "filing_date": "2026-03-12",
+      "accession": "000088026626000023",
+      "primary_doc": "agco-20260311.htm",
+      "section_chars_used": 24189
+    },
+    "input_tokens": 5852,
+    "output_tokens": 1948,
+    "cost_usd": 0.0468,
+    "elapsed_sec": 32.6
+  }
+}

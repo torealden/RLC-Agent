@@ -1,0 +1,265 @@
+{
+  "filing_metadata": {
+    "company_ticker": "GPRE",
+    "company_name": "Green Plains Inc.",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2021-03-26"
+  },
+  "directors": [
+    {
+      "name": "Todd A. Becker",
+      "role": "director",
+      "is_independent": false,
+      "age": 55,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Becker has served as President and CEO of Green Plains since January 2009 and was appointed as a director in March 2009. He previously served as CEO of VBV LLC and as Executive Vice President of Sales and Trading at Global Ethanol. Prior to that, he worked for ten years at ConAgra Foods in various management positions.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "VBV LLC",
+        "Global Ethanol",
+        "ConAgra Foods, Inc.",
+        "Hillshire Brands Company"
+      ]
+    },
+    {
+      "name": "Thomas Manuel",
+      "role": "director",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Manuel has been a director since May 2015 and serves as CEO and Founder of Nu-Tek Food Science LLC since August 2011. He previously served as CEO of Aventine Renewable Energy and held senior management positions at ConAgra Foods from 1977 to 2002. He also served as Managing Director of International Strategy Advisors, LLC.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Nu-Tek Food Science LLC",
+        "Aventine Renewable Energy, Inc.",
+        "International Strategy Advisors, LLC",
+        "ConAgra Foods, Inc."
+      ]
+    },
+    {
+      "name": "Brian Peterson",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Peterson has been a director since May 2005 and currently serves as President and CEO of Whiskey Creek Enterprises. He previously served as Green Plains' Executive Vice President in charge of site development and was the sole founder and owner of Superior Ethanol LLC, which was acquired by Green Plains in 2006.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Whiskey Creek Enterprises",
+        "Superior Ethanol LLC"
+      ]
+    },
+    {
+      "name": "Alain Treuer",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 48,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Treuer has been a director since October 2008 and Vice Chairman of the Board since August 2015. He is Chairman and CEO of Tellac Reuert Partners (TRP SA), a global investment firm, a position he has held since 2005. He was a founder of VBV LLC and previously served as Chairman and CEO of TIGC, a global telecommunications company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "VBV LLC",
+        "Tellac Reuert Partners (TRP SA)",
+        "TIGC",
+        "Trivon (VirginConnect/VirginConnect Mobile)"
+      ]
+    },
+    {
+      "name": "James Crowley",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Crowley has been a director since October 2008 and serves as Chairman and Managing Partner of Old Strategic, LLC since July 2006. His prior experience includes serving as Chairman and Managing Partner of Strategic Research Institute and President of Global Investment and Merchant Banking at Prudential Securities. He currently serves on the board and is Chairman of the Nominating and Governance Committee of Core Molding Technologies.",
+      "other_public_boards": [
+        "Core Molding Technologies"
+      ],
+      "prior_employers_named": [
+        "Old Strategic, LLC",
+        "Strategic Research Institute",
+        "Prudential Securities",
+        "Smith Barney Harris Upham & Co."
+      ]
+    },
+    {
+      "name": "Gene Edwards",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Edwards has been a director since June 2014 and served as Executive Vice President and Chief Development Officer of Valero Energy Corporation until his retirement in April 2014, where he spent a 32-year career. He served on the board of CST Brands, Inc. from May 2013 to December 2013.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Valero Energy Corporation",
+        "CST Brands, Inc."
+      ]
+    },
+    {
+      "name": "Gordon Glade",
+      "role": "director",
+      "is_independent": true,
+      "age": 50,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Glade has been a director since December 2007 and was formerly a shareholder and President and CEO of Amur Equipment Financing (formerly AXIS Capital Inc.) from 1996 to 2016. He currently serves as Vice President and a director of the Edgar and Frances Reynolds Foundation, Inc. and as a director of Heartland Agriculture, LLC and the Brunswick State Bank.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Amur Equipment Financing",
+        "AXIS Capital Inc."
+      ]
+    },
+    {
+      "name": "Jim Anderson",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Anderson has been a director since October 2008 and is currently CEO of Moly-Cop since November 2017. He previously served as Managing Director and Operating Partner at CHAMP Private Equity, and as President and CEO of The Gavilon Group, LLC. He also served as CEO of United Malt Holdings and held senior roles at ConAgra Foods.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Moly-Cop",
+        "CHAMP Private Equity",
+        "The Gavilon Group, LLC",
+        "United Malt Holdings",
+        "CT Malt",
+        "ConAgra Foods, Inc.",
+        "Ferruzzi USA",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Wayne Hoovestol",
+      "role": "chair",
+      "is_independent": false,
+      "age": 62,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Hoovestol has been a director since March 2006 and has served as Chairman of the Board since October 2008. He previously served as Green Plains' CEO from February 2007 to December 2008 and began operating Hoovestol Inc., a trucking company, in 1978. He is also President of Lone Mountain Truck Leasing, which he founded in 2005.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Hoovestol Inc.",
+        "Lone Mountain Truck Leasing",
+        "CapSource Financial, Inc."
+      ]
+    },
+    {
+      "name": "Ejnar Knudsen",
+      "role": "director",
+      "is_independent": false,
+      "age": 52,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Knudsen joined the company as a director in May 2016 and is the founder and CEO of AGR Partners. He previously served as co-portfolio manager of Passport Capital's Agriculture Fund from 2009 to 2012, EVP of Western Milling, and spent 10 years with Rabobank. He currently serves as a director of Ridley Corp. (RIC.ASX).",
+      "other_public_boards": [
+        "Ridley Corp."
+      ],
+      "prior_employers_named": [
+        "AGR Partners",
+        "Passport Capital",
+        "Western Milling",
+        "Rabobank"
+      ]
+    },
+    {
+      "name": "Kimberly Wagner",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Wagner joined the company as a director in October 2020 and is the founder of TBGD Partners, a boutique firm providing expertise to early and mid-stage ventures. She has been a Venture Partner at Flagship Pioneering and President and COO of CIBO Technologies. Prior to that she was a Partner at McKinsey & Co. and a Senior Partner and Managing Director at The Boston Consulting Group.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "TBGD Partners",
+        "Flagship Pioneering",
+        "CIBO Technologies",
+        "McKinsey & Co.",
+        "The Boston Consulting Group, Inc."
+      ]
+    }
+  ],
+  "executive_officers": [
+    {
+      "name": "Todd A. Becker",
+      "title": "President and Chief Executive Officer (and Director)",
+      "tenure_years": 12,
+      "prior_employers_named": [
+        "VBV LLC",
+        "Global Ethanol",
+        "ConAgra Foods, Inc."
+      ]
+    },
+    {
+      "name": "George P. (Patrich) Simpkins Jr.",
+      "title": "Chief Financial Officer",
+      "tenure_years": 9,
+      "prior_employers_named": [
+        "GPS Capital Partners, LLC",
+        "SensorLogic, Inc.",
+        "TXU Corporation",
+        "Duke Energy Corporation",
+        "Louis Dreyfus Energy",
+        "MEAG Power Company",
+        "MCI Communications"
+      ]
+    },
+    {
+      "name": "Walter S. Cronin",
+      "title": "Chief Commercial Officer",
+      "tenure_years": 1,
+      "prior_employers_named": [
+        "Green Plains Asset Management LLC",
+        "County Cork Asset Management",
+        "Bunge Limited",
+        "R.J. O'Brien & Associates LLC",
+        "Continental Grain Company"
+      ]
+    },
+    {
+      "name": "Paul E. Kolomaya",
+      "title": "Chief Accounting Officer",
+      "tenure_years": 2,
+      "prior_employers_named": [
+        "ConAgra Foods, Inc.",
+        "Arthur Andersen & Co."
+      ]
+    },
+    {
+      "name": "Michelle S. Mapes",
+      "title": "Chief Legal and Administration Officer and Corporate Secretary",
+      "tenure_years": 3,
+      "prior_employers_named": [
+        "Husch Blackwell LLP",
+        "HDM Corporation",
+        "Farm Credit Services of America"
+      ]
+    },
+    {
+      "name": "Mark A. Hudak",
+      "title": "Executive Vice President Human Resources",
+      "tenure_years": 8,
+      "prior_employers_named": [
+        "Bimbo Bakeries",
+        "United Malt Holdings",
+        "ConAgra Foods, Inc."
+      ]
+    }
+  ],
+  "extraction_confidence": "high",
+  "extraction_notes": "All directors and executive officers were clearly identified in the proxy with ages, tenures, and biographical details. Knudsen is listed as not independent per the Board's determination stated in the proxy. Hoovestol is also listed as not independent. Tenure years for directors were calculated from the year first mentioned as joining the board through 2021. Wagner's tenure is listed as 0 as she joined in October 2020 (less than one full year). Ejnar Knudsen's directorships at Opal Foods and Materra Farming are not listed as public companies; only Ridley Corp. (RIC.ASX) is explicitly a publicly listed company. For executive officer tenure, years were calculated from the date of their current role.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:01:08.069684Z",
+    "filing_meta": {
+      "ticker": "GPRE",
+      "form": "DEF 14A",
+      "filing_date": "2021-03-26",
+      "accession": "000119312521095446",
+      "primary_doc": "d898309ddef14a.htm",
+      "section_chars_used": 40586
+    },
+    "input_tokens": 10044,
+    "output_tokens": 3111,
+    "cost_usd": 0.0768,
+    "elapsed_sec": 50.0
+  }
+}

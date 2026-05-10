@@ -1,0 +1,267 @@
+{
+  "filing_metadata": {
+    "company_ticker": "HRL",
+    "company_name": "Hormel Foods Corporation",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2020-12-16"
+  },
+  "directors": [
+    {
+      "name": "Prama Bhatt",
+      "role": "director",
+      "is_independent": true,
+      "age": 50,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Ms. Bhatt is Chief Digital Officer of Ulta Beauty, Inc. since December 2019, having previously served Ulta Beauty as SVP and VP of Digital & eCommerce. Her prior experience includes VP eCommerce at Kenneth Cole Productions, various roles at Toys R Us, management consulting at Booz Allen Hamilton, and roles at Ford Motor Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ulta Beauty, Inc.",
+        "Kenneth Cole Productions, Inc.",
+        "Toys R Us, Inc.",
+        "Booz Allen Hamilton, Inc.",
+        "Ford Motor Company"
+      ]
+    },
+    {
+      "name": "Gary C. Bhojwani",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. Bhojwani is CEO of CNO Financial Group, Inc. since January 2018, and previously served as its President. He also founded GCB, LLC, and held senior roles at Allianz Life Insurance Company of North America and Fireman's Fund Insurance Company.",
+      "other_public_boards": [
+        "CNO Financial Group, Inc."
+      ],
+      "prior_employers_named": [
+        "CNO Financial Group, Inc.",
+        "GCB, LLC",
+        "Allianz Life Insurance Company of North America",
+        "Allianz SE",
+        "Fireman's Fund Insurance Company",
+        "Lincoln General Insurance Company",
+        "Avalon Risk Management",
+        "Trade Insurance Services"
+      ]
+    },
+    {
+      "name": "Terrell K. Crews",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Mr. Crews retired from Monsanto Company in 2009, where he served as Executive Vice President, CFO and Vegetable Business CEO. He currently serves on the boards of Archer-Daniels-Midland Company and WestRock Company.",
+      "other_public_boards": [
+        "Archer-Daniels-Midland Company",
+        "WestRock Company"
+      ],
+      "prior_employers_named": [
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Stephen M. Lacy",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Mr. Lacy is Chairman of the Board of Meredith Corporation, a media and marketing company, having previously served as its Executive Chairman, Chairman and CEO, and in various other senior roles since 1998. He also serves on the board of Great Western Bancorp, Inc.",
+      "other_public_boards": [
+        "Meredith Corporation",
+        "Great Western Bancorp, Inc."
+      ],
+      "prior_employers_named": [
+        "Meredith Corporation"
+      ]
+    },
+    {
+      "name": "Elsa A. Murano",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Dr. Murano has served Texas A&M University as Director of the Norman Borlaug Institute for International Agriculture since 2014 and as Professor of Animal Science since 2001. She previously served as President of Texas A&M University and as Undersecretary for Food Safety at the U.S. Department of Agriculture.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Texas A&M University",
+        "U.S. Department of Agriculture"
+      ]
+    },
+    {
+      "name": "Susan K. Nestegard",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Ms. Nestegard is an Advisor for True Wealth Ventures since July 2017, and previously served as President of the Global Healthcare Sector at Ecolab Inc. and as interim CEO of Cambridge Major Laboratories, Inc. She also has over 20 years of experience with 3M Company.",
+      "other_public_boards": [
+        "ALLETE, Inc."
+      ],
+      "prior_employers_named": [
+        "Ecolab Inc.",
+        "Cambridge Major Laboratories, Inc.",
+        "3M Company"
+      ]
+    },
+    {
+      "name": "William A. Newlands",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Mr. Newlands is President and CEO of Constellation Brands, Inc. since March 2019, having previously served in several senior roles at Constellation Brands. He also held senior leadership positions at Beam Inc. and Beam Global Spirits & Wine, Inc.",
+      "other_public_boards": [
+        "Constellation Brands, Inc.",
+        "Canopy Growth Corporation"
+      ],
+      "prior_employers_named": [
+        "Constellation Brands, Inc.",
+        "Beam Inc.",
+        "Beam Global Spirits & Wine, Inc."
+      ]
+    },
+    {
+      "name": "Christopher J. Policinski",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. Policinski is CEO of VitaKey, Inc. since August 2020, and previously served as President and CEO of Land O'Lakes, Inc. from 2005 to June 2018. His earlier career includes management positions at Kraft General Foods Corporation, Bristol Myers Squibb, and Pillsbury Company.",
+      "other_public_boards": [
+        "Xcel Energy, Inc."
+      ],
+      "prior_employers_named": [
+        "VitaKey, Inc.",
+        "Land O Lakes, Inc.",
+        "Kraft General Foods Corporation",
+        "Bristol Myers Squibb",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Jose Luis Prado",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Prado is Vice Chairman of Evans Food Group Ltd. since August 2019, having previously served as its Chairman and CEO. He also held senior roles at PepsiCo, Inc. including President of Quaker Oats North America and Global Baking, and various regional leadership positions within PepsiCo's snack divisions.",
+      "other_public_boards": [
+        "Northern Trust Corporation"
+      ],
+      "prior_employers_named": [
+        "Evans Food Group Ltd.",
+        "PepsiCo, Inc."
+      ]
+    },
+    {
+      "name": "Sally J. Smith",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Ms. Smith retired from Buffalo Wild Wings, Inc. in February 2018, where she served as President and CEO from 1996 to 2018 and CFO from 1994 to 1996. She previously held accounting and finance roles at Dahlberg, Inc. and began her career at KPMG LLP.",
+      "other_public_boards": [
+        "Alerus Financial Corporation",
+        "Digi International Inc."
+      ],
+      "prior_employers_named": [
+        "Buffalo Wild Wings, Inc.",
+        "Dahlberg, Inc.",
+        "KPMG LLP"
+      ]
+    },
+    {
+      "name": "James P. Snee",
+      "role": "chair",
+      "is_independent": false,
+      "age": 53,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Snee is Chairman of the Board, President and CEO of Hormel Foods Corporation since November 2017, having previously served as President and CEO and in various other senior roles within the company over a 31-year career. He also serves on the board of Republic Services, Inc.",
+      "other_public_boards": [
+        "Republic Services, Inc."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Steven A. White",
+      "role": "director",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. White is President, Comcast West Division of Comcast Corporation since 2009, with announced retirement effective December 31, 2020. He previously served in regional senior vice president roles at Comcast and held positions at AT&T Broadband, Telecommunications, Inc., and Colgate-Palmolive Company.",
+      "other_public_boards": [
+        "W.W. Grainger, Inc."
+      ],
+      "prior_employers_named": [
+        "Comcast Corporation",
+        "AT&T Broadband, LLC",
+        "Telecommunications, Inc.",
+        "Colgate-Palmolive Company"
+      ]
+    }
+  ],
+  "executive_officers": [
+    {
+      "name": "James P. Snee",
+      "title": "Chairman of the Board, President and Chief Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "James N. Sheehan",
+      "title": "Executive Vice President and Chief Financial Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Glenn R. Leitch",
+      "title": "Executive Vice President, Supply Chain",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Thomas R. Day",
+      "title": "Former Executive Vice President, Refrigerated Foods (Retired April 24, 2020)",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Deanna T. Brady",
+      "title": "Executive Vice President, Refrigerated Foods",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "James M. Splinter",
+      "title": "Former Group Vice President, Corporate Strategy (Retired June 18, 2020)",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Lori J. Marco",
+      "title": "Senior Vice President, External Affairs, and General Counsel",
+      "tenure_years": null,
+      "prior_employers_named": []
+    }
+  ],
+  "extraction_confidence": "high",
+  "extraction_notes": "Dakota A. Pippins is noted as an independent director in the proxy but is listed as retiring when term expires January 26, 2021 and is not among the 12 director nominees, so is excluded from the directors list. Tenure years calculated from 'director since' year to 2020. Committee chair roles assigned based on the committee table footnotes and compensation committee report. Christopher J. Policinski is listed as Lead Director since September 2016. VitaKey, Inc. was described as a private company so not listed under Policinski's other_public_boards; Xcel Energy, Inc. is the only public board explicitly named for him. Sally J. Smith's other public boards include only those identified as public companies (Alerus Financial Corporation and Digi International Inc.); Allina Health System and The Marvin Companies and National Restaurant Association appear to be non-public entities.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:05:25.204940Z",
+    "filing_meta": {
+      "ticker": "HRL",
+      "form": "DEF 14A",
+      "filing_date": "2020-12-16",
+      "accession": "000110465920135980",
+      "primary_doc": "a20-37094_2def14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14930,
+    "output_tokens": 3118,
+    "cost_usd": 0.0916,
+    "elapsed_sec": 47.2
+  }
+}

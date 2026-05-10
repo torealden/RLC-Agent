@@ -46,6 +46,9 @@ token.json
 #        ~3KB each), manifest.csv, extractions_manifest.csv, the ticker xlsx.
 # Skip:  the actual .htm/.xml/.zip/.xsd/image files filed with the SEC
 #        (~50-300KB each, reproducible via scripts/sec_edgar_puller.py).
+# Two patterns: legacy top-level layout AND new nested
+# <TICKER>/public_reports/sec_filings/<accession>/ layout (per
+# domain_knowledge/company_reports/README.md).
 domain_knowledge/company_reports/*/[0-9]*_*/*.htm
 domain_knowledge/company_reports/*/[0-9]*_*/*.html
 domain_knowledge/company_reports/*/[0-9]*_*/*.xml
@@ -58,6 +61,18 @@ domain_knowledge/company_reports/*/[0-9]*_*/*.gif
 domain_knowledge/company_reports/*/[0-9]*_*/*.css
 domain_knowledge/company_reports/*/[0-9]*_*/*.js
 domain_knowledge/company_reports/*/[0-9]*_*/*.txt
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.htm
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.html
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.xml
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.xsd
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.zip
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.jpg
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.jpeg
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.png
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.gif
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.css
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.js
+domain_knowledge/company_reports/*/public_reports/sec_filings/[0-9]*_*/*.txt
 domain_knowledge/company_reports/company_tickers_cache.json
 
 # State air-permit scraper artifacts.

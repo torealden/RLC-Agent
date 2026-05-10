@@ -1,0 +1,114 @@
+{
+  "filing_metadata": {
+    "company_ticker": "IPI",
+    "company_name": "Intrepid Potash, Inc.",
+    "fiscal_year_disclosed": 2020,
+    "filing_date": "2020-04-07"
+  },
+  "directors": [
+    {
+      "name": "Robert P. Jornayvaz III",
+      "role": "executive_chair",
+      "is_independent": false,
+      "age": 61,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Has served as Executive Chairman of the Board since 2010 and as President and CEO since 2014. Previously served as Chairman and CEO from the company's formation in 2007 until 2010, and as a manager of predecessor Intrepid Mining LLC from 2000. He is the sole owner of Intrepid Production Corporation (IPC) and together beneficially owns 15.5% of common stock.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Intrepid Mining LLC"
+      ]
+    },
+    {
+      "name": "Hugh E. Harvey, Jr.",
+      "role": "director",
+      "is_independent": false,
+      "age": 67,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Served as Executive Vice Chairman from 2010 to March 2020 and as Vice Chairman from March 2020 to present, retiring as an employee of Intrepid in March 2020. From 2007 to 2010 he held various management roles including Chief Technology Officer, Chief Operating Officer, and Executive Vice President of Technology, and previously managed predecessor Intrepid Mining LLC from 2000. He is the sole owner of Harvey Operating and Production Company (HOPCO).",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Intrepid Mining LLC"
+      ]
+    },
+    {
+      "name": "Terry Considine",
+      "role": "director",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Has served as Chief Executive Officer and Chairman of the Board of Apartment Investment Management Company, a publicly held multi-family apartment REIT, since 1994. He brings expertise in operations, finance, and governance as a current NYSE-listed company chief executive and former chief executive of four other listed companies.",
+      "other_public_boards": [
+        "Apartment Investment Management Company"
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Chris A. Elliott",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Owner of Belle Prairie Investments LLC, a privately held company investing in agriculture real estate and environmental mitigation. From 2007 through 2017, he was CEO of AgCoA, a privately held agriculture real estate company. He has over 25 years of business experience in the agriculture industry.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "AgCoA"
+      ]
+    },
+    {
+      "name": "J. Landis Martin",
+      "role": "director",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Founder of private equity firm Platte River Equity, where he has been Chairman since February 2016 and Managing Director since 2005. Previously served as Chairman and CEO of Titanium Metals Corporation (1989\u20132005), President and CEO of NL Industries, Inc. (1987\u20132003), and Chairman and CEO of Baroid Corporation (1990\u20131994). He notified the company of his retirement from the Board effective May 19, 2020.",
+      "other_public_boards": [
+        "Crown Castle International Corp.",
+        "Apartment Investment Management Company"
+      ],
+      "prior_employers_named": [
+        "Platte River Equity",
+        "Titanium Metals Corporation",
+        "NL Industries, Inc.",
+        "Baroid Corporation",
+        "Halliburton Company"
+      ]
+    },
+    {
+      "name": "Barth E. Whitham",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Has served as President and CEO of Enduring Resources, LLC, a privately held upstream energy company, since 2005. From 1991 to 2005, he served as President and COO of Westport Resources Corp., a publicly traded oil and gas E&P company. He also serves on the board of directors of Ensign Energy Services Inc.",
+      "other_public_boards": [
+        "Ensign Energy Services Inc."
+      ],
+      "prior_employers_named": [
+        "Enduring Resources, LLC",
+        "Westport Resources Corp."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Executive officers section was not included in the provided text. J. Landis Martin's retirement from the Board is effective May 19, 2020; his current public-company directorships are listed as Crown Castle International Corp. (Chairman) and Apartment Investment Management Company (lead director, retiring April 28, 2020). Tenure years calculated from 'Director Since' dates relative to the 2020 annual meeting. Hugh E. Harvey, Jr. is listed as a Class III nominee but is not independent given his prior employee status and significant share ownership.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:12:27.485517Z",
+    "filing_meta": {
+      "ticker": "IPI",
+      "form": "DEF 14A",
+      "filing_date": "2020-04-07",
+      "accession": "000104746920002157",
+      "primary_doc": "a2241259zdef14a.htm",
+      "section_chars_used": 15778
+    },
+    "input_tokens": 4261,
+    "output_tokens": 1350,
+    "cost_usd": 0.033,
+    "elapsed_sec": 25.5
+  }
+}

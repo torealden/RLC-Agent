@@ -1,0 +1,165 @@
+{
+  "filing_metadata": {
+    "company_ticker": "AGCO",
+    "company_name": "AGCO Corporation",
+    "fiscal_year_disclosed": 2025,
+    "filing_date": "2025-03-24"
+  },
+  "directors": [
+    {
+      "name": "Michael C. Arnold",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Former President and CEO of Ryerson Inc., and previously held various senior management positions at The Timken Company from 1979 to 2010. He brings expertise in manufacturing, distribution, supply chain, mergers & acquisitions, and capital allocation, and currently serves as Lead Independent Director of Kaiser Aluminum Corporation.",
+      "other_public_boards": [
+        "Kaiser Aluminum Corporation"
+      ],
+      "prior_employers_named": [
+        "Ryerson Inc.",
+        "The Timken Company",
+        "Gardner Denver, Inc."
+      ]
+    },
+    {
+      "name": "Sondra L. Barbour",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Former Executive Vice President of Information Systems & Global Solutions at Lockheed Martin Corporation, where she spent 30 years overseeing large-scale IT and internal audit functions. She currently serves on the Board of Directors of NiSource, Inc. and brings substantial information technology, internal control, and international experience to the Board.",
+      "other_public_boards": [
+        "NiSource, Inc."
+      ],
+      "prior_employers_named": [
+        "Leidos Holdings, Inc.",
+        "Lockheed Martin Corporation",
+        "3M Company",
+        "Perspecta Inc."
+      ]
+    },
+    {
+      "name": "Suzanne P. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Chief Executive Officer of the U.S. Chamber of Commerce since March 2021, previously serving as its President and COO. She also formerly led Potomac Research Group and served as President of the National Journal Group at Atlantic Media Company, and currently serves on the Board of Directors of TransUnion.",
+      "other_public_boards": [
+        "TransUnion"
+      ],
+      "prior_employers_named": [
+        "Potomac Research Group",
+        "Atlantic Media Company"
+      ]
+    },
+    {
+      "name": "Bob De Lange",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Group President, Services, Distribution and Digital of Caterpillar Inc., responsible for the Caterpillar brand and distribution network, having joined Caterpillar in 1993 and held various leadership roles including Group President of Construction Industries. He brings expertise in digitalization, dealer capability, product design, supply chain, and global distribution.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Caterpillar Inc."
+      ]
+    },
+    {
+      "name": "Zhanna Golodryga",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Currently serves as Executive Vice President, Emerging Energy and Sustainability at Phillips 66, and previously was Senior Vice President, Chief Digital and Administrative Officer at Phillips 66. Prior to that, she served as CIO at Hess Corporation and BHP Billiton Petroleum, and currently serves on the Board of Directors of Regions Financial Corporation.",
+      "other_public_boards": [
+        "Regions Financial Corporation"
+      ],
+      "prior_employers_named": [
+        "Phillips 66",
+        "Hess Corporation",
+        "BHP Billiton Petroleum"
+      ]
+    },
+    {
+      "name": "Eric P. Hansotia",
+      "role": "chair",
+      "is_independent": false,
+      "age": 56,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Chairman, President & CEO of AGCO since January 2021, having previously served in various senior roles at AGCO since 2013. Prior to AGCO, he held several positions at Deere & Company including Senior Vice President, Global Harvesting, and currently serves on the Board of Directors of The Toro Company.",
+      "other_public_boards": [
+        "The Toro Company"
+      ],
+      "prior_employers_named": [
+        "Deere & Company"
+      ]
+    },
+    {
+      "name": "Niels P\u00f6rksen",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Chairman and CEO of S\u00fcdzucker AG since 2020, one of the world's largest sugar producers. He previously served as Group Executive of Portfolio Solutions at Nufarm and was a member of the Executive Board of Nordzucker, and held various leadership roles at BASF across multiple countries.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "S\u00fcdzucker AG",
+        "Nufarm",
+        "Nordzucker",
+        "BASF"
+      ]
+    },
+    {
+      "name": "David Sagehorn",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Former Executive Vice President and Chief Financial Officer of Oshkosh Corporation, where he also held roles including Vice President and Treasurer, Vice President Business Development, and Vice President Defense Segment. He currently serves on the Board of Directors of Chart Industries, Inc. as Chair of the Audit Committee.",
+      "other_public_boards": [
+        "Chart Industries, Inc."
+      ],
+      "prior_employers_named": [
+        "Oshkosh Corporation"
+      ]
+    },
+    {
+      "name": "Matthew Tsien",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Spent a 40-year career at General Motors, retiring as Executive Vice President and Chief Technology Officer, and also served as President of General Motors China and President of General Motors Ventures. He currently serves as a Director of Magna International since May 2023.",
+      "other_public_boards": [
+        "Magna International"
+      ],
+      "prior_employers_named": [
+        "General Motors"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director tenure years are calculated from the 'Director since' dates relative to 2025. Zhanna Golodryga is listed as Director since April 2025, so tenure is 0 years. The name 'Niels P\u00f6rksen' appears in the proxy with special characters rendered inconsistently ('NIELS P RKSEN'); full name reconstructed as Niels P\u00f6rksen based on context (S\u00fcdzucker AG CEO). No executive officers section was included in the provided proxy text, so that array is empty. Mallika Srinivasan and George E. Minnich are noted as not standing for reelection and are excluded from the directors array.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:44:55.164627Z",
+    "filing_meta": {
+      "ticker": "AGCO",
+      "form": "DEF 14A",
+      "filing_date": "2025-03-24",
+      "accession": "000088026625000015",
+      "primary_doc": "agco-20250321.htm",
+      "section_chars_used": 25265
+    },
+    "input_tokens": 6047,
+    "output_tokens": 1917,
+    "cost_usd": 0.0469,
+    "elapsed_sec": 32.6
+  }
+}

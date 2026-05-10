@@ -1,0 +1,214 @@
+{
+  "filing_metadata": {
+    "company_ticker": "HRL",
+    "company_name": "Hormel Foods Corporation",
+    "fiscal_year_disclosed": 2025,
+    "filing_date": "2024-12-18"
+  },
+  "directors": [
+    {
+      "name": "Gary C. Bhojwani",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. Bhojwani has been CEO of CNO Financial Group, Inc. since January 2018 and previously served as its President from 2016 to 2017. He was Chairman and CEO of Allianz Life Insurance Company of North America and held executive roles at Fireman's Fund Insurance Company, Lincoln General Insurance Company, and Avalon Risk Management.",
+      "other_public_boards": [
+        "CNO Financial Group, Inc."
+      ],
+      "prior_employers_named": [
+        "Allianz Life Insurance Company of North America",
+        "Allianz SE",
+        "Fireman's Fund Insurance Company",
+        "Lincoln General Insurance Company",
+        "Avalon Risk Management",
+        "Trade Insurance Services"
+      ]
+    },
+    {
+      "name": "Stephen M. Lacy",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 70,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Mr. Lacy retired from Meredith Corporation in November 2020, where he held various senior roles including Chairman and CEO. He currently serves on the Board of First Interstate BancSystem, Inc.",
+      "other_public_boards": [
+        "First Interstate BancSystem, Inc."
+      ],
+      "prior_employers_named": [
+        "Meredith Corporation"
+      ]
+    },
+    {
+      "name": "Elsa A. Murano, Ph.D.",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 18,
+      "bio_summary": "Dr. Murano has served Texas A&M University in various capacities since 2001, including as Director of the Norman Borlaug Institute for International Agriculture and President Emerita. She previously served as Undersecretary for Food Safety at the U.S. Department of Agriculture from 2001 to 2004.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Texas A&M University",
+        "U.S. Department of Agriculture"
+      ]
+    },
+    {
+      "name": "William A. Newlands",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. Newlands has been President and CEO of Constellation Brands, Inc. since March 2019, having joined the company in 2015. He previously held senior executive roles at Beam Inc. and Beam Global Spirits & Wine, Inc.",
+      "other_public_boards": [
+        "Constellation Brands, Inc."
+      ],
+      "prior_employers_named": [
+        "Beam Inc.",
+        "Beam Global Spirits & Wine, Inc."
+      ]
+    },
+    {
+      "name": "Christopher J. Policinski",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Mr. Policinski has been CEO of CJP Leadership Partners, LLC since February 2021 and was briefly CEO of VitaKey, Inc. in 2020-2021. He retired from Land O'Lakes, Inc. in 2018 after serving as President and CEO from 2005 to 2018, and previously held positions at Kraft General Foods Corporation, Bristol-Myers Squibb Co., and Pillsbury Company.",
+      "other_public_boards": [
+        "Xcel Energy, Inc."
+      ],
+      "prior_employers_named": [
+        "CJP Leadership Partners, LLC",
+        "VitaKey, Inc.",
+        "Land O'Lakes, Inc.",
+        "Kraft General Foods Corporation",
+        "Bristol-Myers Squibb Co.",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Debbra L. Schoneman",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Ms. Schoneman has been President of Piper Sandler Companies since 2018, having previously served as its CFO from 2008 to 2017 and in various finance roles since 1990. She joined the Hormel Foods Board in September 2024.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Piper Sandler Companies"
+      ]
+    },
+    {
+      "name": "Sally J. Smith",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Ms. Smith retired from Buffalo Wild Wings, Inc. in February 2018, where she served as President and CEO from 1996 to 2018. She earlier held CFO and Controller roles at Dahlberg, Inc. and began her career at KPMG LLP.",
+      "other_public_boards": [
+        "Digi International Inc."
+      ],
+      "prior_employers_named": [
+        "Buffalo Wild Wings, Inc.",
+        "Dahlberg, Inc.",
+        "KPMG LLP"
+      ]
+    },
+    {
+      "name": "James P. Snee",
+      "role": "chair",
+      "is_independent": false,
+      "age": 57,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Mr. Snee is Chairman of the Board, President and CEO of Hormel Foods Corporation, serving in that capacity since November 2017. He has held various senior roles at Hormel Foods over a 35-year career, including President and COO, and Group Vice President of Hormel Foods International Corporation.",
+      "other_public_boards": [
+        "Republic Services, Inc."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Steven A. White",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. White retired from Comcast Corporation in December 2024, where he most recently served as President, Special Counsel to CEO Comcast Cable. He previously held regional senior vice president roles at Comcast and prior roles at AT&T Broadband and Telecommunications, Inc., and held marketing positions at Colgate-Palmolive Company.",
+      "other_public_boards": [
+        "W.W. Grainger, Inc."
+      ],
+      "prior_employers_named": [
+        "Comcast Corporation",
+        "AT&T Broadband, LLC",
+        "Telecommunications, Inc.",
+        "Colgate-Palmolive Company"
+      ]
+    },
+    {
+      "name": "Michael P. Zechmeister",
+      "role": "director",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Zechmeister retired from C.H. Robinson Worldwide, Inc. in August 2024, where he served as CFO since September 2019. He previously was CFO of United Natural Foods, Inc. and held various finance executive roles at General Mills, Inc. over a 25-year tenure.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "C.H. Robinson Worldwide, Inc.",
+        "United Natural Foods, Inc.",
+        "General Mills, Inc."
+      ]
+    }
+  ],
+  "executive_officers": [
+    {
+      "name": "James P. Snee",
+      "title": "Chairman of the Board, President and Chief Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Jacinth C. Smiley",
+      "title": "Executive Vice President and Chief Financial Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Deanna T. Brady",
+      "title": "Executive Vice President, Retail",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Colleen R. Batcheler",
+      "title": "Senior Vice President, External Affairs and General Counsel",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Kevin L. Myers",
+      "title": "Senior Vice President, Research & Development and Quality Control",
+      "tenure_years": null,
+      "prior_employers_named": []
+    }
+  ],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated from 'director since' year to 2024 filing year. Debbra L. Schoneman joined in September 2024, so tenure rounded to 0. Michael P. Zechmeister joined March 2023, so tenure is 1. Fiscal year disclosed set to 2025 as the annual meeting covers fiscal year ending October 2025. Prama Bhatt was noted as an independent director but not standing for reelection and thus not included as a director nominee. Other public boards limited strictly to currently-serving public company directorships as named in the bios; Isidro Investments (Policinski) and Allina Health/University of St. Thomas (Schoneman) omitted as they are private/non-public entities. SuckerPunch Gourmet LLC (Lacy) omitted as private.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:08:15.895269Z",
+    "filing_meta": {
+      "ticker": "HRL",
+      "form": "DEF 14A",
+      "filing_date": "2024-12-18",
+      "accession": "000110465924129587",
+      "primary_doc": "tm2425757d8_def14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 15115,
+    "output_tokens": 2504,
+    "cost_usd": 0.0829,
+    "elapsed_sec": 38.7
+  }
+}

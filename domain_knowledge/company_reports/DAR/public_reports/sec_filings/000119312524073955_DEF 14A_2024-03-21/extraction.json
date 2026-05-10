@@ -1,0 +1,142 @@
+{
+  "filing_metadata": {
+    "company_ticker": "DAR",
+    "company_name": "Darling Ingredients Inc.",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2024-03-21"
+  },
+  "directors": [
+    {
+      "name": "Randall C. Stuewe",
+      "role": "chair",
+      "is_independent": false,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Randall C. Stuewe serves as Chairman of the Board and Chief Executive Officer of Darling Ingredients Inc. He holds the combined role pursuant to his employment agreement and subject to continued election by stockholders.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Gary W. Mize",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Gary W. Mize serves as the independent Lead Director of Darling Ingredients Inc., elected annually by the independent members of the Board. He chairs the nominating and corporate governance committee and is responsible for convening executive sessions and coordinating Board committee work.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Charles Adair",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Charles Adair is an independent director and Chairman of the audit committee. He also serves on the nominating and corporate governance committee. The Board has designated him as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Beth Albright",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Beth Albright is an independent director who serves on both the audit committee and the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Larry A. Barden",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Larry A. Barden is an independent director who serves on the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Celeste A. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Celeste A. Clark is an independent director who serves on the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Linda Goodspeed",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Linda Goodspeed is an independent director and Chairwoman of the compensation committee. She also serves on the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Enderson Guimaraes",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Enderson Guimaraes is an independent director who serves on both the audit committee and the compensation committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Dirk Kloosterboer",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Dirk Kloosterboer is an independent director of Darling Ingredients Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Michael E. Rescoe",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Michael E. Rescoe is an independent director who serves on the audit committee. The Board has designated him as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Kurt Stoffel",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Kurt Stoffel is an independent director who serves on the audit committee. The Board has designated him as an audit committee financial expert.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "medium",
+  "extraction_notes": "The provided text excerpt is limited to corporate governance and committee sections of the proxy statement and does not include full director biographies, ages, tenure, or the executive officer section. As a result, ages, tenure, prior employers, other public board memberships, and detailed bio summaries could not be populated from the available text. Committee chairmanship roles were inferred from the committee membership descriptions. Mary R. Korby is mentioned as having retired from the Board as of the 2023 annual meeting and was therefore not included as a current director.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:58:58.638522Z",
+    "filing_meta": {
+      "ticker": "DAR",
+      "form": "DEF 14A",
+      "filing_date": "2024-03-21",
+      "accession": "000119312524073955",
+      "primary_doc": "d466310ddef14a.htm",
+      "section_chars_used": 27487
+    },
+    "input_tokens": 5835,
+    "output_tokens": 1489,
+    "cost_usd": 0.0398,
+    "elapsed_sec": 24.6
+  }
+}

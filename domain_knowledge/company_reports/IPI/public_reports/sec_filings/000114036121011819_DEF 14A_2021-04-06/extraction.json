@@ -1,0 +1,111 @@
+{
+  "filing_metadata": {
+    "company_ticker": "IPI",
+    "company_name": "Intrepid Potash, Inc.",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2021-04-06"
+  },
+  "directors": [
+    {
+      "name": "Terry Considine",
+      "role": "director",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Terry Considine served as CEO and Chairman of Apartment Investment and Management Company (AIMCO) from 1994 until 2020. Following AIMCO's separation in December 2020, he currently serves as CEO of Apartment Income REIT Corporation and Executive Chairman of AIMCO. He brings expertise in operations, finance, and governance from his experience leading NYSE-listed companies.",
+      "other_public_boards": [
+        "Apartment Income REIT Corporation",
+        "Apartment Investment and Management Company"
+      ],
+      "prior_employers_named": [
+        "Apartment Investment and Management Company"
+      ]
+    },
+    {
+      "name": "Chris A. Elliott",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Chris A. Elliott is the President and CEO of Mitigation Investment Holdings LLC, a privately held environmental restoration investment company, and owner of Belle Prairie Investments LLC. From 2007 through 2017, he served as CEO of AgCoA, a privately held agriculture real estate company. He has over 25 years of experience in the agriculture industry.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "AgCoA"
+      ]
+    },
+    {
+      "name": "Mary E. McBride",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mary E. McBride is a senior banking executive with over 30 years of experience in commercial banking with a focus on agriculture markets. She joined CoBank, ACB in 1993 and most recently served as president from 2013 to 2016, having also served as COO and chief banking officer there. Prior to CoBank, she worked at First Interstate Bank of Denver and the First National Bank of Boston.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "CoBank, ACB",
+        "First Interstate Bank of Denver",
+        "First National Bank of Boston"
+      ]
+    },
+    {
+      "name": "Barth E. Whitham",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Barth E. Whitham has served as President and CEO of Enduring Resources, LLC, a privately held upstream energy company, since 2005. From 1991 to 2005, he served as President and COO of Westport Resources Corp., a publicly traded oil and gas exploration and production company. He also currently serves on the board of Ensign Energy Services Inc.",
+      "other_public_boards": [
+        "Ensign Energy Services Inc."
+      ],
+      "prior_employers_named": [
+        "Westport Resources Corp."
+      ]
+    },
+    {
+      "name": "Robert P. Jornayvaz III",
+      "role": "executive_chair",
+      "is_independent": false,
+      "age": 62,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Robert P. Jornayvaz III has served as Executive Chairman of Intrepid Potash since 2010 and as President and CEO since 2014. He previously served as Chairman and CEO from the company's formation in 2007 until 2010, and as a manager of predecessor Intrepid Mining LLC from 2000. He has over 15 years of experience in potash mining and over 30 years in oil and gas.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Intrepid Mining LLC"
+      ]
+    },
+    {
+      "name": "Hugh E. Harvey, Jr.",
+      "role": "director",
+      "is_independent": false,
+      "age": 68,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Hugh E. Harvey, Jr. served as Executive Vice Chairman of Intrepid Potash from 2010 to March 2020 and has served as Vice Chairman since March 2020, retiring as an employee at that time. He previously held various management roles including CTO, COO, and EVP of Technology from 2007 to 2010, and was a manager of predecessor Intrepid Mining LLC from 2000. He has over 15 years in potash mining and over 30 years in oil and gas.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Intrepid Mining LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "The proxy text provided covers the director section in full. No separate executive officer table was included in the provided text. Tenure years are calculated from the 'Director Since' dates relative to the 2021 annual meeting. Terry Considine's role is listed as director (nominee); he is not an executive of Intrepid. Hugh Harvey and Robert Jornayvaz are treated as non-independent given their insider/ownership roles. Ensign Energy Services Inc. is listed as a current public board for Whitham based on explicit proxy language.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:12:59.410875Z",
+    "filing_meta": {
+      "ticker": "IPI",
+      "form": "DEF 14A",
+      "filing_date": "2021-04-06",
+      "accession": "000114036121011819",
+      "primary_doc": "nc10021448x1_def14a.htm",
+      "section_chars_used": 15037
+    },
+    "input_tokens": 3927,
+    "output_tokens": 1425,
+    "cost_usd": 0.0332,
+    "elapsed_sec": 25.2
+  }
+}

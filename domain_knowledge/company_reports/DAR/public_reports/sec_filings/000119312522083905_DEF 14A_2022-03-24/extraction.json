@@ -1,0 +1,132 @@
+{
+  "filing_metadata": {
+    "company_ticker": "DAR",
+    "company_name": "Darling Ingredients Inc.",
+    "fiscal_year_disclosed": 2022,
+    "filing_date": "2022-03-24"
+  },
+  "directors": [
+    {
+      "name": "Randall C. Stuewe",
+      "role": "chair",
+      "is_independent": false,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Randall C. Stuewe serves as Chairman of the Board and Chief Executive Officer of Darling Ingredients Inc. pursuant to his employment agreement. He serves as the primary voice to articulate the company's strategy of long-term responsible growth.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Gary W. Mize",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Gary W. Mize serves as the independent Lead Director and Chairman of the nominating and corporate governance committee. He was elected annually by the Board to serve in this role and actively facilitates participation of all directors and regularly engages with the CEO.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Charles Adair",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Charles Adair serves as Chairman of the audit committee and has been designated as an audit committee financial expert. He is an independent director under NYSE and SEC rules.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Beth Albright",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Beth Albright is an independent director serving on both the audit committee and the compensation committee. She meets the independence requirements of the NYSE and the SEC.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Celeste A. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Celeste A. Clark is an independent director who meets the independence requirements of the NYSE and the SEC.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Linda Goodspeed",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Linda Goodspeed serves as Chairwoman of the compensation committee and is also a member of the nominating and corporate governance committee. She is an independent director under NYSE and SEC rules.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Enderson Guimaraes",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Enderson Guimaraes is an independent director serving on both the audit committee and the compensation committee. He meets the independence requirements of the NYSE and the SEC.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Mary R. Korby",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Mary R. Korby is an independent director serving on both the nominating and corporate governance committee and the compensation committee. She meets the independence requirements of the NYSE and the SEC.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Dirk Kloosterboer",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Dirk Kloosterboer is an independent director who meets the independence requirements of the NYSE and the SEC.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Michael E. Rescoe",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Michael E. Rescoe is an independent director serving on the audit committee and has been designated as an audit committee financial expert. He meets the independence requirements of the NYSE and the SEC.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "low",
+  "extraction_notes": "The provided proxy text excerpt covers corporate governance narrative and committee descriptions but does not include the individual director biography section or the executive officers section. As a result, age, tenure, detailed bios, prior employers, and other public board memberships could not be extracted for most directors. Randall C. Stuewe is identified as CEO/Chairman from the governance text. Charles Macaluso (deceased February 2021) and Nicole M. Ringenberg (stepped down July 15, 2021) were excluded as they are not current directors. No executive officers section was present in the provided text.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:58:14.442699Z",
+    "filing_meta": {
+      "ticker": "DAR",
+      "form": "DEF 14A",
+      "filing_date": "2022-03-24",
+      "accession": "000119312522083905",
+      "primary_doc": "d246378ddef14a.htm",
+      "section_chars_used": 25513
+    },
+    "input_tokens": 5631,
+    "output_tokens": 1456,
+    "cost_usd": 0.0387,
+    "elapsed_sec": 17.4
+  }
+}

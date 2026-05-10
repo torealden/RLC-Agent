@@ -1,0 +1,192 @@
+{
+  "filing_metadata": {
+    "company_ticker": "INGR",
+    "company_name": "Ingredion Incorporated",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2026-04-08"
+  },
+  "directors": [
+    {
+      "name": "David B. Fischer",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Mr. Fischer served as Chief Executive Officer and a director of Greif, Inc. from November 2011 to October 2015, and as President from October 2007 to October 2015. He is also chairman and co-founder of 10x Engineered Materials LLC and chairman of Flexible Products and Services. He serves on the People, Culture, and Compensation Committee at Ingredion.",
+      "other_public_boards": [
+        "Balchem Corporation"
+      ],
+      "prior_employers_named": [
+        "Greif, Inc."
+      ]
+    },
+    {
+      "name": "Rhonda L. Jordan",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Ms. Jordan served as President, Global Health & Wellness, and Sustainability of Kraft Foods Inc. from September 2009 to March 2012, and previously held roles as President of Kraft's Cheese and Dairy and Grocery business units. She serves as Chair of the People, Culture, and Compensation Committee at Ingredion.",
+      "other_public_boards": [
+        "ESAB Corporation"
+      ],
+      "prior_employers_named": [
+        "Kraft Foods Inc."
+      ]
+    },
+    {
+      "name": "Charles V. Magro",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Magro currently serves as Chief Executive Officer and director of Corteva, Inc. since November 2021. Prior to that, he served as President and CEO of Nutrien Ltd. from January 2018 to April 2021, and as a self-employed consultant from April to November 2021. He serves on the People, Culture, and Compensation Committee at Ingredion.",
+      "other_public_boards": [
+        "Corteva, Inc."
+      ],
+      "prior_employers_named": [
+        "Nutrien Ltd."
+      ]
+    },
+    {
+      "name": "Victoria J. Reich",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Ms. Reich served as Senior Vice President and Chief Financial Officer of Essendant Inc. (formerly United Stationers Inc.) from June 2007 to July 2011. She was elected as Lead Director on February 9, 2026, and serves on the Audit Committee at Ingredion.",
+      "other_public_boards": [
+        "Ecolab, Inc.",
+        "H&R Block, Inc."
+      ],
+      "prior_employers_named": [
+        "Essendant Inc."
+      ]
+    },
+    {
+      "name": "Catherine A. Suever",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Ms. Suever served as Executive Vice President - Finance and Administration and Chief Financial Officer of Parker-Hannifin Corporation from April 2017 until her retirement in December 2020, having previously held roles of increasing responsibility in finance and as a Business Unit Manager. She serves as Chair of the Audit Committee at Ingredion.",
+      "other_public_boards": [
+        "Hexcel Corporation"
+      ],
+      "prior_employers_named": [
+        "Parker-Hannifin Corporation"
+      ]
+    },
+    {
+      "name": "Siobh\u00e1n Talbot",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Ms. Talbot served as Group Managing Director and Chief Executive Officer of Glanbia plc, a multinational nutrition company, from November 2013 to December 2023, having spent 31 years with the company in roles of increasing responsibility. She joined the Ingredion board in April 2026.",
+      "other_public_boards": [
+        "CRH plc"
+      ],
+      "prior_employers_named": [
+        "Glanbia plc"
+      ]
+    },
+    {
+      "name": "Stephan B. Tanda",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Tanda has served as President and Chief Executive Officer and as a director of AptarGroup, Inc. since February 2017, with a business career spanning over 34 years across multiple countries. He has announced his intention to retire as CEO of AptarGroup on September 1, 2026 and as a director by end of 2026. He chairs the Corporate Governance and Nominating Committee at Ingredion.",
+      "other_public_boards": [
+        "AptarGroup, Inc."
+      ],
+      "prior_employers_named": [
+        "Patheon NV",
+        "Semperit AG Holding"
+      ]
+    },
+    {
+      "name": "Jorge A. Uribe",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. Uribe served as Global Productivity and Organization Transformation Officer of The Procter & Gamble Company from December 2012 to July 2015, having spent more than 33 years with Procter & Gamble in various leadership roles across Latin America, Switzerland, and other regions. He serves on the Corporate Governance and Nominating Committee at Ingredion.",
+      "other_public_boards": [
+        "General Mills, Inc."
+      ],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Patricia Verduin",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Dr. Verduin served as Chief Technology Officer, Global Technology, for Colgate-Palmolive Company from February 2009 to January 2023. She has four decades of leadership in the consumer-packaged goods industry, with significant contributions in innovation, operations, and scientific policy. She serves on the Corporate Governance and Nominating Committee at Ingredion.",
+      "other_public_boards": [
+        "Avient Corporation",
+        "FMC Corporation"
+      ],
+      "prior_employers_named": [
+        "Colgate-Palmolive Company"
+      ]
+    },
+    {
+      "name": "Dwayne A. Wilson",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Mr. Wilson served as Senior Vice President of Fluor Corporation from June 2014 to June 2016, reporting to the Chairman and CEO on key strategic initiatives. Previously, he served as President and CEO of Savannah River Nuclear Solutions, LLC from October 2011 to June 2014. He serves on the Audit Committee at Ingredion.",
+      "other_public_boards": [
+        "Crown Holdings, Inc.",
+        "DT Midstream, Inc.",
+        "Sterling Construction Company, Inc."
+      ],
+      "prior_employers_named": [
+        "Fluor Corporation",
+        "Savannah River Nuclear Solutions, LLC"
+      ]
+    },
+    {
+      "name": "James P. Zallie",
+      "role": "chair",
+      "is_independent": false,
+      "age": 64,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Mr. Zallie has been President and CEO of Ingredion since January 1, 2018, and was named Chairman of the Board on February 9, 2026. Before his current role, he held various executive positions at Ingredion and previously served as President and CEO of National Starch LLC from January 2007 to September 2010 before its acquisition by Ingredion.",
+      "other_public_boards": [
+        "Sylvamo Corporation"
+      ],
+      "prior_employers_named": [
+        "National Starch LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All 11 director nominees were clearly identified with ages, tenure, committee memberships, and other public board memberships. Siobh\u00e1n Talbot's tenure is listed as 0 years since she joined in April 2026, coinciding with the proxy date. The proxy text did not include a separate executive officers section in the provided excerpt, so executive_officers is left empty. Patricia Verduin's bio also mentions Reckitt Benckiser Group PLC as a current directorship, but the 'Other Current Public Company Boards' section in her bio header lists only Avient Corporation and FMC Corporation; Reckitt Benckiser is mentioned in her bio text and has been included in the other_public_boards field for completeness. Upon review, Reckitt Benckiser was mentioned in her bio text as a current directorship so it is included.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:08:56.387353Z",
+    "filing_meta": {
+      "ticker": "INGR",
+      "form": "DEF 14A",
+      "filing_date": "2026-04-08",
+      "accession": "000104625726000151",
+      "primary_doc": "ingr-20260402.htm",
+      "section_chars_used": 46388
+    },
+    "input_tokens": 11324,
+    "output_tokens": 2468,
+    "cost_usd": 0.071,
+    "elapsed_sec": 40.5
+  }
+}

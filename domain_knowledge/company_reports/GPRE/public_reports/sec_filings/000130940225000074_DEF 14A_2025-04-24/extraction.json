@@ -1,0 +1,152 @@
+{
+  "filing_metadata": {
+    "company_ticker": "GPRE",
+    "company_name": "Green Plains Inc.",
+    "fiscal_year_disclosed": 2025,
+    "filing_date": "2025-04-24"
+  },
+  "directors": [
+    {
+      "name": "James D. Anderson",
+      "role": "chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Mr. Anderson has served as Chief Executive Officer of Molycop since November 2017, and previously served as Managing Director and Operating Partner at CHAMP Private Equity, and as President and CEO of The Gavilon Group, LLC. He brings commodity experience and agribusiness knowledge to the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Molycop",
+        "CHAMP Private Equity",
+        "The Gavilon Group, LLC",
+        "United Malt Holdings",
+        "CT Malt",
+        "ConAgra Foods, Inc.",
+        "Ferruzzi USA",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Farha Aslam",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Ms. Aslam is Managing Partner of Crescent House Capital and previously served as Managing Director at Stephens Inc., leading its Food and Agribusiness equity research team, as well as a vice president at Merrill Lynch and a risk management advisor at UBS. She brings extensive knowledge of the agriculture and ethanol industries along with investor and financial expertise.",
+      "other_public_boards": [
+        "Pilgrim's Pride Corporation",
+        "Calavo Growers, Inc.",
+        "AdvanSix Inc."
+      ],
+      "prior_employers_named": [
+        "Stephens Inc.",
+        "Merrill Lynch",
+        "UBS"
+      ]
+    },
+    {
+      "name": "Steve Furcich",
+      "role": "director",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Furcich is a Partner at Tillridge Global Agribusiness Fund and Director for portfolio companies in the Tillridge and NGP Agribusiness Follow-on Funds. He previously had a 28-year career at Archer Daniels Midland Company, where he served as President of ADM's Nutrition and Malting Divisions and Vice President ADM Polymer.",
+      "other_public_boards": [
+        "Wilmar Nutrition"
+      ],
+      "prior_employers_named": [
+        "Archer Daniels Midland Company"
+      ]
+    },
+    {
+      "name": "Carl Grassi",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Grassi is Former Chairman of McDonald Hopkins LLC, where he served as Senior Counsel through March 2024 and in various leadership roles from 1997 to 2020. He has extensive legal and accounting knowledge, having served as corporate counsel and business advisor to numerous public and middle-market companies.",
+      "other_public_boards": [
+        "Regional Brands, Inc."
+      ],
+      "prior_employers_named": [
+        "McDonald Hopkins, LLC"
+      ]
+    },
+    {
+      "name": "Brian Peterson",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 20,
+      "bio_summary": "Mr. Peterson is President and CEO of Whiskey Creek Enterprises and previously served as Green Plains' Executive Vice President in charge of site development from 2005 to 2008. He was the sole founder of Superior Ethanol LLC, which was acquired by Green Plains in 2006, and has over twenty years of experience owning and operating grain farming entities.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Green Plains Inc.",
+        "Superior Ethanol LLC",
+        "Whiskey Creek Enterprises"
+      ]
+    },
+    {
+      "name": "Martin Salinas Jr.",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Salinas is the former Chief Financial Officer of Energy Transfer Partners, LP, one of the largest publicly traded master limited partnerships, serving from 2008 to 2015, and began his career at KPMG. He brings financial expertise, serving as an audit committee financial expert and having served as CFO of a public company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Energy Transfer Partners, LP",
+        "KPMG"
+      ]
+    },
+    {
+      "name": "Patrick Sweeney",
+      "role": "director",
+      "is_independent": true,
+      "age": 35,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Mr. Sweeney is a Director and Portfolio Manager at Ancora Holdings Group LLC, where he serves as Portfolio Manager in Ancora's Alternatives Group for the firm's activist strategy. Prior to Ancora, he worked as a Corporate Banking Analyst at PNC Financial Services in the healthcare and public finance group.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ancora Holdings Group LLC",
+        "PNC Financial Services"
+      ]
+    },
+    {
+      "name": "Kimberly Wagner",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Ms. Wagner is Founder and Managing Partner of TBGD Partners, a boutique firm providing expertise to agribusiness, food/nutrition and life sciences ventures. She previously served as Venture Partner at Flagship Pioneering, President and COO of CiBO Technologies, Partner at McKinsey & Co., and Senior Partner at The Boston Consulting Group.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Flagship Pioneering",
+        "CiBO Technologies",
+        "McKinsey & Co.",
+        "The Boston Consulting Group, Inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All eight director nominees were identified with full biographical information. Steve Furcich lists Wilmar Nutrition (subsidiary of Wilmar International, ticker WLMIF) as a current public company directorship; included as it is explicitly stated. Furst-McNess and Devenish Nutrition are listed as subsidiaries of Easy Bio (private), so excluded from other_public_boards. Martin Salinas Jr.'s past directorships at NuStar Energy and Noble Midstream are listed as past, and Green Plains Partners LP is the filer's affiliate; none included in other_public_boards. No executive officers section was included in the provided proxy text excerpt.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:03:24.436698Z",
+    "filing_meta": {
+      "ticker": "GPRE",
+      "form": "DEF 14A",
+      "filing_date": "2025-04-24",
+      "accession": "000130940225000074",
+      "primary_doc": "gpre-20250424.htm",
+      "section_chars_used": 34591
+    },
+    "input_tokens": 8617,
+    "output_tokens": 1832,
+    "cost_usd": 0.0533,
+    "elapsed_sec": 32.8
+  }
+}

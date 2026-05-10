@@ -1,0 +1,154 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CALM",
+    "company_name": "Cal-Maine Foods, Inc.",
+    "fiscal_year_disclosed": 2020,
+    "filing_date": "2020-08-31"
+  },
+  "directors": [
+    {
+      "name": "Adolphus B. Baker",
+      "role": "chair",
+      "is_independent": false,
+      "age": 63,
+      "tenure_years_on_board": 29,
+      "bio_summary": "Mr. Baker serves as Chairman of the Board and Chief Executive Officer of Cal-Maine Foods. He was elected Chairman in 2012 and has held various leadership roles at the Company since 1986, including President and COO. He is a director of Trustmark Corporation and Eggland's Best, Inc., and is the son-in-law of the late founder Fred R. Adams, Jr.",
+      "other_public_boards": [
+        "Trustmark Corporation"
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Max P. Bowman",
+      "role": "director",
+      "is_independent": false,
+      "age": 60,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Mr. Bowman has served as Vice President, Chief Financial Officer, Treasurer and Secretary of Cal-Maine Foods since October 2018. Previously, he was CFO, VP and Secretary of Southern States Utility Trailer Sales, Inc. and H P Leasing, Inc., and was co-founder and executive of Tenax LLC and Tenax Aerospace, LLC. He also served as CFO for ChemFirst, Inc., a NYSE-listed company sold to DuPont in 2002.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Southern States Utility Trailer Sales, Inc.",
+        "H P Leasing, Inc.",
+        "Tenax LLC",
+        "Tenax Aerospace, LLC",
+        "WGS Systems, LLC",
+        "ChemFirst, Inc."
+      ]
+    },
+    {
+      "name": "Letitia C. Hughes",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 19,
+      "bio_summary": "Ms. Hughes was associated with Trustmark National Bank in Jackson, Mississippi in managerial positions from 1974 until her retirement in 2014, where she last served as Senior Vice-President, Manager, Private Banking. She is an independent director.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Trustmark National Bank"
+      ]
+    },
+    {
+      "name": "Sherman L. Miller",
+      "role": "director",
+      "is_independent": false,
+      "age": 45,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. Miller serves as President and Chief Operating Officer of Cal-Maine Foods, having joined the Company in 1996. He was elected President in 2018 and COO in 2011, and previously served as Vice President of Operations beginning in 2007. He is a director of the U.S. Poultry and Egg Association, United Egg Producers, and the American Feed Industry Association.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "James E. Poole",
+      "role": "director",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Mr. Poole is a Certified Public Accountant who was a principal with Grantham, Poole, Randall, Reitano, Arrington Cunningham, PLLC of Ridgeland, Mississippi until his retirement in 2013. He is an independent director who brings broad accounting expertise and business knowledge to the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Grantham, Poole, Randall, Reitano, Arrington Cunningham, PLLC"
+      ]
+    },
+    {
+      "name": "Steve W. Sanders",
+      "role": "director",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. Sanders is a Certified Public Accountant who retired in 2002 as the managing partner of the Jackson, Mississippi office of Ernst & Young LLP after over 30 years with the firm. He also served as a Lecturer at the Adkerson School of Accountancy at Mississippi State University from 2003 until his retirement in 2017. He is an independent director.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ernst & Young LLP",
+        "Mississippi State University"
+      ]
+    }
+  ],
+  "executive_officers": [
+    {
+      "name": "Adolphus B. Baker",
+      "title": "Chairman of the Board and Chief Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Michael Castleberry",
+      "title": "Vice President - Controller",
+      "tenure_years": null,
+      "prior_employers_named": [
+        "Maxim Production Co., Inc."
+      ]
+    },
+    {
+      "name": "Max P. Bowman",
+      "title": "Vice President, Chief Financial Officer, Treasurer and Secretary",
+      "tenure_years": null,
+      "prior_employers_named": [
+        "Southern States Utility Trailer Sales, Inc.",
+        "H P Leasing, Inc.",
+        "Tenax LLC",
+        "Tenax Aerospace, LLC",
+        "WGS Systems, LLC",
+        "ChemFirst, Inc."
+      ]
+    },
+    {
+      "name": "Charles J. Hardin",
+      "title": "Vice President - Sales",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Robert L. Holladay, Jr.",
+      "title": "Vice President - General Counsel",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Sherman L. Miller",
+      "title": "President, Chief Operating Officer and Director",
+      "tenure_years": null,
+      "prior_employers_named": []
+    }
+  ],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years on board calculated from 'Director since' year subtracted from 2020 (filing year). Committee chair roles inferred from the committee composition table; Letitia C. Hughes is listed as chair of the Audit Committee, James E. Poole as chair of the Compensation and Long-Term Incentive Plan Committees, Adolphus B. Baker as chair of the Executive Committee. Trustmark National Bank is a subsidiary of Trustmark Corporation (public); only Trustmark Corporation is listed as a public board for Baker. Eggland's Best, Inc. appears to be private based on context, so excluded from other_public_boards. Valley Services, Inc. for Sanders is noted as privately-held, so excluded.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:45:56.585309Z",
+    "filing_meta": {
+      "ticker": "CALM",
+      "form": "DEF 14A",
+      "filing_date": "2020-08-31",
+      "accession": "000001616020000088",
+      "primary_doc": "calmproxystatement2021.htm",
+      "section_chars_used": 11178
+    },
+    "input_tokens": 3170,
+    "output_tokens": 1829,
+    "cost_usd": 0.0369,
+    "elapsed_sec": 28.8
+  }
+}

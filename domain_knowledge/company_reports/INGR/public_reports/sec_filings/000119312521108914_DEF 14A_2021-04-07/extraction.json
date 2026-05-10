@@ -1,0 +1,62 @@
+{
+  "filing_metadata": {
+    "company_ticker": "INGR",
+    "company_name": "Ingredion Incorporated",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2021-04-07"
+  },
+  "directors": [],
+  "executive_officers": [
+    {
+      "name": "J.P. Zallie",
+      "title": "Chief Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "J. D. Gray",
+      "title": "Named Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "J. Kokke",
+      "title": "Named Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "E. Adefioye",
+      "title": "Named Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "J. M. Bawcom",
+      "title": "Named Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    }
+  ],
+  "extraction_confidence": "low",
+  "extraction_notes": "The provided text is exclusively from the Executive Compensation section of the DEF 14A proxy statement and does not contain the director biography section. As a result, no board-of-directors roster could be extracted. The executive officers are identified only from compensation tables and narrative, without titles (other than CEO for Zallie) or biographical detail.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:09:40.430619Z",
+    "filing_meta": {
+      "ticker": "INGR",
+      "form": "DEF 14A",
+      "filing_date": "2021-04-07",
+      "accession": "000119312521108914",
+      "primary_doc": "d143887ddef14a.htm",
+      "section_chars_used": 62047
+    },
+    "input_tokens": 13794,
+    "output_tokens": 424,
+    "cost_usd": 0.0477,
+    "elapsed_sec": 7.0
+  }
+}

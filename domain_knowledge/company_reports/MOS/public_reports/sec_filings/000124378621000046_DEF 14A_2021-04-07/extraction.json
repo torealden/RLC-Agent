@@ -1,0 +1,205 @@
+{
+  "filing_metadata": {
+    "company_ticker": "MOS",
+    "company_name": "The Mosaic Company",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2021-04-07"
+  },
+  "directors": [
+    {
+      "name": "Cheryl K. Beebe",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Ms. Beebe served as Executive Vice President and Chief Financial Officer of Ingredion Incorporated from February 2004 until her retirement in January 2014, having previously held roles as Vice President of Finance and Treasurer. She brings extensive financial expertise, international business experience, and agricultural business knowledge.",
+      "other_public_boards": [
+        "Packaging Corporation of America",
+        "Goldman Sachs Trust II",
+        "Hanesbrands Inc."
+      ],
+      "prior_employers_named": [
+        "Ingredion Incorporated"
+      ]
+    },
+    {
+      "name": "Oscar P. Bernardes",
+      "role": "director",
+      "is_independent": true,
+      "age": 74,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Bernardes has been a managing partner at Yguapor Consultoria e Empreendimentos Ltda, a consulting and investment firm in S\u00e3o Paulo, Brazil, since 1999. From 2004 to 2011, he was a managing partner at Integra Associados, specializing in financial restructuring and governance.",
+      "other_public_boards": [
+        "DASA, Laborat\u00f3rios da Am\u00e9rica S.A.",
+        "Jalles Machado S.A.",
+        "Localiza Rent a Car S.A."
+      ],
+      "prior_employers_named": [
+        "Integra Associados - Reestruturacao Empresarial Ltda."
+      ]
+    },
+    {
+      "name": "Gregory L. Ebel",
+      "role": "chair",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Mr. Ebel has served as Chairman of Enbridge, Inc. since its merger with Spectra Energy Corp in February 2017, having previously served as Chairman, President and CEO of Spectra Energy from April 2014 to February 2017. He also previously held the role of Vice President, Investor Shareholder Relations at Duke Energy Corporation.",
+      "other_public_boards": [
+        "Baker Hughes Company",
+        "Enbridge, Inc."
+      ],
+      "prior_employers_named": [
+        "Spectra Energy Corp",
+        "Duke Energy Corporation",
+        "Union Gas Limited"
+      ]
+    },
+    {
+      "name": "Timothy S. Gitzel",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 58,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. Gitzel has been President and Chief Executive Officer of Cameco Corporation, a uranium producer and nuclear fuel provider, since July 2011, having previously served as President and then Senior Vice President and Chief Operating Officer of Cameco. He brings over 25 years of senior management experience in Canadian and international mining.",
+      "other_public_boards": [
+        "Cameco Corporation"
+      ],
+      "prior_employers_named": [
+        "Cameco Corporation"
+      ]
+    },
+    {
+      "name": "Denise C. Johnson",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Ms. Johnson is the Group President of Resource Industries at Caterpillar, Incorporated, a position she has held since February 2016, having previously held various vice president roles at Caterpillar since 2011. She began her career at General Motors Corporation, where she held increasingly important roles from 1989 through 2011.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Caterpillar, Incorporated",
+        "General Motors Corporation",
+        "General Motors Company"
+      ]
+    },
+    {
+      "name": "Emery N. Koenig",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. Koenig is the retired Vice Chairman and Chief Risk Officer of Cargill, Incorporated, having held that position since September 2013 until his retirement in February 2016, and served on Cargill's Corporate Leadership Team and board since December 2009. He brings extensive experience in agricultural commodity trading and global risk management.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cargill Incorporated"
+      ]
+    },
+    {
+      "name": "James (Joc) C. O'Rourke",
+      "role": "director",
+      "is_independent": false,
+      "age": 60,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Mr. O'Rourke was appointed President and Chief Executive Officer of The Mosaic Company in August 2015, having previously served as Executive Vice President - Operations and Chief Operating Officer from August 2012 to August 2015. Prior to joining Mosaic, he was President, Australia Pacific for Barrick Gold Corporation from May 2006 to December 2008.",
+      "other_public_boards": [
+        "The Toro Company"
+      ],
+      "prior_employers_named": [
+        "Barrick Gold Corporation"
+      ]
+    },
+    {
+      "name": "David T. Seaton",
+      "role": "director",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Mr. Seaton is the former Chairman and Chief Executive Officer of Fluor Corporation, having been elected chairman in February 2012 and serving as CEO from February 2011, and previously as Chief Operating Officer from November 2009 to February 2011. He joined Fluor in 1984 and held numerous positions in operations and sales globally.",
+      "other_public_boards": [
+        "ConocoPhillips Company"
+      ],
+      "prior_employers_named": [
+        "Fluor Corporation"
+      ]
+    },
+    {
+      "name": "Steven M. Seibert",
+      "role": "director",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Mr. Seibert is a land use and environmental attorney and Florida Supreme Court-certified mediator who has operated The Seibert Law Firm in St. Petersburg, Florida since January 2003. From December 2016 to October 2020 he served as interim Executive Director of the Florida Humanities Council, and from July 2008 to September 2011 he was Senior Vice President and Director of Strategic Visioning for the Collins Center for Public Policy.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Collins Center for Public Policy",
+        "Florida Humanities Council"
+      ]
+    },
+    {
+      "name": "Luciano Siani Pires",
+      "role": "director",
+      "is_independent": false,
+      "age": 51,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Siani Pires has been Chief Financial Officer for Vale S.A., a global mining company, since July 2012, with oversight responsibility for finance and other functions. From 2008 to July 2012, he held leadership positions at Vale including Group Head of Strategy and Group Head of Human Resources, and previously worked at Brazil's National Development Bank.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Vale S.A.",
+        "Brazil's National Development Bank"
+      ]
+    },
+    {
+      "name": "Gretchen H. Watkins",
+      "role": "director",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Ms. Watkins joined Shell Oil Company in May 2018 as President and Executive Vice President Global Shales. From October 2016 to May 2018, she served as Chief Executive Officer of Maersk Oil and Gas, and from June 2008 to September 2013 she held various officer positions at Marathon Oil Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Shell Oil Company",
+        "Maersk Oil and Gas",
+        "Marathon Oil Company"
+      ]
+    },
+    {
+      "name": "Kelvin R. Westbrook",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Mr. Westbrook has been President and Chief Executive Officer of KRW Advisors, LLC, a strategic and general business consulting firm, since September 2007. He previously founded and led Millennium Digital Media Systems, LLC from 1997 to 2007, and brings expertise in legal, media, marketing, and corporate governance.",
+      "other_public_boards": [
+        "Archer Daniel Midland Company",
+        "T-Mobile US Inc.",
+        "Camden Property Trust"
+      ],
+      "prior_employers_named": [
+        "Millennium Digital Media Systems, LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All 12 director nominees were extracted from the proxy statement. Nancy E. Cooper is noted as not standing for re-election and was therefore excluded from the directors list. Tenure years were calculated based on 'Director Since' year subtracted from 2021. Mr. Seaton's tenure reflects his current board service beginning September 2019. The EHSS committee chair role is held by Emery N. Koenig but the schema does not have an EHSS chair role so he is listed as 'director'; his primary listed role is EHSS Chair. Executive officers section is empty as the proxy text provided did not include a dedicated executive officers section with sufficient detail beyond the CEO who is already listed as a director. Other public boards reflect only companies explicitly named as current in the proxy bio sections.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:16:37.466269Z",
+    "filing_meta": {
+      "ticker": "MOS",
+      "form": "DEF 14A",
+      "filing_date": "2021-04-07",
+      "accession": "000124378621000046",
+      "primary_doc": "a2021proxystatement.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14234,
+    "output_tokens": 2650,
+    "cost_usd": 0.0825,
+    "elapsed_sec": 45.9
+  }
+}

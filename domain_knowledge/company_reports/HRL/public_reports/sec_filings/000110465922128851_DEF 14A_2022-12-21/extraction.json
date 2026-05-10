@@ -1,0 +1,245 @@
+{
+  "filing_metadata": {
+    "company_ticker": "HRL",
+    "company_name": "Hormel Foods Corporation",
+    "fiscal_year_disclosed": 2023,
+    "filing_date": "2022-12-21"
+  },
+  "directors": [
+    {
+      "name": "Prama Bhatt",
+      "role": "director",
+      "is_independent": true,
+      "age": 52,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Ms. Bhatt is Chief Digital Officer of Ulta Beauty, Inc. since December 2019, having previously served in senior digital and eCommerce roles at Ulta Beauty, Kenneth Cole Productions, and Toys R Us. Her earlier career included management consulting at Booz Allen Hamilton and roles at Ford Motor Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ulta Beauty, Inc.",
+        "Kenneth Cole Productions, Inc.",
+        "Toys R Us, Inc.",
+        "Booz Allen Hamilton, Inc.",
+        "Ford Motor Company"
+      ]
+    },
+    {
+      "name": "Gary C. Bhojwani",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. Bhojwani is Chief Executive Officer of CNO Financial Group, Inc. since January 2018, having previously served as President of CNO Financial Group and in senior roles at Allianz Life Insurance Company of North America, Fireman's Fund Insurance Company, and Lincoln General Insurance Company. He also founded Avalon Risk Management.",
+      "other_public_boards": [
+        "CNO Financial Group, Inc."
+      ],
+      "prior_employers_named": [
+        "CNO Financial Group, Inc.",
+        "Allianz Life Insurance Company of North America",
+        "Allianz SE",
+        "Fireman's Fund Insurance Company",
+        "Lincoln General Insurance Company",
+        "Avalon Risk Management",
+        "Trade Insurance Services"
+      ]
+    },
+    {
+      "name": "Stephen M. Lacy",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. Lacy retired from Meredith Corporation in November 2020, where he had served in numerous senior roles including Chairman and CEO. He brings extensive expertise in finance, corporate development, and consumer product marketing.",
+      "other_public_boards": [
+        "First Interstate BancSystem, Inc."
+      ],
+      "prior_employers_named": [
+        "Meredith Corporation"
+      ]
+    },
+    {
+      "name": "Elsa A. Murano",
+      "role": "director",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 16,
+      "bio_summary": "Dr. Murano serves Texas A&M University as Director of the Norman Borlaug Institute for International Agriculture and Professor in the Department of Animal Science. She previously served as President of Texas A&M University and as Undersecretary for Food Safety at the U.S. Department of Agriculture.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Texas A&M University",
+        "U.S. Department of Agriculture"
+      ]
+    },
+    {
+      "name": "Susan K. Nestegard",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Ms. Nestegard is an Advisor for True Wealth Ventures since 2017, having previously served as President of the Global Healthcare Sector at Ecolab Inc. and in multiple senior roles over 20+ years at 3M Company. She also served as interim CEO of Cambridge Major Laboratories.",
+      "other_public_boards": [
+        "ALLETE, Inc."
+      ],
+      "prior_employers_named": [
+        "Ecolab Inc.",
+        "Cambridge Major Laboratories, Inc.",
+        "3M Company"
+      ]
+    },
+    {
+      "name": "William A. Newlands",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Mr. Newlands is President and Chief Executive Officer of Constellation Brands, Inc. since March 2019, having previously held multiple senior roles at Constellation Brands and served as Senior Vice President and President, North America at Beam Inc. He brings extensive expertise in consumer product marketing and international business.",
+      "other_public_boards": [
+        "Constellation Brands, Inc."
+      ],
+      "prior_employers_named": [
+        "Constellation Brands, Inc.",
+        "Beam Inc.",
+        "Beam Global Spirits & Wine, Inc."
+      ]
+    },
+    {
+      "name": "Christopher J. Policinski",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. Policinski is CEO of CJP Leadership Partners, LLC since February 2021 and previously retired from Land O'Lakes, Inc. after serving as President and CEO from 2005 to 2018. His earlier career included management roles at Kraft General Foods Corporation, Bristol-Myers Squibb Co., and Pillsbury Company.",
+      "other_public_boards": [
+        "Xcel Energy, Inc."
+      ],
+      "prior_employers_named": [
+        "VitaKey, Inc.",
+        "Land O Lakes, Inc.",
+        "Kraft General Foods Corporation",
+        "Bristol-Myers Squibb Co.",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Jose Luis Prado",
+      "role": "director",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Prado is Executive Chairman of Palmex Alimentos since February 2022 and Chairman of Tropicale Foods since December 2019. He previously served as Chairman and CEO of Evans Food Group and held various senior leadership roles at PepsiCo including President of Quaker Oats North America and Global Baking.",
+      "other_public_boards": [
+        "Northern Trust Corporation"
+      ],
+      "prior_employers_named": [
+        "Palmex Alimentos, S.A. de C.V.",
+        "Tropicale Foods, LLC",
+        "Evans Food Group Ltd.",
+        "PepsiCo, Inc."
+      ]
+    },
+    {
+      "name": "Sally J. Smith",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Ms. Smith retired from Buffalo Wild Wings, Inc. in February 2018, where she served as President and CEO from 1996 to 2018. Earlier in her career she was CFO of Dahlberg, Inc. and began her career at KPMG LLP.",
+      "other_public_boards": [
+        "Digi International Inc."
+      ],
+      "prior_employers_named": [
+        "Buffalo Wild Wings, Inc.",
+        "Dahlberg, Inc.",
+        "KPMG LLP"
+      ]
+    },
+    {
+      "name": "James P. Snee",
+      "role": "chair",
+      "is_independent": false,
+      "age": 55,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Snee is Chairman of the Board, President and Chief Executive Officer of Hormel Foods Corporation since November 2017, having held progressively senior roles at the Company over a 33-year career including President and COO and Group Vice President of Hormel Foods International. He also serves on the Board of Republic Services, Inc.",
+      "other_public_boards": [
+        "Republic Services, Inc."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Steven A. White",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. White is President, Special Counsel to the CEO for Comcast Corporation since December 2020, having previously served as President of the Comcast West Division from 2009 to 2020. His earlier experience includes roles at AT&T Broadband, Telecommunications Inc., and Colgate-Palmolive Company.",
+      "other_public_boards": [
+        "W.W. Grainger, Inc.",
+        "Shaw Communications Inc."
+      ],
+      "prior_employers_named": [
+        "Comcast Corporation",
+        "AT&T Broadband, LLC",
+        "Telecommunications, Inc.",
+        "Colgate-Palmolive Company"
+      ]
+    }
+  ],
+  "executive_officers": [
+    {
+      "name": "James P. Snee",
+      "title": "Chairman of the Board, President and Chief Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Deanna T. Brady",
+      "title": "Executive Vice President, Retail",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Jacinth C. Smiley",
+      "title": "Executive Vice President and Chief Financial Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Lori J. Marco",
+      "title": "Senior Vice President, External Affairs, and General Counsel",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Mark A. Coffey",
+      "title": "Group Vice President, Supply Chain",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "James N. Sheehan",
+      "title": "Former Executive Vice President and Chief Financial Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    }
+  ],
+  "extraction_confidence": "high",
+  "extraction_notes": "Terrell K. Crews is mentioned as an independent director and committee member in fiscal 2022 but is noted as retiring when his term expires January 31, 2023, and is not listed among the 11 director nominees; therefore excluded from the directors roster. Christopher J. Policinski was Lead Director during most of fiscal 2022 but William A. Newlands was elected Lead Director effective January 31, 2023; Policinski's role is listed as director since he will no longer be Lead Director after the annual meeting. Tenure years calculated based on 'director since' year subtracted from 2022. Fiscal year disclosed set to 2023 as the annual meeting is for fiscal year ending October 2023.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:06:59.380831Z",
+    "filing_meta": {
+      "ticker": "HRL",
+      "form": "DEF 14A",
+      "filing_date": "2022-12-21",
+      "accession": "000110465922128851",
+      "primary_doc": "tm2230866d2_def14a.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 15083,
+    "output_tokens": 2811,
+    "cost_usd": 0.0874,
+    "elapsed_sec": 44.8
+  }
+}

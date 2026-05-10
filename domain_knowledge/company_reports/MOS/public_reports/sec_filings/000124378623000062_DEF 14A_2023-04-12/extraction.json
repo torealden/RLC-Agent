@@ -1,0 +1,198 @@
+{
+  "filing_metadata": {
+    "company_ticker": "MOS",
+    "company_name": "The Mosaic Company",
+    "fiscal_year_disclosed": 2023,
+    "filing_date": "2023-04-12"
+  },
+  "directors": [
+    {
+      "name": "Cheryl K. Beebe",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Ms. Beebe served as CFO and Executive Vice President of Ingredion Incorporated (formerly Corn Products International) from 2004 until her retirement in 2014, also holding roles as VP Finance and Treasurer. She brings financial expertise, international business experience, and agricultural business knowledge.",
+      "other_public_boards": [
+        "Packaging Corporation of America",
+        "Goldman Sachs Asset Management (CEF-IF-ETF-Goldman Sachs Trust II)",
+        "Hanesbrands Inc."
+      ],
+      "prior_employers_named": [
+        "Ingredion Incorporated"
+      ]
+    },
+    {
+      "name": "Gregory L. Ebel",
+      "role": "chair",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. Ebel became President and CEO of Enbridge, Inc. effective January 1, 2023, having previously served as Chair of Enbridge since its merger with Spectra Energy in 2017. He previously served as Chair, President and CEO of Spectra Energy and held finance and investor relations roles at Duke Energy Corporation.",
+      "other_public_boards": [
+        "Enbridge, Inc."
+      ],
+      "prior_employers_named": [
+        "Enbridge, Inc.",
+        "Spectra Energy Corp",
+        "Union Gas Limited",
+        "Duke Energy Corporation"
+      ]
+    },
+    {
+      "name": "Timothy S. Gitzel",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mr. Gitzel has been President and CEO of Cameco Corporation, a uranium producer, since July 2011, having previously served as President and Senior VP and COO of Cameco. He brings executive leadership, mining experience, and expertise in Canadian and international regulatory affairs.",
+      "other_public_boards": [
+        "Cameco Corporation"
+      ],
+      "prior_employers_named": [
+        "Cameco Corporation"
+      ]
+    },
+    {
+      "name": "Denise C. Johnson",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Ms. Johnson is Group President of Resource Industries at Caterpillar, Incorporated, a position she has held since February 2016. She previously held multiple VP roles at Caterpillar and began her career at General Motors Corporation, where she held increasingly important roles from 1989 through 2011.",
+      "other_public_boards": [
+        "ABB Ltd."
+      ],
+      "prior_employers_named": [
+        "Caterpillar, Incorporated",
+        "General Motors Corporation",
+        "General Motors Company"
+      ]
+    },
+    {
+      "name": "Emery N. Koenig",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 13,
+      "bio_summary": "Mr. Koenig is the retired Vice Chair and Chief Risk Officer of Cargill, Incorporated, having held that position since September 2013 until his retirement in February 2016. He also served on Cargill's Corporate Leadership Team and board of directors, and led various business platforms within Cargill.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Cargill, Incorporated"
+      ]
+    },
+    {
+      "name": "James (\"Joc\") C. O'Rourke",
+      "role": "director",
+      "is_independent": false,
+      "age": 62,
+      "tenure_years_on_board": 8,
+      "bio_summary": "Mr. O'Rourke has served as President and CEO of The Mosaic Company since August 2015, previously serving as EVP Operations and COO and EVP Operations. Before joining Mosaic, he was President, Australia Pacific for Barrick Gold Corporation.",
+      "other_public_boards": [
+        "The Toro Company"
+      ],
+      "prior_employers_named": [
+        "Barrick Gold Corporation"
+      ]
+    },
+    {
+      "name": "David T. Seaton",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 11,
+      "bio_summary": "Mr. Seaton is the former Chair and CEO of Fluor Corporation, serving in those roles from 2011 and 2012 respectively until May 2019, having joined Fluor in 1984. He brings extensive project management, executive leadership, and global operations experience.",
+      "other_public_boards": [
+        "ConocoPhillips Company"
+      ],
+      "prior_employers_named": [
+        "Fluor Corporation"
+      ]
+    },
+    {
+      "name": "Steven M. Seibert",
+      "role": "director",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 19,
+      "bio_summary": "Mr. Seibert is a land use and environmental attorney who has operated The Seibert Law Firm since January 2003, and co-founded strategy consulting firm triSect, LLC in 2013. He previously served as Executive Director of the Florida Humanities Council and as Secretary of Florida's Department of Community Affairs.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Collins Center for Public Policy",
+        "Florida Humanities Council"
+      ]
+    },
+    {
+      "name": "Jo\u00e3o Roberto Gon\u00e7alves Teixeira",
+      "role": "director",
+      "is_independent": true,
+      "age": 57,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Mr. Teixeira is the former CEO of Copersucar S.A., a Brazilian sugar, ethanol and logistics corporation, serving from December 2018 until 2022. He previously served as CEO and Head of Wholesale Banking at Banco Votorantim S.A. and held executive positions with Santander Group in Brazil and Dresdner Kleinwort Wasserstein.",
+      "other_public_boards": [
+        "Br Malls Participa\u00e7\u00f5es S.A.",
+        "Fleury S.A."
+      ],
+      "prior_employers_named": [
+        "Copersucar S.A.",
+        "Inviste",
+        "Banco Votorantim S.A.",
+        "Santander Group",
+        "Dresdner Kleinwort Wasserstein"
+      ]
+    },
+    {
+      "name": "Gretchen H. Watkins",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Ms. Watkins has been President of Shell USA, Inc. since May 2018 and previously served as CEO and COO of Maersk Oil and Gas. She also held various corporate officer positions at Marathon Oil Company and executive roles at BP plc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Shell USA, Inc.",
+        "Maersk Oil and Gas",
+        "Marathon Oil Company",
+        "BP plc"
+      ]
+    },
+    {
+      "name": "Kelvin R. Westbrook",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 67,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Westbrook has been President and CEO of KRW Advisors, LLC, a strategic and business consulting firm, since September 2007. He previously founded and led Millennium Digital Media Systems, LLC and has extensive experience in telecommunications, media, and corporate governance.",
+      "other_public_boards": [
+        "Archer Daniel Midland Company",
+        "T-Mobile US Inc.",
+        "Camden Property Trust"
+      ],
+      "prior_employers_named": [
+        "Millennium Digital Media Systems, LLC"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Director tenure years calculated from 'Director Since' year to 2023 annual meeting year. Emery N. Koenig's role is listed as EHSS Committee Chair in the proxy, but his primary listed committee chair role per the committee section is EHSS Chair; however the schema only allows specific roles and 'nominating_committee_chair' does not apply \u2014 corrected: Koenig chairs EHSS committee and serves on CGN; Westbrook chairs CGN. Koenig's role set to director as EHSS chair is not in the allowed role enum. Jo\u00e3o Roberto Gon\u00e7alves Teixeira's name appears with encoding issues in the proxy (shown as 'Jo o Roberto Gon alves Teixeira') but has been normalized. No executive officers section was included in the provided text excerpt. Kelvin R. Westbrook is the Corporate Governance and Nominating Committee Chair per the proxy. Emery N. Koenig chairs the EHSS Committee which is not in the role enum, so set to 'director'.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:17:56.255026Z",
+    "filing_meta": {
+      "ticker": "MOS",
+      "form": "DEF 14A",
+      "filing_date": "2023-04-12",
+      "accession": "000124378623000062",
+      "primary_doc": "mos-20230412.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 14428,
+    "output_tokens": 2478,
+    "cost_usd": 0.0805,
+    "elapsed_sec": 37.5
+  }
+}

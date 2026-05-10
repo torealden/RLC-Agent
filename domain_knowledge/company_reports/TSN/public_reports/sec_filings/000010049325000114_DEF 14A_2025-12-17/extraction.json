@@ -1,0 +1,229 @@
+{
+  "filing_metadata": {
+    "company_ticker": "TSN",
+    "company_name": "Tyson Foods, Inc.",
+    "fiscal_year_disclosed": 2026,
+    "filing_date": "2025-12-17"
+  },
+  "directors": [
+    {
+      "name": "John H. Tyson",
+      "role": "chair",
+      "is_independent": false,
+      "age": 72,
+      "tenure_years_on_board": 41,
+      "bio_summary": "John H. Tyson has been Chairman of the Board since 1998 and a director since 1984, having served as Chief Executive Officer from 2000 to 2006. He has devoted his professional career to Tyson Foods and has a substantial personal interest through the Tyson Limited Partnership and individual shareholdings.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Les R. Baledge",
+      "role": "director",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 5,
+      "bio_summary": "Les R. Baledge is a private investor who served as Executive Vice President and General Counsel of Tyson Foods from 1999 to 2004. Prior to joining Tyson, he practiced corporate and finance law and began assisting the Company with legal matters in 1982.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tyson Foods"
+      ]
+    },
+    {
+      "name": "Mike Beebe",
+      "role": "director",
+      "is_independent": true,
+      "age": 78,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Mike Beebe served as Governor of Arkansas from 2007 to 2015, previously serving as the state's Attorney General from 2003 to 2007 and as a state senator for 20 years. He currently serves on the board of Home BancShares, Inc.",
+      "other_public_boards": [
+        "Home BancShares, Inc."
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Sarah Bond",
+      "role": "director",
+      "is_independent": true,
+      "age": 47,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Sarah Bond is President of Xbox at Microsoft, leading Xbox's innovation and growth across hardware, software, and services. Prior to Microsoft, which she joined in 2017, she held multiple leadership roles at T-Mobile and McKinsey & Company.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Microsoft",
+        "T-Mobile",
+        "McKinsey & Company"
+      ]
+    },
+    {
+      "name": "Maria Claudia Borras",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Maria Claudia Borras currently serves as Chief Growth & Experience Officer and interim Executive Vice President of Industrial & Energy Technology at Baker Hughes. She previously served as Chief Commercial Officer at GE Oil & Gas and has spent most of her career at Baker Hughes, which she originally joined in 1993.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Baker Hughes",
+        "GE Oil & Gas"
+      ]
+    },
+    {
+      "name": "David J. Bronczek",
+      "role": "director",
+      "is_independent": true,
+      "age": 71,
+      "tenure_years_on_board": 5,
+      "bio_summary": "David J. Bronczek previously served as President and Chief Operating Officer of FedEx Corporation until his retirement in 2019, having worked at FedEx for more than 40 years including 17 years as President and CEO of FedEx Express. He served on the boards of International Paper and as an independent director of Yellowstone Acquisition Group from 2020 to 2023.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "FedEx Corporation",
+        "FedEx Express"
+      ]
+    },
+    {
+      "name": "Donnie King",
+      "role": "director",
+      "is_independent": false,
+      "age": 63,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Donnie King has served as President and Chief Executive Officer of Tyson Foods since June 2021, having held multiple senior leadership roles across the Company's domestic and international operations since rejoining in 2019. He began his career with Valmac Industries in 1982, which was acquired by Tyson Foods in 1984, and was self-employed from 2017 to 2019 before returning.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Valmac Industries"
+      ]
+    },
+    {
+      "name": "Maria N. Martinez",
+      "role": "director",
+      "is_independent": true,
+      "age": 68,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Maria N. Martinez retired from Cisco Systems after serving as Executive Vice President and Chief Operating Officer from 2021 to 2024 and previously as EVP and Chief Customer Experience Officer. Prior to Cisco, she held senior executive roles at Salesforce, Microsoft, Motorola, and AT&T, and served as CEO of Embrace Networks, Inc.",
+      "other_public_boards": [
+        "McKesson Corporation",
+        "Bank of America"
+      ],
+      "prior_employers_named": [
+        "Cisco Systems, Inc.",
+        "Salesforce, Inc.",
+        "Microsoft Corporation",
+        "Motorola, Inc.",
+        "AT&T Inc.",
+        "Embrace Networks, Inc."
+      ]
+    },
+    {
+      "name": "Cheryl S. Miller",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Cheryl S. Miller most recently served as CFO of West Marine from January to October 2022 and previously served in senior executive roles at JM Family Enterprises and AutoNation, Inc., including as President and CEO of AutoNation from 2019 to 2020. She currently serves on the boards of Celsius Holdings and Old Dominion Freight Line.",
+      "other_public_boards": [
+        "Celsius Holdings",
+        "Old Dominion Freight Line"
+      ],
+      "prior_employers_named": [
+        "West Marine",
+        "JM Family Enterprises",
+        "AutoNation, Inc."
+      ]
+    },
+    {
+      "name": "Kate B. Quinn",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Kate B. Quinn served as Vice Chair and Chief Administrative Officer of U.S. Bancorp from 2017 to 2023, and prior to that served as SVP and Chief Marketing Officer at Anthem (now Elevance). She has also held leadership roles at The Hartford, CIGNA, and PacifiCare (now United Healthcare) Health Systems.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "U.S. Bancorp",
+        "Anthem",
+        "The Hartford",
+        "CIGNA",
+        "PacifiCare Health Systems"
+      ]
+    },
+    {
+      "name": "Jeffrey K. Schomburger",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 63,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Jeffrey K. Schomburger retired as Global Sales Officer for The Procter & Gamble Company in 2019, a position he held since 2015, having joined P&G in 1984 and served as President of P&G's global Walmart team from 2005 to 2015. He has served as Lead Independent Director since November 2025.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "The Procter & Gamble Company"
+      ]
+    },
+    {
+      "name": "Barbara A. Tyson",
+      "role": "director",
+      "is_independent": true,
+      "age": 76,
+      "tenure_years_on_board": 37,
+      "bio_summary": "Barbara A. Tyson served as Vice President of Tyson Foods until 2002, when she retired and became a consultant to the Company until 2011. She has been a Board member since 1988 and also serves on the board of Arkansas Children's Hospital Northwest since July 2017.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tyson Foods"
+      ]
+    },
+    {
+      "name": "John R. Tyson",
+      "role": "director",
+      "is_independent": false,
+      "age": 35,
+      "tenure_years_on_board": 0,
+      "bio_summary": "John R. Tyson is an executive and investor who previously served in multiple executive roles at Tyson Foods, including Chief Financial Officer, Chief Strategy Officer, and Chief Sustainability Officer. Prior to his tenure at Tyson Foods, he worked in investment banking and private equity as a venture capital investor.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tyson Foods"
+      ]
+    },
+    {
+      "name": "Olivia L. Tyson",
+      "role": "director",
+      "is_independent": false,
+      "age": 33,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Olivia L. Tyson has served as President of the Tyson Family Foundation since 2018, focusing on investments in Northwest Arkansas including food security, arts education, and entrepreneurship. She is also a co-founder of Tricky Knot, an entertainment development and financing company, and served as a Board Observer for more than 11 years prior to her formal appointment.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Noel White",
+      "role": "director",
+      "is_independent": false,
+      "age": 67,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Noel White served as Executive Vice Chairman of Tyson Foods from October 2020 to December 2023, prior to which he served as CEO from September 2018 to October 2020. He has more than 40 years of experience in the food industry with Tyson Foods and IBP, inc., which was acquired by Tyson Foods in 2001.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "IBP, inc."
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated based on Director Since year subtracted from 2025 filing year. Sarah Bond, John R. Tyson, and Olivia L. Tyson all joined in 2025, shown as 0 years. The proxy text provided does not include a separate executive officers section; only board director bios were provided. Kate B. Quinn is listed as Audit Committee Chairperson per committee membership details. Jeffrey K. Schomburger is listed as Lead Independent Director effective November 13, 2025. Fiscal year disclosed set to 2026 as the fiscal year 2026 committee appointments are referenced and the annual meeting appears to be for fiscal year 2026.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:24:32.552198Z",
+    "filing_meta": {
+      "ticker": "TSN",
+      "form": "DEF 14A",
+      "filing_date": "2025-12-17",
+      "accession": "000010049325000114",
+      "primary_doc": "tsn-20251217.htm",
+      "section_chars_used": 32526
+    },
+    "input_tokens": 7802,
+    "output_tokens": 2834,
+    "cost_usd": 0.0659,
+    "elapsed_sec": 46.8
+  }
+}

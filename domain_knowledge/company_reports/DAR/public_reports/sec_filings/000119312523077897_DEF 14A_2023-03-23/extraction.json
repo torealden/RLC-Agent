@@ -1,0 +1,154 @@
+{
+  "filing_metadata": {
+    "company_ticker": "DAR",
+    "company_name": "Darling Ingredients Inc.",
+    "fiscal_year_disclosed": 2023,
+    "filing_date": "2023-03-23"
+  },
+  "directors": [
+    {
+      "name": "Randall C. Stuewe",
+      "role": "chair",
+      "is_independent": false,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Randall C. Stuewe serves as Chairman of the Board and Chief Executive Officer of Darling Ingredients Inc. He holds the combined role pursuant to his employment agreement and subject to continued election by stockholders.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Gary W. Mize",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Gary W. Mize serves as the independent Lead Director of Darling Ingredients Inc. and chairs the nominating and corporate governance committee. He was elected annually by the Board to serve in the Lead Director role with well-defined duties including chairing executive sessions and coordinating committee work.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Charles Adair",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Charles Adair is an independent director and chairs the audit committee of Darling Ingredients Inc. He has been designated as an audit committee financial expert by the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Beth Albright",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Beth Albright is an independent director serving on both the audit committee and the compensation committee of Darling Ingredients Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Celeste A. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Celeste A. Clark is an independent director of Darling Ingredients Inc. who served during all or part of fiscal year 2022.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Linda Goodspeed",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Linda Goodspeed is an independent director and serves as Chairwoman of the compensation committee of Darling Ingredients Inc. She also serves on the nominating and corporate governance committee.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Enderson Guimaraes",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Enderson Guimaraes is an independent director serving on both the audit committee and the compensation committee of Darling Ingredients Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Mary R. Korby",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Mary R. Korby is an independent director serving on both the nominating and corporate governance committee and the compensation committee of Darling Ingredients Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Dirk Kloosterboer",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Dirk Kloosterboer is an independent director of Darling Ingredients Inc. who served during all or part of fiscal year 2022.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Michael E. Rescoe",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Michael E. Rescoe is an independent director serving on the audit committee of Darling Ingredients Inc. and has been designated as an audit committee financial expert by the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Larry Barden",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Larry Barden was appointed to the Board in January 2023. He retired as a partner from Sidley Austin LLP on December 31, 2022, an international law firm that the company engages for legal services.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Sidley Austin LLP"
+      ]
+    },
+    {
+      "name": "Kurt Stoffel",
+      "role": "director",
+      "is_independent": true,
+      "age": null,
+      "tenure_years_on_board": null,
+      "bio_summary": "Kurt Stoffel is a new director nominee for Darling Ingredients Inc. who has been determined to meet the independence requirements of the NYSE and the SEC.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "medium",
+  "extraction_notes": "The provided proxy text excerpt covers primarily corporate governance sections and does not include individual director biographies with ages, tenure, or detailed prior employment history. Committee assignments were extracted from committee descriptions. No executive officer section was included in the provided text. Role assignments for committee chairs are based on committee membership descriptions. Ages and tenure are unavailable from the provided text.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:58:33.967042Z",
+    "filing_meta": {
+      "ticker": "DAR",
+      "form": "DEF 14A",
+      "filing_date": "2023-03-23",
+      "accession": "000119312523077897",
+      "primary_doc": "d425300ddef14a.htm",
+      "section_chars_used": 27575
+    },
+    "input_tokens": 5895,
+    "output_tokens": 1666,
+    "cost_usd": 0.0427,
+    "elapsed_sec": 19.5
+  }
+}

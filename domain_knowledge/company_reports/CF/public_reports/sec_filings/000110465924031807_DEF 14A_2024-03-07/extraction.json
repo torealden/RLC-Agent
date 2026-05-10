@@ -1,0 +1,229 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CF",
+    "company_name": "CF Industries Holdings, Inc.",
+    "fiscal_year_disclosed": 2024,
+    "filing_date": "2024-03-07"
+  },
+  "directors": [
+    {
+      "name": "Javed Ahmed",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Former CEO of Tate & Lyle PLC from 2009 to 2018, a global food and beverage ingredients provider. Previously spent 17 years at Benckiser NV (later Reckitt Benckiser) in senior roles, and began his career at Procter & Gamble before five years at Bain & Co.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tate & Lyle PLC",
+        "Benckiser NV",
+        "Reckitt Benckiser Group plc",
+        "The Procter & Gamble Company",
+        "Bain & Co."
+      ]
+    },
+    {
+      "name": "Robert C. Arzbaecher",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 19,
+      "bio_summary": "Former CEO and chairman of Actuant Corporation from 2000 to 2014, and interim president and CEO from 2015 to 2016. Previously held financial positions at Applied Power, Inc., Grabill Aerospace Industries Ltd., Farley Industries Inc., and Grant Thornton LLP; he is a certified public accountant.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Actuant Corporation",
+        "Applied Power, Inc.",
+        "Grabill Aerospace Industries Ltd.",
+        "Farley Industries Inc.",
+        "Grant Thornton LLP"
+      ]
+    },
+    {
+      "name": "Christopher D. Bohn",
+      "role": "director",
+      "is_independent": false,
+      "age": 56,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Currently serves as executive vice president and chief operating officer of CF Industries since February 2024, having previously held multiple senior roles at the company including EVP and CFO, SVP manufacturing and distribution, and VP supply chain over nearly 15 years. Prior to CF Industries, he was CFO for Hess Print Solutions and VP global financial planning and analysis for Merisant Worldwide, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Hess Print Solutions",
+        "Merisant Worldwide, Inc."
+      ]
+    },
+    {
+      "name": "Deborah L. DeHaas",
+      "role": "director",
+      "is_independent": true,
+      "age": 64,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Retired from Deloitte in September 2020 as vice chairman and managing partner of the Center for Board Effectiveness after 18 years, having held roles including first chief inclusion officer and regional managing partner for midwest and central regions. Before Deloitte, she was a partner at Arthur Andersen LLP, and since November 2020 has served as CEO of Corporate Leadership Center.",
+      "other_public_boards": [
+        "Dover Corporation"
+      ],
+      "prior_employers_named": [
+        "Deloitte",
+        "Arthur Andersen LLP",
+        "Corporate Leadership Center"
+      ]
+    },
+    {
+      "name": "John W. Eaves",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Executive chairman of Arch Resources, Inc. and former president and CEO from 2012 to April 2020, with over 30 years in the coal industry. Previously held various senior roles at Arch Resources and earlier served at Diamond Shamrock Coal Company and Natomas Coal Company.",
+      "other_public_boards": [
+        "Arch Resources, Inc."
+      ],
+      "prior_employers_named": [
+        "Arch Resources, Inc.",
+        "Diamond Shamrock Coal Company",
+        "Natomas Coal Company"
+      ]
+    },
+    {
+      "name": "Susan A. Ellerbusch",
+      "role": "director",
+      "is_independent": true,
+      "age": 56,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Former CEO of Air Liquide North America LLC from September 2019 to January 2022, and previously president of Air Liquide Large Industries U.S. from 2015 to 2019. Prior to Air Liquide, held roles of increasing responsibility at British Petroleum (BP), including President of BP Biofuels North America from 2008 to 2015.",
+      "other_public_boards": [
+        "Summit Materials, Inc."
+      ],
+      "prior_employers_named": [
+        "Air Liquide North America LLC",
+        "Air Liquide S.A.",
+        "British Petroleum"
+      ]
+    },
+    {
+      "name": "Stephen J. Hagge",
+      "role": "chair",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Former president and CEO of AptarGroup, Inc. from 2012 to January 2017, having also served as its CFO, COO, EVP, and director; became Chair of the CF Industries Board effective January 1, 2022 and also serves as lead independent director. Currently a director of Crown Holdings, Inc. since 2019.",
+      "other_public_boards": [
+        "Crown Holdings, Inc."
+      ],
+      "prior_employers_named": [
+        "AptarGroup, Inc."
+      ]
+    },
+    {
+      "name": "Jesus Madrazo",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Serves as CEO and president of Reiter Affiliated Companies since November 2023, and previously was EVP of public affairs and sustainability at Bayer AG's Crop Science division from 2018 to 2019. Held numerous leadership positions over 19 years at Monsanto Company, including EVP of operations for Europe, Middle East, Asia, Africa and global supply chain.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Reiter Affiliated Companies",
+        "Bayer AG",
+        "Monsanto Company"
+      ]
+    },
+    {
+      "name": "Anne P. Noonan",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Current president and CEO and director of Summit Materials, Inc. since September 2020, and former president and CEO of OMNOVA Solutions Inc. from December 2016 to April 2020. Previously held senior positions at Chemtura Corporation from 1987 through 2014.",
+      "other_public_boards": [
+        "Summit Materials, Inc."
+      ],
+      "prior_employers_named": [
+        "Summit Materials, Inc.",
+        "OMNOVA Solutions Inc.",
+        "Chemtura Corporation"
+      ]
+    },
+    {
+      "name": "Michael J. Toelle",
+      "role": "director",
+      "is_independent": true,
+      "age": 61,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Owner of T & T Farms, a diversified farming company, and a board member of Nationwide Mutual Insurance Company since 2013. Former board chairman and longtime board member of CHS Inc., and previously served on the board of Cenex, Inc.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "CHS Inc.",
+        "Cenex, Inc."
+      ]
+    },
+    {
+      "name": "Theresa E. Wagler",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 10,
+      "bio_summary": "CFO and executive vice president of Steel Dynamics, Inc. since 2007 and 2009 respectively, serving as principal accounting officer with oversight of IT, cybersecurity, HR, and ESG. Prior to Steel Dynamics, she served as assistant corporate controller for Fort Wayne National Bank and as a CPA at Ernst & Young LLP.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Steel Dynamics, Inc.",
+        "Fort Wayne National Bank",
+        "Ernst & Young LLP"
+      ]
+    },
+    {
+      "name": "Celso L. White",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Former global chief supply chain officer at Molson Coors Brewing Company from January 2013 to December 2019, and previously VP of international supply chain at Molson Coors. Prior to Molson Coors, was Pepsi Cola's VP and general manager of Concentrate Operations from 2004 to 2010; co-founded Igniting Business Growth LLC consultancy in January 2020.",
+      "other_public_boards": [
+        "Armada Acquisition Corp. I"
+      ],
+      "prior_employers_named": [
+        "Molson Coors Brewing Company",
+        "Pepsi Cola",
+        "Igniting Business Growth LLC"
+      ]
+    },
+    {
+      "name": "W. Anthony Will",
+      "role": "director",
+      "is_independent": false,
+      "age": 58,
+      "tenure_years_on_board": 10,
+      "bio_summary": "President and CEO of CF Industries since January 2014, having previously served in multiple senior roles at the company since 2007. Before CF Industries, was a partner at Accenture Ltd., and also held VP roles at Sears, Roebuck and Co. and Fort James Corporation, and was a manager at Boston Consulting Group.",
+      "other_public_boards": [
+        "Olin Corporation"
+      ],
+      "prior_employers_named": [
+        "Accenture Ltd.",
+        "Sears, Roebuck and Co.",
+        "Fort James Corporation",
+        "Boston Consulting Group"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "All 13 director nominees were extracted from the proxy's Director Nominee Biographies section. Tenure years were calculated based on 'Director Since' year subtracted from 2024. Christopher D. Bohn joined the board in February 2024 so tenure is listed as 0 (less than one year). The proxy text provided did not include a separate executive officers section, so that list is empty. Stephen J. Hagge is listed as both Chair and Lead Independent Director per the proxy; role normalized to 'chair'. OMNOVA Solutions Inc. for Anne P. Noonan is listed as a past directorship (Dec 2016 - Apr 2020) and thus excluded from other_public_boards. AptarGroup, Inc. for Stephen J. Hagge ended in 2019 and is excluded from other_public_boards.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:51:55.234382Z",
+    "filing_meta": {
+      "ticker": "CF",
+      "form": "DEF 14A",
+      "filing_date": "2024-03-07",
+      "accession": "000110465924031807",
+      "primary_doc": "tm242770d2_def14a.htm",
+      "section_chars_used": 52787
+    },
+    "input_tokens": 11538,
+    "output_tokens": 2914,
+    "cost_usd": 0.0783,
+    "elapsed_sec": 45.3
+  }
+}

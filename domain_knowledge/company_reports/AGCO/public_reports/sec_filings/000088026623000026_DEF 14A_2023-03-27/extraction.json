@@ -1,0 +1,175 @@
+{
+  "filing_metadata": {
+    "company_ticker": "AGCO",
+    "company_name": "AGCO Corporation",
+    "fiscal_year_disclosed": 2023,
+    "filing_date": "2023-03-27"
+  },
+  "directors": [
+    {
+      "name": "Michael C. Arnold",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 66,
+      "tenure_years_on_board": 10,
+      "bio_summary": "Former President and CEO of Ryerson Inc., with prior senior management roles at The Timken Company from 1979 to 2010. He brings expertise in manufacturing, distribution, M&A, capital allocation, and international operations.",
+      "other_public_boards": [
+        "Kaiser Aluminum Corporation"
+      ],
+      "prior_employers_named": [
+        "Ryerson Inc.",
+        "The Timken Company",
+        "Gardner Denver, Inc."
+      ]
+    },
+    {
+      "name": "Sondra L. Barbour",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 60,
+      "tenure_years_on_board": 4,
+      "bio_summary": "Former Executive Vice President of Information Systems & Global Solutions at Lockheed Martin Corporation, where she spent 30 years. She also briefly served as Executive Vice President at Leidos Holdings, Inc. and brings expertise in information technology, internal controls, and international experience.",
+      "other_public_boards": [
+        "Nisource, Inc."
+      ],
+      "prior_employers_named": [
+        "Leidos Holdings, Inc.",
+        "Lockheed Martin Corporation"
+      ]
+    },
+    {
+      "name": "Suzanne P. Clark",
+      "role": "director",
+      "is_independent": true,
+      "age": 55,
+      "tenure_years_on_board": 6,
+      "bio_summary": "Chief Executive Officer of the U.S. Chamber of Commerce since March 2021, having previously served as its President and Chief Operating Officer. She also led Potomac Research Group from 2010 to 2014 and was President of the National Journal Group at Atlantic Media Company.",
+      "other_public_boards": [
+        "Transunion"
+      ],
+      "prior_employers_named": [
+        "U.S. Chamber of Commerce",
+        "Potomac Research Group",
+        "Atlantic Media Company"
+      ]
+    },
+    {
+      "name": "Bob De Lange",
+      "role": "director",
+      "is_independent": true,
+      "age": 53,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Group President, Services, Distribution and Digital at Caterpillar Inc., responsible for the Caterpillar brand and distribution network. He joined Caterpillar in 1993 and has held various leadership roles including Group President of Construction Industries.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Caterpillar Inc."
+      ]
+    },
+    {
+      "name": "Eric P. Hansotia",
+      "role": "chair",
+      "is_independent": false,
+      "age": 54,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Chairman, President and Chief Executive Officer of AGCO since January 1, 2021, having previously served in various senior roles at AGCO including Chief Operating Officer. Prior to AGCO, he held several positions at John Deere including Senior Vice President, Global Harvesting.",
+      "other_public_boards": [
+        "Toro Co."
+      ],
+      "prior_employers_named": [
+        "John Deere"
+      ]
+    },
+    {
+      "name": "George E. Minnich",
+      "role": "director",
+      "is_independent": true,
+      "age": 73,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Former Senior Vice President and Chief Financial Officer of ITT Corporation and held senior finance positions at United Technologies Corporation including CFO of Otis Elevator and Carrier Corporation. He also spent over two decades at Price Waterhouse, serving as an audit partner.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "ITT Corporation",
+        "United Technologies Corporation",
+        "Price Waterhouse"
+      ]
+    },
+    {
+      "name": "Niels P\u00f6rksen",
+      "role": "director",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Chief Executive Officer at S\u00fcdzucker AG since 2020, one of the world's largest sugar producers. He previously held roles at Nufarm, Nordzucker, and BASF in various agricultural and chemical industry leadership positions.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "S\u00fcdzucker AG",
+        "Nufarm",
+        "Nordzucker",
+        "Industrieverbrand Agrar",
+        "BASF"
+      ]
+    },
+    {
+      "name": "David Sagehorn",
+      "role": "director",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 1,
+      "bio_summary": "Former Executive Vice President and Chief Financial Officer of Oshkosh Corporation, where he served for over 13 years in various management roles including Vice President and Treasurer and Vice President of Business Development.",
+      "other_public_boards": [
+        "Chart Industries, Inc."
+      ],
+      "prior_employers_named": [
+        "Oshkosh Corporation"
+      ]
+    },
+    {
+      "name": "Mallika Srinivasan",
+      "role": "director",
+      "is_independent": false,
+      "age": 63,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Chairperson and Managing Director of Tractors and Farm Equipment Limited (TAFE), India's second largest agricultural tractor manufacturer, since December 2019, and has held various roles at TAFE since 1986. She also serves as Chairperson of the Indian Government's Public Enterprises Selection Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Tractors and Farm Equipment Limited",
+        "Tata Steel Limited",
+        "Tata Consumer Products Limited"
+      ]
+    },
+    {
+      "name": "Matthew Tsien",
+      "role": "director",
+      "is_independent": true,
+      "age": 62,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Former Executive Vice President and Chief Technology Officer of General Motors, where he spent a 40-year career including service as President of GM China and President of General Motors Ventures. He brings expertise in engineering, electrification, connectivity, manufacturing, and international operations.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "General Motors"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years calculated from 'Director since' dates relative to the 2023 annual meeting year. Eric P. Hansotia holds the role of Chairman, President and CEO; normalized to 'chair' as the schema does not include a combined CEO/chair role. Niels P\u00f6rksen's name appears as 'NIELS P RKSEN' in the source text (likely a Unicode rendering issue); corrected to Niels P\u00f6rksen based on context. Mallika Srinivasan is noted as non-independent due to her role as TAFE's Chairperson and Managing Director and TAFE's commercial relationships with AGCO. No executive officers section was included in the provided proxy text excerpt.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:43:52.169117Z",
+    "filing_meta": {
+      "ticker": "AGCO",
+      "form": "DEF 14A",
+      "filing_date": "2023-03-27",
+      "accession": "000088026623000026",
+      "primary_doc": "agco-20230323.htm",
+      "section_chars_used": 23398
+    },
+    "input_tokens": 5769,
+    "output_tokens": 1865,
+    "cost_usd": 0.0453,
+    "elapsed_sec": 27.7
+  }
+}

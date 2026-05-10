@@ -1,0 +1,159 @@
+{
+  "filing_metadata": {
+    "company_ticker": "GPRE",
+    "company_name": "Green Plains Inc.",
+    "fiscal_year_disclosed": 2023,
+    "filing_date": "2023-03-29"
+  },
+  "directors": [
+    {
+      "name": "Jim Anderson",
+      "role": "lead_independent",
+      "is_independent": true,
+      "age": 65,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Mr. Anderson has served as Chief Executive Officer of Moly-Cop since November 2017 and previously served as Managing Director and Operating Partner at CHAMP Private Equity and as President and CEO of The Gavilon Group, LLC. He brings extensive commodity and agribusiness experience to the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Moly-Cop",
+        "CHAMP Private Equity",
+        "The Gavilon Group, LLC",
+        "United Malt Holdings",
+        "CT Malt",
+        "ConAgra Foods, Inc.",
+        "Ferruzzi USA",
+        "Pillsbury Company"
+      ]
+    },
+    {
+      "name": "Ejnar Knudsen",
+      "role": "director",
+      "is_independent": false,
+      "age": 54,
+      "tenure_years_on_board": 7,
+      "bio_summary": "Mr. Knudsen is Founder and CEO of AGR Partners, overseeing investments totaling over $400 million in food processors and agribusinesses. He previously served as co-portfolio manager of Passport Capital's Agriculture Fund and as EVP of Western Milling, and spent 10 years with Rabobank.",
+      "other_public_boards": [
+        "Ridley Corporation Limited"
+      ],
+      "prior_employers_named": [
+        "Passport Capital",
+        "Western Milling",
+        "Rabobank"
+      ]
+    },
+    {
+      "name": "Kimberly Wagner",
+      "role": "nominating_committee_chair",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Ms. Wagner is the Founder of TBGD Partners, a boutique firm advising early and mid-stage ventures in agribusiness, food/nutrition and life sciences. She previously served as Venture Partner at Flagship Pioneering, President and COO of CiBO Technologies, a Partner at McKinsey & Co., and a Senior Partner and Managing Director at The Boston Consulting Group.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Flagship Pioneering",
+        "CiBO Technologies",
+        "McKinsey & Co.",
+        "The Boston Consulting Group, Inc."
+      ]
+    },
+    {
+      "name": "Todd Becker",
+      "role": "director",
+      "is_independent": false,
+      "age": 57,
+      "tenure_years_on_board": 14,
+      "bio_summary": "Mr. Becker has served as President and CEO of Green Plains Inc. since January 2009 and as President and CEO of the general partner of Green Plains Partners LP since March 2015. He previously served as CEO of VBV LLC and as Executive Vice President of Sales and Trading at Global Ethanol, and spent ten years at ConAgra Foods, Inc.",
+      "other_public_boards": [
+        "Green Plains Partners LP"
+      ],
+      "prior_employers_named": [
+        "VBV LLC",
+        "Global Ethanol",
+        "ConAgra Foods, Inc."
+      ]
+    },
+    {
+      "name": "Brian Peterson",
+      "role": "compensation_committee_chair",
+      "is_independent": true,
+      "age": 59,
+      "tenure_years_on_board": 18,
+      "bio_summary": "Mr. Peterson is President and CEO of Whiskey Creek Enterprises and previously served as Green Plains' Executive Vice President in charge of site development from 2005 to 2008. He was the sole founder and owner of Superior Ethanol LLC, which was acquired by Green Plains in 2006, and has owned and operated grain farming entities for over twenty years.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Superior Ethanol LLC"
+      ]
+    },
+    {
+      "name": "Alain Treuer",
+      "role": "director",
+      "is_independent": true,
+      "age": 50,
+      "tenure_years_on_board": 15,
+      "bio_summary": "Mr. Treuer is Co-Founder of VBV LLC, a joint venture formed in 2006 to develop ethanol production in the U.S. that later merged with Green Plains. He is also Co-Founder and Executive Chairman of Local Ocean France, Chairman of Trivon AG, and Chairman and CEO of Tellac Reuert Partners (TRP SA), a global investment firm.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "VBV LLC",
+        "Local Ocean France",
+        "Trivon AG",
+        "Tellac Reuert Partners",
+        "TIGC"
+      ]
+    },
+    {
+      "name": "Farha Aslam",
+      "role": "director",
+      "is_independent": true,
+      "age": 54,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Ms. Aslam is Managing Partner of Crescent House Capital and previously served as Managing Director at Stephens Inc. leading the firm's Food and Agribusiness equity research team, and as a vice president at Merrill Lynch and a risk management advisor at UBS. She brings extensive knowledge of agriculture, ethanol, and capital markets to the Board.",
+      "other_public_boards": [
+        "Pilgrim's Pride Corporation",
+        "Calavo Growers, Inc.",
+        "AdvanSix Inc."
+      ],
+      "prior_employers_named": [
+        "Stephens Inc.",
+        "Merrill Lynch",
+        "UBS"
+      ]
+    },
+    {
+      "name": "Martin Salinas Jr.",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 51,
+      "tenure_years_on_board": 2,
+      "bio_summary": "Mr. Salinas is the former Chief Financial Officer of Energy Transfer Partners, LP, one of the largest publicly traded master limited partnerships, serving from 2008 to 2015, and previously served as their controller and vice president of finance from 2004 to 2008. He began his career at KPMG and serves as an audit committee financial expert.",
+      "other_public_boards": [
+        "NuStar Energy L.P."
+      ],
+      "prior_employers_named": [
+        "Energy Transfer Partners, LP",
+        "KPMG"
+      ]
+    }
+  ],
+  "executive_officers": [],
+  "extraction_confidence": "high",
+  "extraction_notes": "Wayne Hoovestol, Chairman of the Board and director since 2006, is retiring at the 2023 Annual Meeting and is not standing for re-election; he is excluded from the directors list. Executive officers were not detailed in the provided proxy text excerpt. Ejnar Knudsen is noted as non-independent per the proxy's independence disclosures. Tenure years are calculated based on 'Director Since' year subtracted from 2023. The prior employer 'USB' in the Aslam bio appears to be a typographical error for 'UBS' in the source text; it has been normalized to 'UBS'.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T20:02:16.773561Z",
+    "filing_meta": {
+      "ticker": "GPRE",
+      "form": "DEF 14A",
+      "filing_date": "2023-03-29",
+      "accession": "000130940223000060",
+      "primary_doc": "gpre-20230329.htm",
+      "section_chars_used": 80000
+    },
+    "input_tokens": 13969,
+    "output_tokens": 1909,
+    "cost_usd": 0.0705,
+    "elapsed_sec": 30.3
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "filing_metadata": {
+    "company_ticker": "CALM",
+    "company_name": "Cal-Maine Foods, Inc.",
+    "fiscal_year_disclosed": 2021,
+    "filing_date": "2021-08-17"
+  },
+  "directors": [
+    {
+      "name": "Adolphus B. Baker",
+      "role": "chair",
+      "is_independent": false,
+      "age": 64,
+      "tenure_years_on_board": 30,
+      "bio_summary": "Mr. Baker serves as Chairman of the Board and Chief Executive Officer of Cal-Maine Foods, having been elected Chairman in 2012 and CEO in 2010. He has been employed by the Company since 1986, previously serving in roles including President, COO, and VP/Director of Marketing. He is active in industry organizations and is the son-in-law of the late founder Fred R. Adams, Jr.",
+      "other_public_boards": [
+        "Trustmark Corporation"
+      ],
+      "prior_employers_named": []
+    },
+    {
+      "name": "Max P. Bowman",
+      "role": "director",
+      "is_independent": false,
+      "age": 61,
+      "tenure_years_on_board": 3,
+      "bio_summary": "Mr. Bowman has served as Vice President, CFO, Treasurer and Secretary of the Company since October 2018, joining as VP Finance in June 2018. Previously, he was CFO and VP of Southern States Utility Trailer Sales, Inc. and H & P Leasing, Inc., and co-founder of Tenax LLC and Tenax Aerospace, LLC. He also served as CFO for ChemFirst, Inc., a NYSE company, from 1997 to 2003.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Southern States Utility Trailer Sales, Inc.",
+        "H & P Leasing, Inc.",
+        "Tenax LLC",
+        "Tenax Aerospace, LLC",
+        "WGS Systems, LLC",
+        "ChemFirst, Inc."
+      ]
+    },
+    {
+      "name": "Letitia C. Hughes",
+      "role": "director",
+      "is_independent": true,
+      "age": 69,
+      "tenure_years_on_board": 20,
+      "bio_summary": "Ms. Hughes was associated with Trustmark National Bank in managerial positions from 1974 until her retirement in 2014, where she served as Senior Vice-President, Manager, Private Banking. Her experience at a large regional southeastern bank provides the Board with insights into banking and lending relationships.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Trustmark National Bank"
+      ]
+    },
+    {
+      "name": "Sherman L. Miller",
+      "role": "director",
+      "is_independent": false,
+      "age": 46,
+      "tenure_years_on_board": 9,
+      "bio_summary": "Mr. Miller serves as President and Chief Operating Officer of the Company, having joined in 1996 and held various operations roles. He was elected President in 2018, COO in 2011, and VP of Operations in 2007. He is active in industry associations including the U.S. Poultry and Egg Association and United Egg Producers.",
+      "other_public_boards": [],
+      "prior_employers_named": []
+    },
+    {
+      "name": "James E. Poole",
+      "role": "audit_committee_chair",
+      "is_independent": true,
+      "age": 72,
+      "tenure_years_on_board": 17,
+      "bio_summary": "Mr. Poole is a Certified Public Accountant who was a principal with the accounting firm of Grantham, Poole, Randall, Reitano, Arrington & Cunningham, PLLC of Ridgeland, Mississippi for more than five years until his retirement in 2013. He brings accounting expertise and broad knowledge of the general business climate to the Board.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Grantham, Poole, Randall, Reitano, Arrington & Cunningham, PLLC"
+      ]
+    },
+    {
+      "name": "Steve W. Sanders",
+      "role": "director",
+      "is_independent": true,
+      "age": 75,
+      "tenure_years_on_board": 12,
+      "bio_summary": "Mr. Sanders is a Certified Public Accountant who retired in 2002 as managing partner of the Jackson, Mississippi office of Ernst & Young LLP after more than 30 years. He later served as a Lecturer at the Adkerson School of Accountancy, Mississippi State University, until his retirement in 2017.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Ernst & Young LLP",
+        "Mississippi State University"
+      ]
+    },
+    {
+      "name": "Camille S. Young",
+      "role": "director",
+      "is_independent": true,
+      "age": 48,
+      "tenure_years_on_board": 0,
+      "bio_summary": "Ms. Young serves as Principal and Director of Cornerstone Government Affairs, a bipartisan consulting firm specializing in government relations, public affairs, and strategic communications, which she joined in 2011. Prior to that, she was a government affairs representative at Watkins Ludlam Winter & Stennis, P.A. and previously worked for the Mississippi Farm Bureau Federation and the United States Department of Agriculture.",
+      "other_public_boards": [],
+      "prior_employers_named": [
+        "Watkins Ludlam Winter & Stennis, P.A.",
+        "Mississippi Farm Bureau Federation",
+        "United States Department of Agriculture"
+      ]
+    }
+  ],
+  "executive_officers": [
+    {
+      "name": "Adolphus B. Baker",
+      "title": "Chairman of the Board and Chief Executive Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Michael Castleberry",
+      "title": "Vice President Controller",
+      "tenure_years": 7,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Max P. Bowman",
+      "title": "Vice President, Chief Financial Officer, Treasurer and Secretary",
+      "tenure_years": null,
+      "prior_employers_named": [
+        "Southern States Utility Trailer Sales, Inc.",
+        "H & P Leasing, Inc.",
+        "Tenax LLC",
+        "Tenax Aerospace, LLC",
+        "WGS Systems, LLC",
+        "ChemFirst, Inc."
+      ]
+    },
+    {
+      "name": "Charles J. Hardin",
+      "title": "Vice President Sales",
+      "tenure_years": 19,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Robert L. Holladay, Jr.",
+      "title": "Vice President General Counsel",
+      "tenure_years": 10,
+      "prior_employers_named": []
+    },
+    {
+      "name": "Sherman L. Miller",
+      "title": "President, Chief Operating Officer",
+      "tenure_years": null,
+      "prior_employers_named": []
+    }
+  ],
+  "extraction_confidence": "high",
+  "extraction_notes": "Tenure years for Baker and Miller as executive officers not explicitly stated separately from their director tenure; Castleberry tenure calculated from January 2014 to fiscal year 2021; Hardin tenure calculated from 2002. Bowman joined as VP Finance June 2018 and became CFO October 2018. Camille Young joined the board in 2021, so tenure_years_on_board set to 0. Trustmark National Bank (a subsidiary) listed as current board for Baker but Trustmark Corporation (public company) is included in other_public_boards; Eggland's Best, Inc. and Eggland's Best, LLC appear to be private entities and are excluded. James Poole chairs the Audit Committee per the committee table. The committee table shows Letitia Hughes chairs Compensation and James Poole chairs Audit; role assigned accordingly.",
+  "_provenance": {
+    "schema": "sec_def14a_v1",
+    "schema_version": "1.0",
+    "prompt_version": "def14a-v1-2026-05-09",
+    "model": "claude-sonnet-4-6",
+    "extracted_at": "2026-05-09T19:48:36.375949Z",
+    "filing_meta": {
+      "ticker": "CALM",
+      "form": "DEF 14A",
+      "filing_date": "2021-08-17",
+      "accession": "000119312521248349",
+      "primary_doc": "d144129ddef14a.htm",
+      "section_chars_used": 11760
+    },
+    "input_tokens": 3339,
+    "output_tokens": 2054,
+    "cost_usd": 0.0408,
+    "elapsed_sec": 33.9
+  }
+}
