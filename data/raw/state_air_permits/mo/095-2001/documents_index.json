@@ -1,0 +1,130 @@
+[
+  {
+    "title": "Cargill - Rochester-Kansas City, 112017-002",
+    "url": "https://dnr.mo.gov/sites/dnr/files/vfc/2019/02/main/cargillkscityroch2017cp.pdf",
+    "program": "Air Quality",
+    "permit_id": "112017-002",
+    "action_date": "11/07/2017",
+    "action_type": "Construction Permit: De Minimis",
+    "extra": {
+      "page_url": "https://dnr.mo.gov/air/business-industry/air-permits/cargill-rochester-kansas-city-112017-002",
+      "site_id": "095-2001",
+      "application_number": "2017-07-033",
+      "county": "Jackson",
+      "permit_status": "Issued",
+      "sub_facility": null
+    }
+  },
+  {
+    "title": "Cargill - Rochester-Kansas City, OP2017-017",
+    "url": "https://dnr.mo.gov/sites/dnr/files/vfc/2019/02/main/cargillkscity2017op.pdf",
+    "program": "Air Quality",
+    "permit_id": "OP2017-017",
+    "action_date": "03/22/2017",
+    "action_type": "Operating Permit: Part 70",
+    "extra": {
+      "page_url": "https://dnr.mo.gov/air/business-industry/air-permits/cargill-rochester-kansas-city-op2017-017",
+      "site_id": "095-2001",
+      "application_number": "2007-07-035",
+      "county": "Jackson",
+      "permit_status": "Issued",
+      "sub_facility": null
+    }
+  },
+  {
+    "title": "Cargill Birmingham Rd-Kansas City, OP2017-053",
+    "url": "https://dnr.mo.gov/sites/dnr/files/vfc/2019/02/main/cargillkc-birm2017op.pdf",
+    "program": "Air Quality",
+    "permit_id": "OP2017-053",
+    "action_date": "06/26/2017",
+    "action_type": "Operating Permit: Intermediate",
+    "extra": {
+      "page_url": "https://dnr.mo.gov/air/business-industry/air-permits/cargill-birmingham-rd-kansas-city-op2017-053",
+      "site_id": "047-0027",
+      "application_number": "2012-10-012",
+      "county": "Clay",
+      "permit_status": "Issued",
+      "sub_facility": null
+    }
+  },
+  {
+    "title": "Cargill Inc.-Kansas City, 042021-002A",
+    "url": "https://dnr.mo.gov/sites/dnr/files/vfc/2024/10/main/cargill-kansas-city-042021-002a%20final.pdf",
+    "program": "Air Quality",
+    "permit_id": "042021-002A",
+    "action_date": "10/16/2024",
+    "action_type": "Construction Permit: De Minimis",
+    "extra": {
+      "page_url": "https://dnr.mo.gov/air/business-industry/air-permits/cargill-inc-kansas-city-042021-002a",
+      "site_id": "095-2001",
+      "application_number": "2024-06-019",
+      "county": "Jackson",
+      "permit_status": "Issued",
+      "sub_facility": null
+    }
+  },
+  {
+    "title": "Cargill Inc.-Rochester-Kansas City, 082025-020",
+    "url": "https://dnr.mo.gov/sites/dnr/files/vfc/2025/08/main/cargill-kansas-city-082025-020.pdf",
+    "program": "Air Quality",
+    "permit_id": "082025-020",
+    "action_date": "08/26/2025",
+    "action_type": "Construction Permit: De Minimis",
+    "extra": {
+      "page_url": "https://dnr.mo.gov/air/business-industry/air-permits/cargill-inc-rochester-kansas-city-082025-020",
+      "site_id": "095-2001",
+      "application_number": "2025-04-010",
+      "county": "Jackson",
+      "permit_status": "Issued",
+      "sub_facility": null
+    }
+  },
+  {
+    "title": "Cargill-Kansas City, 032012-012",
+    "url": "https://dnr.mo.gov/sites/dnr/files/vfc/2019/02/main/cargillkscity2011cp.pdf",
+    "program": "Air Quality",
+    "permit_id": "032012-012",
+    "action_date": "03/30/2012",
+    "action_type": "Construction Permit: Temporary",
+    "extra": {
+      "page_url": "https://dnr.mo.gov/air/business-industry/air-permits/cargill-kansas-city-032012-012",
+      "site_id": "095-2001",
+      "application_number": "2012-01-063",
+      "county": "Jackson",
+      "permit_status": "Issued",
+      "sub_facility": null
+    }
+  },
+  {
+    "title": "Cargill-Kansas City, 042021-002",
+    "url": "https://dnr.mo.gov/sites/dnr/files/vfc/2021/04/main/cargill-kansas-city-042021-002cp_1.pdf",
+    "program": "Air Quality",
+    "permit_id": "042021-002",
+    "action_date": "04/08/2021",
+    "action_type": "Construction Permit: De Minimis",
+    "extra": {
+      "page_url": "https://dnr.mo.gov/air/business-industry/air-permits/cargill-kansas-city-042021-002",
+      "site_id": "095-2001",
+      "application_number": "2020-08-028",
+      "county": "Jackson",
+      "permit_status": "Issued",
+      "sub_facility": null
+    }
+  },
+  {
+    "title": "Cargill-Kansas City, 092012-007",
+    "url": "https://dnr.mo.gov/sites/dnr/files/vfc/2019/02/main/cargillkscity2012cp.pdf",
+    "program": "Air Quality",
+    "permit_id": "092012-007",
+    "action_date": "09/21/2012",
+    "action_type": "Construction Permit: De Minimis",
+    "extra": {
+      "page_url": "https://dnr.mo.gov/air/business-industry/air-permits/cargill-kansas-city-092012-007",
+      "site_id": "095-2001",
+      "application_number": "2012-09-085",
+      "county": "Jackson",
+      "permit_status": "Issued",
+      "sub_facility": null
+    }
+  }
+]
