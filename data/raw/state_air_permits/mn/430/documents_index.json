@@ -1,0 +1,93 @@
+[
+  {
+    "title": "Major Amendment (2013-06-10) AQ07300002",
+    "url": null,
+    "program": "Air Quality",
+    "permit_id": "AQ07300002",
+    "action_date": "2013-06-10",
+    "action_type": "Major Amendment",
+    "extra": {
+      "effectiveStartDate": "2013-06-10",
+      "effectiveEndDate": "2015-05-12",
+      "activityName": "Ag Processing Inc - Dawson"
+    }
+  },
+  {
+    "title": "Major Amendment (2015-05-13) AQ07300002",
+    "url": null,
+    "program": "Air Quality",
+    "permit_id": "AQ07300002",
+    "action_date": "2015-05-13",
+    "action_type": "Major Amendment",
+    "extra": {
+      "effectiveStartDate": "2015-05-13",
+      "effectiveEndDate": "2019-02-18",
+      "activityName": "Ag Processing Inc - Dawson"
+    }
+  },
+  {
+    "title": "Major Amendment (2020-11-17) AQ07300002",
+    "url": null,
+    "program": "Air Quality",
+    "permit_id": "AQ07300002",
+    "action_date": "2020-11-17",
+    "action_type": "Major Amendment",
+    "extra": {
+      "effectiveStartDate": "2020-11-17",
+      "effectiveEndDate": "2022-11-27",
+      "activityName": "Ag Processing Inc - Dawson"
+    }
+  },
+  {
+    "title": "Major Amendment (2022-11-28) AQ07300002",
+    "url": null,
+    "program": "Air Quality",
+    "permit_id": "AQ07300002",
+    "action_date": "2022-11-28",
+    "action_type": "Major Amendment",
+    "extra": {
+      "effectiveStartDate": "2022-11-28",
+      "effectiveEndDate": "2026-05-10",
+      "activityName": "Ag Processing Inc - Dawson"
+    }
+  },
+  {
+    "title": "Minor Amendment (2006-06-06) AQ07300002",
+    "url": null,
+    "program": "Air Quality",
+    "permit_id": "AQ07300002",
+    "action_date": "2006-06-06",
+    "action_type": "Minor Amendment",
+    "extra": {
+      "effectiveStartDate": "2006-06-06",
+      "effectiveEndDate": "2013-06-09",
+      "activityName": "Ag Processing Inc - Dawson"
+    }
+  },
+  {
+    "title": "Part 70 Permit (2004-02-05) AQ07300002",
+    "url": null,
+    "program": "Air Quality",
+    "permit_id": "AQ07300002",
+    "action_date": "2004-02-05",
+    "action_type": "Part 70 Permit",
+    "extra": {
+      "effectiveStartDate": "2004-02-05",
+      "effectiveEndDate": "2006-06-05",
+      "activityName": "Ag Processing Inc - Dawson"
+    }
+  },
+  {
+    "title": "Part 70 Reissuance (2019-02-19) AQ07300002",
+    "url": null,
+    "program": "Air Quality",
+    "permit_id": "AQ07300002",
+    "action_date": "2019-02-19",
+    "action_type": "Part 70 Reissuance",
+    "extra": {
+      "effectiveStartDate": "2019-02-19",
+      "effectiveEndDate": "2020-11-16",
+      "activityName": "Ag Processing Inc - Dawson"
+    }
+  }
+]

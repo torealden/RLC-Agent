@@ -59,3 +59,18 @@ domain_knowledge/company_reports/*/[0-9]*_*/*.css
 domain_knowledge/company_reports/*/[0-9]*_*/*.js
 domain_knowledge/company_reports/*/[0-9]*_*/*.txt
 domain_knowledge/company_reports/company_tickers_cache.json
+
+# State air-permit scraper artifacts.
+# Keep the small JSON outputs (metadata.json, documents_index.json) per
+# facility — they're the load-bearing extraction. Skip bulk CSV
+# downloads, zip files, Playwright storage state, raw HTML / PDF
+# captures.
+data/raw/state_air_permits/*/*.zip
+data/raw/state_air_permits/*/*.csv
+data/raw/state_air_permits/*/*.html
+data/raw/state_air_permits/*/.session.json
+data/raw/state_air_permits/*/metadata/
+# Per-facility intermediate files we don't need in git
+data/raw/state_air_permits/*/*_documents.json
+data/raw/state_air_permits/*/*_sites_*.json
+data/raw/state_air_permits/*/*_wimn_page.html
