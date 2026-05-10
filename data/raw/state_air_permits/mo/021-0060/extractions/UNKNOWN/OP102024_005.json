@@ -1,0 +1,102 @@
+{
+  "_source_pdf": "data\\raw\\state_air_permits\\mo\\021-0060\\permit_pdfs\\biodiesel\\OP102024_005.pdf",
+  "_extracted_at": "2026-05-10T11:43:02",
+  "_model": "qwen3-coder:30b",
+  "_elapsed_sec": 108.0,
+  "facility": {
+    "name": "Ag Processing, Inc.",
+    "operator": "Ag Processing, Inc.",
+    "city": "St. Joseph",
+    "state": "MO",
+    "permit_number": "OP102024-005",
+    "expiration_date": "2029-10-28",
+    "industry": "biodiesel",
+    "facility_description": "Ag Processing, Inc. is a 292 million pounds per year methyl ester (biodiesel) plant. The biodiesel process involves reacting semi-refined or refined vegetable oils with methanol in the presence of a catalyst to produce biodiesel (methyl ester) and crude glycerin. Excess methanol is recovered and recycled back into the process. Emissions from the process and controlled with a condenser and scrubber system. This plant is adjacent to the Ag Processing, Inc. extraction/refining plant (021-0060). It is a major source of HAP emissions."
+  },
+  "emission_units": [
+    {
+      "unit_id": "EP-100",
+      "description": "Biodiesel Process Vent (91 ft3/min)",
+      "category": "transesterification",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "CD-100"
+      ]
+    },
+    {
+      "unit_id": "EP-101",
+      "description": "Light Liquid Valves",
+      "category": "other",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-102",
+      "description": "Light Liquid Pumps",
+      "category": "other",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-103",
+      "description": "Gas Pressure Relief Valves",
+      "category": "other",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "CD-100"
+      ]
+    },
+    {
+      "unit_id": "EP-104",
+      "description": "Agitators",
+      "category": "other",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-107",
+      "description": "Methanol Storage Tank (76,310 gallons)",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": 76310,
+      "throughput_limit_unit": "gallons",
+      "control_devices": [
+        "CD-100"
+      ]
+    },
+    {
+      "unit_id": "EP-108",
+      "description": "Catalyst Tank (35,720 gallons)",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": 35720,
+      "throughput_limit_unit": "gallons",
+      "control_devices": [
+        "CD-100"
+      ]
+    }
+  ],
+  "facility_totals": {
+    "primary_throughput": 292000000,
+    "primary_throughput_unit": "pounds/year",
+    "primary_throughput_basis": "Ag Processing, Inc. is a 292 million pounds per year methyl ester (biodiesel) plant."
+  },
+  "extraction_notes": "The permit lists emission units with associated control devices but does not provide specific rated capacities for most units. Some units like EP-107 and EP-108 are identified by storage tank capacity, but no throughput or capacity is specified for the main process units. The control device CD-100 is referenced for multiple emission units but no specific performance data is provided."
+}

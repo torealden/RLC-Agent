@@ -1,0 +1,525 @@
+{
+  "_source_pdf": "data\\raw\\state_air_permits\\mo\\021-0060\\permit_pdfs\\main\\OP2020_020.pdf",
+  "_extracted_at": "2026-05-10T12:09:56",
+  "_model": "qwen3-coder:30b",
+  "_elapsed_sec": 383.6,
+  "facility": {
+    "name": "Ag Processing, Inc.",
+    "operator": "Ag Processing, Inc.",
+    "city": "St. Joseph",
+    "state": "MO",
+    "permit_number": "OP2020-020",
+    "expiration_date": "2025-10-30",
+    "industry": "oilseed_crush",
+    "facility_description": "Ag Processing, Inc. operates a soybean processing facility in St. Joseph, Missouri. The installation consists of an oil extraction plant, an oil refinery plant and a hydrogen gas plant. The installation is subject to MACT GGGG - National Emission Standards for Hazardous Air Pollutants: Solvent Extraction for Vegetable Oil Production as wells as NSPS DD \u2013 Standards of Performance for Grain Elevators. This installation is a major source of PM, PM, NO, VOC, CO and HAP emissions."
+  },
+  "emission_units": [
+    {
+      "unit_id": "EP-05",
+      "description": "Railcar Receiving",
+      "category": "receiving",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-06",
+      "description": "West Truck Receiving",
+      "category": "receiving",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-07",
+      "description": "South Truck Receiving",
+      "category": "receiving",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-08",
+      "description": "Receiving Legs",
+      "category": "receiving",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-11",
+      "description": "North House Garner & Scale",
+      "category": "receiving",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-12",
+      "description": "South House Garner & Scale",
+      "category": "receiving",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-13B",
+      "description": "Cascade Conditioner 1",
+      "category": "conditioning",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-13C",
+      "description": "Cracking And Dehulling",
+      "category": "dehulling",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-14",
+      "description": "Hull Grinder",
+      "category": "dehulling",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-15.4",
+      "description": "Pellet Cooler",
+      "category": "cooling",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-19",
+      "description": "Flakers",
+      "category": "flaking",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-27",
+      "description": "Bulk DE Storage",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-30",
+      "description": "Meal Grinding",
+      "category": "milling",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-31",
+      "description": "Truck Meal Loadout",
+      "category": "packaging",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-57",
+      "description": "Rail Meal Loadout",
+      "category": "packaging",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-31.1",
+      "description": "Hull Storage Tank",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-31.2",
+      "description": "Off Quality Storage Tank",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-31.3",
+      "description": "Hi-Pro Meal Storage Tank",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-31.4",
+      "description": "Pellet Storage Tank",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-58",
+      "description": "Pellet Storage Bin 7",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-44",
+      "description": "Outside Bleaching Storage",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-45",
+      "description": "Bulk Clay Receiver",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-53",
+      "description": "Bean Heater Aspirator",
+      "category": "drying",
+      "rated_capacity": 165,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "cyclone"
+      ]
+    },
+    {
+      "unit_id": "EP-53",
+      "description": "Jet Dryer",
+      "category": "drying",
+      "rated_capacity": 50,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "hot dehull baghouse"
+      ]
+    },
+    {
+      "unit_id": "EP-53",
+      "description": "Secondary Dehulling",
+      "category": "dehulling",
+      "rated_capacity": 50,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "hot dehull baghouse"
+      ]
+    },
+    {
+      "unit_id": "EP-53",
+      "description": "Cascade Cooler",
+      "category": "cooling",
+      "rated_capacity": 50,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "baghouse"
+      ]
+    },
+    {
+      "unit_id": "EP-53",
+      "description": "Cascade Conditioner",
+      "category": "conditioning",
+      "rated_capacity": 50,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "hot dehull baghouse"
+      ]
+    },
+    {
+      "unit_id": "EP-Source 20",
+      "description": "Extraction Process",
+      "category": "extraction",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-Source 20",
+      "description": "Desolventizing Toasting (Dt) Process",
+      "category": "desolventization",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-Source 20",
+      "description": "Solvent Storage Tanks",
+      "category": "storage",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-55",
+      "description": "DC Top Dryer Deck",
+      "category": "drying",
+      "rated_capacity": 121,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "cyclone"
+      ]
+    },
+    {
+      "unit_id": "EP-55",
+      "description": "DC Middle Dryer Deck",
+      "category": "drying",
+      "rated_capacity": 121,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "cyclone",
+        "scrubber"
+      ]
+    },
+    {
+      "unit_id": "EP-55",
+      "description": "DC Bottom Dryer Deck",
+      "category": "drying",
+      "rated_capacity": 121,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "cyclone",
+        "scrubber"
+      ]
+    },
+    {
+      "unit_id": "EP-55",
+      "description": "DC Cooler Deck",
+      "category": "cooling",
+      "rated_capacity": 121,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "cyclone",
+        "scrubber"
+      ]
+    },
+    {
+      "unit_id": "EP-59",
+      "description": "Meal Bin 5",
+      "category": "storage",
+      "rated_capacity": 121,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "baghouse"
+      ]
+    },
+    {
+      "unit_id": "EP-60",
+      "description": "Meal Bin 6",
+      "category": "storage",
+      "rated_capacity": 121,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "baghouse"
+      ]
+    },
+    {
+      "unit_id": "EP-Source 46",
+      "description": "Crude Oil Receiving",
+      "category": "receiving",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP-50",
+      "description": "Bean Bin 1",
+      "category": "storage",
+      "rated_capacity": 300,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "oil application dust suppression system"
+      ]
+    },
+    {
+      "unit_id": "EP-51",
+      "description": "Bean Bin 2",
+      "category": "storage",
+      "rated_capacity": 300,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "oil application dust suppression system"
+      ]
+    },
+    {
+      "unit_id": "EP-52",
+      "description": "Bean Bin 3",
+      "category": "storage",
+      "rated_capacity": 300,
+      "rated_capacity_unit": "ton/hr",
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": [
+        "oil application dust suppression system"
+      ]
+    },
+    {
+      "unit_id": "EP-54",
+      "description": "Flake Conveyor",
+      "category": "transport",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP56.1",
+      "description": "Cooling Towers",
+      "category": "cooling",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "EP56.2",
+      "description": "Cooling Towers",
+      "category": "cooling",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "HR1.1",
+      "description": "Haul Roads",
+      "category": "transport",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "HR1.2",
+      "description": "Haul Roads",
+      "category": "transport",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "2.1",
+      "description": "Haul Roads",
+      "category": "transport",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    },
+    {
+      "unit_id": "2.2",
+      "description": "Haul Roads",
+      "category": "transport",
+      "rated_capacity": null,
+      "rated_capacity_unit": null,
+      "throughput_limit": null,
+      "throughput_limit_unit": null,
+      "control_devices": []
+    }
+  ],
+  "facility_totals": {
+    "primary_throughput": 1478250,
+    "primary_throughput_unit": "tons",
+    "primary_throughput_basis": "Total oilseed throughput, measured per \u00a763.2855, (see Testing) shall not exceed 1,478,250 tons for any consecutive 12-month period."
+  },
+  "extraction_notes": "Some units have multiple descriptions with the same unit ID (e.g., EP-53 appears multiple times with different descriptions). These were all included as separate units. The facility has a throughput limit of 1,478,250 tons for any consecutive 12-month period for oilseed processing."
+}
