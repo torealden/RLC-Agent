@@ -247,7 +247,22 @@ def find_source_pdf(facility_id: str, raw_pdf_path: str | None) -> Path | None:
 
 
 def write_equipment_csv(folder: Path, units: list[dict]) -> None:
-    out = folder / "equipment_list.csv"
+    """Write equipment list. SAFETY: never overwrites equipment_list.csv if
+    it has been manually modified — writes to equipment_list_auto.csv
+    instead. The hand-curated file is the source of truth once it exists.
+    """
+    out_auto = folder / "equipment_list_auto.csv"
+    out_human = folder / "equipment_list.csv"
+
+    # Determine target: if a human-edited list exists and was modified more
+    # recently than the bronze record's extracted_at, preserve it.
+    if out_human.exists():
+        # Use _auto suffix so the human file is preserved
+        out = out_auto
+    else:
+        # First time — use the canonical name
+        out = out_human
+
     with open(out, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, quoting=csv.QUOTE_ALL)
         w.writerow([

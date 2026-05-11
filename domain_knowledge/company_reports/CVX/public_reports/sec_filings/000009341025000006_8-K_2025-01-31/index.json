@@ -1,0 +1,98 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "0000093410-25-000006-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "0000093410-25-000006-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "0000093410-25-000006.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "0000093410-25-000006-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "12324"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "cvx-20250129.htm",
+        "type": "text.gif",
+        "size": "47323"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "cvx-20250129.xsd",
+        "type": "text.gif",
+        "size": "1779"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "cvx-20250129_htm.xml",
+        "type": "text.gif",
+        "size": "2704"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "cvx-20250129_lab.xml",
+        "type": "text.gif",
+        "size": "21629"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "cvx-20250129_pre.xml",
+        "type": "text.gif",
+        "size": "12507"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1615"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "Financial_Report.xlsx",
+        "type": "text.gif",
+        "size": "5667"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "16872"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "38073"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2766"
+      },
+      {
+        "last-modified": "2025-01-31 16:11:17",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1084"
+      }
+    ],
+    "name": "/Archives/edgar/data/93410/000009341025000006",
+    "parent-dir": "/Archives/edgar/data/93410"
+  }
+}

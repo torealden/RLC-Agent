@@ -75,9 +75,11 @@ def main():
                 if result.warnings:
                     for w in result.warnings:
                         print(f"    WARN: {w}", flush=True)
-                # Persist to bronze
-                if result.success and result.data is not None:
-                    n_saved = collector.save_to_bronze(result.data)
+                # Persist to bronze. save_to_bronze expects List[Dict]; result.data
+                # is a DataFrame, so convert before saving.
+                if result.success and result.data is not None and not result.data.empty:
+                    records = result.data.to_dict('records')
+                    n_saved = collector.save_to_bronze(records)
                     print(f"    bronze rows upserted: {n_saved}", flush=True)
             except Exception as e:
                 print(f"    FAILED: {e}", flush=True)

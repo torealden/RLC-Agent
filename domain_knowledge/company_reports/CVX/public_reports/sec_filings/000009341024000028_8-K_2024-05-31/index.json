@@ -1,0 +1,98 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "0000093410-24-000028-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "0000093410-24-000028-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "0000093410-24-000028.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "0000093410-24-000028-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "11345"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "cvx-20240529.htm",
+        "type": "text.gif",
+        "size": "71597"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "cvx-20240529.xsd",
+        "type": "text.gif",
+        "size": "1911"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "cvx-20240529_htm.xml",
+        "type": "text.gif",
+        "size": "2722"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "cvx-20240529_lab.xml",
+        "type": "text.gif",
+        "size": "21885"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "cvx-20240529_pre.xml",
+        "type": "text.gif",
+        "size": "12519"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1634"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "Financial_Report.xlsx",
+        "type": "text.gif",
+        "size": "5687"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "17016"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "38100"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2766"
+      },
+      {
+        "last-modified": "2024-05-31 16:12:17",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1084"
+      }
+    ],
+    "name": "/Archives/edgar/data/93410/000009341024000028",
+    "parent-dir": "/Archives/edgar/data/93410"
+  }
+}

@@ -314,10 +314,12 @@ def detect_state(pdf_path: Path) -> str:
 
 
 def process_pdf(pdf_path: Path, model: str, out_dir: Path, force: bool = False,
-                char_budget: int = 80_000, num_ctx: int = 65536) -> dict:
+                char_budget: int = 80_000, num_ctx: int = 65536,
+                run_tag: str = "") -> dict:
     state = detect_state(pdf_path)
     facility_key = pdf_path.stem.replace("_titlev", "")
-    out_path = out_dir / state / f"{facility_key}.json"
+    suffix = f"_{run_tag}" if run_tag else ""
+    out_path = out_dir / state / f"{facility_key}{suffix}.json"
 
     if out_path.exists() and not force:
         return {"status": "skip:exists", "out": str(out_path)}
@@ -399,6 +401,9 @@ def main():
     ap.add_argument("--out-dir", type=Path, default=OUT_DIR)
     ap.add_argument("--filter-only", action="store_true",
                     help="Run page filter only; print stats and skip LLM (debug)")
+    ap.add_argument("--run-tag", default="",
+                    help="Suffix appended to output filename for best-of-N runs "
+                         "(e.g. --run-tag r2 saves to <facility>_r2.json)")
     ap.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL,
                     help=f"Ollama base URL (default: {DEFAULT_OLLAMA_URL}). "
                          f"For laptop via Tailscale: http://100.73.98.127:11434")
@@ -455,7 +460,8 @@ def main():
     t_total = time.time()
     for pdf in pdfs:
         r = process_pdf(pdf, args.model, args.out_dir, force=args.force,
-                        char_budget=args.char_budget, num_ctx=args.num_ctx)
+                        char_budget=args.char_budget, num_ctx=args.num_ctx,
+                        run_tag=args.run_tag)
         results.append(r)
 
     elapsed = time.time() - t_total

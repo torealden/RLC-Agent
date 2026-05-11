@@ -1,0 +1,92 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "0000093410-25-000105-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "0000093410-25-000105-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "0000093410-25-000105.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "0000093410-25-000105-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "9455"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "cvx-20251029.htm",
+        "type": "text.gif",
+        "size": "27025"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "cvx-20251029.xsd",
+        "type": "text.gif",
+        "size": "1779"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "cvx-20251029_htm.xml",
+        "type": "text.gif",
+        "size": "2706"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "cvx-20251029_lab.xml",
+        "type": "text.gif",
+        "size": "21629"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "cvx-20251029_pre.xml",
+        "type": "text.gif",
+        "size": "12507"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1615"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "16871"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "38060"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2766"
+      },
+      {
+        "last-modified": "2025-11-03 08:11:08",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1084"
+      }
+    ],
+    "name": "/Archives/edgar/data/93410/000009341025000105",
+    "parent-dir": "/Archives/edgar/data/93410"
+  }
+}

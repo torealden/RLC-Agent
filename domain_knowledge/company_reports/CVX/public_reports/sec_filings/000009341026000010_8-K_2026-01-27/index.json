@@ -1,0 +1,92 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "0000093410-26-000010-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "0000093410-26-000010-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "0000093410-26-000010.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "0000093410-26-000010-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "9468"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "cvx-20260127.htm",
+        "type": "text.gif",
+        "size": "28108"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "cvx-20260127.xsd",
+        "type": "text.gif",
+        "size": "1779"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "cvx-20260127_htm.xml",
+        "type": "text.gif",
+        "size": "2706"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "cvx-20260127_lab.xml",
+        "type": "text.gif",
+        "size": "21629"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "cvx-20260127_pre.xml",
+        "type": "text.gif",
+        "size": "12507"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1615"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "16871"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "38060"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2766"
+      },
+      {
+        "last-modified": "2026-01-27 16:45:32",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1084"
+      }
+    ],
+    "name": "/Archives/edgar/data/93410/000009341026000010",
+    "parent-dir": "/Archives/edgar/data/93410"
+  }
+}

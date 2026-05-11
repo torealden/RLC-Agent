@@ -1,6 +1,6 @@
 {
   "source": "EPA ECHO air_rest_services.metadata",
-  "fetched_at": "2026-04-01T05:30:01.324535",
+  "fetched_at": "2026-05-01T04:00:02.288115",
   "fields": [
     {
       "column_id": "1",
@@ -952,7 +952,7 @@
       "column_name": "WEB_DOCS",
       "description": null,
       "data_type": "VARCHAR2",
-      "data_length": "20"
+      "data_length": "5"
     },
     {
       "column_id": "120",

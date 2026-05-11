@@ -1,7 +1,7 @@
 table,industry,facility_id,operator,city,county,state,lat,lon,status,data_source,pre_check_verdict,user_verified,user_correction,notes
 facility_master,beef_packing,ia.iowa_premium_tama,Iowa Premium Beef,Tama,Tama,IA,41.967,-92.578,active,public_knowledge,confirmed (spot-check ok),,,~1.1K head/day; premium Black Angus focus
 facility_master,biodiesel,ia.cargill_iowa_falls_biodiesel,Cargill,Iowa Falls,Hardin,IA,42.521,-93.265,active,public_knowledge,confirmed (spot-check ok),,,Smaller â€” co-located with crush
-facility_master,biodiesel,ia.chevron_reg_mason_city,Chevron Renewable Energy Group,Mason City,Cerro Gordo,IA,43.153,-93.200,active,public_knowledge,confirmed (spot-check ok),,,Former REG site
+facility_master,biodiesel,ia.chevron_reg_mason_city,Chevron Renewable Energy Group,Mason City,Cerro Gordo,IA,43.153,-93.2,active,public_knowledge,confirmed (spot-check ok),,,Former REG site
 facility_master,biodiesel,ia.chevron_reg_newton,Chevron Renewable Energy Group,Newton,Jasper,IA,41.696,-93.048,active,public_knowledge,spot-check: coords look like city centroid (verify actual plant),,,Largest IA biodiesel plant; former REG flagship
 facility_master,biodiesel,ia.chevron_reg_ralston,Chevron Renewable Energy Group,Ralston,Carroll,IA,42.046,-94.633,active,public_knowledge,confirmed (spot-check ok),,,Former REG site; HQ before acquisition
 facility_master,biodiesel,ia.stockton_biodiesel_tama,Stockton Biodiesel,Tama,Tama,IA,41.967,-92.578,active,public_knowledge,questioned: self-flagged in notes,,,Smaller plant; verify status
@@ -18,24 +18,24 @@ facility_master,ethanol,ia.poet_ashton,POET Biorefining,Ashton,Osceola,IA,43.305
 facility_master,ethanol,ia.adm_cedar_rapids_ethanol,ADM,Cedar Rapids,Linn,IA,41.974,-91.665,active,public_knowledge,confirmed (spot-check ok),,,Co-located with corn wet mill + crush; large complex
 facility_master,ethanol,ia.valero_charles_city,Valero Renewable Fuels,Charles City,Floyd,IA,43.066,-92.674,active,public_knowledge,confirmed (spot-check ok),,,Acquired from Hawkeye
 facility_master,ethanol,ia.adm_clinton,ADM,Clinton,Clinton,IA,41.844,-90.188,active,public_knowledge,confirmed (spot-check ok),,,Wet mill complex on Mississippi River
-facility_master,ethanol,ia.poet_coon_rapids,POET Biorefining,Coon Rapids,Carroll,IA,41.870,-94.679,active,public_knowledge,confirmed (spot-check ok),,,POET fleet
-facility_master,ethanol,ia.cargill_eddyville_ethanol,Cargill,Eddyville,Wapello,IA,41.140,-92.648,active,public_knowledge,confirmed (spot-check ok),,,Co-located with crush + biorefining at the Eddyville biocomplex
+facility_master,ethanol,ia.poet_coon_rapids,POET Biorefining,Coon Rapids,Carroll,IA,41.87,-94.679,active,public_knowledge,confirmed (spot-check ok),,,POET fleet
+facility_master,ethanol,ia.cargill_eddyville_ethanol,Cargill,Eddyville,Wapello,IA,41.14,-92.648,active,public_knowledge,confirmed (spot-check ok),,,Co-located with crush + biorefining at the Eddyville biocomplex
 facility_master,ethanol,ia.poet_emmetsburg,POET Biorefining,Emmetsburg,Palo Alto,IA,43.111,-94.683,active,public_knowledge,confirmed (spot-check ok),,,Was cellulosic Project Liberty; now corn ethanol
 facility_master,ethanol,ia.valero_fort_dodge,Valero Renewable Fuels,Fort Dodge,Webster,IA,42.504,-94.191,active,public_knowledge,spot-check: coords look like city centroid (verify actual plant),,,Acquired from Hawkeye
 facility_master,ethanol,ia.quad_county_galva,Quad County Corn Processors,Galva,Ida,IA,42.506,-95.412,idle,public_knowledge,spot-check: coords look like city centroid (verify actual plant),,,"Pioneered cellulosic ethanol bolt-on
 [2026-05-07] Status changed from active to idle: halted operations late 2025; board pursuing capital for upgrades."
 facility_master,ethanol,ia.poet_gowrie,POET Biorefining,Gowrie,Webster,IA,42.281,-94.288,active,public_knowledge,confirmed (spot-check ok),,,POET fleet
-facility_master,ethanol,ia.iowa_ethanol_hanlontown,Iowa Ethanol LLC,Hanlontown,Worth,IA,43.330,-93.371,active,public_knowledge,questioned: self-flagged in notes,,,Verify status â€” early IA ethanol plant
-facility_master,ethanol,ia.poet_hanlontown,POET Biorefining,Hanlontown,Worth,IA,43.330,-93.371,active,public_knowledge,confirmed (spot-check ok),,,POET fleet
+facility_master,ethanol,ia.iowa_ethanol_hanlontown,Iowa Ethanol LLC,Hanlontown,Worth,IA,43.33,-93.371,active,public_knowledge,questioned: self-flagged in notes,,,Verify status â€” early IA ethanol plant
+facility_master,ethanol,ia.poet_hanlontown,POET Biorefining,Hanlontown,Worth,IA,43.33,-93.371,active,public_knowledge,confirmed (spot-check ok),,,POET fleet
 facility_master,ethanol,ia.valero_hartley,Valero Renewable Fuels,Hartley,O'Brien,IA,43.181,-95.481,active,public_knowledge,confirmed (spot-check ok),,,Acquired from Hawkeye
-facility_master,ethanol,ia.poet_jewell,POET Biorefining,Jewell,Hamilton,IA,42.310,-93.642,active,public_knowledge,confirmed (spot-check ok),,,POET fleet
+facility_master,ethanol,ia.poet_jewell,POET Biorefining,Jewell,Hamilton,IA,42.31,-93.642,active,public_knowledge,confirmed (spot-check ok),,,POET fleet
 facility_master,ethanol,ia.homeland_lawler,Homeland Energy Solutions LLC,Lawler,Chickasaw,IA,43.083,-92.146,active,public_knowledge,confirmed (spot-check ok),,,
 facility_master,ethanol,ia.plymouth_merrill,Plymouth Energy LLC,Merrill,Plymouth,IA,42.722,-96.247,active,public_knowledge,confirmed (spot-check ok),,,
 facility_master,ethanol,ia.lincolnway_nevada,Lincolnway Energy LLC,Nevada,Story,IA,42.024,-93.452,active,public_knowledge,confirmed (spot-check ok),,,Locally-owned
 facility_master,ethanol,ia.green_plains_shenandoah,Green Plains,Shenandoah,Page,IA,40.766,-95.372,active,public_knowledge,confirmed (spot-check ok),,,
 facility_master,ethanol,ia.absolute_st_ansgar,Absolute Energy,St. Ansgar,Mitchell,IA,43.378,-92.918,active,public_knowledge,confirmed (spot-check ok),,,
-facility_master,ethanol,ia.pine_lake_steamboat_rock,Pine Lake Corn Processors,Steamboat Rock,Hardin,IA,42.404,-93.080,active,public_knowledge,spot-check: coords look like city centroid (verify actual plant),,,
-facility_master,ethanol,ia.green_plains_superior,Green Plains,Superior,Dickinson,IA,43.434,-95.000,active,public_knowledge,confirmed (spot-check ok),,,
+facility_master,ethanol,ia.pine_lake_steamboat_rock,Pine Lake Corn Processors,Steamboat Rock,Hardin,IA,42.404,-93.08,active,public_knowledge,spot-check: coords look like city centroid (verify actual plant),,,
+facility_master,ethanol,ia.green_plains_superior,Green Plains,Superior,Dickinson,IA,43.434,-95,active,public_knowledge,confirmed (spot-check ok),,,
 facility_master,ethanol,ia.western_iowa_wall_lake,Western Iowa Energy LLC,Wall Lake,Sac,IA,42.272,-95.092,active,public_knowledge,confirmed (spot-check ok),,,Combo plant â€” also biodiesel
 facility_master,ethanol,ia.big_river_west_burlington,Big River Resources,West Burlington,Des Moines,IA,40.825,-91.149,active,public_knowledge,confirmed (spot-check ok),,,Coop-owned
 facility_master,pork_packing,ia.smithfield_algona,Smithfield Foods,Algona,Kossuth,IA,43.069,-94.234,active,public_knowledge,confirmed (spot-check ok),,,
@@ -43,30 +43,30 @@ facility_master,pork_packing,ia.tyson_columbus_jct,Tyson Foods,Columbus Junction
 facility_master,pork_packing,ia.wholestone_council_bluffs,Wholestone Farms,Council Bluffs,Pottawattamie,IA,41.262,-95.861,active,public_knowledge,confirmed (spot-check ok),,,Newer plant
 facility_master,pork_packing,ia.smithfield_denison,Smithfield Foods,Denison,Crawford,IA,41.985,-95.355,active,public_knowledge,confirmed (spot-check ok),,,
 facility_master,pork_packing,ia.jbs_marshalltown,JBS USA,Marshalltown,Marshall,IA,42.049,-92.908,active,public_knowledge,confirmed (spot-check ok),,,
-facility_master,pork_packing,ia.jbs_ottumwa,JBS USA,Ottumwa,Wapello,IA,41.020,-92.411,active,public_knowledge,confirmed (spot-check ok),,,
+facility_master,pork_packing,ia.jbs_ottumwa,JBS USA,Ottumwa,Wapello,IA,41.02,-92.411,active,public_knowledge,confirmed (spot-check ok),,,
 facility_master,pork_packing,ia.tyson_perry,Tyson Foods,Perry,Dallas,IA,41.838,-94.107,active,public_knowledge,confirmed (spot-check ok),,,
 facility_master,pork_packing,ia.sioux_preme_sioux_center,Sioux-Preme Packing Co,Sioux Center,Sioux,IA,43.078,-96.175,active,public_knowledge,confirmed (spot-check ok),,,"Smaller, ~5K head/day"
 facility_master,pork_packing,ia.seaboard_triumph_sioux_city,Seaboard Triumph Foods,Sioux City,Woodbury,IA,42.503,-96.405,active,public_knowledge,spot-check: coords look like city centroid (verify actual plant),,,Newer plant ~22K head/day
-facility_master,pork_packing,ia.tyson_storm_lake,Tyson Foods,Storm Lake,Buena Vista,IA,42.640,-95.207,active,public_knowledge,confirmed (spot-check ok),,,Pork; large IA Tyson plant
+facility_master,pork_packing,ia.tyson_storm_lake,Tyson Foods,Storm Lake,Buena Vista,IA,42.64,-95.207,active,public_knowledge,confirmed (spot-check ok),,,Pork; large IA Tyson plant
 facility_master,pork_packing,ia.tyson_waterloo,Tyson Foods,Waterloo,Black Hawk,IA,42.493,-92.339,active,public_knowledge,spot-check: coords look like city centroid (verify actual plant),,,
 oilseed_crush_facilities,oilseed_crush,ia.agp_algona,Ag Processing Inc.,Algona,Kossuth,IA,43.069966,-94.233019,Operating,,confirmed (spot-check ok),,,Co-located biodiesel facility
 oilseed_crush_facilities,oilseed_crush,ia.platinum_alta,Platinum Crush (N Bowdish),Alta,Buena Vista,IA,42.673689,-95.303994,Operating,,confirmed (spot-check ok),,,"875K tons meal/yr, 465M lbs crude oil/yr, 80K tons hulls/yr"
-oilseed_crush_facilities,oilseed_crush,ia.cargill_cedar_rapids_east,Cargill,Cedar Rapids East,,IA,41.970000,-91.647000,Operating,Soybean Crushing Plants and Oil Processors.xlsx,confirmed (spot-check ok),,,
-oilseed_crush_facilities,oilseed_crush,ia.cargill_cedar_rapids_west,Cargill,Cedar Rapids West,,IA,41.976000,-91.670000,Operating,Soybean Crushing Plants and Oil Processors.xlsx,confirmed (spot-check ok),,,
+oilseed_crush_facilities,oilseed_crush,ia.cargill_cedar_rapids_east,Cargill,Cedar Rapids East,,IA,41.97,-91.647,Operating,Soybean Crushing Plants and Oil Processors.xlsx,confirmed (spot-check ok),,,
+oilseed_crush_facilities,oilseed_crush,ia.cargill_cedar_rapids_west,Cargill,Cedar Rapids West,,IA,41.976,-91.67,Operating,Soybean Crushing Plants and Oil Processors.xlsx,confirmed (spot-check ok),,,
 oilseed_crush_facilities,oilseed_crush,ia.bunge_council_bluffs,Bunge,Council Bluffs,Pottawattamie,IA,41.166151,-95.798398,Operating,,confirmed (spot-check ok),,,
 oilseed_crush_facilities,oilseed_crush,ia.cf_processing_creston,CF Processing,Creston,,IA,41.058588,-94.361397,closed,Soybean Crushing Plants and Oil Processors.xlsx,confirmed (spot-check ok),,,Marked closed 2026-05-06 per Soybean Crushing Plants list (D:\Plant Lists). White River Nutrition operates a separate facility in Creston (ia.white_river_creston).
 oilseed_crush_facilities,oilseed_crush,ia.white_river_creston,White River Nutrition,Creston,Union,IA,41.058588,-94.361397,Operating,,confirmed (spot-check ok),,,
 oilseed_crush_facilities,oilseed_crush,ia.adm_des_moines,ADM,Des Moines,Polk,IA,41.586865,-93.624949,Operating,,confirmed (spot-check ok),,,
-oilseed_crush_facilities,oilseed_crush,ia.cargill_des_moines,Cargill,Des Moines,,IA,41.575840,-93.555836,Operating,Soybean Crushing Plants and Oil Processors.xlsx,confirmed (spot-check ok),,,
+oilseed_crush_facilities,oilseed_crush,ia.cargill_des_moines,Cargill,Des Moines,,IA,41.57584,-93.555836,Operating,Soybean Crushing Plants and Oil Processors.xlsx,confirmed (spot-check ok),,,
 oilseed_crush_facilities,oilseed_crush,ia.agp_eagle_grove,AGP,Eagle Grove,Wright,IA,42.664142,-93.904623,Operating,,confirmed (spot-check ok),,,
 oilseed_crush_facilities,oilseed_crush,ia.cargill_eddyville_v004r3,Cargill,Eddyville,Wapello,IA,41.139874,-92.647721,Operating,,confirmed (spot-check ok),,,
-oilseed_crush_facilities,oilseed_crush,ia.agp_emmetsburg,AGP,Emmetsburg,Palo Alto,IA,43.110808,-94.678190,Operating,,confirmed (spot-check ok),,,
+oilseed_crush_facilities,oilseed_crush,ia.agp_emmetsburg,AGP,Emmetsburg,Palo Alto,IA,43.110808,-94.67819,Operating,,confirmed (spot-check ok),,,
 oilseed_crush_facilities,oilseed_crush,ia.cargill_fort_dodge,Cargill,Fort Dodge,Webster,IA,42.504402,-94.191004,Operating,,spot-check: coords look like city centroid (verify actual plant),,,
-oilseed_crush_facilities,oilseed_crush,ia.cargill_iowa_falls,Cargill,Iowa Falls,Hardin,IA,42.520792,-93.264760,Operating,,confirmed (spot-check ok),,,Biodiesel: 90 MGY
+oilseed_crush_facilities,oilseed_crush,ia.cargill_iowa_falls,Cargill,Iowa Falls,Hardin,IA,42.520792,-93.26476,Operating,,confirmed (spot-check ok),,,Biodiesel: 90 MGY
 oilseed_crush_facilities,oilseed_crush,ia.agp_manning,AGP,Manning,Carroll,IA,41.909229,-95.065057,Operating,,spot-check: coords look like city centroid (verify actual plant),,,
 oilseed_crush_facilities,oilseed_crush,ia.agp_mason_city,AGP,Mason City,Cerro Gordo,IA,43.152457,-93.201794,Operating,,confirmed (spot-check ok),,,
 oilseed_crush_facilities,oilseed_crush,ia.west_central_cooperative_ralston,West Central Cooperative,Ralston,,IA,42.041647,-94.633103,Operating,Soybean Crushing Plants and Oil Processors.xlsx,questioned: operator not in major-operator list,,,
-oilseed_crush_facilities,oilseed_crush,ia.agp_sergeant_bluff,AGP,Sergeant Bluff,Woodbury,IA,42.403920,-96.358980,Operating,,spot-check: coords look like city centroid (verify actual plant),,,
+oilseed_crush_facilities,oilseed_crush,ia.agp_sergeant_bluff,AGP,Sergeant Bluff,Woodbury,IA,42.40392,-96.35898,Operating,,spot-check: coords look like city centroid (verify actual plant),,,
 oilseed_crush_facilities,oilseed_crush,ia.agp_sheldon,AGP,Sheldon,O'Brien,IA,43.180134,-95.852519,Operating,,confirmed (spot-check ok),,,
 oilseed_crush_facilities,oilseed_crush,ia.shell_rock_shell_rock,Shell Rock Soy Processing,Shell Rock,Butler,IA,42.711082,-92.582096,Operating,,confirmed (spot-check ok),,,900K tons meal/yr
-oilseed_crush_facilities,oilseed_crush,ia.cargill_sioux_city,Cargill,Sioux City,Woodbury,IA,42.527010,-96.364729,Operating,,confirmed (spot-check ok),,,
+oilseed_crush_facilities,oilseed_crush,ia.cargill_sioux_city,Cargill,Sioux City,Woodbury,IA,42.52701,-96.364729,Operating,,confirmed (spot-check ok),,,

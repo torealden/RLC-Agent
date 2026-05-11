@@ -1,0 +1,92 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "0000093410-25-000098-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "0000093410-25-000098-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "0000093410-25-000098.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "0000093410-25-000098-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "13572"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "cvx-20250925.htm",
+        "type": "text.gif",
+        "size": "48626"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "cvx-20250925.xsd",
+        "type": "text.gif",
+        "size": "1779"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "cvx-20250925_htm.xml",
+        "type": "text.gif",
+        "size": "3071"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "cvx-20250925_lab.xml",
+        "type": "text.gif",
+        "size": "21615"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "cvx-20250925_pre.xml",
+        "type": "text.gif",
+        "size": "12507"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1615"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "16857"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "38044"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2766"
+      },
+      {
+        "last-modified": "2025-09-25 08:00:43",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1084"
+      }
+    ],
+    "name": "/Archives/edgar/data/93410/000009341025000098",
+    "parent-dir": "/Archives/edgar/data/93410"
+  }
+}

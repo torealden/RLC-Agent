@@ -1,0 +1,302 @@
+{
+  "directory": {
+    "item": [
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "0000093410-24-000007-index-headers.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "0000093410-24-000007-index.html",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "0000093410-24-000007.txt",
+        "type": "text.gif",
+        "size": ""
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "0000093410-24-000007-xbrl.zip",
+        "type": "compressed.gif",
+        "size": "46759"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "cvx-20240130.htm",
+        "type": "text.gif",
+        "size": "56178"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "cvx-20240130.xsd",
+        "type": "text.gif",
+        "size": "1911"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "cvx-20240130_htm.xml",
+        "type": "text.gif",
+        "size": "2716"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "cvx-20240130_lab.xml",
+        "type": "text.gif",
+        "size": "24139"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "cvx-20240130_pre.xml",
+        "type": "text.gif",
+        "size": "12519"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex101psusharesettled.htm",
+        "type": "text.gif",
+        "size": "13649"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex101psusharesettled001.jpg",
+        "type": "image2.gif",
+        "size": "229624"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex101psusharesettled002.jpg",
+        "type": "image2.gif",
+        "size": "278711"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex101psusharesettled003.jpg",
+        "type": "image2.gif",
+        "size": "286876"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex102psucashsettled.htm",
+        "type": "text.gif",
+        "size": "13649"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex102psucashsettled001.jpg",
+        "type": "image2.gif",
+        "size": "224192"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex102psucashsettled002.jpg",
+        "type": "image2.gif",
+        "size": "279213"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex102psucashsettled003.jpg",
+        "type": "image2.gif",
+        "size": "286708"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex103stdrsusharesettled.htm",
+        "type": "text.gif",
+        "size": "13912"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex103stdrsusharesettled001.jpg",
+        "type": "image2.gif",
+        "size": "255873"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex103stdrsusharesettled002.jpg",
+        "type": "image2.gif",
+        "size": "287996"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex103stdrsusharesettled003.jpg",
+        "type": "image2.gif",
+        "size": "248651"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex104stdrsucashsettled.htm",
+        "type": "text.gif",
+        "size": "13727"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex104stdrsucashsettled001.jpg",
+        "type": "image2.gif",
+        "size": "256100"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex104stdrsucashsettled002.jpg",
+        "type": "image2.gif",
+        "size": "298022"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex104stdrsucashsettled003.jpg",
+        "type": "image2.gif",
+        "size": "229602"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex105specialrsusharesett.htm",
+        "type": "text.gif",
+        "size": "6946"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex105specialrsusharesett001.jpg",
+        "type": "image2.gif",
+        "size": "257802"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex105specialrsusharesett002.jpg",
+        "type": "image2.gif",
+        "size": "137191"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex106specialrsucashsettl.htm",
+        "type": "text.gif",
+        "size": "7136"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex106specialrsucashsettl001.jpg",
+        "type": "image2.gif",
+        "size": "262820"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex106specialrsucashsettl002.jpg",
+        "type": "image2.gif",
+        "size": "147281"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex107nqso.htm",
+        "type": "text.gif",
+        "size": "13242"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex107nqso001.jpg",
+        "type": "image2.gif",
+        "size": "241128"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex107nqso002.jpg",
+        "type": "image2.gif",
+        "size": "264086"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex107nqso003.jpg",
+        "type": "image2.gif",
+        "size": "254649"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex108nqsocashless.htm",
+        "type": "text.gif",
+        "size": "13223"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex108nqsocashless001.jpg",
+        "type": "image2.gif",
+        "size": "241243"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex108nqsocashless002.jpg",
+        "type": "image2.gif",
+        "size": "264088"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex108nqsocashless003.jpg",
+        "type": "image2.gif",
+        "size": "250776"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex109sars.htm",
+        "type": "text.gif",
+        "size": "13356"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex109sars001.jpg",
+        "type": "image2.gif",
+        "size": "252757"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex109sars002.jpg",
+        "type": "image2.gif",
+        "size": "282307"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "ex109sars003.jpg",
+        "type": "image2.gif",
+        "size": "234275"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "FilingSummary.xml",
+        "type": "text.gif",
+        "size": "1631"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "Financial_Report.xlsx",
+        "type": "text.gif",
+        "size": "5682"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "MetaLinks.json",
+        "type": "text.gif",
+        "size": "17034"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "R1.htm",
+        "type": "text.gif",
+        "size": "38094"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "report.css",
+        "type": "text.gif",
+        "size": "2767"
+      },
+      {
+        "last-modified": "2024-02-02 16:34:36",
+        "name": "Show.js",
+        "type": "text.gif",
+        "size": "1085"
+      }
+    ],
+    "name": "/Archives/edgar/data/93410/000009341024000007",
+    "parent-dir": "/Archives/edgar/data/93410"
+  }
+}
