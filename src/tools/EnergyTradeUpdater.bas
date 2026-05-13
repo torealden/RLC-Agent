@@ -1,3 +1,4 @@
+Attribute VB_Name = "EnergyTradeUpdater"
 ' =============================================================================
 ' EnergyTradeUpdater - Pure VBA with PostgreSQL Connection
 ' =============================================================================
