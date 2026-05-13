@@ -1,9 +1,9 @@
 """
 Update models/Biofuels/us_liquid_fuel_and_biofuel_production.xlsx from DB.
 
-Pulls monthly production AND stocks data and writes them into the workbook's
-two flat-file sheets ("Production" and "Stocks"). Both sheets share an
-identical layout:
+Pulls monthly production, stocks, AND domestic-use data and writes them into
+the workbook's three flat-file sheets ("Production", "Stocks", "Domestic Use").
+All three sheets share an identical layout:
 
   Row 3 headers:
     A=thousand gallons  B=Biodiesel  C=Renewable Diesel  D=Co-Processing
@@ -13,27 +13,31 @@ identical layout:
 
   Rows 4+ : column A = date (monthly), 1990-01 onward.
 
-Production source: gold.us_liquid_fuel_production_monthly (EMTS RIN-based).
-Stocks source:     gold.us_liquid_fuel_stocks_monthly (EIA monthly biofuels).
+Production source:    gold.us_liquid_fuel_production_monthly (EMTS RIN-based).
+Stocks source:        gold.us_liquid_fuel_stocks_monthly (EIA monthly biofuels).
+Domestic Use source:  gold.us_liquid_fuel_domestic_use_monthly (EIA apparent consumption).
 
 Columns currently driven (production):
   B Biodiesel, C Renewable Diesel, D Co-Processing, E SAF, F Ethanol,
   N Renewable Naphtha, O Renewable Propane
 
 Columns currently driven (stocks):
-  B Biodiesel (combined_bd_rd − renewable_diesel),
-  C Renewable Diesel, F Ethanol
+  B Biodiesel (combined_bd_rd − renewable_diesel), C Renewable Diesel, F Ethanol
+
+Columns currently driven (domestic use):
+  B Biodiesel (apparent: prod + imp − exp), C Renewable Diesel (apparent),
+  F Ethanol (blender_input)
 
 Left untouched (no public source or not separable):
   H Diesel, I Jet Fuel, J Gasoline           ← EIA petroleum, not yet wired
   L Glycerin, M FAME, P Soap Stock, Q Methyl Acetate  ← no source
-  D/E (stocks only), N/O (stocks only)       ← EIA does not split these
+  D/E/N/O on stocks + domestic use            ← EIA does not split these
 
 Usage:
-  python src/tools/update_us_liquid_fuel_production.py               # full refresh, both sheets
-  python src/tools/update_us_liquid_fuel_production.py --months 12   # last 12 months only
-  python src/tools/update_us_liquid_fuel_production.py --sheet stocks # only Stocks sheet
-  python src/tools/update_us_liquid_fuel_production.py --dry-run     # report only, no write
+  python src/tools/update_us_liquid_fuel_production.py                          # full refresh, all sheets
+  python src/tools/update_us_liquid_fuel_production.py --months 12              # last 12 months
+  python src/tools/update_us_liquid_fuel_production.py --sheet domestic_use     # only one sheet
+  python src/tools/update_us_liquid_fuel_production.py --dry-run                # report only
 """
 from __future__ import annotations
 
@@ -76,6 +80,12 @@ STOCKS_COLUMN_MAP = {
     "F": "ethanol_kgal",
 }
 
+DOMESTIC_USE_COLUMN_MAP = {
+    "B": "biodiesel_kgal",
+    "C": "renewable_diesel_kgal",
+    "F": "ethanol_kgal",
+}
+
 SHEET_SPECS = {
     "production": {
         "sheet_name": "Production",
@@ -86,6 +96,11 @@ SHEET_SPECS = {
         "sheet_name": "Stocks",
         "view":       "gold.us_liquid_fuel_stocks_monthly",
         "column_map": STOCKS_COLUMN_MAP,
+    },
+    "domestic_use": {
+        "sheet_name": "Domestic Use",
+        "view":       "gold.us_liquid_fuel_domestic_use_monthly",
+        "column_map": DOMESTIC_USE_COLUMN_MAP,
     },
 }
 
@@ -180,8 +195,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--months", type=int, default=None,
                     help="Only update the latest N months (default: all)")
-    ap.add_argument("--sheet", choices=["production", "stocks", "both"], default="both",
-                    help="Which sheet(s) to update (default: both)")
+    ap.add_argument("--sheet", choices=["production", "stocks", "domestic_use", "all"], default="all",
+                    help="Which sheet(s) to update (default: all)")
     ap.add_argument("--dry-run", action="store_true",
                     help="Report what would be written but don't save")
     args = ap.parse_args()
@@ -193,7 +208,7 @@ def main():
     print(f"Loading {XLSX}")
     wb = openpyxl.load_workbook(XLSX)
 
-    sheets_to_update = ["production", "stocks"] if args.sheet == "both" else [args.sheet]
+    sheets_to_update = ["production", "stocks", "domestic_use"] if args.sheet == "all" else [args.sheet]
     for key in sheets_to_update:
         update_sheet(wb, SHEET_SPECS[key], args.months)
 
