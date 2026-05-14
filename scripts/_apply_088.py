@@ -9,27 +9,21 @@ conn = psycopg2.connect(host=os.getenv('RLC_PG_HOST'), port=os.getenv('RLC_PG_PO
     dbname=os.getenv('RLC_PG_DB','rlc_commodities'), user=os.getenv('RLC_PG_USER'),
     password=os.getenv('RLC_PG_PASSWORD'), sslmode='require', connect_timeout=10)
 cur = conn.cursor(cursor_factory=RealDictCursor)
-with open('database/migrations/088_trade_export_mapped_biofuel_split.sql') as f:
-    sql = f.read()
-try:
-    cur.execute(sql)
-    conn.commit()
-    print('mig 088 re-applied OK', flush=True)
-except Exception as e:
-    print(f'FAIL: {type(e).__name__}: {e}', flush=True)
-    conn.rollback()
-    conn.close()
-    sys.exit(1)
 
-# Re-verify
-print('\n--- Jan 2026 sums vs WORLD TOTAL ---', flush=True)
-for commodity in ('BIODIESEL','RENEWABLE_DIESEL'):
-    cur.execute("""SELECT SUM(quantity) AS s FROM gold.trade_export_matrix
-WHERE commodity_group=%s AND flow='imports' AND year=2026 AND month=1 AND NOT is_regional_total""", (commodity,))
-    s = cur.fetchone()['s']
-    cur.execute("""SELECT quantity FROM gold.trade_export_matrix
-WHERE commodity_group=%s AND flow='imports' AND year=2026 AND month=1 AND country_name='WORLD TOTAL'""", (commodity,))
-    w = cur.fetchone()
-    w = w['quantity'] if w else None
-    print(f"  {commodity}: country_sum={s}  WORLD_TOTAL={w}", flush=True)
+# Look for ANY SAF/AJF/jet pathway nationwide (small list expected)
+print('--- ALL CARB pathways: SAF/AJF/Aviation/Jet ---', flush=True)
+cur.execute("""SELECT DISTINCT facility_name, facility_location, fuel_type, feedstock
+FROM bronze.carb_lcfs_pathways
+WHERE fuel_type ILIKE '%saf%' OR fuel_type ILIKE '%ajf%' OR fuel_type ILIKE '%aviation%' OR fuel_type ILIKE '%jet%'
+   OR fuel_type ILIKE '%hefa%'
+ORDER BY facility_name LIMIT 30""")
+for r in cur.fetchall(): print(f"  {r['facility_name']:50s} {r['facility_location']:25s} {r['fuel_type']:20s} feedstock={r['feedstock']}", flush=True)
+
+# Search applicant_description for TX SAF + Netherlands references
+print('\n--- CARB pathways mentioning Netherlands import or HEFA ---', flush=True)
+cur.execute("SELECT applicant_description FROM bronze.carb_lcfs_pathways WHERE applicant_description ILIKE '%netherlands%' OR applicant_description ILIKE '%hefa%' LIMIT 5")
+for r in cur.fetchall():
+    desc = (r['applicant_description'] or '')[:200]
+    print(f"  {desc}", flush=True)
+
 conn.close()

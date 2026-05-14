@@ -115,12 +115,14 @@ SHEET_SPECS = {
         "cadence":    "monthly",
     },
     "prices": {
-        "sheet_name": "Prices",
+        "sheet_name": "Prices - Daily",
         "view":       "gold.us_liquid_fuel_prices_daily",
         "column_map": PRICES_COLUMN_MAP,
         "cadence":    "daily",
     },
 }
+# Note: "Price - Monthly" sheet is maintained by Tore via Excel AVERAGEIFS over
+# the "Prices - Daily" sheet — no DB-side update needed.
 
 
 def get_conn():
