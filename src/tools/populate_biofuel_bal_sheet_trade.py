@@ -63,7 +63,14 @@ WORKBOOKS = {
 
 
 def fetch_trade(commodity: str) -> dict[tuple[int, int, str], float]:
-    """Return dict keyed by (year, month, flow) → mil_gal."""
+    """Return dict keyed by (year, month, flow) → mil_gal.
+
+    Combines two sources:
+    1. gold.biofuel_trade_split (HS 3826 with BD/RD split heuristic) — quantity_gal in gallons.
+    2. gold.trade_export_mapped for HS 2710.20.x (RD-classified petroleum/biodiesel blends) —
+       quantity_converted in '000 gallons'. Tagged commodity_group='RENEWABLE_DIESEL' so only
+       contributes when commodity=RENEWABLE_DIESEL.
+    """
     conn = psycopg2.connect(
         host=os.getenv("RLC_PG_HOST"), port=os.getenv("RLC_PG_PORT", "5432"),
         dbname=os.getenv("RLC_PG_DB", "rlc_commodities"),
@@ -73,13 +80,35 @@ def fetch_trade(commodity: str) -> dict[tuple[int, int, str], float]:
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
         """
-        SELECT year, month, flow, SUM(quantity_gal) / 1e6 AS mil_gal
-        FROM gold.biofuel_trade_split
-        WHERE commodity_split = %s
+        WITH hs_3826_split AS (
+            SELECT year, month, flow,
+                   SUM(quantity_gal) / 1e6 AS mil_gal
+            FROM gold.biofuel_trade_split
+            WHERE commodity_split = %(commodity)s
+            GROUP BY year, month, flow
+        ),
+        hs_271020 AS (
+            -- Only HS 2710.20.x RD-classified blends.
+            -- Excludes regional aggregates (is_regional_total) and the '-' world total.
+            SELECT year, month, LOWER(flow) AS flow,
+                   SUM(quantity_converted) / 1000.0 AS mil_gal
+            FROM gold.trade_export_mapped
+            WHERE hs_code LIKE '271020%%'
+              AND commodity_group = %(commodity)s
+              AND NOT is_regional_total
+              AND country_code <> '-'
+            GROUP BY year, month, flow
+        )
+        SELECT year, month, flow, SUM(mil_gal) AS mil_gal
+        FROM (
+            SELECT * FROM hs_3826_split
+            UNION ALL
+            SELECT * FROM hs_271020
+        ) combined
         GROUP BY year, month, flow
         ORDER BY year, month, flow
         """,
-        (commodity,),
+        {"commodity": commodity},
     )
     return {(r["year"], r["month"], r["flow"]): float(r["mil_gal"]) for r in cur.fetchall()}
 
