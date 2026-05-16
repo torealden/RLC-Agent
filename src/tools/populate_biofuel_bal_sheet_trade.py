@@ -45,72 +45,105 @@ from psycopg2.extras import RealDictCursor
 import openpyxl
 
 YEAR_HEADER_ROW = 3
-IMPORTS_JAN_ROW = 42  # Jan; Feb=43, ..., Dec=53
+PRODUCTION_JAN_ROW = 26  # Jan; Feb=27, ..., Dec=37
+IMPORTS_JAN_ROW = 42     # Jan; Feb=43, ..., Dec=53
 EXPORTS_JAN_ROW = 58
 
 WORKBOOKS = {
     "biodiesel": {
-        "path":       ROOT / "output" / "balance_sheet_templates" / "us_biodiesel_bal_sheets.xlsx",
-        "sheet":      "Biodiesel",
-        "commodity":  "BIODIESEL",
+        "path":         ROOT / "output" / "balance_sheet_templates" / "us_biodiesel_bal_sheets.xlsx",
+        "sheet":        "Biodiesel",
+        "commodity":    "BIODIESEL",
+        "trade_source": "biofuel_split",   # gold.biofuel_trade_split union gold.trade_export_mapped
     },
     "renewable_diesel": {
-        "path":       ROOT / "output" / "balance_sheet_templates" / "us_renewable_diesel_bal_sheets.xlsx",
-        "sheet":      "Renewable Diesel",
-        "commodity":  "RENEWABLE_DIESEL",
+        "path":         ROOT / "output" / "balance_sheet_templates" / "us_renewable_diesel_bal_sheets.xlsx",
+        "sheet":        "Renewable Diesel",
+        "commodity":    "RENEWABLE_DIESEL",
+        "trade_source": "biofuel_split",
+    },
+    "saf": {
+        "path":         ROOT / "output" / "balance_sheet_templates" / "us_saf_bal_sheets.xlsx",
+        "sheet":        "SAF",
+        "commodity":    "SAF",
+        "trade_source": "saf_candidates",   # gold.saf_trade_candidates (price-threshold view)
+        "populate_production": True,         # also fill Production block from EMTS
     },
 }
 
 
-def fetch_trade(commodity: str) -> dict[tuple[int, int, str], float]:
-    """Return dict keyed by (year, month, flow) → mil_gal.
-
-    Combines two sources:
-    1. gold.biofuel_trade_split (HS 3826 with BD/RD split heuristic) — quantity_gal in gallons.
-    2. gold.trade_export_mapped for HS 2710.20.x (RD-classified petroleum/biodiesel blends) —
-       quantity_converted in '000 gallons'. Tagged commodity_group='RENEWABLE_DIESEL' so only
-       contributes when commodity=RENEWABLE_DIESEL.
-    """
-    conn = psycopg2.connect(
+def _get_conn():
+    return psycopg2.connect(
         host=os.getenv("RLC_PG_HOST"), port=os.getenv("RLC_PG_PORT", "5432"),
         dbname=os.getenv("RLC_PG_DB", "rlc_commodities"),
         user=os.getenv("RLC_PG_USER"), password=os.getenv("RLC_PG_PASSWORD"),
         sslmode="require",
     )
+
+
+def fetch_trade_biofuel_split(commodity: str) -> dict[tuple[int, int, str], float]:
+    """BD/RD: combine HS 3826 split + HS 2710.20 direct."""
+    conn = _get_conn()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
         """
         WITH hs_3826_split AS (
-            SELECT year, month, flow,
-                   SUM(quantity_gal) / 1e6 AS mil_gal
+            SELECT year, month, flow, SUM(quantity_gal) / 1e6 AS mil_gal
             FROM gold.biofuel_trade_split
             WHERE commodity_split = %(commodity)s
             GROUP BY year, month, flow
         ),
         hs_271020 AS (
-            -- Only HS 2710.20.x RD-classified blends.
-            -- Excludes regional aggregates (is_regional_total) and the '-' world total.
             SELECT year, month, LOWER(flow) AS flow,
                    SUM(quantity_converted) / 1000.0 AS mil_gal
             FROM gold.trade_export_mapped
-            WHERE hs_code LIKE '271020%%'
-              AND commodity_group = %(commodity)s
-              AND NOT is_regional_total
-              AND country_code <> '-'
+            WHERE hs_code LIKE '271020%%' AND commodity_group = %(commodity)s
+              AND NOT is_regional_total AND country_code <> '-'
             GROUP BY year, month, flow
         )
-        SELECT year, month, flow, SUM(mil_gal) AS mil_gal
-        FROM (
-            SELECT * FROM hs_3826_split
-            UNION ALL
-            SELECT * FROM hs_271020
-        ) combined
-        GROUP BY year, month, flow
-        ORDER BY year, month, flow
+        SELECT year, month, flow, SUM(mil_gal) AS mil_gal FROM (
+            SELECT * FROM hs_3826_split UNION ALL SELECT * FROM hs_271020
+        ) c GROUP BY year, month, flow ORDER BY year, month, flow
         """,
         {"commodity": commodity},
     )
     return {(r["year"], r["month"], r["flow"]): float(r["mil_gal"]) for r in cur.fetchall()}
+
+
+def fetch_trade_saf() -> dict[tuple[int, int, str], float]:
+    """SAF: price-threshold candidates across HS 3826 + 2710.19.11 + 2710.20."""
+    conn = _get_conn()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute(
+        """
+        SELECT year, month, flow, SUM(quantity_gal) / 1e6 AS mil_gal
+        FROM gold.saf_trade_candidates
+        GROUP BY year, month, flow ORDER BY year, month, flow
+        """
+    )
+    return {(r["year"], r["month"], r["flow"]): float(r["mil_gal"]) for r in cur.fetchall()}
+
+
+def fetch_saf_production() -> dict[tuple[int, int], float]:
+    """SAF production from EMTS, in mil gal."""
+    conn = _get_conn()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute(
+        """
+        SELECT year, month, saf_kgal / 1000.0 AS mil_gal
+        FROM gold.us_liquid_fuel_production_monthly
+        WHERE saf_kgal IS NOT NULL
+        ORDER BY year, month
+        """
+    )
+    return {(r["year"], r["month"]): float(r["mil_gal"]) for r in cur.fetchall()}
+
+
+def fetch_trade(commodity: str, trade_source: str) -> dict[tuple[int, int, str], float]:
+    """Dispatch to the right fetcher per workbook."""
+    if trade_source == "saf_candidates":
+        return fetch_trade_saf()
+    return fetch_trade_biofuel_split(commodity)
 
 
 def build_year_col_map(ws) -> dict[int, int]:
@@ -178,6 +211,19 @@ def populate(spec: dict, trade: dict[tuple[int, int, str], float], dry_run: bool
     if skipped_years:
         print(f"  Skipped years not in header: {sorted(skipped_years)}")
 
+    # Optional: populate the Production block (currently SAF only)
+    if spec.get("populate_production"):
+        prod = fetch_saf_production()
+        prod_written = 0
+        for (yr, mo), mil_gal in prod.items():
+            if yr not in year_cols:
+                continue
+            col = year_cols[yr]
+            row = PRODUCTION_JAN_ROW + (mo - 1)
+            ws.cell(row, col).value = mil_gal
+            prod_written += 1
+        print(f"  Production cells written: {prod_written}")
+
     if dry_run:
         print("  [DRY RUN] not saving")
     else:
@@ -189,14 +235,14 @@ def populate(spec: dict, trade: dict[tuple[int, int, str], float], dry_run: bool
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--commodity", choices=list(WORKBOOKS.keys()) + ["both"], default="both")
+    ap.add_argument("--commodity", choices=list(WORKBOOKS.keys()) + ["all"], default="all")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    keys = list(WORKBOOKS.keys()) if args.commodity == "both" else [args.commodity]
+    keys = list(WORKBOOKS.keys()) if args.commodity == "all" else [args.commodity]
     for key in keys:
         spec = WORKBOOKS[key]
-        trade = fetch_trade(spec["commodity"])
+        trade = fetch_trade(spec["commodity"], spec.get("trade_source", "biofuel_split"))
         print(f"\nFetched {len(trade)} (year, month, flow) rows for {spec['commodity']}")
         populate(spec, trade, args.dry_run)
 
