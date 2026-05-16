@@ -77,12 +77,16 @@ PRODUCTION_COLUMN_MAP = {
 STOCKS_COLUMN_MAP = {
     "B": "biodiesel_kgal",
     "C": "renewable_diesel_kgal",
+    "D": "co_processing_kgal",      # =0 (refinery-integrated) per mig 091
+    "E": "saf_kgal",                 # heuristic = use × 1.0 month per mig 091
     "F": "ethanol_kgal",
 }
 
 DOMESTIC_USE_COLUMN_MAP = {
     "B": "biodiesel_kgal",
     "C": "renewable_diesel_kgal",
+    "D": "co_processing_kgal",      # =production (refinery-integrated) per mig 091
+    "E": "saf_kgal",                 # =prod + imp − exp per mig 091
     "F": "ethanol_kgal",
 }
 
