@@ -192,6 +192,36 @@ class AMSCashPriceCollector(BaseCollector):
         """Parse MARS API response into list of records."""
         return self._parse_mars_response(response_data, '', '')
 
+    def collect(
+        self,
+        start_date: date = None,
+        end_date: date = None,
+        use_cache: bool = False,
+        **kwargs,
+    ) -> CollectorResult:
+        # Override BaseCollector.collect() so the dispatcher path persists data.
+        # Without this, .collect() only calls fetch_data() and the bronze/silver
+        # tables never get updated — the May 4-18 2026 gap was caused by this.
+        summary = self.collect_and_save(start_date=start_date, end_date=end_date)
+        if not summary.get('success'):
+            return CollectorResult(
+                success=False,
+                source=self.config.source_name,
+                error_message=summary.get('error'),
+                records_fetched=summary.get('records_fetched', 0),
+            )
+        period = summary.get('period') or ''
+        period_end = period.split(' to ')[-1] if ' to ' in period else None
+        period_start = period.split(' to ')[0] if ' to ' in period else None
+        return CollectorResult(
+            success=True,
+            source=self.config.source_name,
+            records_fetched=summary.get('bronze_saved', 0),
+            period_start=period_start,
+            period_end=period_end,
+            warnings=summary.get('warnings') or [],
+        )
+
     def fetch_data(
         self,
         start_date: date = None,
