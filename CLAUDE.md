@@ -703,12 +703,23 @@ When a user asks about **corn positioning**:
 
 ## Current Knowledge Graph Stats
 
-- **224 nodes** (commodities, data series, models, seasonal events, policies, regions, market participants, companies, strategies)
-- **143 edges** (causal links, competition, seasonal patterns, predictions, policy dependencies)
-- **121 contexts** (expert rules, risk thresholds, seasonal norms, computed percentiles, pace tracking, margin frameworks)
-- **82 sources** (HB Weekly Text reports, Fastmarkets quarterlies, consulting engagements, HOBO feasibility study)
-- **9 extraction batches** covering the complete annual analytical cycle + biofuel demand infrastructure + HOBO RD/SAF feasibility study
+*Live counts as of 2026-05-19. Re-verify via `scripts/_check_kg_counts.py` before quoting in client-facing material.*
+
+- **436 nodes** (commodities, data series, models, seasonal events, policies, regions, market participants, companies, strategies)
+- **395 edges** (causal links, competition, seasonal patterns, predictions, policy dependencies)
+- **336 contexts** (expert rules, risk thresholds, seasonal norms, computed percentiles, pace tracking, margin frameworks)
+- **181 sources** (HB Weekly Text reports, Fastmarkets quarterlies, consulting engagements, HOBO feasibility study, and additional batches since Feb 2026)
 - **15 computed contexts**: 9 seasonal norms (CFTC monthly percentiles × 6 + crop condition weekly × 3) + 6 pace tracking (soy crush vs USDA × 4 MYs + corn grind YoY × 2 MYs)
+
+## Current Database Stats
+
+*Live counts as of 2026-05-19.*
+
+- **89 bronze tables** (raw ingested data)
+- **93 silver tables** (cleaned + standardized)
+- **180 gold views** (analytics-ready)
+- **41 distinct collectors** seen in `core.collection_status`
+- The hand-curated bronze/silver/gold tables documented in detail elsewhere in this file (31/26/53) are the **commodities-focused subset**; the live database has ~3× as many tables now spanning facilities, permits, trade, fuel, refining, and adjacent industries.
 
 ### Computed Context Types
 
