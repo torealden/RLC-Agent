@@ -693,13 +693,17 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['soybeans', 'corn', 'wheat', 'rice', 'palm_oil', 'sugar'],
     ),
 
-    # === EPA ECHO Facility Intelligence (monthly) ===
+    # === EPA ECHO Facility Intelligence (daily) ===
+    # Switched from monthly to daily 2026-05-19 — three of four collectors
+    # failed on May 1 with a transient "No facilities found" ECHO API blip
+    # and would have waited until June 1 to retry under monthly cadence.
+    # Each collector enriches ~200-1,700 facilities @ ~0.5s each, so they
+    # run in pre-dawn windows staggered 4:00-5:30am ET to avoid overlap.
     'epa_echo_oilseed': CollectorSchedule(
         collector_name='epa_echo_oilseed',
         collector_class='EPAEchoOilseedCollector',
         release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.MONTHLY,
-            day_of_month=1,
+            frequency=ReleaseFrequency.DAILY,
             release_time=time(4, 0),
             description="EPA ECHO soybean/oilseed processing facility data"
         ),
@@ -711,8 +715,7 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_name='epa_echo_ethanol',
         collector_class='EPAEchoEthanolCollector',
         release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.MONTHLY,
-            day_of_month=1,
+            frequency=ReleaseFrequency.DAILY,
             release_time=time(4, 30),
             description="EPA ECHO ethanol production facility data"
         ),
@@ -724,8 +727,7 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_name='epa_echo_biodiesel',
         collector_class='EPAEchoBiodieselCollector',
         release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.MONTHLY,
-            day_of_month=1,
+            frequency=ReleaseFrequency.DAILY,
             release_time=time(5, 0),
             description="EPA ECHO biodiesel/renewable diesel facility data"
         ),
@@ -737,8 +739,7 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_name='epa_echo_milling',
         collector_class='EPAEchoMillingCollector',
         release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.MONTHLY,
-            day_of_month=1,
+            frequency=ReleaseFrequency.DAILY,
             release_time=time(5, 30),
             description="EPA ECHO wheat/flour milling facility data"
         ),
