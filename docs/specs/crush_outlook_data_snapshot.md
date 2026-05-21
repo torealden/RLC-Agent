@@ -1,6 +1,6 @@
 # US Soybean Crush — Outlook Data Snapshot
 
-*Generated 2026-05-21 17:30 UTC for June 4 conference prep.*
+*Generated 2026-05-21 17:55 UTC for June 4 conference prep.*
 
 ---
 
