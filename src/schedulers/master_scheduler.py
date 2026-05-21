@@ -311,7 +311,12 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.WEEKLY,
             day_of_week=DayOfWeek.FRIDAY,
-            release_time=time(15, 30),  # 3:30 PM ET
+            # CFTC publishes at 3:30 PM ET on Fridays. Previously this fired
+            # at 15:30 ET (exactly the publish moment) and lost the race
+            # about half the time — the missing 2026-05-12 release was the
+            # most recent example. Pushed to 4:30 PM ET = one full hour
+            # after publish to remove the race. Patched 2026-05-21.
+            release_time=time(16, 30),  # 4:30 PM ET
             description="CFTC Commitments of Traders (data as of Tuesday)"
         ),
         priority=1,
