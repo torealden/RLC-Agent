@@ -264,8 +264,8 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
     # WEEKLY RELEASES - THURSDAY
     # -------------------------------------------------------------------------
     'usda_fas_export_sales': CollectorSchedule(
-        collector_name='usda_fas',
-        collector_class='USDATFASCollector',
+        collector_name='usda_fas_export_sales',
+        collector_class='USDAFASESRv2Collector',
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.WEEKLY,
             day_of_week=DayOfWeek.THURSDAY,

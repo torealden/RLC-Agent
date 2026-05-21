@@ -48,8 +48,8 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'class': 'CFTCCOTCollector',
     },
     'usda_fas_export_sales': {
-        'module': 'src.agents.collectors.us.usda_fas_collector',
-        'class': 'USDATFASCollector',
+        'module': 'src.agents.collectors.us.usda_fas_esr_v2_collector',
+        'class': 'USDAFASESRv2Collector',
     },
     'usda_wasde': {
         'module': 'src.agents.collectors.us.usda_wasde_collector',
