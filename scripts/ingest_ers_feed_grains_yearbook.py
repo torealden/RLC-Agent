@@ -205,6 +205,69 @@ def style_header(ws, cols: int, row: int = 1):
         c.alignment = Alignment(horizontal="center")
 
 
+def write_quarterly_tab(wb, sheet_name: str, data: dict[str, dict[int, float]], unit_label: str):
+    """Quarterly linear interp of annual animal-unit data.
+
+    data: {category: {year: value}}.
+    Quarter midpoint offsets: 0.125 / 0.375 / 0.625 / 0.875 from Jan 1
+    (per reference_xlsx_flat_file_conventions.md).
+    Final-year quarters extrapolate using prior-year growth rate.
+    """
+    ws = wb.create_sheet(sheet_name)
+    categories = ["Dairy", "Cattle on feed", "Cattle, other", "Hogs",
+                  "Poultry", "Livestock, other", "All animals"]
+    years = sorted({y for c in categories for y in data.get(c, {})})  # ascending
+    Q_OFFSETS = [("Q1", 0.125), ("Q2", 0.375), ("Q3", 0.625), ("Q4", 0.875)]
+
+    # Headers
+    ws.cell(row=1, column=1, value="Year")
+    ws.cell(row=1, column=2, value="Quarter")
+    for col_idx, cat in enumerate(categories, start=3):
+        ws.cell(row=1, column=col_idx, value=cat)
+    style_header(ws, len(categories) + 2)
+
+    out_row = 2
+    for i, y in enumerate(years):
+        for qlabel, off in Q_OFFSETS:
+            ws.cell(row=out_row, column=1, value=int(y))
+            ws.cell(row=out_row, column=2, value=qlabel)
+            for col_idx, cat in enumerate(categories, start=3):
+                v_now = data.get(cat, {}).get(y)
+                if v_now is None:
+                    ws.cell(row=out_row, column=col_idx, value=None)
+                    continue
+                if i + 1 < len(years):
+                    v_next = data.get(cat, {}).get(years[i + 1])
+                    if v_next is not None:
+                        val = v_now + off * (v_next - v_now)
+                    else:
+                        val = v_now
+                else:
+                    # final year — extrapolate using prior-year growth
+                    if i >= 1:
+                        v_prev = data.get(cat, {}).get(years[i - 1])
+                        if v_prev and v_prev > 0:
+                            g = (v_now - v_prev) / v_prev
+                            val = v_now * (1 + g * off)
+                        else:
+                            val = v_now
+                    else:
+                        val = v_now
+                cell = ws.cell(row=out_row, column=col_idx, value=val)
+                cell.number_format = "#,##0.000"
+            out_row += 1
+
+    ws.column_dimensions["A"].width = 8
+    ws.column_dimensions["B"].width = 9
+    for col_idx in range(3, len(categories) + 3):
+        ws.column_dimensions[openpyxl.utils.get_column_letter(col_idx)].width = 18
+
+    ws.insert_rows(1)
+    ws.cell(row=1, column=1, value=f"{sheet_name} — US, quarterly linear interpolation ({unit_label})")
+    ws.cell(row=1, column=1).font = Font(bold=True, size=12)
+    ws.merge_cells(start_row=1, end_row=1, start_column=1, end_column=len(categories) + 2)
+
+
 def write_summary_tab(wb, sheet_name: str, data: dict[str, dict[int, float]], unit_label: str):
     """data: {category: {year: value}}. Categories become columns.
 
@@ -334,8 +397,12 @@ def build_xlsx():
 
     write_summary_tab(wb, "GCAU", t30.get("Grain-consuming animal units (GCAU)", {}),
                       "Million animal units")
+    write_quarterly_tab(wb, "GCAU_Quarterly", t30.get("Grain-consuming animal units (GCAU)", {}),
+                       "Million animal units")
     write_summary_tab(wb, "PCAU", t30.get("High protein animal units (HPAU)", {}),
                       "Million animal units")
+    write_quarterly_tab(wb, "PCAU_Quarterly", t30.get("High protein animal units (HPAU)", {}),
+                       "Million animal units")
     write_summary_tab(wb, "RCAU", t30.get("Roughage-consuming animal units (RCAU)", {}),
                       "Million animal units")
     write_summary_tab(wb, "GRCAU", t30.get("Grain and roughage-consuming animal units (GRCAU)", {}),
