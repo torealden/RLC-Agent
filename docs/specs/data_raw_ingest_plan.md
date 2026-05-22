@@ -1,150 +1,143 @@
-# data/raw — ingest plan
+# data/raw — ingest plan (v2)
 
-*Generated 2026-05-22. Companion to `data_raw_ingest_inventory.md` (file-level listing).*
+*Last updated 2026-05-22 09:50 UTC. Companion to `data_raw_ingest_inventory.md`.*
 
-**Scope:** 685 files / 1,400 MB across 37 entities. Plan groups them into priority tiers and identifies what becomes new bronze tables, what extends existing tables, and what's analytical-snapshot-only (no ingest needed).
+**Scope:** 685+ files (Tore is still adding). 34 FAO domain ZIPs now on disk.
 
----
-
-## Tier 1 — Net-new tables, high analytical value (~6 entities)
-
-These unlock genuinely new analyses we don't have today.
-
-### 1.1 FAO Population (OA)
-- **File:** `oilseeds_fats_greases/Population_E_All_Data.zip` (1.4 MB)
-- **Bronze target:** `bronze.fao_population` (country × year × element × value)
-- **Effort:** 1 hour. Single CSV, ~245 countries × 75 years × 5 elements ≈ 90k rows.
-- **Unlocks:** Per-capita normalizers for any country, total/rural/urban splits.
-
-### 1.2 FAO Production Crops + Livestock (QCL)
-- **File:** `oilseeds_fats_greases/Production_Crops_Livestock_E_All_Data.zip` (24 MB)
-- **Bronze target:** `bronze.fao_qcl` (area × item × element × year × value)
-- **Effort:** 2 hours. ~245 countries × 313 items × 20 elements × 60 years ≈ 9M rows, but heavily sparse — likely 2-3M actual rows.
-- **Unlocks:** Livestock counts for **gCAU/pCAU multiplier inputs** (the Table 30 / "High protein" framework you noted). Filter to species items (Cattle 866, Pigs, Chickens 1057, etc.) × Element 5111/5112/5114 (Stocks) = inputs to country-level animal-unit aggregation.
-
-### 1.3 FAO Food Balance Sheets (FBS)
-- **File:** Not on disk yet — quarterly-pull reminder set for Jun 15.
-- **Bronze target:** `bronze.fao_fbs`
-- **Effort:** 2 hours after download.
-- **Unlocks:** Per-country S&D equation (production + imports − exports = feed / food / seed / waste / processing). The canonical FAO "domestic disappearance" framework.
-
-### 1.4 FAO Commodity Balances Non-Food (CB)
-- **File:** `oilseeds_fats_greases/CommodityBalances_(non-food)_(2010-)_E_All_Data.zip` (339 KB)
-- **Bronze target:** `bronze.fao_commodity_balances_nonfood`
-- **Effort:** 30 min. Tiny file.
-- **Unlocks:** Industrial use of crops where it's broken out separately from FBS.
-
-### 1.5 USDA ERS Feed Grains Yearbook
-- **File:** `Feed Grains Yearbook Tables - Jul 24.xlsx` + Outlook xlsx monthly files
-- **Bronze target:** `bronze.ers_feed_grains_yearbook` (table 1-35 normalized)
-- **Effort:** 4 hours. Multi-sheet xlsx, each table has its own shape. Worth doing carefully because Table 30 (gCAU/pCAU) is load-bearing.
-- **Unlocks:** US-side gCAU/pCAU authoritative, cross-check vs FAO-derived for everyone else.
-
-### 1.6 USDA ERS Oil Crops Yearbook (24-year history)
-- **Files:** `oilseeds_fats_greases/Oil Crops Yearbooks/YearbookAllTables_{2002..2025}.zip` (24 zips)
-- **Bronze target:** `bronze.ers_oil_crops_yearbook`
-- **Effort:** 4 hours. Need to handle schema drift across 24 years of yearbook formats.
-- **Unlocks:** 24 years of authoritative US oilseed S&D + crush from ERS, complementing the FAS PSD path. Pre-1999 oil crops S&D not currently in our system.
+This document priorities the entities for ingest. Tore's stated preference: ingest everything, use everything if it helps. This plan defers nothing permanently; "skip" tiers are "later, not never."
 
 ---
 
-## Tier 2 — Extend existing tables, fills historical gaps (~5 entities)
+## A. FAO domains on disk — 34 zips
 
-### 2.1 FGIS Inspections — pre-2014 backfill
-- **Files:** `cross_commodity/CY1990.csv` through `CY2025.csv` (39 files, 294 MB)
-- **Bronze target:** Extends existing `bronze.fgis_inspections` (currently 534K rows back to 1990 per CLAUDE.md — verify if pre-2014 is in there or if these CY files extend it)
-- **Effort:** 1-2 hours validate + bulk-load anything missing.
+### A.1 P0 Core — directly feeds the analytical sheets
 
-### 2.2 ERS Wheat / Feed Grains numbered table CSVs
-- **Files:** `food_grains/01_Wheat_*.csv` through `25_*.csv`, `feed_grains/*.csv`
-- **Bronze target:** Same as 1.5/1.6 (the numbered breakouts ARE the yearbook tables exported individually). Likely redundant with the master xlsx ingest.
-- **Effort:** Use these only if the master xlsx ingest hits format issues; cleaner data shape.
+| Domain | File | Size | Use |
+|---|---|---|---|
+| Population (OA) | `Population_E_All_Data.zip` | 1.4 MB | Per-capita normalizers |
+| Production Crops + Livestock (QCL) | `Production_Crops_Livestock_E_All_Data.zip` | 24 MB | **gCAU/pCAU livestock counts**; non-US production cross-check |
+| Food Balance Sheets (FBS) | `FoodBalanceSheets_E_All_Data.zip` | ? | Country S&D — production / imports / exports / feed / food / waste |
+| Commodity Balances non-food (CB 2010+) | `CommodityBalances_(non-food)_(2010-)_E_All_Data.zip` | 0.3 MB | Industrial use breakouts |
+| Commodity Balances non-food OLD method (pre-2013) | `CommodityBalances_(non-food)_(-2013_old_methodology)_E_All_Data_(Normalized).zip` | ? | History extension for CB |
 
-### 2.3 NASS Cattle on Feed Database (COFD)
-- **Files:** `livestock/cofd_*.csv`, `cofd1225.pdf` (cattle on feed monthly + historical tables)
-- **Bronze target:** `bronze.nass_cattle_on_feed` (NEW table)
-- **Effort:** 2 hours. Feeds into gCAU calculation directly (cattle on feed is the largest single category).
-- **Unlocks:** US cattle-on-feed history, which currently isn't in any bronze table.
+### A.2 P1 Strategic — high analytical value, ingest after P0
 
-### 2.4 Canada AAFC Crop Production
-- **Files:** `Canada - Crop Production - Aug 25.xlsx`
-- **Bronze target:** Extends `bronze.canada_statscan` or new `bronze.canada_aafc`
-- **Effort:** 1 hour.
+These are not "ag econ" per traditional definition but are load-bearing for any serious global model.
 
-### 2.5 CONAB monthly safra xlsx archive
-- **Files:** `CONAB - {Crop} - {Month YY}.xlsx` (already have 10+ months)
-- **Bronze target:** Extends existing `bronze.conab_production`
-- **Effort:** 2 hours. Tricky because CONAB xlsx schema varies by report and our existing collector hit 404 on automated path; bulk-load these manual pulls.
-
----
-
-## Tier 3 — Reference snapshots, parse-only (no recurring ingest)
-
-These are point-in-time analyst inputs, not series we need refreshed.
-
-| Entity | Files | Action |
+| Domain | File | Why it matters |
 |---|---|---|
-| EIA BBD Capacity / Feedstock Use (snapshots) | `BBD Feedstock Use - EIA - Aug 25.xlsx`, `BBD US Capacity - EIA - Aug 25.xlsx`, `Biodiesel Capacity - EIA - Aug 25.xlsx`, `Capacity - EIA - Aug 25.xlsx` | Parse to `reference.eia_bbd_capacity_snapshots`, dated rows |
-| WASDE PDFs (37 files, 33 MB) | Monthly WASDE PDF archive 2024-2026 | Index for LLM retrieval; don't re-parse (WASDE collector handles current) |
-| Crop Production / Acreage / Crop Progress PDFs | 30+ monthly NASS PDFs | Same — index for retrieval, NASS collector handles current data |
-| Bloomberg pre-report surveys | `Bloomberg* Acreage`, `Bloomber Survey` | Note as analyst-curated input, no recurring ingest |
-| Attache reports | `Attache Reports/` (subfolder) | Tier-2 candidate for KG extraction; not bronze-table-shaped |
-| MMN reports, MN/MO permits, Drought monitor PDFs | Various | Index only |
-| 2012-13 / 2020-21 corn summary markdown | Historical analyst writeups | Already in repo, don't re-ingest |
+| Exchange Rate | `Exchange_rate_E_All_Data.zip` | FX-adjusted trade competitiveness; price normalization to USD |
+| Producer Prices | `Prices_E_All_Data.zip` + `PricesArchive_*.zip` | Origin-country producer prices — input to bilateral arbitrage |
+| Consumer Price Indices | `ConsumerPriceIndices_E_All_Data.zip` | Real vs nominal price comparisons, inflation context |
+| Deflators | `Deflators_E_All_Data.zip` | Same — inflation deflators by country |
+| Macro Statistics Key Indicators | `Macro-Statistics_Key_Indicators_E_All_Data.zip` | GDP, GDP per capita — demand pressure |
+| Value of Production | `Value_of_Production_E_All_Data.zip` | Country agricultural value of production by commodity |
+
+### A.3 P2 Useful — analytical layer two
+
+| Domain | File | Use |
+|---|---|---|
+| Fertilizers Nutrient | `Inputs_FertilizersNutrient_E_All_Data.zip` | Fertilizer use → yield correlation |
+| Fertilizers Product | `Inputs_FertilizersProduct_E_All_Data.zip` | Same, by product |
+| Fertilizers Archive | `Inputs_FertilizersArchive_E_All_Data.zip` | History extension |
+| Land Use | `Inputs_LandUse_E_All_Data.zip` | Arable land changes, agricultural land area |
+| Fertilizers Trade Matrix | `Fertilizers_DetailedTradeMatrix_E_All_Data.zip` | Fertilizer bilateral trade — input cost driver |
+| Trade Crops + Livestock (TCL) | `Trade_CropsLivestock_E_All_Data.zip` | Backup/cross-check vs country-Census trade |
+| Trade Detailed Matrix (TM) | `Trade_DetailedTradeMatrix_E_All_Data.zip` | Same — bilateral cross-check |
+
+### A.4 P3 Skip unless asked
+
+Per Tore's honest assessment: not directly needed for ag market modeling. Stored on disk; ingest deferred until a specific use case surfaces.
+
+| Domain | File | Why skip for now |
+|---|---|---|
+| Capital Stock | `Investment_CapitalStock_E_All_Data.zip` | Tore: "probably don't need" — confirmed |
+| Pesticides Trade | `Inputs_Pesticides_Trade_E_All_Data.zip` | Tore: "probably don't need" — confirmed |
+| Pesticides Use | `Inputs_Pesticides_Use_E_All_Data.zip` | Same |
+| Livestock Manure | `Environment_LivestockManure_E_All_Data.zip` | Tore: "probably don't need" — environmental angle only |
+| Machinery (current + archive) | `Investment_Machinery*.zip` | Capital-flow signal, lower analytical value |
+| Credit Agriculture | `Investment_CreditAgriculture_E_All_Data.zip` | Planting-decision input, indirect |
+| Foreign Direct Investment | `Investment_ForeignDirectInvestment_E_All_Data.zip` | Capital-flow only |
+| Government Expenditure | `Investment_GovernmentExpenditure_E_All_Data.zip` | Indirect demand signal |
+| Land Cover (Environment) | `Environment_LandCover_E_All_Data.zip` | Satellite-derived, lower-frequency |
+| Development Assistance | `Development_Assistance_to_Agriculture_E_All_Data.zip` | Aid flows, not market signals |
+| Value shares industry primary factors | `Value_shares_industry_primary_factors_E_All_Data.zip` | Labor/capital shares (input-output) |
+| SDG Bulk Downloads | `SDG_BulkDownloads_E_All_Data.zip` | Sustainability indicators, mostly political |
+| World Census of Agriculture | `World_Census_Agriculture_E_All_Data.zip` | Decennial structural — not a market series |
 
 ---
 
-## Tier 4 — Big-file ingests deferred
+## B. The "what is this for" framework
 
-### 4.1 FAO Trade Detailed Matrix (TM) — 409 MB
-- **Per your note (2026-05-22): FAO TM is the cross-check, not the canonical bilateral trade source.** Primary will be each country's own Census-equivalent (Census US, StatCan, ComexStat, INDEC, IBGE — collectors exist for several).
-- **Bronze target if/when ingested:** `bronze.fao_trade_matrix`
-- **Recommendation:** **Defer.** Ingest when we want explicit reconciliation of "what Brazil says they exported to China" vs "what FAO TM reports for that flow." Until then, the file just sits on disk.
+When the deep-dive conversation happens (deferred per Tore's morning preference), this is the lens I'd use to assess any non-traditional series:
 
-### 4.2 FAO Trade Crops + Livestock (TCL) — 89 MB
-- Same logic as TM — backup/cross-check rather than canonical.
-- **Defer** to the same future reconciliation pass.
+**Layer 0 — Traditional ag econ** (already covered):
+Production / acreage / yield / S&D / crush margins / futures + cash prices / export pace.
 
-### 4.3 MN State Air Permits bulk (94 MB across Title V archive)
-- Already in flight via Ollama PDF extraction pipeline (per `project_state_air_permits_llm.md`)
-- The `my_neighborhood_sites.csv` (75.5 MB) is the MN MPCA bulk export — should ingest as `bronze.mn_facility_sites` so the air-permit extraction can join against it.
+**Layer 1 — Adjacent and obvious value**:
+- **Exchange rates** — every bilateral trade decision goes through FX. Brazil exports more soy when BRL weakens vs USD.
+- **Producer prices in origin countries** — input to "what's competitive vs USA" math.
+- **Macro indicators (GDP)** — demand pressure proxy for soybean meal in China, rice in Indonesia, etc.
+- **Consumer price indices** — for real-price work and income elasticity.
 
----
+**Layer 2 — Worth tracking if you have the bandwidth**:
+- **Fertilizer use → yield correlation** — yield models need this input.
+- **Land use change** — acreage frontier expansion (Brazil cerrado, Argentina Chaco).
+- **Credit availability** — planting decision input where credit is tight.
+- **Investment flows** — capacity build forward signal for crush, ethanol, BBD.
 
-## Effort summary
+**Layer 3 — Probably skip unless a specific question surfaces**:
+- Pesticides, capital stock, manure, FDI, government expenditure, SDG indicators, World Census of Ag.
 
-| Tier | Entities | Net new bronze tables | Estimated effort | Unlocks |
-|------|---------:|----------------------:|-----------------:|---------|
-| Tier 1 | 6 | 6 new tables | ~14 hours | gCAU/pCAU, per-country S&D, 24yr oil crops |
-| Tier 2 | 5 | 1 new (COFD) + 4 extends | ~8 hours | Pre-2014 trade, cattle on feed, Canada |
-| Tier 3 | ~10 | 1 reference table | ~2 hours | EIA BBD capacity snapshots |
-| Tier 4 | 2 (deferred) + 1 (in-flight) | 1 in-flight | ~6 hours when triggered | Trade cross-validation |
-| **Total active** | **21 entities** | **8 new tables** | **~24 hours** | |
+The pattern: each layer further from the price signal is more interesting *analytically* but less reliable as a *forecast input*. Layer 1 and 2 should be in our system. Layer 3 is "have it on disk in case."
 
 ---
 
-## Recommended execution order (post-Helios meeting)
+## C. Other on-disk entities (unchanged from v1)
 
-1. **FAO Population (OA)** — 1 hr, trivial, unblocks per-capita math
-2. **FAO QCL livestock filter** — focus the QCL ingest on livestock stocks first (the gCAU/pCAU inputs), defer full crop production rows to a second pass
-3. **USDA ERS Feed Grains Yearbook Table 30 (gCAU/pCAU)** — 2 hr; this + (1) + (2) = the aggregation-sheet substrate Tore described
-4. **ERS Oil Crops Yearbook 24-year backfill** — 4 hr; biggest single historical unlock
-5. **NASS Cattle on Feed (COFD)** — 2 hr; feeds gCAU directly
-6. **FAO Food Balance Sheets** — wait for Jun 15 quarterly pull, then ingest
-7. **Canada AAFC + CONAB xlsx bulk-load** — fold into existing tables
-8. **EIA BBD capacity snapshots** — reference table for the BBD models
-
-The first three (FAO Population + QCL + ERS Feed Grains Yearbook) together = ~7 hours of work that lights up the aggregation sheets you described as the next analytical artifact.
+[See v1 sections — Tier 1 ERS Feed Grains Yearbook, Tier 1 ERS Oil Crops 24yr, Tier 2 NASS Cattle on Feed, Tier 2 FGIS pre-2014, Tier 3 reference snapshots, etc. — all unchanged.]
 
 ---
 
-## Conventions to lock in before starting
+## D. Newly-confirmed CONAB downloads (2026-05-22)
 
-- **All FAO bronze tables**: long format (area_code, area, item_code, item, element_code, element, year, value, unit, flag, year_code).
-- **All bronze.fao_* tables** include `source_zip` text column = the filename of the ZIP it came from, so we can detect when a fresher snapshot supersedes.
-- **Refresh strategy**: when a new ZIP is dropped in data/raw/, the ingest script truncates and reloads (FAO ZIPs are always full-history dumps, no incremental). Old `source_zip` value tells us last refresh date.
-- **Brazil rows**: ingested as-is (no MY adjustment). Per `reference_brazil_my_alignment.md`, analytical layer handles US-vs-Brazil calendar alignment.
+Tore was copy-pasting from CONAB's portal. Direct downloads exist at `https://portaldeinformacoes.conab.gov.br/downloads/arquivos/`:
+
+| File | Size | Schema |
+|---|---:|---|
+| `Frete.txt` | 2.4 MB | Inland freight rates: origin/destination/year/month/distance_km/R$ per ton + R$ per ton-km |
+| `PrecoMinimo.txt` | 51 KB | Minimum prices by product/state/region/start-date |
+| `CustoProducao.txt` | 44 KB | Production cost by enterprise/product/state/municipality/year-month |
+| `OfertaDemanda.txt` | 3.5 KB | Supply/demand by product/safra (S&D table) |
+| `Estoques.txt` | ~1 KB gz | Stocks |
+
+**Action:** rebuild the existing CONAB collector to hit these endpoints directly. Eliminates Tore's manual copy-paste workflow for all 5 series.
 
 ---
 
-*Inventory regenerable via `python scripts/_inventory_data_raw.py`. Re-run after each new download batch to track coverage.*
+## E. MPOB ingest path (2026-05-22 confirmed)
+
+Tore worried MPOB pastes data as images. **Confirmed not the case for the April 2026 docx files** — both `mpob_april.docx` (45×5 detail table) and `mpob_summary_april.docx` (24×14 annual trend) contain proper Word tables. Production, stocks, exports, by region (P. Malaysia / Sabah / Sarawak), are extractable directly via `python-docx`.
+
+**Action:** write a simple MPOB docx ingest that reads `mpob_*.docx` files in `data/raw/oilseeds_fats_greases/`, parses both tables, writes to `bronze.mpob_monthly`. Estimated 30 minutes.
+
+---
+
+## F. Recommended next ingest sequence (post-Helios)
+
+1. **FAO Population (OA)** — 1 hr — per-capita normalizers
+2. **FAO QCL livestock filter** — 2 hr — gCAU/pCAU inputs
+3. **USDA ERS Feed Grains Yearbook (Table 30)** — 2 hr — US-side gCAU/pCAU authoritative
+4. **CONAB direct-download rebuild** — 2 hr — kill the copy-paste workflow
+5. **MPOB docx ingest** — 30 min — kill another copy-paste workflow
+6. **FAO Exchange Rate + Macro Stats** — 2 hr — unlocks FX-adjusted trade analytics
+7. **FAO Food Balance Sheets** — 2 hr — country S&D framework
+8. **USDA ERS Oil Crops Yearbook 24yr backfill** — 4 hr
+
+The first 5 (= ~7.5 hours of focused work) eliminate two manual workflows AND deliver the gCAU/pCAU substrate. That's the highest leverage hour-for-hour.
+
+---
+
+## Open architectural question (deferred)
+
+Tore noted: outside the traditional balance-sheet model, he doesn't yet have a sense of how to structure new schema. Worth a dedicated design session once the P0 + P1 FAO ingests are done, because the database shape will inform what's possible analytically. **Not this morning.**
