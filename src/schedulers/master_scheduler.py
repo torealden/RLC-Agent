@@ -470,6 +470,21 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['soybeans', 'corn', 'cotton', 'wheat', 'rice', 'sugar'],
     ),
 
+    # ── CONAB Direct-Download (6 endpoints — freight, prices, costs, S&D, stocks, warehouses) ──
+    # Runs day after main CONAB to pick up any portal refresh tied to the safra report.
+    'conab_direct': CollectorSchedule(
+        collector_name='conab_direct',
+        collector_class='CONABDirectCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=11,
+            release_time=time(9, 30),
+            description="CONAB direct-download text endpoints (freight, min prices, prod cost, S&D, stocks, warehouses)"
+        ),
+        priority=2,
+        commodities=['soybeans', 'corn', 'cotton', 'wheat', 'rice', 'sugar', 'coffee'],
+    ),
+
     'canada_statscan': CollectorSchedule(
         collector_name='canada_statscan',
         collector_class='StatsCanCollector',

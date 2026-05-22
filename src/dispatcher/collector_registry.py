@@ -191,6 +191,12 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.south_america.conab_collector',
         'class': 'CONABCollector',
     },
+    # Direct-download endpoints (freight, min prices, prod cost, S&D, stocks, warehouses)
+    # — replaces the manual copy-paste portal workflow.
+    'conab_direct': {
+        'module': 'src.agents.collectors.south_america.conab_direct_collector',
+        'class': 'CONABDirectCollector',
+    },
     'anec': {
         'module': 'src.agents.collectors.south_america.anec_collector',
         'class': 'ANECCollector',
