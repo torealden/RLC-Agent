@@ -206,7 +206,12 @@ def build_flat_file(long_df: pd.DataFrame):
     for col_idx, iso in enumerate(iso_order, start=2):
         ws.cell(row=1, column=col_idx, value=iso)
 
-    header_fill = PatternFill(start_color="1B2A4A", end_color="1B2A4A", fill_type="solid")
+    # Header fill color matches Tore's internal balance-sheet convention
+    # (us_soybean_complex_bal_sheets.xlsm and family). Note: this is the
+    # *internal* color. Public/client-facing artifacts (IFVS widget, Helios
+    # deck) use the brand-kit INK #1B2A4A instead. See
+    # reference_excel_color_conventions.md.
+    header_fill = PatternFill(start_color="3C7D22", end_color="3C7D22", fill_type="solid")
     header_font = Font(bold=True, color="FFFFFF", name="Calibri")
     for col in range(1, len(iso_order) + 2):
         c = ws.cell(row=1, column=col)
