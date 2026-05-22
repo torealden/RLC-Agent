@@ -5,24 +5,58 @@
 
 ## Meeting frame (anchor in your first 5 minutes)
 
-> "Joao introduced us because there's a perception that Helios and RLC might be working in overlapping territory. I don't think we are, but the only way to know is to walk through what each of us actually does. I'll show you what we've built, you tell me what you've built, and at the end we'll know whether there's anything to coordinate on or whether we're just two firms in the same neighborhood doing different jobs."
+*Updated 2026-05-22 per Tore + Claude-Content. Joao is Tore's friend
+outside work and a former direct report at Fastmarkets — the intro was a
+friend intro with a side of professional hygiene, not a strategic overlap
+flag. Francisco is coming in curious (Joao primed him on the palm
+oil / biofuels angle and he was "really excited"), not adversarial.*
 
-This is the only framing line that has to land word-for-word. Everything after it can be conversational. Three things this does:
-- Names the elephant (perceived overlap) instead of letting Francisco worry about it.
-- Refuses the "are you a competitor" frame and replaces it with "are we adjacent or overlapping."
-- Implicitly promises the meeting won't pivot to a sales pitch or M&A pitch. He'll relax.
+> "Joao said you were doing something interesting and we should know each
+> other. He's been right about a lot of things over the years, so here we
+> are. My instinct on how to use 45 minutes — let me show you what we're
+> building, you show me what you're building, and we figure out from there
+> whether we're adjacent, overlapping, or just both in commodities. Sound
+> right?"
 
-If Francisco opens with "what are you hoping to get out of this," answer with the same frame, shorter: "Clarity on whether what we do is actually the same thing as what you do. If it isn't, a working relationship as adjacent firms."
+What this does:
+- References Joao + the friend dynamic explicitly — sets the social contract.
+- Vouches for Joao without overselling.
+- Proposes a simple structure ("show me, I'll show you") with an open
+  outcome ("adjacent, overlapping, or just both") — names the question
+  lightly without making it the centerpiece.
+- Ends with a question — gives Francisco agency to redirect if he wants.
+
+If Francisco opens with "what are you hoping to get out of this," keep
+the same relaxed energy: "Honestly, mostly curiosity about what you're
+seeing in softs. Joao gave me the bullet-point version and I want the
+analyst-to-analyst version. Plus a working relationship if it makes sense
+when we're done."
+
+## Warm-up beat (before the demo)
+
+Before screen share, when Francisco asks about your background (he probably will), the natural one-liner is:
+
+> "Left FM about a year ago. Before FM I was at The Jacobsen — they hired me to build an analytics business to complement their existing PRA. Joao came up under me at FM as our Brazil analyst, and we've stayed in touch — Joao and I tend to see the same things the same way."
+
+What this does in 25 seconds: places you on the Jacobsen → FM → independent arc (analytics + PRA experience signals you understand what an index provider has to be), and establishes Joao as a peer relationship not just a vendor relationship. Don't recite the whole career — Francisco doesn't need SmithBarney through Informa unless he asks.
 
 ## Demo walkthrough — the 12 minutes you control
 
 Five beats, ~2.5 min each. Don't go past 12 min — leave the rest for him.
 
-1. **IFV calculator.** Show one number. UCO HEFA in California. Explain it in 90 seconds: "this is what a producer can pay for feedstock given the full credit stack — RIN, LCFS, 45Z, less OPEX." Move on. Don't dwell on the math; you can come back if he asks.
-2. **Policy scenario tab.** Same UCO bid, run the five 45Z scenarios. "What you're seeing is the engine doing what an analyst spreadsheet would do, but with policy as a first-class argument." The point isn't the numbers — it's that the engine handles regulatory branching natively.
-3. **Multi-industry facility map.** Pan to Iowa. "2,001 facilities, rail, ports, marine highways. The map isn't the product; the structured data underneath is. When a 45Z change hits, we know which specific facilities are exposed."
-4. **KG depth viewer.** Pick one node — `rd_price_stack` or `feedstock_sensitivity_rule`. Show the contexts and edges. "This is the analytical structure that drives our forecasts. 436 nodes, 395 edges. Not LLM hallucination; this is hand-curated from primary sources."
-5. **Three-way balance sheet comparison.** Spreadsheet vs LLM forecast vs canonical EIA/EPA. "We're tracking forecast accuracy as a measured asset. Every prediction the engine makes goes into a forecast book and gets reconciled when the realized data lands."
+1. **IFV calculator.** Show one number. UCO HEFA in California. Explain it in 90 seconds: "this is what a producer can pay for feedstock given the full credit stack — RIN, LCFS, 45Z, less OPEX." Don't dwell on the math; come back if he asks.
+
+   *Add the education-revenue framing inside this beat:* "We're going to feature this widget on the website as both lead generation and as the entry point to the analytical service. Plus an educational layer underneath — when a new vegetable-oil buyer joins Unilever, Unilever pays for that person to take a class on the market. The education revenue is a bonus; what it really is, is a funnel into the analytical service. The kid who took the class becomes the buyer who trusts the IFV number five years later." This was the strongest single business moment of the rehearsal. Most analytical firms treat education as marketing spend. Framing it as revenue line + funnel is the version Francisco actually responded to.
+
+2. **Policy scenario tab.** Same UCO bid, run the five 45Z scenarios. Replacement phrasing for "first-class argument": *"Policy is a dial you turn, not a fact baked into the model. Same engine, different policy world."* If asked how you chose the five scenarios: *"They're CARB's own scenario set for evaluating LCFS — not arbitrary, not my opinion. As we develop the system we'll continue to build out policy nodes."*
+
+3. **Multi-industry facility map.** Pan to Iowa. "2,001 facilities — crushers, biofuel plants, food manufacturing, oleo-chemical, **and transportation: rail terminals, barge terminals, sea terminals**." Slow down for half a beat on the transportation layer — most analytics firms don't model the logistics layer, and including it signals depth. The map isn't the product; the structured data underneath is.
+
+4. **KG depth viewer.** Pick one node — `rd_price_stack` or `feedstock_sensitivity_rule`. 436 nodes / 395 edges / 336 contexts. Hand-curated from primary sources, not LLM hallucination.
+
+5. **Three-way balance sheet comparison.** Spreadsheet vs LLM forecast vs canonical USDA. **Caveat honestly:** "Facility agents aren't fully deployed yet, so today the product is mine vs USDA. The LLM column lights up once the facility-agent layer is running."
+
+   *When/if asked why "USDA is easy to beat":* **lead with the mechanism, not the conclusion.** "USDA analysts know they move markets, so they walk revisions in over three reports instead of one. The arbitrage is being early to the direction — that's where I've built a career." Lands as observation → insight, not as boast → justification.
 
 End with: *"That's the operational substrate. The product surface — IFV indices, the Feedstock Report, the eventual forward forecasts — sits on top of all of this."* Then stop. Don't sell.
 
@@ -33,6 +67,9 @@ End with: *"That's the operational substrate. The product surface — IFV indice
 Grouped by what he's probably trying to figure out.
 
 ### Cluster A — "Is this overlapping with what we do?"
+
+*Rehearsal note (2026-05-22): these questions in the friendly-CEO frame are unlikely to come up the way Cluster D and the substantive palm/SBO/policy probes do. Keep them ready but don't anchor to them.*
+
 
 **Q: How is your coverage scope different from ours?**
 You cover the event layer for softs (fruit, vegetable, cocoa, coffee, sugar). I work in the mechanism layer for BBD feedstocks (UCO, tallow, yellow grease, DCO, soybean oil, canola oil) and the regulatory stack around them. Different commodity verticals, different analytical layer. The places we might brush against each other are palm oil, where you might cover the climate-event signal and we'd cover the BBD-substitution effect; and SAF, where you might cover aviation-demand signals and we'd cover the feedstock-side production economics. Both of those look more like data exchange than competition.
@@ -65,22 +102,35 @@ Open to it if there's something specific you're missing on the BBD side. The IFV
 **Q: Why did Joao think we should talk if there's no deal?**
 Joao watches the space and he sees two firms doing related things and didn't want either of us to find out about the other six months later in a competitive context. He's right that we should know each other; he wasn't necessarily implying a transaction.
 
-### Cluster D — Hot questions (the ones Francisco might probe with)
+### Cluster D — Probable curious-CEO questions (Francisco is not adversarial)
 
-**Q: You're not raising. Then how did all this get funded?**
-Personal capital plus revenue from The Feedstock Report and adjacent consulting. The system was built incrementally and the infrastructure cost is dominated by Claude API spend, not headcount.
+**Q: What's the moat?** *(load-bearing — this is the analytically honest answer Francisco actually responds to)*
 
-**Q: What's the moat? The 436 KG nodes are presumably not patented.**
-The math isn't the moat — anyone with a regulatory expert and a spreadsheet can get to the same equations. The moat is two things working together: the data-and-engine pipeline that produces the IFV number daily without manual intervention, and the analyst credibility from twenty-eight years in feedstocks that lets the number be trusted by people who actually trade these markets. Either alone is replaceable. Together they're slow to copy.
+The math isn't the moat — anyone with a regulatory expert and a spreadsheet can replicate the IFV equations. The real moat is two things working together: **a management philosophy of intellectual honesty, and twenty-eight years of relationships built on it.**
+
+I tell every analyst that's ever worked for me: I will never be angry when we're wrong. We're trying to predict the unpredictable; we will be wrong a lot. The only thing that matters is that the client knows *why* we think what we think, so they can judge for themselves. **I have never lost a client over a wrong call.** I get to have spirited debates with retainer clients I've had for decades. That's the actual moat — it's a *relationship structure*, not a data structure. The data is the substrate that lets the relationship exist at this scale, but the data alone wouldn't sell anything.
+
+Most analytical shops sell certainty. They build cultures where being wrong is career-ending, so analysts shade toward consensus to protect themselves, and the publication says nothing new. I'm selling intellectual honesty. Those are different products.
 
 **Q: Why publish the framework publicly if it's your edge?**
-Because the framework being public is the asset. The widget and the essay establish RLC as the firm that authored the way the industry should think about feedstock pricing. Once that's anchored, the paid product is the *forward* index — what implied UCO value will be at T+3, T+6, T+12. The retrospective spot calculation is a credentialing artifact, not the revenue product.
 
-**Q: What stops Helios from building IFV next quarter?**
-Nothing technical. Practically — same answer as the "could either of us extend" question. You'd be entering a category where there's already a published framework, an established analyst voice, and a productized engine. The right move for a competitor is probably to license rather than rebuild.
+Because the framework being public is the asset. The widget and the essay establish RLC as the firm that authored the way the industry should think about feedstock pricing. Once anchored, the paid product is the *forward* index — what implied UCO value will be at T+3, T+6, T+12. The retrospective spot calculation is a credentialing artifact, not the revenue product.
 
-**Q: Sounds like you've thought about acquisition. What would change your mind?**
-Not currently considering it. If something changed, it would be capital-need driven (which is not the situation) or distribution-leverage driven (where the right partner has feedstock-customer reach we don't, which Helios largely doesn't). Honest answer: I want to know what RLC looks like as a fully-built independent firm before I think about how it fits inside someone else's roadmap.
+**Q: Where do you see this in 5 years?**
+
+The aspirational anchor is Sparks Companies — Willard Sparks built an institution that carried his analytical voice without him being in every conversation, and most boutique firms never make that transition. Sparks combined founder depth with a publishing cadence customers couldn't get elsewhere, then got acquired on their own terms once the brand was credentialed. That's the structural play I'm running. Worked at Informa, worked at Fastmarkets — I've been adjacent to that lineage my whole career.
+
+**Q: Should you be raising venture money?** *(Tore brought this up himself in rehearsal — Francisco's response gave him a useful frame)*
+
+Probably not for the analytical business — money doesn't accelerate analytical judgment, and most VC-backed analytics firms break exactly there. **Small specific raise for the index-provider build-out (IOSCO, audit, regulator relations) is the one piece where outside capital might help**, because PRAs sell partly on looking institutional. Strategic investor (CME, ICE, Bloomberg) more likely than financial VC. But not now. Build the analyst-credibility first, decide on the institutional capital question in 12-24 months from a position of credentialing.
+
+**Q: What does the customer side look like today?**
+
+The Feedstock Report (weekly research subscriber base). Higby Barrett (analytics partnership). Two consulting engagements in BBD that closed in Q1. The IFV widget + essay series we're publishing next month is the lead funnel. Customer mix is obligated parties, refiners, integrated oils/fats traders, and ag-focused funds.
+
+**Q: How much is built vs planned?** *(give the honest version)*
+
+Built and running: medallion data architecture, 40+ collectors, KG, IFV engine, multi-industry facility map (2,001 facilities), rail and port network, the dispatcher, the air-permit extraction pipeline (Iowa oilseed crush is done), the three-way comparison machinery (Tore + USDA — LLM column pending facility-agent deployment). Planned: forward-index publication; facility-agent simulation (bones-in-place, not running); world coverage extension beyond US/Iowa.
 
 ---
 
