@@ -8,9 +8,17 @@ from contextlib import contextmanager
 import os
 from pathlib import Path
 
-# Auto-load .env file from this directory
+# Auto-load .env — try local dir first (legacy), fall back to project root.
+# Without this fallback the dashboard would connect to localhost (default)
+# instead of RDS, and queries against core.collection_status etc. return
+# empty because the local postgres is empty.
 from dotenv import load_dotenv
-load_dotenv(Path(__file__).parent / ".env")
+_local_env = Path(__file__).parent / ".env"
+_root_env = Path(__file__).resolve().parents[2] / ".env"
+if _local_env.exists():
+    load_dotenv(_local_env)
+elif _root_env.exists():
+    load_dotenv(_root_env)
 
 _PG_HOST = os.getenv("RLC_PG_HOST", "localhost")
 _PG_PORT = os.getenv("RLC_PG_PORT", "5432")

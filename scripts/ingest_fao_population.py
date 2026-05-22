@@ -193,8 +193,8 @@ def build_flat_file(long_df: pd.DataFrame):
     # Order columns by our COUNTRY_MAP order
     iso_order = [iso for iso in COUNTRY_MAP if iso in pivot.columns]
     pivot = pivot[iso_order]
-    # Years descending (most recent on top — matches your existing balance sheet conventions)
-    pivot = pivot.sort_index(ascending=False)
+    # Years ascending (old at top, new at bottom) per reference_xlsx_flat_file_conventions.md
+    pivot = pivot.sort_index(ascending=True)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     wb = openpyxl.Workbook()
@@ -232,6 +232,67 @@ def build_flat_file(long_df: pd.DataFrame):
     for col_idx in range(2, len(iso_order) + 2):
         ws.column_dimensions[openpyxl.utils.get_column_letter(col_idx)].width = 14
 
+    # --------- Quarterly tab (linear interp between annual anchors) ---------
+    q_ws = wb.create_sheet("Population_Quarterly")
+    # Quarter offsets: mid-Q1 = +0.125 yr from Jan 1, mid-Q2 = +0.375, etc.
+    Q_OFFSETS = [("Q1", 0.125), ("Q2", 0.375), ("Q3", 0.625), ("Q4", 0.875)]
+
+    # Build quarterly rows. For each year Y (ascending), produce 4 quarters.
+    # Each quarter value = pivot[Y] + offset × (pivot[Y+1] - pivot[Y]).
+    # Final year uses the prior-year growth rate to extrapolate.
+    sorted_years = list(pivot.index)
+    q_rows = []  # list of (year, quarter_label, {iso: value})
+    for i, y in enumerate(sorted_years):
+        for qlabel, off in Q_OFFSETS:
+            row = {}
+            for iso in iso_order:
+                v_now = pivot.at[y, iso] if iso in pivot.columns else None
+                if v_now is None or pd.isna(v_now):
+                    row[iso] = None
+                    continue
+                if i + 1 < len(sorted_years):
+                    v_next = pivot.at[sorted_years[i + 1], iso]
+                    if pd.notna(v_next):
+                        row[iso] = v_now + off * (v_next - v_now)
+                    else:
+                        row[iso] = v_now
+                else:
+                    # final year: extrapolate using last YoY growth rate
+                    if i >= 1:
+                        v_prev = pivot.at[sorted_years[i - 1], iso]
+                        if pd.notna(v_prev) and v_prev > 0:
+                            g = (v_now - v_prev) / v_prev
+                            row[iso] = v_now * (1 + g * off)
+                        else:
+                            row[iso] = v_now
+                    else:
+                        row[iso] = v_now
+            q_rows.append((y, qlabel, row))
+
+    # Headers
+    q_ws.cell(row=1, column=1, value="Year")
+    q_ws.cell(row=1, column=2, value="Quarter")
+    for col_idx, iso in enumerate(iso_order, start=3):
+        q_ws.cell(row=1, column=col_idx, value=iso)
+    for col in range(1, len(iso_order) + 3):
+        c = q_ws.cell(row=1, column=col)
+        c.fill = header_fill
+        c.font = header_font
+        c.alignment = Alignment(horizontal="center")
+
+    for row_idx, (y, qlabel, row) in enumerate(q_rows, start=2):
+        q_ws.cell(row=row_idx, column=1, value=int(y))
+        q_ws.cell(row=row_idx, column=2, value=qlabel)
+        for col_idx, iso in enumerate(iso_order, start=3):
+            v = row.get(iso)
+            cell = q_ws.cell(row=row_idx, column=col_idx, value=float(v) if v is not None and pd.notna(v) else None)
+            cell.number_format = "#,##0"
+
+    q_ws.column_dimensions["A"].width = 8
+    q_ws.column_dimensions["B"].width = 9
+    for col_idx in range(3, len(iso_order) + 3):
+        q_ws.column_dimensions[openpyxl.utils.get_column_letter(col_idx)].width = 14
+
     # Metadata sheet
     meta = wb.create_sheet("_meta")
     meta["A1"] = "Source"
@@ -248,9 +309,13 @@ def build_flat_file(long_df: pd.DataFrame):
     meta["B6"] = f"{int(pivot.index.min())} – {int(pivot.index.max())} (FAO includes UN projections)"
     meta["A7"] = "Countries"
     meta["B7"] = f"{len(iso_order)} columns: {', '.join(iso_order)}"
+    meta["A8"] = "Quarterly tab"
+    meta["B8"] = "Linear interpolation between annual anchors at Q1/Q2/Q3/Q4 midpoints (+0.125, +0.375, +0.625, +0.875 from Jan 1). Final-year quarters extrapolate using prior-year growth rate."
+    meta["A9"] = "Sort"
+    meta["B9"] = "Ascending — oldest year at top, newest at bottom. Latest year appends at the bottom on refresh (stable lookup convention)."
     for col in ["A", "B"]:
         meta.column_dimensions[col].width = 32
-    for r in range(1, 8):
+    for r in range(1, 10):
         meta[f"A{r}"].font = Font(bold=True)
 
     wb.save(OUT_XLSX)

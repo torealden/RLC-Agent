@@ -206,11 +206,15 @@ def style_header(ws, cols: int, row: int = 1):
 
 
 def write_summary_tab(wb, sheet_name: str, data: dict[str, dict[int, float]], unit_label: str):
-    """data: {category: {year: value}}. Categories become columns."""
+    """data: {category: {year: value}}. Categories become columns.
+
+    Years sorted ascending (oldest top, newest bottom) per
+    reference_xlsx_flat_file_conventions.md.
+    """
     ws = wb.create_sheet(sheet_name)
     categories = ["Dairy", "Cattle on feed", "Cattle, other", "Hogs",
                   "Poultry", "Livestock, other", "All animals"]
-    years = sorted({y for c in categories for y in data.get(c, {})}, reverse=True)
+    years = sorted({y for c in categories for y in data.get(c, {})}, reverse=False)
 
     ws.cell(row=1, column=1, value="Year")
     for col_idx, cat in enumerate(categories, start=2):
