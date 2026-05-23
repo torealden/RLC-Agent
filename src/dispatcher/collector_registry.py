@@ -70,6 +70,7 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
     'usda_nass_crop_progress': {
         'module': 'src.agents.collectors.us.usda_nass_collector',
         'class': 'NASSCollector',
+        'init_kwargs': {'data_type': 'crop_progress'},
     },
     'eia_petroleum': {
         'module': 'src.agents.collectors.us.eia_petroleum_collector',
@@ -132,14 +133,17 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
     'usda_nass_stocks': {
         'module': 'src.agents.collectors.us.usda_nass_collector',
         'class': 'NASSCollector',
+        'init_kwargs': {'data_type': 'stocks'},
     },
     'usda_nass_acreage': {
         'module': 'src.agents.collectors.us.usda_nass_collector',
         'class': 'NASSCollector',
+        'init_kwargs': {'data_type': 'acreage'},
     },
     'usda_nass_production': {
         'module': 'src.agents.collectors.us.usda_nass_collector',
         'class': 'NASSCollector',
+        'init_kwargs': {'data_type': 'production'},
     },
     'canada_statscan_stocks': {
         'module': 'src.agents.collectors.canada.canada_statscan_collector',
@@ -319,7 +323,8 @@ class CollectorRegistry:
 
         Args:
             name: Collector schedule key
-            **kwargs: Passed to collector constructor
+            **kwargs: Passed to collector constructor (overrides any
+                init_kwargs declared in COLLECTOR_MAP)
 
         Returns:
             Instantiated collector, or None if not available
@@ -328,8 +333,14 @@ class CollectorRegistry:
         if cls is None:
             return None
 
+        # Merge any registry-declared init_kwargs (e.g., data_type for NASS)
+        # with call-site overrides. Call-site wins on conflict.
+        entry = COLLECTOR_MAP.get(name, {})
+        merged_kwargs = dict(entry.get('init_kwargs') or {})
+        merged_kwargs.update(kwargs)
+
         try:
-            return cls(**kwargs) if kwargs else cls()
+            return cls(**merged_kwargs) if merged_kwargs else cls()
         except Exception as e:
             logger.error(f"Failed to instantiate collector '{name}': {e}")
             return None

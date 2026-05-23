@@ -15,7 +15,7 @@ import logging
 import os
 from dataclasses import dataclass, field
 from datetime import datetime, date, timedelta
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 
 from .base_collector import (
     BaseCollector,
@@ -62,6 +62,11 @@ class NASSConfig(CollectorConfig):
     auth_type: AuthType = AuthType.API_KEY
     frequency: DataFrequency = DataFrequency.WEEKLY
 
+    # Which NASS data type this instance pulls. One of:
+    # 'crop_progress', 'condition', 'acreage', 'production', 'stocks'
+    # Routed from the schedule entry via collector_registry init_kwargs.
+    data_type: str = "crop_progress"
+
     # API key from environment or direct setting
     api_key: Optional[str] = field(
         default_factory=lambda: os.environ.get('NASS_API_KEY')
@@ -74,6 +79,43 @@ class NASSConfig(CollectorConfig):
 
     # Rate limit (NASS allows ~50k queries/day)
     rate_limit_per_minute: int = 30
+
+
+# Maps data_type -> bronze table metadata.
+# conflict_cols defines the unique constraint we upsert against (USDA revises
+# values, so latest fetch wins).
+NASS_BRONZE_TABLES: Dict[str, Dict[str, Any]] = {
+    'crop_progress': {
+        'table': 'bronze.nass_crop_progress',
+        'has_week_ending': True,
+        'has_condition_category': False,
+        'conflict_cols': ['commodity', 'year', 'week_ending', 'state', 'short_desc'],
+    },
+    'condition': {
+        'table': 'bronze.nass_crop_condition',
+        'has_week_ending': True,
+        'has_condition_category': True,
+        'conflict_cols': ['commodity', 'year', 'week_ending', 'state', 'condition_category'],
+    },
+    'acreage': {
+        'table': 'bronze.nass_acreage',
+        'has_week_ending': False,
+        'has_condition_category': False,
+        'conflict_cols': ['commodity', 'year', 'reference_period', 'state', 'statisticcat'],
+    },
+    'production': {
+        'table': 'bronze.nass_production',
+        'has_week_ending': False,
+        'has_condition_category': False,
+        'conflict_cols': ['commodity', 'year', 'reference_period', 'state', 'short_desc'],
+    },
+    'stocks': {
+        'table': 'bronze.nass_stocks',
+        'has_week_ending': False,
+        'has_condition_category': False,
+        'conflict_cols': ['commodity', 'year', 'reference_period', 'state', 'short_desc'],
+    },
+}
 
 
 class NASSCollector(BaseCollector):
@@ -95,15 +137,160 @@ class NASSCollector(BaseCollector):
     - Grain Stocks: Quarterly
     """
 
-    def __init__(self, config: NASSConfig = None):
+    def __init__(self, config: NASSConfig = None, data_type: Optional[str] = None):
+        """
+        Args:
+            config: NASSConfig instance (optional)
+            data_type: one of 'crop_progress', 'condition', 'acreage',
+                'production', 'stocks'. Overrides config.data_type if given.
+                Plumbed in from collector_registry init_kwargs so that each
+                schedule entry (usda_nass_crop_progress, usda_nass_stocks,
+                usda_nass_acreage, usda_nass_production) gets the right
+                NASS report fetched.
+        """
         config = config or NASSConfig()
+        if data_type is not None:
+            config.data_type = data_type
         super().__init__(config)
         self.config: NASSConfig = config
+
+        if self.config.data_type not in NASS_BRONZE_TABLES:
+            raise ValueError(
+                f"Invalid data_type '{self.config.data_type}'. "
+                f"Must be one of {list(NASS_BRONZE_TABLES.keys())}"
+            )
 
         if not self.config.api_key:
             self.logger.warning(
                 "No NASS API key. Register at: https://quickstats.nass.usda.gov/api"
             )
+
+    def collect(self, **kwargs) -> CollectorResult:
+        """
+        BaseCollector hook — fetch this instance's configured data_type and
+        persist to the matching bronze table. Required: without this override
+        BaseCollector.collect() only calls fetch_data() and the result is
+        dropped on the floor (silent failure pattern previously seen with AMS).
+        """
+        data_type = kwargs.pop('data_type', self.config.data_type)
+        result = self.fetch_data(data_type=data_type, **kwargs)
+        if result.success and result.records_fetched > 0:
+            try:
+                inserted = self.save_to_bronze(result, data_type=data_type)
+                # Attach persist count so dispatcher event log shows it.
+                if not isinstance(result.data, dict):
+                    result.warnings = list(result.warnings or []) + [
+                        f"rows_persisted={inserted}"
+                    ]
+            except Exception as exc:
+                self.logger.error(f"NASS save_to_bronze failed: {exc}")
+                result.success = False
+                result.error_message = f"persist failed: {exc}"
+        return result
+
+    def save_to_bronze(self, result: CollectorResult, data_type: Optional[str] = None) -> int:
+        """
+        Insert NASS records into the bronze table that matches data_type.
+
+        Strips columns the target table doesn't have (week_ending is only on
+        crop_progress / crop_condition; condition_category is only on
+        crop_condition). Renames reference_period_desc -> reference_period
+        and domain -> condition_category as needed.
+        """
+        if not result or result.records_fetched == 0:
+            return 0
+        data_type = data_type or self.config.data_type
+        spec = NASS_BRONZE_TABLES.get(data_type)
+        if spec is None:
+            raise ValueError(f"Unknown data_type for persist: {data_type}")
+
+        # Extract records list from either pandas DataFrame or raw list
+        records: List[Dict[str, Any]]
+        if PANDAS_AVAILABLE and isinstance(result.data, pd.DataFrame):
+            records = result.data.to_dict('records')
+        elif isinstance(result.data, list):
+            records = result.data
+        else:
+            self.logger.warning(f"NASS save_to_bronze: unexpected data type {type(result.data)}")
+            return 0
+
+        if not records:
+            return 0
+
+        # Build the column list dynamically per target table
+        columns = ['commodity', 'year', 'reference_period', 'state',
+                   'agg_level', 'short_desc', 'unit', 'value', 'source']
+        if spec['has_week_ending']:
+            columns.insert(2, 'week_ending')
+        # statisticcat vs condition_category: crop_condition has the latter
+        if spec['has_condition_category']:
+            columns.insert(-3, 'condition_category')
+        else:
+            columns.insert(-3, 'statisticcat')
+
+        # Build value tuples
+        from src.services.database.db_config import get_connection
+        tuples = []
+        for r in records:
+            row = {
+                'commodity': r.get('commodity'),
+                'year': r.get('year'),
+                'reference_period': r.get('reference_period_desc') or r.get('reference_period'),
+                'state': r.get('state'),
+                'agg_level': r.get('agg_level'),
+                'statisticcat': r.get('statisticcat'),
+                'condition_category': r.get('domain') or r.get('condition_category'),
+                'short_desc': r.get('short_desc'),
+                'unit': r.get('unit'),
+                'value': r.get('value'),
+                'source': r.get('source') or 'USDA_NASS',
+                'week_ending': r.get('week_ending'),
+            }
+            tuples.append(tuple(row[c] for c in columns))
+
+        if not tuples:
+            return 0
+
+        # Dedupe within batch on the table's unique key (last-wins). NASS
+        # sometimes returns multiple records that collapse to the same
+        # constraint key — e.g., bronze.nass_acreage has UNIQUE(commodity,
+        # year, reference_period, state, statisticcat) but NASS returns
+        # multiple short_descs (PLANTED, HARVESTED, etc.) that all share a
+        # statisticcat. Without dedupe, Postgres raises "ON CONFLICT DO
+        # UPDATE command cannot affect row a second time".
+        conflict_cols = spec['conflict_cols']
+        # Build key -> tuple position map for dedup
+        key_positions = [columns.index(c) for c in conflict_cols]
+        seen: Dict[Tuple, Tuple] = {}
+        for t in tuples:
+            k = tuple(t[i] for i in key_positions)
+            seen[k] = t  # last write wins
+        tuples = list(seen.values())
+
+        col_list = ', '.join(columns)
+        placeholders = '(' + ','.join(['%s'] * len(columns)) + ')'
+
+        # Upsert on the table's unique constraint. USDA revises NASS values
+        # over time (e.g., grain stocks after the second-look survey), so
+        # latest fetch always wins for non-conflict columns.
+        update_cols = [c for c in columns if c not in conflict_cols]
+        update_clause = ', '.join(f"{c} = EXCLUDED.{c}" for c in update_cols)
+
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                args = ','.join(
+                    cur.mogrify(placeholders, t).decode('utf-8') for t in tuples
+                )
+                sql = (
+                    f"INSERT INTO {spec['table']} ({col_list}) VALUES {args} "
+                    f"ON CONFLICT ({', '.join(conflict_cols)}) DO UPDATE SET "
+                    f"{update_clause}, collected_at = NOW()"
+                )
+                cur.execute(sql)
+                inserted = cur.rowcount
+            conn.commit()
+        self.logger.info(f"NASS save_to_bronze: upserted {inserted} rows into {spec['table']}")
+        return inserted
 
     def get_table_name(self) -> str:
         return "usda_nass"
