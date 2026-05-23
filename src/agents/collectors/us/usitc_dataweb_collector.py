@@ -94,10 +94,17 @@ def _make_session(token: str) -> Tuple[requests.Session, str]:
 
 
 def _is_maintenance(r: requests.Response) -> bool:
-    """USITC's maintenance page returns 503 with the HTML site shell."""
-    if r.status_code != 503:
-        return False
-    return "Site under maintenance" in r.text or "under maintenance" in r.text.lower()
+    """
+    Detect both states where the API is unavailable:
+    - 503 + HTML "Site under maintenance" page (scheduled downtime)
+    - JSON error body containing "data load mode" (active data refresh window)
+    """
+    body = r.text or ""
+    if r.status_code == 503 and ("under maintenance" in body.lower()):
+        return True
+    if "data load mode" in body.lower():
+        return True
+    return False
 
 
 # -----------------------------------------------------------------------------
@@ -106,62 +113,111 @@ def _is_maintenance(r: requests.Response) -> bool:
 
 def build_run_report_body(
     *,
-    trade_type: str,           # "Export" or "Import"
+    trade_type: str,           # "Export", "Import", "Domestic Exports", "Total Exports", "General Imports", "Foreign Exports", "Trade Balance"
     hs_codes: List[str],       # e.g., ["1201", "1507", "2304"]
     year: int,
     classification: str = "HTS",
+    data_columns: Optional[List[str]] = None,  # e.g., ["GEN_VAL_MO", "GEN_QY1_MO"]
 ) -> Dict[str, Any]:
     """
-    Build a minimal-but-complete runReport payload.
+    Build a runReport payload that matches the DataWeb v2 schema documented in
+    data/spec_sheets/us_census_data_api_guide.docx (canonical basicQuery shape).
 
-    Returns monthly data for the given year, all partner countries (not
-    aggregated), at HS-10 granularity.
+    Returns monthly data for the given year, all partner countries
+    "broken out" (i.e., not aggregated to world total), at HS-10 granularity
+    with the requested data columns.
+
+    Data column codes (subject to verification against live response once
+    API is back from maintenance):
+      GEN_VAL_MO          — General imports value monthly (imports only)
+      DOM_VAL_MO          — Domestic exports value monthly (exports only)
+      TOT_VAL_MO          — Total exports value monthly
+      GEN_QY1_MO          — First-unit quantity monthly
+      CONS_FIR_UNIT_QUANT — Consumption first unit quantity
     """
+    if data_columns is None:
+        if "Import" in trade_type:
+            data_columns = ["GEN_VAL_MO", "GEN_QY1_MO"]
+        else:
+            data_columns = ["TOT_VAL_MO", "GEN_QY1_MO"]
+
     return {
-        "tradeType": trade_type,
-        "classificationSystem": classification,
-        "dataToReport": ["GEN_VAL_MO", "GEN_QY1_MO"],
-        "scale": 1,
-        "timeframeSelectType": "fullYears",
-        "years": [str(year)],
-        "startMonth": "01",
-        "endMonth": "12",
-        "timeline": "Monthly",
-        # Commodities — manual list at the requested granularity
-        "commoditySelectType": "manual",
-        "commoditiesManual": ",".join(hs_codes),
-        "commodities": [],
-        "commoditiesGroupsSystem": [],
-        "commoditiesGroupsUser": [],
-        "commoditiesAgg": "false",
-        "granularity": 10,
-        "searchGranularity": len(hs_codes[0]) if hs_codes else 4,
-        "groupGranularity": 10,
-        # Countries — all, in detail
-        "countries": [],
-        "countriesSelectType": "all",
-        "countriesAgg": "false",
-        "countriesGroupsSystem": [],
-        "countriesGroupsUser": [],
-        # Programs — n/a for our use case
-        "importPrograms": [],
-        "importProgramsAgg": "false",
-        "programsSelectType": "all",
-        "extendedImportPrograms": [],
-        "extendedImportProgramsAgg": "false",
-        "rateProvisionCodes": [],
-        "rateProvisionCodesAgg": "false",
-        "provisionCodesSelectType": "all",
-        # Districts — n/a
-        "districts": [],
-        "districtsAgg": "true",
-        "districtsSelectType": "all",
-        # Output
-        "sortOrder": [],
-        "columnOrder": [],
-        "exportRawData": True,
-        "suppressZeroValues": True,
-        "displayCommodityList": False,
+        "savedQueryName": "",
+        "savedQueryDesc": "",
+        "isOwner": True,
+        "runMonthly": False,
+        "reportOptions": {
+            "tradeType": trade_type,
+            "classificationSystem": classification,
+        },
+        "searchOptions": {
+            "MiscGroup": {
+                "districts": {
+                    "aggregation": "Aggregate District",
+                    "districtGroups": {"userGroups": []},
+                    "districts": [],
+                    "districtsExpanded": [{"name": "All Districts", "value": "all"}],
+                    "districtsSelectType": "all",
+                },
+                "importPrograms": {
+                    "aggregation": None,
+                    "importPrograms": [],
+                    "programsSelectType": "all",
+                },
+                "extImportPrograms": {
+                    "aggregation": "Aggregate CSC",
+                    "extImportPrograms": [],
+                    "extImportProgramsExpanded": [],
+                    "programsSelectType": "all",
+                },
+                "provisionCodes": {
+                    "aggregation": "Aggregate RPCODE",
+                    "provisionCodesSelectType": "all",
+                    "rateProvisionCodes": [],
+                    "rateProvisionCodesExpanded": [],
+                },
+            },
+            "commodities": {
+                "aggregation": "Break Out Commodities",
+                "codeDisplayFormat": "YES",
+                "commodities": [],
+                "commoditiesExpanded": [],
+                "commoditiesManual": ",".join(hs_codes),
+                "commodityGroups": {"systemGroups": [], "userGroups": []},
+                "commoditySelectType": "manual",
+                "granularity": "10",
+                "groupGranularity": None,
+                "searchGranularity": str(len(hs_codes[0])) if hs_codes else "4",
+            },
+            "componentSettings": {
+                "dataToReport": data_columns,
+                "scale": "1",
+                "timeframeSelectType": "fullYears",
+                "years": [str(year)],
+                "startDate": None,
+                "endDate": None,
+                "startMonth": None,
+                "endMonth": None,
+                "yearsTimeline": "Monthly",
+            },
+            "countries": {
+                "aggregation": "Break Out Countries",
+                "countries": [],
+                "countriesExpanded": [{"name": "All Countries", "value": "all"}],
+                "countriesSelectType": "all",
+                "countryGroups": {"systemGroups": [], "userGroups": []},
+            },
+        },
+        "sortingAndDataFormat": {
+            "DataSort": {"columnOrder": [], "fullColumnOrder": [], "sortOrder": []},
+            "reportCustomizations": {
+                "exportCombineTables": False,
+                "showAllSubtotal": False,
+                "subtotalRecords": "",
+                "totalRecords": "1000000",  # set high so we don't truncate big result sets
+                "exportRawData": True,
+            },
+        },
     }
 
 
