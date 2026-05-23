@@ -197,6 +197,13 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.south_america.conab_direct_collector',
         'class': 'CONABDirectCollector',
     },
+
+    # === USITC DataWeb (US trade backfill 1989-2012, beyond Census API floor) ===
+    # Manual backfill collector — not on a cron, run via CLI when filling gaps.
+    'usitc_dataweb': {
+        'module': 'src.agents.collectors.us.usitc_dataweb_collector',
+        'class': 'USITCDataWebCollector',
+    },
     'anec': {
         'module': 'src.agents.collectors.south_america.anec_collector',
         'class': 'ANECCollector',
