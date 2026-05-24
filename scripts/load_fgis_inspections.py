@@ -36,6 +36,15 @@ from typing import Optional, Dict, List, Tuple
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+# Load .env BEFORE importing db_config — module-level PG_HOST falls back
+# to 'localhost' if env isn't loaded first, silently writing to a non-existent
+# local DB instead of RDS.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(PROJECT_ROOT / '.env')
+except ImportError:
+    pass
+
 from src.services.database.db_config import get_connection as get_db_connection
 
 logging.basicConfig(
@@ -314,21 +323,47 @@ UPSERT_SQL = """
 """
 
 
+_BULK_COLS = [
+    'cert_date', 'serial_no', 'calendar_year',
+    'type_service', 'type_shipment', 'type_carrier',
+    'grain', 'grain_class', 'grain_subclass', 'grade',
+    'destination', 'port_region', 'port_name', 'ams_region', 'fgis_region',
+    'city', 'state', 'marketing_year',
+    'metric_tons', 'bushels_1000', 'pounds',
+    'test_weight', 'moisture_avg', 'damaged_kernels', 'foreign_material',
+    'carrier_name',
+]
+
+
 def insert_batch(conn, records: List[Dict]) -> int:
-    """Insert a batch of records using executemany-style loop."""
+    """Bulk upsert via execute_values — ~100x faster than per-row execute()
+    over WAN connections. The previous per-row try/except/rollback path
+    silently lost rows because conn.rollback() inside the loop would
+    discard prior successful inserts after any single transient error.
+    """
+    if not records:
+        return 0
+    import psycopg2.extras
+
+    update_set = ', '.join(
+        f"{c} = EXCLUDED.{c}" for c in _BULK_COLS
+        if c not in ('calendar_year', 'serial_no')
+    )
+    sql = (
+        f"INSERT INTO bronze.fgis_inspections_history "
+        f"({', '.join(_BULK_COLS)}, collected_at) "
+        f"VALUES %s "
+        f"ON CONFLICT (calendar_year, serial_no) DO UPDATE SET "
+        f"{update_set}, collected_at = NOW()"
+    )
+    template = '(' + ','.join(['%s'] * len(_BULK_COLS)) + ', NOW())'
+
+    tuples = [tuple(r.get(c) for c in _BULK_COLS) for r in records]
+
     cur = conn.cursor()
-    count = 0
-    for rec in records:
-        try:
-            cur.execute(UPSERT_SQL, rec)
-            count += 1
-        except Exception as e:
-            logger.warning(f"  Row error (serial={rec.get('serial_no')}): {e}")
-            conn.rollback()
-            # Re-establish state for next row
-            continue
+    psycopg2.extras.execute_values(cur, sql, tuples, template=template, page_size=2000)
     conn.commit()
-    return count
+    return len(records)
 
 
 def load_year(filepath: Path, calendar_year: int, dry_run: bool = False) -> Tuple[int, int, int]:
