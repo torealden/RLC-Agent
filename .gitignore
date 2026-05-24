@@ -145,3 +145,9 @@ data/raw/state_air_permits/*/metadata/
 data/raw/state_air_permits/*/*_documents.json
 data/raw/state_air_permits/*/*_sites_*.json
 data/raw/state_air_permits/*/*_wimn_page.html
+
+
+# Working models — large xlsm/xlsx workbooks that bloat the repo with every save.
+# Local-only; restore from .bak.{date} backups the updater scripts create.
+Models/
+models/
