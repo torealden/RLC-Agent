@@ -55,26 +55,42 @@ FGIS_URL_TEMPLATE = "https://fgisonline.ams.usda.gov/ExportGrainReport/CY{year}.
 TARGET_DIR = PROJECT_ROOT / "data" / "raw" / "cross_commodity"
 
 
-def download_year(year: int, target_dir: Path = TARGET_DIR) -> Path:
-    """Download CY{year}.csv. Returns the path written."""
+def download_year(year: int, target_dir: Path = TARGET_DIR) -> tuple[Path, bool]:
+    """Download CY{year}.csv. Returns (path, did_change).
+
+    did_change is False when the freshly-downloaded file is byte-identical to
+    the on-disk copy — letting callers skip the bronze reload step. This makes
+    the Monday-morning scheduled task a no-op on weeks where FGIS hasn't
+    published yet (e.g., federal holidays like Memorial Day push the release
+    to Tuesday).
+    """
     url = FGIS_URL_TEMPLATE.format(year=year)
     target = target_dir / f"CY{year}.csv"
     target.parent.mkdir(parents=True, exist_ok=True)
+
+    logger.info(f"Downloading {url}")
+    r = requests.get(url, timeout=60)
+    r.raise_for_status()
+    new_bytes = r.content
+
+    if target.exists() and target.read_bytes() == new_bytes:
+        size_kb = len(new_bytes) / 1024
+        logger.info(
+            f"FGIS CY{year}.csv unchanged ({size_kb:,.1f} KB) — likely "
+            f"holiday or pre-release. Skipping reload."
+        )
+        return target, False
 
     if target.exists():
         backup = target.with_suffix(f".csv.bak.{date.today().isoformat()}")
         shutil.copy2(target, backup)
         logger.info(f"Backed up existing CY{year}.csv -> {backup.name}")
 
-    logger.info(f"Downloading {url}")
-    r = requests.get(url, timeout=60)
-    r.raise_for_status()
-
-    target.write_bytes(r.content)
-    size_kb = len(r.content) / 1024
+    target.write_bytes(new_bytes)
+    size_kb = len(new_bytes) / 1024
     line_count = r.text.count('\n')
     logger.info(f"Saved {target.name} — {size_kb:,.1f} KB, ~{line_count:,} lines")
-    return target
+    return target, True
 
 
 def reload_bronze(year: int) -> int:
@@ -97,13 +113,17 @@ def main() -> int:
     args = p.parse_args()
 
     try:
-        download_year(args.year)
+        _, changed = download_year(args.year)
     except requests.HTTPError as e:
         logger.error(f"Download failed: {e}")
         return 2
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return 3
+
+    if not changed:
+        logger.info("No bronze reload needed (file unchanged).")
+        return 0
 
     if not args.no_load:
         rc = reload_bronze(args.year)
