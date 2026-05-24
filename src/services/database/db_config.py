@@ -25,6 +25,21 @@ from contextlib import contextmanager
 # CONFIGURATION
 # =============================================================================
 
+# Load .env at import time so any script that imports db_config gets the
+# right credentials WITHOUT having to remember to call load_dotenv() first.
+# Without this, PG_HOST silently falls back to 'localhost' and entry-point
+# scripts write to a non-existent local DB. This bug pattern bit AMS (May
+# 2026), NASS (Sep 2024 silent-failure), and FGIS inspections (Mar-May
+# 2026 frozen data) before this fix.
+try:
+    from dotenv import load_dotenv
+    _project_root = Path(__file__).resolve().parents[3]
+    _env_path = _project_root / ".env"
+    if _env_path.exists():
+        load_dotenv(_env_path)
+except ImportError:
+    pass
+
 # Database type: "postgresql" or "sqlite"
 # Can be overridden by environment variable RLC_DB_TYPE
 DB_TYPE = os.environ.get("RLC_DB_TYPE", "postgresql")
