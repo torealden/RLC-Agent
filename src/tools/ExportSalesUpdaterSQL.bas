@@ -135,22 +135,31 @@ Private Sub UpdateFromDatabase(weekCount As Integer)
         myFilter = "marketing_year = " & currentMyExpr
     End If
 
-    ' Query latest N weeks for this commodity x MY x column
+    ' Query latest N weeks for this commodity x MY x column.
+    ' The week_ending IN-subquery hits bronze directly (cheap) instead of the
+    ' gold view, which now has a WORLD TOTAL aggregation that makes a full
+    ' view scan slow. The outer query against the view is then filtered
+    ' tightly enough that PG can push the commodity/MY/week filters down.
     sql = "SELECT week_ending, country_name, spreadsheet_row, " & valueColumn & " AS qty " & _
           "FROM gold.export_sales_matrix " & _
           "WHERE commodity = '" & commodity & "' " & _
           "  AND " & myFilter & " " & _
           "  AND (is_regional_total = FALSE OR country_name = 'WORLD TOTAL') " & _
           "  AND week_ending IN ( " & _
-          "      SELECT DISTINCT week_ending FROM gold.export_sales_matrix " & _
+          "      SELECT DISTINCT week_ending FROM bronze.fas_export_sales " & _
           "      WHERE commodity = '" & commodity & "' " & _
           "      ORDER BY week_ending DESC LIMIT " & weekCount & _
           "  ) " & _
           "ORDER BY week_ending, spreadsheet_row"
 
+    ' Bump CommandTimeout above ADODB default 30s BEFORE opening the
+    ' recordset. Large pulls (208 weeks x WORLD TOTAL aggregation) can run
+    ' 60-90s on first query before plans cache.
+    conn.CommandTimeout = 300
+
     On Error GoTo QueryError
     Set rs = CreateObject("ADODB.Recordset")
-    rs.Open sql, conn
+    rs.Open sql, conn, 0, 1, 1  ' adOpenForwardOnly, adLockReadOnly, adCmdText
 
     ' First pass: identify columns to update
     Application.StatusBar = "Identifying columns..."
