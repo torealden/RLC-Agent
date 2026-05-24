@@ -36,10 +36,12 @@ Private Const DB_PASSWORD As String = "SoupBoss1"
 
 ' Spreadsheet structure — matches the Census-trade tab layout the ESR
 ' tabs were cloned from. Row 2 = week_ending date headers; data rows
-' 4..217 (row 3 is blank, row 4 starts the country block).
+' 4..218 (row 4 starts the country block, 217 = WORLD TOTAL,
+' 218 = UNKNOWN — the FAS UNKNOWN-destination bucket that's needed for
+' the world total to balance).
 Private Const HEADER_ROW As Integer = 2
 Private Const DATA_START_ROW As Integer = 4
-Private Const DATA_END_ROW As Integer = 217
+Private Const DATA_END_ROW As Integer = 218
 Private Const COUNTRY_COLUMN As Integer = 1
 
 ' Regional subtotal rows — same convention as TradeUpdaterSQL / InspectionsUpdaterSQL.
