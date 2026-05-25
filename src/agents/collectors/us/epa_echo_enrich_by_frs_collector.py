@@ -1,33 +1,6 @@
 """
 EPA ECHO Enrich-by-FRS Collector
 
-⚠️ DRAFT — DOES NOT WORK YET (2026-05-23). Phase 2 of Task #66.
-
-The skeleton, FRS-selection query, throttled DFR fetch, upsert + audit logic
-all run end-to-end. BUT the response-parsing function `_parse_dfr` was built
-from a wrong assumption: I assumed the DFR endpoint returns the same
-top-level fields (AIRStatus, AIRName, AIRCity, ...) as the AIR search
-endpoint. It does not — DFR is enrichment-only (Permits, NAICS, SIC,
-ComplianceSummary, EnforcementComplianceSummaries, etc.). The facility-
-level identifying info lives inside the first 'Permits' entry or under
-the 'Industries' / 'SystemExtractDates' blocks.
-
-Also discovered: bronze.epa_echo_facility has some stale FRS IDs (e.g.,
-FRS 110028258506 is mapped to 'Big River West Burlington' in our xref but
-the live DFR returns 'BIG RIVER RESOURCES GRINNELL LLC'). Need to audit
-existing rows before flipping the daily schedule.
-
-Next steps before this can run for real:
-  1. Dump 3-5 real DFR responses and identify where AIRStatus / AIRName
-     etc. actually live. Likely needs both /air_rest_services + /dfr endpoints.
-  2. Fix _parse_dfr to read from the correct nested paths.
-  3. Audit current bronze.epa_echo_facility rows against live DFR — flag
-     stale FRS IDs that don't resolve to the expected facility name.
-  4. Re-run smoke test on a known curated facility, verify operating_status
-     changes match expectation.
-
-------- ORIGINAL DESIGN (still valid, just the parse is broken) -------
-
 Phase 2 of the architecture flip (Task #66). Replaces the four SIC-sweep
 collectors (epa_echo_{oilseed,ethanol,biodiesel,milling}) that each do
 1,000-1,600-facility daily sweeps with ~80% false positives and 9 hours
@@ -112,26 +85,50 @@ def _make_session() -> requests.Session:
 def _parse_dfr(dfr_results: Dict[str, Any]) -> Dict[str, Any]:
     """
     Turn the EPA DFR JSON 'Results' block into the column dict that
-    bronze.epa_echo_facility expects. Mirrors the parsing in the existing
-    standalone collector but pulled into a single small function.
+    bronze.epa_echo_facility expects.
+
+    Key paths confirmed against 5 live samples 2026-05-25:
+    - Top-level facility identity (name/address/lat/lon) lives in the
+      first Permits[] entry (EPASystem='FRS'). NOT in any top-level
+      AIRName/AIRStreet/etc field — that's the AIR search endpoint shape,
+      not DFR.
+    - Operating status lives on the Permits[] entry where
+      Statute='CAA' AND EPASystem='ICIS-Air'. The GHGRP permit has its
+      own FacilityStatus but it's a reporting-year description, not a
+      site operating status.
     """
     out: Dict[str, Any] = {}
+    permits = dfr_results.get('Permits') or []
 
-    # Top-level facility info
-    out['facility_name']      = dfr_results.get('AIRName') or dfr_results.get('FacilityName', '')
-    out['street_address']     = dfr_results.get('AIRStreet', '')
-    out['city']               = dfr_results.get('AIRCity', '')
-    out['state']              = dfr_results.get('AIRState', '')
-    out['zip_code']           = dfr_results.get('AIRZip', '')
-    out['county_name']        = dfr_results.get('AIRCounty', '')
-    out['county_fips']        = dfr_results.get('FacFIPSCode', '')
-    out['epa_region']         = dfr_results.get('AIREPARegion', '')
-    out['latitude']           = dfr_results.get('FacLat')
-    out['longitude']          = dfr_results.get('FacLong')
-    out['operating_status']   = dfr_results.get('AIRStatus', '')
-    out['air_programs']       = dfr_results.get('AIRPrograms', '')
-    out['air_classification'] = dfr_results.get('AIRClassification', '')
-    out['air_universe']       = dfr_results.get('AIRUniverse', '')
+    # Pick the FRS root permit for facility identity, and the CAA/ICIS-Air
+    # permit for operating status.
+    frs_permit: Dict[str, Any] = next(
+        (p for p in permits if isinstance(p, dict) and p.get('EPASystem') == 'FRS'),
+        permits[0] if permits and isinstance(permits[0], dict) else {},
+    )
+    air_permit: Dict[str, Any] = next(
+        (p for p in permits if isinstance(p, dict)
+         and p.get('Statute') == 'CAA' and p.get('EPASystem') == 'ICIS-Air'),
+        {},
+    )
+
+    out['facility_name']      = frs_permit.get('FacilityName', '')
+    out['street_address']     = frs_permit.get('FacilityStreet', '')
+    out['city']               = frs_permit.get('FacilityCity', '')
+    out['state']              = frs_permit.get('FacilityState', '')
+    out['zip_code']           = frs_permit.get('FacilityZip', '')
+    out['county_name']        = frs_permit.get('FacilityCountyName', '')
+    out['county_fips']        = frs_permit.get('FacilityFipsCode', '')
+    out['epa_region']         = frs_permit.get('EPARegion', '')
+    # Lat/lon: prefer SpatialMetadata (NAD83), fall back to first permit
+    spatial = dfr_results.get('SpatialMetadata') or {}
+    out['latitude']           = spatial.get('Latitude83') or frs_permit.get('Latitude')
+    out['longitude']          = spatial.get('Longitude83') or frs_permit.get('Longitude')
+    out['operating_status']   = air_permit.get('FacilityStatus', '')
+    out['air_universe']       = air_permit.get('Universe', '')
+    # air_programs and air_classification do NOT come from DFR — they're only
+    # in the AIR search endpoint. Omit them from the parsed dict so the
+    # upsert preserves whatever the prior SIC-sweep collector wrote.
 
     # Permits
     permits = dfr_results.get('Permits', []) or []
