@@ -1,3 +1,4 @@
+Attribute VB_Name = "GrainTradeUpdater"
 ' =============================================================================
 ' GrainTradeUpdater - Pure VBA with PostgreSQL Connection
 ' =============================================================================
@@ -430,8 +431,8 @@ End Function
 Public Sub AssignGrainShortcuts()
     ' Assign Ctrl+J and Ctrl+Shift+J shortcuts
 
-    Application.OnKey "^j", "UpdateGrainData"
-    Application.OnKey "^+j", "UpdateGrainDataCustom"
+    Application.OnKey "^j", "GrainTradeUpdater.UpdateGrainData"
+    Application.OnKey "^+j", "GrainTradeUpdater.UpdateGrainDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+J = Quick update (latest 3 months)" & vbCrLf & _

@@ -1,3 +1,4 @@
+Attribute VB_Name = "EIAFeedstockWorkbookEvents"
 ' =============================================================================
 ' EIAFeedstockWorkbookEvents - Paste into ThisWorkbook module
 ' =============================================================================

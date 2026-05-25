@@ -1,3 +1,4 @@
+Attribute VB_Name = "EnergyTradeWorkbookEvents"
 ' =============================================================================
 ' ThisWorkbook Event Code for us_fuel_trade.xlsm
 ' =============================================================================

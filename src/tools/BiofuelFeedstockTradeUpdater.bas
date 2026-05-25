@@ -1,3 +1,4 @@
+Attribute VB_Name = "BiofuelFeedstockTradeUpdater"
 ' =============================================================================
 ' BiofuelFeedstockTradeUpdater - Pure VBA with PostgreSQL Connection
 ' =============================================================================
@@ -436,8 +437,8 @@ End Function
 Public Sub AssignFeedstockShortcuts()
     ' Assign Ctrl+F and Ctrl+Shift+F shortcuts
 
-    Application.OnKey "^f", "UpdateFeedstockData"
-    Application.OnKey "^+f", "UpdateFeedstockDataCustom"
+    Application.OnKey "^f", "BiofuelFeedstockTradeUpdater.UpdateFeedstockData"
+    Application.OnKey "^+f", "BiofuelFeedstockTradeUpdater.UpdateFeedstockDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+F = Quick update (latest 3 months)" & vbCrLf & _

@@ -289,8 +289,8 @@ End Function
 Public Sub AssignEMTSShortcuts()
     ' Assign Ctrl+E and Ctrl+Shift+E shortcuts
 
-    Application.OnKey "^e", "UpdateEMTSData"
-    Application.OnKey "^+e", "UpdateEMTSDataCustom"
+    Application.OnKey "^e", "EMTSDataUpdater.UpdateEMTSData"
+    Application.OnKey "^+e", "EMTSDataUpdater.UpdateEMTSDataCustom"
 
     MsgBox "EMTS keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+E = Quick update (latest 6 months)" & vbCrLf & _

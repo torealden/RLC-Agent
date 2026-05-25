@@ -1,3 +1,4 @@
+Attribute VB_Name = "BiofuelDataUpdater"
 ' =============================================================================
 ' BiofuelDataUpdater - Pure VBA with PostgreSQL Connection
 ' =============================================================================
@@ -870,8 +871,8 @@ End Function
 Public Sub AssignBiofuelShortcuts()
     ' Assign Ctrl+B and Ctrl+Shift+B shortcuts
 
-    Application.OnKey "^b", "UpdateBiofuelData"
-    Application.OnKey "^+b", "UpdateBiofuelDataCustom"
+    Application.OnKey "^b", "BiofuelDataUpdater.UpdateBiofuelData"
+    Application.OnKey "^+b", "BiofuelDataUpdater.UpdateBiofuelDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+B = Quick update (latest 6 months)" & vbCrLf & _

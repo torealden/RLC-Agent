@@ -724,8 +724,8 @@ End Function
 
 Public Sub AssignTradeShortcuts()
     ' Assign Ctrl+I and Ctrl+Shift+I shortcuts
-    Application.OnKey "^i", "UpdateTradeData"
-    Application.OnKey "^+i", "UpdateTradeDataCustom"
+    Application.OnKey "^i", "TradeUpdaterSQL.UpdateTradeData"
+    Application.OnKey "^+i", "TradeUpdaterSQL.UpdateTradeDataCustom"
 End Sub
 
 Public Sub RemoveTradeShortcuts()

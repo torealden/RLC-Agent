@@ -1,3 +1,4 @@
+Attribute VB_Name = "CrushUpdaterSQL"
 ' =============================================================================
 ' CrushUpdaterSQL - Pure VBA with PostgreSQL Connection
 ' =============================================================================
@@ -287,8 +288,8 @@ End Function
 Public Sub AssignCrushShortcuts()
     ' Assign Ctrl+U and Ctrl+Shift+U shortcuts
 
-    Application.OnKey "^u", "UpdateCrushData"
-    Application.OnKey "^+u", "UpdateCrushDataCustom"
+    Application.OnKey "^u", "CrushUpdaterSQL.UpdateCrushData"
+    Application.OnKey "^+u", "CrushUpdaterSQL.UpdateCrushDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+U = Quick update (latest 6 months)" & vbCrLf & _

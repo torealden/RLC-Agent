@@ -1,3 +1,4 @@
+Attribute VB_Name = "LivestockUpdaterSQL"
 ' =============================================================================
 ' LivestockUpdaterSQL - US Livestock Slaughter Data Updater
 ' =============================================================================
@@ -254,8 +255,8 @@ End Function
 ' =============================================================================
 
 Public Sub AssignLivestockShortcuts()
-    Application.OnKey "^l", "UpdateLivestockData"         ' Ctrl+L
-    Application.OnKey "^+l", "UpdateLivestockDataCustom"   ' Ctrl+Shift+L
+    Application.OnKey "^l", "LivestockUpdaterSQL.UpdateLivestockData"         ' Ctrl+L
+    Application.OnKey "^+l", "LivestockUpdaterSQL.UpdateLivestockDataCustom"   ' Ctrl+Shift+L
 End Sub
 
 Public Sub RemoveLivestockShortcuts()

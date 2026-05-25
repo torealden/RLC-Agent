@@ -1,3 +1,4 @@
+Attribute VB_Name = "FeedstockWorkbookEvents"
 ' =============================================================================
 ' FeedstockWorkbookEvents - Paste into ThisWorkbook module
 ' =============================================================================

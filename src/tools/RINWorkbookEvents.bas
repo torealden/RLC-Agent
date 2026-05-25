@@ -1,3 +1,4 @@
+Attribute VB_Name = "RINWorkbookEvents"
 ' =============================================================================
 ' RINWorkbookEvents - Paste into ThisWorkbook module
 ' =============================================================================

@@ -1,3 +1,4 @@
+Attribute VB_Name = "TradeUpdater"
 ' =============================================================================
 ' TradeUpdater VBA Module
 ' =============================================================================
@@ -288,8 +289,8 @@ Public Sub AssignKeyboardShortcuts()
     ' Assign Ctrl+I and Ctrl+Shift+I shortcuts
     ' Run this once to set up shortcuts
 
-    Application.OnKey "^i", "UpdateTradeData"           ' Ctrl+I
-    Application.OnKey "^+i", "UpdateTradeDataCustom"    ' Ctrl+Shift+I
+    Application.OnKey "^i", "TradeUpdater.UpdateTradeData"           ' Ctrl+I
+    Application.OnKey "^+i", "TradeUpdater.UpdateTradeDataCustom"    ' Ctrl+Shift+I
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+I = Quick update (last 3 months)" & vbCrLf & _

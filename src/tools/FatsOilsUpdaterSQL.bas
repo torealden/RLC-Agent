@@ -1075,8 +1075,8 @@ End Function
 ' =============================================================================
 
 Public Sub AssignFatsOilsShortcuts()
-    Application.OnKey "^u", "UpdateFatsOilsData"
-    Application.OnKey "^+u", "UpdateFatsOilsDataCustom"
+    Application.OnKey "^u", "FatsOilsUpdaterSQL.UpdateFatsOilsData"
+    Application.OnKey "^+u", "FatsOilsUpdaterSQL.UpdateFatsOilsDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+U        Quick update (latest 6 months, all commodities)" & vbCrLf & _

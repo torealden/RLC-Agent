@@ -1,3 +1,4 @@
+Attribute VB_Name = "EMTSWorkbookEvents"
 ' =============================================================================
 ' EMTSWorkbookEvents - Paste into ThisWorkbook module
 ' =============================================================================

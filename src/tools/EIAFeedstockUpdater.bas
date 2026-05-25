@@ -286,8 +286,8 @@ End Function
 Public Sub AssignFeedstockShortcuts()
     ' Assign Ctrl+Shift+D and Ctrl+Shift+Alt+D shortcuts
 
-    Application.OnKey "^d", "UpdateFeedstockData"
-    Application.OnKey "^+d", "UpdateFeedstockDataCustom"
+    Application.OnKey "^d", "EIAFeedstockUpdater.UpdateFeedstockData"
+    Application.OnKey "^+d", "EIAFeedstockUpdater.UpdateFeedstockDataCustom"
 End Sub
 
 Public Sub RemoveFeedstockShortcuts()

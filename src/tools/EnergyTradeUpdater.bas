@@ -431,8 +431,8 @@ End Function
 Public Sub AssignEnergyShortcuts()
     ' Assign Ctrl+Y and Ctrl+Shift+Y shortcuts
 
-    Application.OnKey "^y", "UpdateEnergyData"
-    Application.OnKey "^+y", "UpdateEnergyDataCustom"
+    Application.OnKey "^y", "EnergyTradeUpdater.UpdateEnergyData"
+    Application.OnKey "^+y", "EnergyTradeUpdater.UpdateEnergyDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+Y = Quick update (latest 3 months)" & vbCrLf & _

@@ -1,3 +1,4 @@
+Attribute VB_Name = "InspectionsUpdaterSQL"
 ' =============================================================================
 ' InspectionsUpdaterSQL - FGIS Export Inspections VBA Updater
 ' =============================================================================
@@ -637,8 +638,8 @@ End Function
 Public Sub AssignInspectionsShortcuts()
     ' Assign Ctrl+G and Ctrl+Shift+G shortcuts
 
-    Application.OnKey "^g", "UpdateInspectionsData"
-    Application.OnKey "^+g", "UpdateInspectionsDataCustom"
+    Application.OnKey "^g", "InspectionsUpdaterSQL.UpdateInspectionsData"
+    Application.OnKey "^+g", "InspectionsUpdaterSQL.UpdateInspectionsDataCustom"
 
     MsgBox "Inspections keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+G = Quick update (latest 6 months / 26 weeks)" & vbCrLf & _

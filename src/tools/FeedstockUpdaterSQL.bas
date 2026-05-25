@@ -1,3 +1,4 @@
+Attribute VB_Name = "FeedstockUpdaterSQL"
 ' =============================================================================
 ' FeedstockUpdaterSQL - Pure VBA with PostgreSQL Connection
 ' =============================================================================
@@ -408,8 +409,8 @@ End Function
 Public Sub AssignFeedstockShortcuts()
     ' Assign Ctrl+E and Ctrl+Shift+E shortcuts
 
-    Application.OnKey "^e", "UpdateFeedstockData"
-    Application.OnKey "^+e", "UpdateFeedstockDataCustom"
+    Application.OnKey "^e", "FeedstockUpdaterSQL.UpdateFeedstockData"
+    Application.OnKey "^+e", "FeedstockUpdaterSQL.UpdateFeedstockDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+E = Quick update (latest 26 weeks)" & vbCrLf & _

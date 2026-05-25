@@ -1,3 +1,4 @@
+Attribute VB_Name = "RINUpdaterSQL"
 ' =============================================================================
 ' RINUpdaterSQL - Pure VBA with PostgreSQL Connection
 ' =============================================================================
@@ -553,8 +554,8 @@ End Function
 Public Sub AssignRINShortcuts()
     ' Assign Ctrl+R and Ctrl+Shift+R shortcuts
 
-    Application.OnKey "^r", "UpdateRINData"
-    Application.OnKey "^+r", "UpdateRINDataCustom"
+    Application.OnKey "^r", "RINUpdaterSQL.UpdateRINData"
+    Application.OnKey "^+r", "RINUpdaterSQL.UpdateRINDataCustom"
 
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+R = Quick update (latest 6 months + all annual)" & vbCrLf & _
