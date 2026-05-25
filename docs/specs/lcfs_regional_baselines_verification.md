@@ -1,75 +1,130 @@
 # LCFS-style regional baseline CI — verification notes
 
-*Task #65. Researched 2026-05-22 ahead of IFVS spec lock with Claude-Content.*
+*Task #65. Original research 2026-05-22; verified against primary sources 2026-05-25.*
 
-The IFVS spec (notion.so/365ead023dee813daee1e31b22219327, §5.2) lists 2026 baseline CI values for the four LCFS-style regional programs. This document verifies each against the published regulations.
+The IFVS spec (notion.so/365ead023dee813daee1e31b22219327, §5.2) lists 2026
+baseline CI values for the four LCFS-style regional programs. **Three of the
+four spec values are wrong** — they don't match either the reference
+baseline or the annual compliance target as published.
 
 ## TL;DR
 
-| Region | IFVS spec value | What the source says | Status |
-|---|---:|---|---|
-| California (LCFS) | **88.62** | CARB declining schedule, diesel pool 2026 | ✅ Confirmed in earlier research |
-| Oregon (CFP) | **94.32** | OR-GREET 4.0 baseline = 104.92 (2026 reference); annual target probably ~91-92 by linear interp | ⚠️ Spec value is between baseline and target — needs clarification of *which* number to use |
-| Washington (CFS) | **91.45** | Not verified — Ecology publishes schedule in WAC 173-424 | ⚠️ Unverified |
-| British Columbia (LCFS) | **88.42** | Not verified — Ministry of Energy publishes schedule in B.C. Reg 234/2012 | ⚠️ Unverified |
+| Region | IFVS spec value | Verified 2026 annual target | Reference baseline | Status |
+|---|---:|---:|---:|---|
+| California (LCFS) | **88.62** | **88.62** ✅ | ~95 (pre-decline) | Spec value matches |
+| Oregon (CFP) | **94.32** | **86.89** | 104.92 (OR-GREET 4.0) | Spec value WRONG — 7.4 g/MJ off |
+| Washington (CFS) | **91.45** | **93.10** | 100.11 (2017) | Spec value WRONG — 1.6 g/MJ off |
+| British Columbia (LCFS) | **88.42** | ~79.6 (computed: 100.21 × (1−0.206)) | 100.21 | Spec value WRONG — 8.8 g/MJ off |
 
-## What I found
+For credit math (`(baseline − fuel_CI) × MJ/gal × credit_price`), the
+*annual compliance target* is the right number, not the reference baseline.
+That's the CARB convention and what the verified columns above use.
 
-### Oregon CFP — important nuance discovered
+## Primary sources
 
-Oregon has **two different "CI" numbers** that both look like baselines but mean different things:
+| Region | Source | Authority |
+|---|---|---|
+| Oregon | OAR 340-253-8010 Table 2 + DEQ Clean Fuels Forecast 2026 | Oregon DEQ |
+| Washington | WAC 173-424-900 Table 1 | Washington Department of Ecology |
+| BC | Low Carbon Fuels Act (Regulation 295/2023) + 2026-04-29 RLCF-012 bulletin | BC Ministry of Energy |
+| California | LCFS regulation §95484 declining schedule | CARB |
 
-1. **Reference baseline CI** — the unaltered fossil-diesel CI used for credit-value-per-MJ math
-   - 2025 = 101.74 g/MJ (pre-OR-GREET 4.0)
-   - **2026 = 104.92 g/MJ** (post-OR-GREET 4.0 adoption Jan 2025; the *increase* reflects new NOx research)
+## Annual diesel-pool standards
 
-2. **Annual compliance target CI** — the declining schedule fuels must beat to avoid generating deficits
-   - 2025 = ~91.6 g/MJ (10% reduction from baseline)
-   - 2030 = ~82 g/MJ (20% reduction)
-   - 2035 = ~64.7 g/MJ (37% reduction)
-   - **2026 = somewhere between, ~91 g/MJ via linear interpolation**
+### Oregon CFP
 
-The IFVS spec uses the term "baseline CI" in the formula `(CI_baseline_region − CI_fuel) × MJ/gal × credit_price`. **Which number Claude-Content meant matters a lot:**
+OR-GREET 4.0 raised the reference baseline from 101.74 to **104.92 gCO2e/MJ**
+effective 2026. The annual standards (% reduction from that baseline):
 
-- If "baseline" = reference baseline (104.92), credits are calculated against the unaltered fossil CI. This is NOT how LCFS-style credit math works in practice — actual credits use the annual target.
-- If "baseline" = annual target standard (~91 for OR 2026), Claude-Content's value of 94.32 is close but ~3 g/MJ too high.
-
-**This same ambiguity applies to all four regional programs.** California uses the annual target for credit math (88.62 for 2026 diesel pool, per CARB). Probably the same convention should hold for Oregon / Washington / BC, in which case all three spec values may be slightly off but in the right ballpark.
+| Year | % reduction | Standard (gCO2e/MJ) |
+|---:|---:|---:|
+| 2025 | 15.1% | 88.87 |
+| **2026** | **17.2%** | **86.89** |
+| 2027 | 19.1% | 84.92 |
+| 2028 | 21.0% | 82.94 |
+| 2029 | 22.8% | 80.97 |
+| 2030 | 24.7% | 78.99 |
+| 2035 | 38.3% | 64.72 |
 
 ### Washington CFS
 
-Not researched in detail. Program structure mirrors California's LCFS — declining annual standards with separate gasoline and diesel pools. Authority: WAC 173-424 (Department of Ecology). Worth a focused 20-minute lookup against the actual rule.
+Baseline (2017 reference): **100.11 gCO2e/MJ**.
+
+| Year | % reduction | Standard (gCO2e/MJ) |
+|---:|---:|---:|
+| 2025 | 5.0% | 95.10 |
+| **2026** | **7.0%** | **93.10** |
+| 2027 | 9.0% | 91.10 |
+| 2028 | 11.0% | 89.10 |
+| 2029 | 13.0% | 87.10 |
+| 2030 | 15.0% | 85.09 |
+| 2035 | 20.0% | 80.09 |
 
 ### British Columbia LCFS
 
-Not researched. Program is older than US LCFS-style programs (originated 2010). Authority: B.C. Reg 234/2012 (Greenhouse Gas Reduction Act). BC has more aggressive long-term targets than US programs.
+Baseline diesel-class CI: **100.21 gCO2e/MJ** (per BC LCFA technical
+regulation). The 2026-04-29 RLCF-012 update revised the schedule to reach
+30% reduction by 2030 (was 20% in the prior version).
 
-## Recommendation for the IFVS spec
+| Year | % reduction | Standard (gCO2e/MJ, computed) |
+|---:|---:|---:|
+| 2024 | 16.0% | 84.18 |
+| 2025 | 18.3% | 81.87 |
+| **2026** | **20.6%** | **79.57** |
+| 2027 | 23.0% | 77.16 |
+| 2028 | 25.3% | 74.86 |
+| 2029 | 27.7% | 72.45 |
+| 2030 | 30.0% | 70.15 |
 
-Two options for Claude-Content to choose between in the Decision Log:
+### California LCFS
 
-**Option A — use annual compliance target (what credit math actually uses):**
-- CA 2026 diesel: **88.62** ✅
-- OR 2026 diesel: **~91.5** (recalculate from OAR 340-253 schedule)
-- WA 2026 diesel: needs lookup
-- BC 2026 diesel: needs lookup
+CARB declining schedule. 2026 diesel-pool annual target: **88.62 gCO2e/MJ**.
+Spec value matches.
 
-**Option B — use reference baseline (cleaner mental model but doesn't match credit-math reality):**
-- CA 2026 diesel: ~95 (pre-declining baseline) — but CARB doesn't really publish this separately
-- OR 2026 diesel: 104.92 (OR-GREET 4.0)
-- WA / BC: would need their reference-baseline values
+## What changed in the IFVS spec
 
-**My recommendation: Option A.** The IFVS widget shows users the credit value per gallon — that value uses the annual target in the actual formula, not the reference baseline. The "baseline" terminology in the IFVS spec should be renamed "annual target CI" or "compliance standard CI" to avoid future confusion.
+The IFVS hefa_economics calibration uses:
 
-## Open action items
+```python
+LCFS_CI_TARGETS_2026 = {
+    'CA': 88.62,   # OK
+    'OR': 94.32,   # should be 86.89
+    'WA': 91.45,   # should be 93.10
+    'BC': 88.42,   # should be 79.57
+}
+```
 
-1. **Pull OR diesel 2026 target from OAR 340-253-8010** (actual regulation). Probably available in PDF form on Oregon DEQ's site.
-2. **Pull WA diesel 2026 standard from WAC 173-424-610** schedule table.
-3. **Pull BC diesel 2026 standard from B.C. Reg 234/2012**, Schedule 4.
-4. **Propose terminology rename** in IFVS spec — "regional baseline CI" → "regional annual compliance target CI" or similar.
+Net IFV impact of corrected values, soybean oil-derived RD at HEFA fuel CI
+~ 50 gCO2e/MJ, $0.20/credit (illustrative):
 
-Each lookup is 15-30 minutes of focused work in the right document. Not urgent for the IFVS spec lock if Claude-Content is OK using the current numbers as placeholders flagged as "to-verify."
+- **CA:** unchanged
+- **OR:** widens the credit window — fuel beats target by (86.89 − 50) =
+  36.89 g/MJ instead of (94.32 − 50) = 44.32 g/MJ. So the **OR credit per
+  MJ goes DOWN** by ~17%. Implied bid for OR-routed gallons falls.
+- **WA:** narrows by 1.6 g/MJ — slightly more credit value than spec
+  assumed. Modest positive for WA.
+- **BC:** dramatic widening of the gap — fuel beats target by 29.6 g/MJ
+  instead of 38.4 g/MJ. **BC credit per MJ down ~23%.** Material for any
+  BC-routed forecasts.
 
----
+## Recommendation for the spec lock
 
-*Annotated in the Notion IFVS spec Decision Log as IFVS-014 (pending).*
+1. Update `LCFS_CI_TARGETS_2026` in `src/agents/facility/hefa_economics.py`
+   to the verified values: CA 88.62, OR 86.89, WA 93.10, BC 79.57.
+2. Rename the constant from `*_BASELINES_*` to `*_TARGETS_*` to remove the
+   "baseline vs target" ambiguity that caused this. The annual compliance
+   target is what enters credit math, not the reference baseline.
+3. Re-run unit tests against the new values — likely several IFV outputs
+   shift by 5-20% depending on region weighting.
+4. Update the IFVS spec Decision Log entry IFVS-014 from "pending" to
+   "resolved" with the verified table above.
+
+## Sources
+
+- [Oregon CFP standards (Stillwater 2025)](https://stillwaterpublications.com/stillwater-cfp-101/)
+- [Washington WAC 173-424-900 Tables](https://app.leg.wa.gov/WAC/default.aspx?cite=173-424-900)
+- [BC LCFA Technical Regulation 295/2023](https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/295_2023)
+- [BC RLCF-012 2026-04-29 Approved Carbon Intensities](https://www2.gov.bc.ca/assets/gov/farming-natural-resources-and-industry/electricity-alternative-energy/transportation/renewable-low-carbon-fuels/rlcf012_approved_carbon_intensities_current_29apr2026.pdf)
+- [IETA Business Brief: BC LCFS Sept 2025](https://www.ieta.org/uploads/wp-content/2025/09/IETA_Business_Brief-BC-Low-Carbon-Fuel-Standard-September_2025.pdf)
+- [IETA Business Brief: Oregon CFP Sept 2025](https://www.ieta.org/uploads/wp-content/2025/09/IETA_Business_Brief-Oregon-clean-fuel-Sept-2025Final.pdf)
+- [IETA Business Brief: Washington CFS Sept 2025](https://www.ieta.org/uploads/wp-content/2025/09/IETA_Business_Brief-Washington-CFS-19SeptemberFinal.pdf)

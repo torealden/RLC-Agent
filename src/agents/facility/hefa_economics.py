@@ -54,6 +54,26 @@ LCFS_BASELINE_CI = {
     'saf':                         89.37,  # CARB jet baseline (illustrative)
 }
 
+# Annual diesel-pool COMPLIANCE TARGETS for the four LCFS-style programs,
+# 2026 vintage. These are the values that enter the credit-value formula
+# `(target_CI − fuel_CI) × MJ/gal × credit_price`, NOT the reference baselines.
+# Verified against primary regulations 2026-05-25; see
+# docs/specs/lcfs_regional_baselines_verification.md for source links + the
+# full year-by-year schedule for each region.
+#
+# Reference baselines (for context, not used in the credit math):
+#   CA: ~95 (pre-declining)        OR: 104.92 (OR-GREET 4.0, 2026)
+#   WA: 100.11 (2017)              BC: 100.21
+#
+# Use only renewable_diesel and biodiesel here; SAF goes through CA jet pool
+# separately under CARB's avg-CI rules.
+LCFS_REGIONAL_DIESEL_TARGETS_2026 = {
+    'CA': 88.62,   # CARB declining schedule
+    'OR': 86.89,   # OAR 340-253-8010 Table 2, 17.2% reduction from 104.92
+    'WA': 93.10,   # WAC 173-424-900 Table 1, 7.0% reduction from 100.11
+    'BC': 79.57,   # BC LCFA Reg 295/2023, 20.6% reduction from 100.21
+}
+
 # D4 equivalence value (RINs per gallon of fuel) per EPA RFS.
 D4_EQUIVALENCE_PER_GAL = {
     'renewable_diesel':            1.7,
