@@ -714,57 +714,23 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
     ),
 
     # === EPA ECHO Facility Intelligence (daily) ===
-    # Switched from monthly to daily 2026-05-19 — three of four collectors
-    # failed on May 1 with a transient "No facilities found" ECHO API blip
-    # and would have waited until June 1 to retry under monthly cadence.
-    # Each collector enriches ~200-1,700 facilities @ ~0.5s each, so they
-    # run in pre-dawn windows staggered 4:00-5:30am ET to avoid overlap.
-    'epa_echo_oilseed': CollectorSchedule(
-        collector_name='epa_echo_oilseed',
-        collector_class='EPAEchoOilseedCollector',
+    # FRS-driven enrichment of our curated facility list. Cut over from the
+    # four SIC-sweep collectors (oilseed/ethanol/biodiesel/milling) on
+    # 2026-05-26 — those swept 1,000-1,600 facilities/day with ~80% false
+    # positives and ~9 hours of API time. This one reads the curated list
+    # from gold.facility_map_with_frs (2,001 facilities with FRS IDs),
+    # hits DFR directly, and audits operating_status / compliance_status /
+    # enforcement_actions changes. Expected runtime: ~30 minutes.
+    'epa_echo_enrich_by_frs': CollectorSchedule(
+        collector_name='epa_echo_enrich_by_frs',
+        collector_class='EpaEchoEnrichByFrsCollector',
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.DAILY,
             release_time=time(4, 0),
-            description="EPA ECHO soybean/oilseed processing facility data"
+            description="EPA ECHO daily enrichment by FRS ID (curated list)"
         ),
         priority=5,
-        commodities=['soybeans', 'canola', 'sunflower', 'cottonseed'],
-    ),
-
-    'epa_echo_ethanol': CollectorSchedule(
-        collector_name='epa_echo_ethanol',
-        collector_class='EPAEchoEthanolCollector',
-        release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.DAILY,
-            release_time=time(4, 30),
-            description="EPA ECHO ethanol production facility data"
-        ),
-        priority=5,
-        commodities=['corn', 'sorghum'],
-    ),
-
-    'epa_echo_biodiesel': CollectorSchedule(
-        collector_name='epa_echo_biodiesel',
-        collector_class='EPAEchoBiodieselCollector',
-        release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.DAILY,
-            release_time=time(5, 0),
-            description="EPA ECHO biodiesel/renewable diesel facility data"
-        ),
-        priority=5,
-        commodities=['soybean_oil', 'canola_oil', 'tallow'],
-    ),
-
-    'epa_echo_milling': CollectorSchedule(
-        collector_name='epa_echo_milling',
-        collector_class='EPAEchoMillingCollector',
-        release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.DAILY,
-            release_time=time(5, 30),
-            description="EPA ECHO wheat/flour milling facility data"
-        ),
-        priority=5,
-        commodities=['wheat'],
+        commodities=['soybeans', 'corn', 'wheat', 'soybean_oil', 'canola_oil', 'tallow'],
     ),
 }
 

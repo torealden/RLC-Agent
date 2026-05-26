@@ -255,21 +255,12 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
     },
 
     # === EPA ECHO Facility Intelligence ===
-    'epa_echo_oilseed': {
-        'module': 'src.agents.collectors.us.epa_echo_facility_collector',
-        'class': 'EPAEchoOilseedCollector',
-    },
-    'epa_echo_ethanol': {
-        'module': 'src.agents.collectors.us.epa_echo_facility_collector',
-        'class': 'EPAEchoEthanolCollector',
-    },
-    'epa_echo_biodiesel': {
-        'module': 'src.agents.collectors.us.epa_echo_facility_collector',
-        'class': 'EPAEchoBiodieselCollector',
-    },
-    'epa_echo_milling': {
-        'module': 'src.agents.collectors.us.epa_echo_facility_collector',
-        'class': 'EPAEchoMillingCollector',
+    # FRS-driven enrichment of the curated facility list. Replaces the four
+    # SIC-sweep collectors (oilseed/ethanol/biodiesel/milling) — 30 min vs
+    # 9 hours of daily API time, no false positives.
+    'epa_echo_enrich_by_frs': {
+        'module': 'src.agents.collectors.us.epa_echo_enrich_by_frs_collector',
+        'class': 'EpaEchoEnrichByFrsCollector',
     },
 }
 
