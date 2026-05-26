@@ -79,24 +79,61 @@ OTHER_TOTAL_COL = 17
 def fetch_allocation() -> dict:
     """Return {(fuel_type, period): {feedstock_code: quantity_mil_lbs}}.
 
+    Source priority per (period, fuel, feedstock):
+      1. eia_form819     — EIA canon (BD national totals)
+      2. rlc_allocator_v1 — our allocator output (RD + coprocessing)
+      3. fastmarkets     — legacy reference (RD + SAF forward projections)
+
+    Highest-priority source wins; lower-priority sources do NOT add to
+    the total (avoiding double-counting where allocator + fastmarkets
+    both have RD).
+
+    Also collapses tallow grade split (EBFT + IBFT) back to BFT for
+    sheet display, since the xlsm has a single Tallow column.
+
     IP rule (memory: feedback_fastmarkets_keep_dont_show): FM-era rows
     must never appear in CLIENT-FACING material. eia_data.xlsm is
-    currently Tore's INTERNAL modeling tool, so all sources are read
-    here. When this artifact starts going to clients, add:
-        AND source NOT IN ('fastmarkets')
-    or whitelist:
-        AND source IN ('eia_form819', 'rlc_allocator_v1')
+    currently Tore's INTERNAL modeling tool so fastmarkets is included
+    here for forward-period coverage. When this artifact starts going
+    to clients, drop 'fastmarkets' from the source_priority CTE.
     """
     data: dict = defaultdict(lambda: defaultdict(float))
     with get_connection() as conn:
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("""
-            SELECT period, fuel_type, feedstock_code,
-                   SUM(quantity_mil_lbs) AS total_mil_lbs
-            FROM bronze.historical_feedstock_allocation
-            WHERE fuel_type IN ('biodiesel', 'renewable_diesel', 'saf', 'co_processing', 'coprocessing')
-              AND quantity_mil_lbs IS NOT NULL
-            GROUP BY period, fuel_type, feedstock_code
+            WITH agg AS (
+                SELECT
+                    period,
+                    fuel_type,
+                    -- Collapse tallow grade split back to BFT for xlsm display
+                    CASE WHEN feedstock_code IN ('EBFT', 'IBFT')
+                         THEN 'BFT' ELSE feedstock_code END AS feedstock_code,
+                    source,
+                    SUM(quantity_mil_lbs) AS qty
+                FROM bronze.historical_feedstock_allocation
+                WHERE fuel_type IN ('biodiesel', 'renewable_diesel', 'saf',
+                                    'co_processing', 'coprocessing')
+                  AND quantity_mil_lbs IS NOT NULL
+                GROUP BY period, fuel_type,
+                         CASE WHEN feedstock_code IN ('EBFT', 'IBFT')
+                              THEN 'BFT' ELSE feedstock_code END,
+                         source
+            ),
+            ranked AS (
+                SELECT *,
+                       ROW_NUMBER() OVER (
+                           PARTITION BY period, fuel_type, feedstock_code
+                           ORDER BY CASE source
+                               WHEN 'eia_form819'      THEN 1
+                               WHEN 'rlc_allocator_v1' THEN 2
+                               WHEN 'fastmarkets'      THEN 3
+                               ELSE 99 END
+                       ) AS rn
+                FROM agg
+            )
+            SELECT period, fuel_type, feedstock_code, qty AS total_mil_lbs, source
+            FROM ranked
+            WHERE rn = 1
         """)
         for r in cur.fetchall():
             key = (r['fuel_type'], r['period'])
