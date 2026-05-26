@@ -73,10 +73,13 @@ OTHER_TOTAL_COL = 17
 def fetch_allocation() -> dict:
     """Return {(fuel_type, period): {feedstock_code: quantity_mil_lbs}}.
 
-    IP rule: filter out source='fastmarkets'. Those rows are kept in the
-    DB for internal triangulation only and must never appear in any
-    client-facing artifact (eia_data.xlsm is one such artifact).
-    See memory: feedback_fastmarkets_keep_dont_show.
+    IP rule (memory: feedback_fastmarkets_keep_dont_show): FM-era rows
+    must never appear in CLIENT-FACING material. eia_data.xlsm is
+    currently Tore's INTERNAL modeling tool, so all sources are read
+    here. When this artifact starts going to clients, add:
+        AND source NOT IN ('fastmarkets')
+    or whitelist:
+        AND source IN ('eia_form819', 'rlc_allocator_v1')
     """
     data: dict = defaultdict(lambda: defaultdict(float))
     with get_connection() as conn:
@@ -87,7 +90,6 @@ def fetch_allocation() -> dict:
             FROM bronze.historical_feedstock_allocation
             WHERE fuel_type IN ('biodiesel', 'renewable_diesel', 'saf', 'co_processing', 'coprocessing')
               AND quantity_mil_lbs IS NOT NULL
-              AND source NOT IN ('fastmarkets')
             GROUP BY period, fuel_type, feedstock_code
         """)
         for r in cur.fetchall():
