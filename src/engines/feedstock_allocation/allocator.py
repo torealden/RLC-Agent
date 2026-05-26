@@ -528,32 +528,50 @@ class FeedstockAllocator:
 
     def load_eia_tallow(self, period: date) -> Optional[float]:
         """
-        Load EIA Form 819 total tallow consumption for the period.
-        This is the guardrail — EBFT + IBFT must reconcile to this total.
+        Load tallow consumption as a guardrail for the EBFT/IBFT split.
 
-        Returns million lbs, or None if no EIA data for this period.
+        Source by era (see project_basic_data_setup_sequence for context):
+          - 2022+ : EIA Form 819 table_2b/2c. Reports BD + RD total tallow.
+          - 2012-2021: EIA old biodiesel report (old_table3). Biodiesel-only,
+                       but RD tallow was small in that era so BD ≈ total
+                       within ~10-15%. Reasonable proxy.
+          - 2006-2011: USDA Fats & Oils Selected End-Use (usda_fo). Methyl
+                       ester biodiesel only; pre-RD era so equals total.
+
+        Returns million lbs, or None if no data for this period.
         """
         from src.services.database.db_config import get_connection
 
+        # New format takes precedence (2022+); fall back to historical sources
+        # if new-format data is missing for the period.
+        source_sheets_in_order = [
+            ('table_2b', 'table_2c'),  # Form 819 (2022+)
+            ('old_table3',),           # EIA old biodiesel report (2012-2021)
+            ('usda_fo',),              # USDA F&O methyl esters (2006-2011)
+        ]
+
         with get_connection() as conn:
             with conn.cursor() as cur:
-                # EIA feedstock data uses "Tallow" as the feedstock name
-                cur.execute("""
-                    SELECT quantity_mil_lbs
-                    FROM bronze.eia_feedstock_monthly
-                    WHERE LOWER(feedstock_name) LIKE '%%tallow%%'
-                      AND year = %s AND month = %s
-                      AND source_sheet IN ('table_2b', 'table_2c')
-                      AND is_withheld = FALSE
-                """, (period.year, period.month))
-                rows = cur.fetchall()
+                for sheets in source_sheets_in_order:
+                    placeholders = ','.join(['%s'] * len(sheets))
+                    cur.execute(f"""
+                        SELECT quantity_mil_lbs
+                        FROM bronze.eia_feedstock_monthly
+                        WHERE LOWER(feedstock_name) LIKE '%%tallow%%'
+                          AND year = %s AND month = %s
+                          AND source_sheet IN ({placeholders})
+                          AND is_withheld = FALSE
+                          AND quantity_mil_lbs IS NOT NULL
+                    """, (period.year, period.month, *sheets))
+                    rows = cur.fetchall()
+                    if rows:
+                        total = sum(float(r['quantity_mil_lbs'] or 0) for r in rows)
+                        era_tag = sheets[0]
+                        logger.info(f"  Tallow guardrail: {total:.1f} mil lbs "
+                                    f"({len(rows)} rows, src={era_tag})")
+                        return total
 
-                if rows:
-                    total = sum(float(r['quantity_mil_lbs'] or 0) for r in rows)
-                    logger.info(f"  EIA tallow total: {total:.1f} mil lbs ({len(rows)} records)")
-                    return total
-
-        logger.info(f"  No EIA tallow data for {period} — will use supply estimates")
+        logger.info(f"  No tallow data for {period} - using supply estimates")
         return None
 
     def run_tallow_split(self, period: date, prices: dict, supply: dict) -> Optional[dict]:
