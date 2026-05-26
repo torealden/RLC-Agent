@@ -118,6 +118,10 @@ def main():
             logger.info(f"DELETED {cur.rowcount} prior rows with source='{NEW_SOURCE}'")
 
             # --- 4. Insert from allocator output ---
+            # Normalize fuel_type: allocator outputs 'coprocessing' (no
+            # underscore); bronze.historical_feedstock_allocation has used
+            # 'co_processing' historically. Keep the legacy naming so the
+            # downstream sync script's FUEL_TO_SHEET map stays consistent.
             cur.execute("""
                 WITH latest_per_period AS (
                     SELECT DISTINCT ON (scenario, period)
@@ -133,7 +137,8 @@ def main():
                     fa.period,
                     fa.facility_id,
                     bf.facility_name,
-                    fa.fuel_type,
+                    CASE WHEN fa.fuel_type = 'coprocessing' THEN 'co_processing'
+                         ELSE fa.fuel_type END AS fuel_type,
                     fa.feedstock_code,
                     fa.allocated_mil_lbs,
                     fa.allocated_mil_gal,

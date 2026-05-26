@@ -43,15 +43,21 @@ import psycopg2.extras
 from src.services.database.db_config import get_connection
 
 
-DROPBOX = Path(r"C:/Users/torem/RLC Dropbox/RLC Team Folder/RLC-Models/Biofuels/new_models")
-EIA_DATA = DROPBOX / "eia_data.xlsm"
+# Primary location (in-repo). Falls back to the legacy Dropbox path if
+# someone happens to be running against the synced Dropbox copy instead.
+REPO_EIA_DATA = Path(r"C:/dev/RLC-Agent/models/Biofuels/eia_data.xlsm")
+DROPBOX_EIA_DATA = Path(r"C:/Users/torem/RLC Dropbox/RLC Team Folder/RLC-Models/Biofuels/new_models/eia_data.xlsm")
+EIA_DATA = REPO_EIA_DATA if REPO_EIA_DATA.exists() else DROPBOX_EIA_DATA
 
-# Fuel type → sheet name in eia_data.xlsm
+# Fuel type → sheet name in eia_data.xlsm. Allocator output uses
+# 'coprocessing' (no underscore); legacy bronze.historical_feedstock_allocation
+# uses 'co_processing'. Accept both spellings.
 FUEL_TO_SHEET = {
     'biodiesel':        'biodiesel_monthly',
     'renewable_diesel': 'renewable_diesel_monthly',
     'saf':              'sustainable_aviation_monthly',
     'co_processing':    'co_processing_monthly',
+    'coprocessing':     'co_processing_monthly',
 }
 
 # Feedstock column maps per tab layout
