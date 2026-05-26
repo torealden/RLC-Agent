@@ -254,6 +254,14 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'class': 'INDECCollector',
     },
 
+    # === EIA Form 819 (xlsx) ===
+    # Feedstock-by-type (table2.xlsx) and operable capacity (table1.xlsx).
+    # NOT available via EIA v2 API — xlsx is the only public source.
+    'eia_biofuels_form819': {
+        'module': 'src.agents.collectors.us.eia_biofuels_form819_collector',
+        'class': 'EIABiofuelsForm819Collector',
+    },
+
     # === EPA ECHO Facility Intelligence ===
     # FRS-driven enrichment of the curated facility list. Replaces the four
     # SIC-sweep collectors (oilseed/ethanol/biodiesel/milling) — 30 min vs

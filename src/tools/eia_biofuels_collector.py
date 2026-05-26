@@ -19,22 +19,25 @@ import sys
 import re
 import logging
 import argparse
+from pathlib import Path
 
 import requests
 import openpyxl
-import psycopg2
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(PROJECT_ROOT / '.env')
+except ImportError:
+    pass
+
+from src.services.database.db_config import get_connection
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-DB_CONFIG = {
-    'host': 'localhost',
-    'port': 5432,
-    'database': 'rlc_commodities',
-    'user': 'postgres',
-    'password': 'SoupBoss1',
-}
-
 TABLE1_URL = "https://www.eia.gov/biofuels/update/table1.xlsx"
 TABLE2_URL = "https://www.eia.gov/biofuels/update/table2.xlsx"
 
@@ -392,59 +395,57 @@ UPSERT_CAPACITY_SQL = """
 
 def save_feedstock_records(records, source_file):
     """Upsert feedstock records into bronze.eia_feedstock_monthly."""
-    conn = psycopg2.connect(**DB_CONFIG)
-    cursor = conn.cursor()
     inserted = updated = errors = 0
-
-    for rec in records:
-        try:
-            cursor.execute(UPSERT_FEEDSTOCK_SQL, (
-                rec['year'], rec['month'], rec['source_sheet'],
-                rec['feedstock_name'], rec['plant_type'],
-                rec['quantity_mil_lbs'], rec['is_withheld'], rec['is_no_data'],
-                source_file,
-            ))
-            result = cursor.fetchone()
-            if result and result[0]:
-                inserted += 1
-            else:
-                updated += 1
-        except Exception as e:
-            logger.error(f"Error saving feedstock record {rec}: {e}")
-            errors += 1
-            conn.rollback()
-
-    conn.commit()
-    cursor.close()
-    conn.close()
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            for rec in records:
+                try:
+                    cursor.execute("SAVEPOINT sp_eia_feed")
+                    cursor.execute(UPSERT_FEEDSTOCK_SQL, (
+                        rec['year'], rec['month'], rec['source_sheet'],
+                        rec['feedstock_name'], rec['plant_type'],
+                        rec['quantity_mil_lbs'], rec['is_withheld'], rec['is_no_data'],
+                        source_file,
+                    ))
+                    result = cursor.fetchone()
+                    is_insert = result[0] if isinstance(result, tuple) else result['is_insert']
+                    if is_insert:
+                        inserted += 1
+                    else:
+                        updated += 1
+                    cursor.execute("RELEASE SAVEPOINT sp_eia_feed")
+                except Exception as e:
+                    cursor.execute("ROLLBACK TO SAVEPOINT sp_eia_feed")
+                    logger.error(f"Error saving feedstock record {rec}: {e}")
+                    errors += 1
+            conn.commit()
     return inserted, updated, errors
 
 
 def save_capacity_records(records, source_file):
     """Upsert capacity records into bronze.eia_capacity_monthly."""
-    conn = psycopg2.connect(**DB_CONFIG)
-    cursor = conn.cursor()
     inserted = updated = errors = 0
-
-    for rec in records:
-        try:
-            cursor.execute(UPSERT_CAPACITY_SQL, (
-                rec['year'], rec['month'], rec['biofuel_type'],
-                rec['capacity_mmgy'], source_file,
-            ))
-            result = cursor.fetchone()
-            if result and result[0]:
-                inserted += 1
-            else:
-                updated += 1
-        except Exception as e:
-            logger.error(f"Error saving capacity record {rec}: {e}")
-            errors += 1
-            conn.rollback()
-
-    conn.commit()
-    cursor.close()
-    conn.close()
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            for rec in records:
+                try:
+                    cursor.execute("SAVEPOINT sp_eia_cap")
+                    cursor.execute(UPSERT_CAPACITY_SQL, (
+                        rec['year'], rec['month'], rec['biofuel_type'],
+                        rec['capacity_mmgy'], source_file,
+                    ))
+                    result = cursor.fetchone()
+                    is_insert = result[0] if isinstance(result, tuple) else result['is_insert']
+                    if is_insert:
+                        inserted += 1
+                    else:
+                        updated += 1
+                    cursor.execute("RELEASE SAVEPOINT sp_eia_cap")
+                except Exception as e:
+                    cursor.execute("ROLLBACK TO SAVEPOINT sp_eia_cap")
+                    logger.error(f"Error saving capacity record {rec}: {e}")
+                    errors += 1
+            conn.commit()
     return inserted, updated, errors
 
 

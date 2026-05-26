@@ -440,6 +440,25 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['natural_gas'],
     ),
 
+    # ── EIA Form 819 xlsx (Table 1 capacity + Table 2 feedstock) ──
+    # Downloads table1.xlsx + table2.xlsx from eia.gov/biofuels/update/
+    # Populates bronze.eia_capacity_monthly + bronze.eia_feedstock_monthly.
+    # Companion to eia_biofuels_monthly (which handles finished-fuel via API).
+    # Form 819 feedstock-by-type data is NOT in the EIA v2 API.
+    'eia_biofuels_form819': CollectorSchedule(
+        collector_name='eia_biofuels_form819',
+        collector_class='EIABiofuelsForm819Collector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=28,
+            release_time=time(15, 0),
+            description="EIA Form 819 xlsx: capacity (table1) + feedstock by type (table2)"
+        ),
+        priority=1,
+        commodities=['biodiesel', 'renewable_diesel', 'fuel_ethanol',
+                     'soybean_oil', 'canola_oil', 'tallow', 'uco', 'distillers_corn_oil'],
+    ),
+
     # ── EIA Monthly Biofuels (Form 819 + PSM — released ~end-of-month) ──
     'eia_biofuels_monthly': CollectorSchedule(
         collector_name='eia_biofuels_monthly',
