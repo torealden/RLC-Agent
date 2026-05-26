@@ -87,6 +87,9 @@ data/last_run_*.json
 # Raw GIS / crop progress downloads — re-fetchable, very large
 data/crop_progress_conditions/
 
+# EIA biofuels live + Wayback-archived downloads — re-fetchable
+data/eia_biofuels/
+
 # Full DB exports — never commit (74MB+, contains state)
 database/exports/
 
