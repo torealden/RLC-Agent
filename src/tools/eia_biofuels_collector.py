@@ -80,6 +80,8 @@ def normalize_feedstock_name(raw_name):
         'Soybean oil': 'Soybean Oil',
         'Soybean Oil': 'Soybean Oil',
         'Other vegetable oils': 'Other Vegetable Oil',
+        'Tallow (beef)': 'Tallow',   # EIA renamed in 2023; normalize to Tallow
+        'Tallow': 'Tallow',
         'Yellow Grease': 'Yellow Grease',
         'Agriculture and forestry residues': 'Ag Forestry Residues',
         'Dedicated energy crops': 'Energy Crops',
