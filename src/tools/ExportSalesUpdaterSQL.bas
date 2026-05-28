@@ -159,7 +159,11 @@ Private Sub UpdateFromDatabase(weekCount As Integer)
 
     On Error GoTo QueryError
     Set rs = CreateObject("ADODB.Recordset")
-    rs.Open sql, conn, 0, 1, 1  ' adOpenForwardOnly, adLockReadOnly, adCmdText
+    ' adOpenStatic (3) so the second pass can MoveFirst safely. Forward-only
+    ' (0) cursors do NOT support MoveFirst on an empty resultset and throw
+    ' "Either BOF or EOF is True" — which is exactly what NMY sales hits
+    ' when FAS hasn't published any forward-MY sales yet.
+    rs.Open sql, conn, 3, 1, 1  ' adOpenStatic, adLockReadOnly, adCmdText
 
     ' First pass: identify columns to update
     Application.StatusBar = "Identifying columns..."
@@ -192,7 +196,23 @@ Private Sub UpdateFromDatabase(weekCount As Integer)
         columnsCleared = columnsCleared + 1
     Next colKey
 
-    ' Second pass: populate
+    ' Second pass: populate. Guard against empty recordset (NMY sales early
+    ' in the marketing year often have zero forward-MY rows from FAS).
+    If rs.BOF And rs.EOF Then
+        rs.Close
+        conn.Close
+        Application.StatusBar = False
+        Application.Cursor = xlDefault
+        Application.ScreenUpdating = True
+        Application.Calculation = xlCalculationAutomatic
+        Application.EnableEvents = True
+        MsgBox "No data found for " & commodity & " (" & flow & "). " & _
+               "This is normal for NMY sheets early in the marketing year " & _
+               "before FAS publishes forward-MY sales.", _
+               vbInformation, "Export Sales Updater"
+        Exit Sub
+    End If
+
     Application.StatusBar = "Updating cells..."
     DoEvents
     rs.MoveFirst
