@@ -83,6 +83,28 @@ PRICE_DASHBOARD = [
     {'group': 'Animal Fats & Greases', 'product': 'UCO',                 'location': 'Europe CIF',     'source_table': 'feedstock', 'fs': 'UCO', 'region': 'europe', 'is_placeholder': True},
     {'group': 'Animal Fats & Greases', 'product': 'Brown Grease',        'location': 'Domestic',       'source_table': 'feedstock', 'fs': 'BG',  'region': 'domestic', 'is_placeholder': True},
 
+    # ── AMS-sourced byproducts (slugs 2837/2839/3510, live since 2022) ──
+    # Added 2026-05-28 after fastmarkets feed went dark. AMS region naming
+    # differs from fastmarkets — these entries use AMS-native location
+    # strings (Minnesota / Central US / CA-South etc.) so the consolidated
+    # view returns data. The older fastmarkets-styled entries above will
+    # increasingly return stale values; prune them once Tore reviews.
+    {'group': 'Animal Fats & Greases', 'product': 'Choice White Grease', 'location': 'Chicago (AMS)',   'source_table': 'feedstock', 'fs': 'CWG', 'region': 'chicago'},
+    {'group': 'Animal Fats & Greases', 'product': 'Choice White Grease', 'location': 'Minnesota (AMS)', 'source_table': 'feedstock', 'fs': 'CWG', 'region': 'minnesota'},
+    {'group': 'Animal Fats & Greases', 'product': 'Yellow Grease',       'location': 'Minnesota (AMS)', 'source_table': 'feedstock', 'fs': 'YG',  'region': 'minnesota'},
+    {'group': 'Animal Fats & Greases', 'product': 'Yellow Grease',       'location': 'CA-South (AMS)',  'source_table': 'feedstock', 'fs': 'YG',  'region': 'ca_south'},
+    {'group': 'Animal Fats & Greases', 'product': 'Yellow Grease',       'location': 'CA-SJV (AMS)',    'source_table': 'feedstock', 'fs': 'YG',  'region': 'ca_sjv'},
+    {'group': 'Animal Fats & Greases', 'product': 'Loose Lard',          'location': 'Chicago (AMS)',   'source_table': 'feedstock', 'fs': 'LARD','region': 'chicago'},
+
+    # ── Protein Meals (AMS only, new with 2837/2839/3510) ──
+    {'group': 'Protein Meals', 'product': 'Meat & Bone Meal', 'location': 'Central US',  'source_table': 'feedstock', 'fs': 'MBM', 'region': 'central_us'},
+    {'group': 'Protein Meals', 'product': 'Meat & Bone Meal', 'location': 'Minnesota',   'source_table': 'feedstock', 'fs': 'MBM', 'region': 'minnesota'},
+    {'group': 'Protein Meals', 'product': 'Meat & Bone Meal', 'location': 'US PNW',      'source_table': 'feedstock', 'fs': 'MBM', 'region': 'us_pnw'},
+    {'group': 'Protein Meals', 'product': 'Blood Meal',       'location': 'Central US',  'source_table': 'feedstock', 'fs': 'BM',  'region': 'central_us'},
+    {'group': 'Protein Meals', 'product': 'Blood Meal',       'location': 'Minnesota',   'source_table': 'feedstock', 'fs': 'BM',  'region': 'minnesota'},
+    {'group': 'Protein Meals', 'product': 'Feathermeal',      'location': 'Minnesota',   'source_table': 'feedstock', 'fs': 'FM',  'region': 'minnesota'},
+    {'group': 'Protein Meals', 'product': 'Feathermeal',      'location': 'KC Region',   'source_table': 'feedstock', 'fs': 'FM',  'region': 'kc'},
+
     # ── Fuels & Credits ──
     {'group': 'Fuels & Credits', 'product': 'ULSD',             'location': 'Gulf',         'source_table': 'fuel',   'col': 'ulsd_gulf'},
     {'group': 'Fuels & Credits', 'product': 'ULSD',             'location': 'NY Harbor',    'source_table': 'fuel',   'col': 'ulsd_nyharbor'},
@@ -145,10 +167,17 @@ class DataPack:
 # Price fetchers
 # =============================================================
 def _fetch_feedstock_price(cur, fs_code: str, region: str, target_date: date) -> Optional[Dict[str, Any]]:
-    """Latest feedstock price on or before target_date for (fs, region)."""
+    """Latest feedstock price on or before target_date for (fs, region).
+
+    Reads silver.feedstock_prices_consolidated which UNIONs the legacy
+    fastmarkets feed (frozen ~2025-04) with USDA AMS byproducts
+    (live since 2022). For client-facing rendering, prefer non-proprietary
+    rows — but ORDER BY price_date will naturally surface the most recent
+    AMS data after fastmarkets went dark.
+    """
     cur.execute("""
         SELECT price_date, price_per_lb, source
-        FROM bronze.feedstock_prices
+        FROM silver.feedstock_prices_consolidated
         WHERE feedstock_code = %s AND region = %s
           AND price_date <= %s AND price_per_lb > 0
         ORDER BY price_date DESC LIMIT 1
@@ -180,7 +209,7 @@ def _fetch_52w_range(cur, source_table: str, **kwargs) -> Optional[Dict[str, flo
     if source_table == 'feedstock':
         cur.execute("""
             SELECT MIN(price_per_lb) AS lo, MAX(price_per_lb) AS hi
-            FROM bronze.feedstock_prices
+            FROM silver.feedstock_prices_consolidated
             WHERE feedstock_code = %s AND region = %s
               AND price_date BETWEEN %s AND %s
               AND price_per_lb > 0

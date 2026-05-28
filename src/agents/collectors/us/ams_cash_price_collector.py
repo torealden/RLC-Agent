@@ -107,6 +107,15 @@ REPORT_CATALOG: Dict[str, Dict] = {
     # --- Farm Inputs (bi-weekly) ---
     '3195': {'name': 'Farm Inputs & Fuel', 'category': 'farm_inputs'},
 
+    # --- Byproducts / Tallow / Grease / Protein (daily + weekly) ---
+    # Source for BBD feedstock prices: tallow, CWG, yellow grease, lard, MBM,
+    # blood meal, feathermeal. The dashboard's animal-fat row used to be all
+    # "no data" — these slugs fill that gap. 3510 is the only AMS source for
+    # yellow grease pricing.
+    '2837': {'name': 'USDA Tallow & Protein Daily (NW_LS442)', 'category': 'byproducts'},
+    '2839': {'name': 'Weekly Tallow & Protein (NW_LS906)',     'category': 'byproducts'},
+    '3510': {'name': 'National Animal By-Product Feedstuff',   'category': 'byproducts'},
+
     # NOTE: These reports are NOT in MARS API — they use USDA LMR system:
     #   Hogs (was 2675) -> National Daily Hog Report (LM_HG201) at mpr.datamart.ams.usda.gov
     #   Choice Steers (was 2485) -> 5-Area Cattle (LM_CT169) at mpr.datamart.ams.usda.gov
@@ -114,7 +123,13 @@ REPORT_CATALOG: Dict[str, Dict] = {
 }
 
 # Categories that route to silver.specialty_price instead of silver.cash_price
-SPECIALTY_CATEGORIES = {'livestock', 'ethanol_ddgs', 'cotton', 'farm_inputs', 'specialty_grain'}
+SPECIALTY_CATEGORIES = {'livestock', 'ethanol_ddgs', 'cotton', 'farm_inputs',
+                        'specialty_grain', 'byproducts'}
+
+# Slugs whose `commodity` field carries the animal source (Beef/Pork) rather
+# than the actual product — the feedstock product lives in `item`. For these
+# reports the parser swaps to use `item` as the commodity column.
+COMMODITY_FROM_ITEM_SLUGS = {'2837', '2839'}
 
 # Comprehensive price field mapping — USDA MARS uses MANY naming conventions
 # including space-separated names (e.g., "price Min"), underscored, and camelCase.
@@ -124,12 +139,14 @@ PRICE_FIELDS = {
         'current_price', 'weighted_avg', 'wtd_avg', 'average',
     ],
     'price_low': [
-        'price Min', 'price_Min', 'price_min', 'avg_price_min',
-        'price_low', 'low_price', 'low', 'min_price',
+        # 'price_minimum' covers byproducts slugs 2837/2839 (tallow/protein)
+        'price Min', 'price_Min', 'price_min', 'price_minimum',
+        'avg_price_min', 'price_low', 'low_price', 'low', 'min_price',
     ],
     'price_high': [
-        'price Max', 'price_Max', 'price_max', 'avg_price_max',
-        'price_high', 'high_price', 'high', 'max_price',
+        # 'price_maximum' covers byproducts slugs 2837/2839 (tallow/protein)
+        'price Max', 'price_Max', 'price_max', 'price_maximum',
+        'avg_price_max', 'price_high', 'high_price', 'high', 'max_price',
     ],
     'price_avg': [
         'avg_price', 'wtd_avg_price', 'price_avg', 'average_price',
@@ -376,22 +393,40 @@ class AMSCashPriceCollector(BaseCollector):
                 return None
 
             # Commodity — MARS grain reports use 'commodity' (Corn, Soybeans, Wheat)
-            # while farm inputs use 'commod', feedstuffs use 'commodity'
-            commodity = (
-                item.get('commodity') or
-                item.get('commod') or
-                item.get('commodity_name') or
-                item.get('item') or
-                item.get('product') or
-                ''
-            )
+            # while farm inputs use 'commod', feedstuffs use 'commodity'.
+            # The Tallow & Protein reports (2837/2839) put the animal source
+            # in 'commodity' ("Beef"/"Pork") and the actual product
+            # ("Tallow", "Choice White Grease") in 'item' — for those slugs
+            # we flip the order so `item` wins.
+            if str(slug_id) in COMMODITY_FROM_ITEM_SLUGS:
+                commodity = (
+                    item.get('item') or
+                    item.get('product') or
+                    item.get('commodity') or
+                    item.get('commod') or
+                    item.get('commodity_name') or
+                    ''
+                )
+            else:
+                commodity = (
+                    item.get('commodity') or
+                    item.get('commod') or
+                    item.get('commodity_name') or
+                    item.get('item') or
+                    item.get('product') or
+                    ''
+                )
             record['commodity'] = str(commodity).strip()
 
             # Location — MARS grain reports use 'trade_loc' (e.g., "Central",
             # "Mississippi River", "Kansas City"), farm inputs use
-            # 'geographical_location', livestock uses 'market_location_name'
+            # 'geographical_location', livestock uses 'market_location_name'.
+            # Tallow reports (2837/2839) use 'freight_region'.
+            # By-Product Feedstuff (3510) uses 'trade Loc' (with a SPACE).
             location = (
                 item.get('trade_loc') or
+                item.get('trade Loc') or
+                item.get('freight_region') or
                 item.get('region') or
                 item.get('location') or
                 item.get('geographical_location') or
