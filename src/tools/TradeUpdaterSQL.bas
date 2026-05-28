@@ -735,6 +735,12 @@ Public Sub AssignTradeShortcuts()
     ' Assign Ctrl+I and Ctrl+Shift+I shortcuts
     Application.OnKey "^i", "TradeUpdaterSQL.UpdateTradeData"
     Application.OnKey "^+i", "TradeUpdaterSQL.UpdateTradeDataCustom"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Trade Updater (Census trade flows)", _
+        "Ctrl+I", "Quick update", _
+        "Ctrl+Shift+I", "Custom update"
 End Sub
 
 Public Sub RemoveTradeShortcuts()

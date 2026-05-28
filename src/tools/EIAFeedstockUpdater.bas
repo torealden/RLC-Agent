@@ -288,6 +288,12 @@ Public Sub AssignFeedstockShortcuts()
 
     Application.OnKey "^d", "EIAFeedstockUpdater.UpdateFeedstockData"
     Application.OnKey "^+d", "EIAFeedstockUpdater.UpdateFeedstockDataCustom"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "EIA Feedstock Updater", _
+        "Ctrl+D", "Quick update (latest 6 months)", _
+        "Ctrl+Shift+D", "Custom update (choose months)"
 End Sub
 
 Public Sub RemoveFeedstockShortcuts()

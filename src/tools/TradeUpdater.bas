@@ -295,6 +295,12 @@ Public Sub AssignKeyboardShortcuts()
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+I = Quick update (last 3 months)" & vbCrLf & _
            "Ctrl+Shift+I = Custom date range", vbInformation, "Trade Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Trade Updater (legacy non-SQL)", _
+        "Ctrl+I", "Quick update", _
+        "Ctrl+Shift+I", "Custom update"
 End Sub
 
 

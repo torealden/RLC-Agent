@@ -294,6 +294,12 @@ Public Sub AssignCrushShortcuts()
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+U = Quick update (latest 6 months)" & vbCrLf & _
            "Ctrl+Shift+U = Custom month count", vbInformation, "Crush Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Crush Updater (legacy — superseded by FatsOilsUpdaterSQL)", _
+        "Ctrl+U", "Quick update", _
+        "Ctrl+Shift+U", "Custom update"
 End Sub
 
 Public Sub RemoveCrushShortcuts()

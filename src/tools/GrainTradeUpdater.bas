@@ -437,6 +437,12 @@ Public Sub AssignGrainShortcuts()
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+J = Quick update (latest 3 months)" & vbCrLf & _
            "Ctrl+Shift+J = Custom month count", vbInformation, "Grain Trade Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Grain Trade Updater", _
+        "Ctrl+J", "Quick update", _
+        "Ctrl+Shift+J", "Custom update"
 End Sub
 
 Public Sub RemoveGrainShortcuts()

@@ -257,6 +257,12 @@ End Function
 Public Sub AssignLivestockShortcuts()
     Application.OnKey "^l", "LivestockUpdaterSQL.UpdateLivestockData"         ' Ctrl+L
     Application.OnKey "^+l", "LivestockUpdaterSQL.UpdateLivestockDataCustom"   ' Ctrl+Shift+L
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "NASS Livestock Slaughter Updater", _
+        "Ctrl+L", "Quick update", _
+        "Ctrl+Shift+L", "Custom update"
 End Sub
 
 Public Sub RemoveLivestockShortcuts()

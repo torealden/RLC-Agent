@@ -298,6 +298,12 @@ Public Sub AssignEMTSShortcuts()
            "Data is pulled directly from the database." & vbCrLf & _
            "(Make sure EPA CSV has been loaded first)", _
            vbInformation, "EMTS Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "EMTS Data Updater", _
+        "Ctrl+E", "Quick update", _
+        "Ctrl+Shift+E", "Custom update"
 End Sub
 
 Public Sub RemoveEMTSShortcuts()

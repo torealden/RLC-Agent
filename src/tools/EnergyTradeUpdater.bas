@@ -437,6 +437,12 @@ Public Sub AssignEnergyShortcuts()
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+Y = Quick update (latest 3 months)" & vbCrLf & _
            "Ctrl+Shift+Y = Custom month count", vbInformation, "Energy Trade Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Energy Trade Updater (us_fuel_trade)", _
+        "Ctrl+Y", "Quick update", _
+        "Ctrl+Shift+Y", "Custom update"
 End Sub
 
 Public Sub RemoveEnergyShortcuts()

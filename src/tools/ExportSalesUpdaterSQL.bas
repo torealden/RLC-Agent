@@ -365,6 +365,12 @@ End Function
 Public Sub AssignExportSalesShortcuts()
     Application.OnKey "^e", "ExportSalesUpdaterSQL.UpdateExportSalesData"
     Application.OnKey "^+e", "ExportSalesUpdaterSQL.UpdateExportSalesDataCustom"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Export Sales Updater (ESR)", _
+        "Ctrl+E", "Quick update (latest weeks)", _
+        "Ctrl+Shift+E", "Custom update"
 End Sub
 
 Public Sub RemoveExportSalesShortcuts()

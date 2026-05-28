@@ -560,6 +560,12 @@ Public Sub AssignRINShortcuts()
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+R = Quick update (latest 6 months + all annual)" & vbCrLf & _
            "Ctrl+Shift+R = Custom month count", vbInformation, "RIN Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "RIN Updater (EMTS RIN data)", _
+        "Ctrl+R", "Quick update", _
+        "Ctrl+Shift+R", "Custom update"
 End Sub
 
 Public Sub RemoveRINShortcuts()

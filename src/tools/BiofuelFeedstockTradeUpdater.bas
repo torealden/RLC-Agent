@@ -443,6 +443,12 @@ Public Sub AssignFeedstockShortcuts()
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+F = Quick update (latest 3 months)" & vbCrLf & _
            "Ctrl+Shift+F = Custom month count", vbInformation, "Feedstock Trade Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Biofuel Feedstock Trade Updater", _
+        "Ctrl+F", "Quick update (latest 6 months)", _
+        "Ctrl+Shift+F", "Custom update (choose months)"
 End Sub
 
 Public Sub RemoveFeedstockShortcuts()

@@ -877,6 +877,12 @@ Public Sub AssignBiofuelShortcuts()
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+B = Quick update (latest 6 months)" & vbCrLf & _
            "Ctrl+Shift+B = Custom month count", vbInformation, "Biofuel Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Biofuel Data Updater", _
+        "Ctrl+B", "Quick update (latest 6 months)", _
+        "Ctrl+Shift+B", "Custom update (choose months)"
 End Sub
 
 Public Sub RemoveBiofuelShortcuts()

@@ -415,6 +415,12 @@ Public Sub AssignFeedstockShortcuts()
     MsgBox "Keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+E = Quick update (latest 26 weeks)" & vbCrLf & _
            "Ctrl+Shift+E = Custom week count", vbInformation, "EIA Feedstock Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Feedstock Updater (EIA Form 819 feedstock)", _
+        "Ctrl+E", "Quick update", _
+        "Ctrl+Shift+E", "Custom update"
 End Sub
 
 Public Sub RemoveFeedstockShortcuts()

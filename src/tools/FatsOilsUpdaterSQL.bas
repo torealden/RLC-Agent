@@ -1083,6 +1083,12 @@ Public Sub AssignFatsOilsShortcuts()
            "Ctrl+Shift+U  Custom update (choose month count; on multi-commodity" & vbCrLf & _
            "              tabs, choose 'cursor block only' vs 'all')", _
            vbInformation, "Fats & Oils Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "Fats & Oils Updater (NASS Fats & Oils + crush tabs)", _
+        "Ctrl+U", "Quick update (all commodities on active sheet)", _
+        "Ctrl+Shift+U", "Cursor-block only / Custom update"
 End Sub
 
 Public Sub RemoveFatsOilsShortcuts()

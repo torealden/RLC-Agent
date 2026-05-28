@@ -644,6 +644,12 @@ Public Sub AssignInspectionsShortcuts()
     MsgBox "Inspections keyboard shortcuts assigned:" & vbCrLf & vbCrLf & _
            "Ctrl+G = Quick update (latest 6 months / 26 weeks)" & vbCrLf & _
            "Ctrl+Shift+G = Custom period count", vbInformation, "Inspections Updater"
+
+    ' Banner: tell the user which shortcuts are now active in this workbook
+    ShortcutsHelper.ShowShortcutBanner _
+        "FGIS Inspections Updater", _
+        "Ctrl+G", "Quick update", _
+        "Ctrl+Shift+G", "Custom update"
 End Sub
 
 Public Sub RemoveInspectionsShortcuts()
