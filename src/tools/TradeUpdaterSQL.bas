@@ -520,6 +520,15 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         commodity = "SUNFLOWER_OIL"
     ElseIf InStr(sheetLower, "sunflower") > 0 Then
         commodity = "SUNFLOWER"
+    ElseIf InStr(sheetLower, "safflower") > 0 And InStr(sheetLower, "meal") > 0 Then
+        ' HS 2306.90 = "Other oilcake/meal" — safflower meal has no dedicated
+        ' HS subheading and gets lumped here with sesame/other minor oilseed
+        ' meals. Data is a PROXY, not pure safflower meal.
+        commodity = "OILCAKE_OTHER"
+    ElseIf InStr(sheetLower, "safflower") > 0 And InStr(sheetLower, "oil") > 0 Then
+        commodity = "SAFFLOWER_OIL"
+    ElseIf InStr(sheetLower, "safflower") > 0 Then
+        commodity = "SAFFLOWER"
     ElseIf InStr(sheetLower, "palm") > 0 And InStr(sheetLower, "kernel") > 0 _
            And InStr(sheetLower, "oil") > 0 Then
         commodity = "PALM_KERNEL_OIL"

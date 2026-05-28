@@ -133,6 +133,14 @@ def get_commodity_from_sheet_name(sheet_name: str) -> Tuple[str, str]:
         commodity = 'COTTONSEED_OIL'
     elif 'cottonseed' in sheet_lower:
         commodity = 'COTTONSEED'
+    elif 'safflower' in sheet_lower and 'meal' in sheet_lower:
+        # HS 2306.90 is the only home for safflower meal — proxy bucket
+        # mixed with sesame and other minor oilseed meals.
+        commodity = 'OILCAKE_OTHER'
+    elif 'safflower' in sheet_lower and 'oil' in sheet_lower:
+        commodity = 'SAFFLOWER_OIL'
+    elif 'safflower' in sheet_lower:
+        commodity = 'SAFFLOWER'
     else:
         commodity = 'UNKNOWN'
 
