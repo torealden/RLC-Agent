@@ -193,8 +193,9 @@ class USDAFASESRv2Collector(BaseCollector):
 
                 for rec in payload:
                     parsed = self._parse_record(rec, commodity_key, cinfo, my)
+                    # _parse_record returns 0, 1, or 2 rows (NMY synthesis)
                     if parsed:
-                        all_records.append(parsed)
+                        all_records.extend(parsed)
 
                 self.logger.info(
                     f"  {commodity_key} (code={code}) MY{my}: "
@@ -221,8 +222,18 @@ class USDAFASESRv2Collector(BaseCollector):
         commodity_key: str,
         cinfo: Dict[str, Any],
         market_year_v2: int,
-    ) -> Optional[Dict[str, Any]]:
-        """Map a v2 ESR API record to bronze.fas_export_sales row dict.
+    ) -> List[Dict[str, Any]]:
+        """Map a v2 ESR API record to one or two bronze.fas_export_sales rows.
+
+        Returns:
+          - [] on parse error or missing week
+          - [current_my_row] for normal records
+          - [current_my_row, nmy_row] when the record's nextMYNetSales (forward
+            sales booked for the following MY) is non-zero. The synthetic
+            NMY row carries those forward-MY figures so they appear in
+            gold.export_sales_matrix under marketing_year = current MY + 1
+            (otherwise they'd be stranded in the current-MY row's
+            prev_my_accumulated column and invisible to NMY spreadsheet tabs).
 
         Critical convention:
           bronze.fas_export_sales.marketing_year stores the STARTING year of
@@ -231,12 +242,14 @@ class USDAFASESRv2Collector(BaseCollector):
         try:
             week_str = rec.get('weekEndingDate', '')
             if not week_str:
-                return None
+                return []
             week_ending = date.fromisoformat(week_str[:10])
 
             v1_marketing_year = market_year_v2 - 1
+            next_my_net = self._safe_float(rec.get('nextMYNetSales'))
+            next_my_outstanding = self._safe_float(rec.get('nextMYOutstandingSales'))
 
-            return {
+            current_row = {
                 'commodity': commodity_key,
                 'commodity_code': cinfo['code'],
                 'country': '',  # v2 doesn't return countryDescription in this endpoint
@@ -249,12 +262,39 @@ class USDAFASESRv2Collector(BaseCollector):
                 'outstanding_sales': self._safe_float(rec.get('outstandingSales')),
                 'gross_new_sales': self._safe_float(rec.get('grossNewSales')),
                 'net_sales': self._safe_float(rec.get('currentMYNetSales')),
-                'prev_my_accumulated': self._safe_float(rec.get('nextMYNetSales')),
+                'prev_my_accumulated': next_my_net,
                 'unit': cinfo['unit'],
             }
+            out = [current_row]
+
+            # Synthesize an NMY row when forward sales are present. FAS reports
+            # forward-MY sales in both (a) a dedicated marketYear=N+1 query and
+            # (b) the nextMY* fields on current-MY rows. Early in the season
+            # (b) often has data before (a) does, so we always synthesize from
+            # (b) — the dedicated NMY query, when it has data, will upsert
+            # over our synthetic row via the existing unique constraint on
+            # (commodity_code, country_code, marketing_year, week_ending).
+            if next_my_net is not None and next_my_net != 0:
+                out.append({
+                    'commodity': commodity_key,
+                    'commodity_code': cinfo['code'],
+                    'country': '',
+                    'country_code': current_row['country_code'],
+                    'region': '',
+                    'marketing_year': v1_marketing_year + 1,  # NMY
+                    'week_ending': week_ending,
+                    'weekly_exports': 0.0,           # no physical exports yet for NMY
+                    'accumulated_exports': 0.0,
+                    'outstanding_sales': next_my_outstanding,  # cumulative forward outstanding
+                    'gross_new_sales': next_my_net,  # gross = net when no cancellations
+                    'net_sales': next_my_net,
+                    'prev_my_accumulated': None,
+                    'unit': cinfo['unit'],
+                })
+            return out
         except Exception as e:
             self.logger.warning(f"parse_record error for {commodity_key}: {e}")
-            return None
+            return []
 
     @staticmethod
     def _safe_float(v: Any) -> Optional[float]:
