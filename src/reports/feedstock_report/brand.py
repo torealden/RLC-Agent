@@ -62,11 +62,14 @@ RANGE_PRIOR    = SOFT_GRAY   # prior-week marker if shown
 # ============================================================
 # FONT STACK
 # ============================================================
-# Inter is the open substitute for Google Sans (visually near-identical).
-# Calibri is the Windows DOCX fallback. Both render cleanly.
-FONT_PRIMARY    = 'Inter'           # for charts + DOCX body
-FONT_FALLBACKS  = ['Calibri', 'Segoe UI', 'Arial', 'sans-serif']
-FONT_MONO       = 'Consolas'        # for table numerics if monospace needed
+# Google Sans is the primary brand font. Tore has it installed on RLC
+# machines (2026-05-28). When rendering on a machine that doesn't have
+# Google Sans installed, matplotlib falls back through the FONT_FALLBACKS
+# list (Inter -> Calibri -> Segoe UI). Inter is the closest open clone
+# and a safe second choice if a renderer machine lacks Google Sans.
+FONT_PRIMARY    = 'Google Sans'
+FONT_FALLBACKS  = ['Inter', 'Calibri', 'Segoe UI', 'Arial', 'sans-serif']
+FONT_MONO       = 'Google Sans Mono'  # falls back to Consolas if not installed
 
 # Heading sizes (pt) — DOCX
 H1_SIZE = 22
