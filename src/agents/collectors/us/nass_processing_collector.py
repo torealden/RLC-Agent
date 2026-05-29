@@ -776,11 +776,15 @@ class NASSProcessingCollector:
         all_records = []
 
         for stat_cat in stat_categories:
+            # NASS reports peanut STOCKS as freq_desc='POINT IN TIME' with
+            # reference_period_desc='END OF [MONTH]'. Other peanut series
+            # (MILLED/CRUSHED/USAGE etc) are freq_desc='MONTHLY'. Drop the
+            # freq filter so both shapes come back; both are valid monthly
+            # observations, just different reporting conventions.
             params = {
                 'commodity_desc': 'PEANUTS',
                 'statisticcat_desc': stat_cat,
                 'source_desc': 'SURVEY',
-                'freq_desc': 'MONTHLY',
                 'year__GE': str(year - 1),
                 'year__LE': str(year),
                 'agg_level_desc': 'NATIONAL',
@@ -790,9 +794,11 @@ class NASSProcessingCollector:
 
             if data and 'data' in data:
                 for item in data['data']:
-                    # Skip cumulative "AUG THRU" records - we want monthly only
-                    ref_period = item.get('reference_period_desc', '')
-                    if 'THRU' in ref_period.upper():
+                    # Skip cumulative "AUG THRU [MONTH]" — those are running
+                    # totals. Keep "END OF [MONTH]" — those are end-of-month
+                    # stocks (which is the point-in-time number we want).
+                    ref_period = item.get('reference_period_desc', '').upper()
+                    if 'THRU' in ref_period:
                         continue
 
                     record = self._parse_peanut_record(item, stat_cat)
@@ -845,6 +851,11 @@ class NASSProcessingCollector:
     def _month_from_period(self, period: str) -> Optional[int]:
         """Convert NASS period string to month number."""
         period_upper = period.upper().strip()
+
+        # NASS uses 'END OF MAR' / 'END OF MARCH' for point-in-time stocks
+        # (peanut stocks report). Strip the prefix so it matches month_map.
+        if period_upper.startswith('END OF '):
+            period_upper = period_upper[len('END OF '):]
 
         # Monthly periods
         month_map = {
