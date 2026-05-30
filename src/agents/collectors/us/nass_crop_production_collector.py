@@ -381,9 +381,16 @@ class NASSCropProductionCollector:
         for c in commodities:
             cfg = COMMODITIES[c]
             cls_list = cfg['classes']
-            up_list  = cfg.get('util_practices', [None])
+            up_list_full = cfg.get('util_practices', [None])
             total = 0
             for stat in statistics:
+                # AREA PLANTED isn't split by util_practice (you plant before
+                # deciding grain vs silage). NASS returns HTTP 400 for those
+                # combinations — skip them and only query the rollup.
+                if stat == 'AREA PLANTED' and cfg.get('util_practices'):
+                    up_list = ['ALL UTILIZATION PRACTICES']
+                else:
+                    up_list = up_list_full
                 for cls in cls_list:
                     for up in up_list:
                         raw_rows = self._fetch_query(
