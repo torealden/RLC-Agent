@@ -193,19 +193,29 @@ def _is_forecast(reference_period: str) -> bool:
 
 def _derive_source_report(statistic: str, reference_period: str,
                           release_date: date) -> str:
-    """Derive source_report from statistic + reference_period + release month."""
+    """Derive source_report from statistic + reference_period + release month.
+
+    NASS uses 'YEAR - MAR ACREAGE' and 'YEAR - JUN ACREAGE' for the
+    Prospective Plantings (March 31) and June Acreage (June 30) reports.
+    The bare 'YEAR' reference_period is used both for the Acreage report's
+    surprise-month value AND for revisions in monthly Crop Production
+    releases and the Annual Crop Production Summary (Jan).
+    """
     rp = (reference_period or '').upper()
+    if rp == 'YEAR - MAR ACREAGE':
+        return 'Prospective Plantings'
+    if rp == 'YEAR - JUN ACREAGE':
+        return 'Acreage'
     if 'FORECAST' in rp:
         return 'Crop Production'
     if rp == 'YEAR':
         m = release_date.month
-        if statistic == 'area_planted':
-            if m == 3:
-                return 'Prospective Plantings'
-            if m == 6:
-                return 'Acreage'
         if m == 1:
             return 'Annual Crop Production Summary'
+        if m == 3 and statistic == 'area_planted':
+            return 'Prospective Plantings'
+        if m == 6 and statistic == 'area_planted':
+            return 'Acreage'
         return 'Crop Production'    # revisions
     return 'Crop Production'        # fallback
 
