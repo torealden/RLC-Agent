@@ -55,35 +55,46 @@ SHORT_DESC = {
 }
 
 # Vintage column definitions per statistic.
-# Each entry: (column label, reference_period match, source_report match)
-# reference_period match: exact string OR list of strings OR None.
-# source_report match: exact string OR None.
-# When both ref_period and source_report are set, both must match.
-# When only one is set, it's the discriminator.
+# Each entry: (label, ref_periods accepted, release-date filter, pick mode)
+#   ref_periods: list of NASS reference_period_desc values to accept
+#   release filter: callable (release_date, crop_year) -> bool
+#   pick mode: 'earliest' picks the original release (first publication of
+#              this vintage); 'latest' picks the most current revision
+#
+# Tore's preference (2026-05-31): "hold the original PP planting number
+# in that column and as the estimate changes, reflect the changes in the
+# current non-PP columns." So vintage columns use 'earliest' (original
+# release) where possible. Final uses 'latest' so it always reflects
+# the most current canonical 'YEAR' value.
+
+def _in_month(target_month):
+    return lambda rel, yr: rel.year == yr and rel.month == target_month
+def _any(rel, yr): return True
+def _final_year(rel, yr):
+    # Final = post-harvest canonical 'YEAR' release. Must be released in
+    # crop_year+1 or later (skips intra-year rp='YEAR' releases like the
+    # Mar PP and Jun Acreage when they use the bare 'YEAR' periodicity).
+    # Also avoids Census-of-Ag re-publications (which release values for
+    # historical crop_years in subsequent off-cycle months under the same
+    # short_desc but with anomalous magnitudes).
+    return rel.year >= yr + 1
+
 AP_COLS = [
-    # Match on reference_period only — NASS uses 'YEAR - MAR ACREAGE' for
-    # Prospective Plantings (Mar 31) and 'YEAR - JUN ACREAGE' for the
-    # June Acreage report. Source_report is unreliable for these because
-    # the collector's derivation only labels rp='YEAR' rows.
-    ('PP (Mar)',     ['YEAR - MAR ACREAGE'],          None),
-    ('Acreage (Jun)',['YEAR - JUN ACREAGE'],          None),
-    ('Aug WASDE',    ['YEAR - AUG FORECAST'],         None),
-    ('Sep',          ['YEAR - SEP FORECAST'],         None),
-    ('Oct',          ['YEAR - OCT FORECAST'],         None),
-    ('Nov',          ['YEAR - NOV FORECAST'],         None),
-    # Final = the rp='YEAR' row, where source_report=Annual CPS (Jan release)
-    # filters to the canonical post-harvest final. We take the latest 'YEAR'
-    # release; revisions overwrite earlier as expected.
-    ('Final (Jan)',  ['YEAR'],                        None),
+    ('PP (Mar)',      ['YEAR - MAR ACREAGE', 'YEAR'], _in_month(3),  'earliest'),
+    ('Acreage (Jun)', ['YEAR - JUN ACREAGE', 'YEAR'], _in_month(6),  'earliest'),
+    ('Aug WASDE',     ['YEAR - AUG FORECAST'],         _any,         'earliest'),
+    ('Sep',           ['YEAR - SEP FORECAST'],         _any,         'earliest'),
+    ('Oct',           ['YEAR - OCT FORECAST'],         _any,         'earliest'),
+    ('Nov',           ['YEAR - NOV FORECAST'],         _any,         'earliest'),
+    ('Final (Jan)',   ['YEAR'],                        _final_year,  'earliest'),
 ]
 
-# AH/Y/P start at Aug (Tore's choice)
 SEASON_COLS = [
-    ('Aug WASDE',    ['YEAR - AUG FORECAST'],         None),
-    ('Sep',          ['YEAR - SEP FORECAST'],         None),
-    ('Oct',          ['YEAR - OCT FORECAST'],         None),
-    ('Nov',          ['YEAR - NOV FORECAST'],         None),
-    ('Final (Jan)',  ['YEAR'],                         'Annual Crop Production Summary'),
+    ('Aug WASDE',     ['YEAR - AUG FORECAST'],         _any,         'earliest'),
+    ('Sep',           ['YEAR - SEP FORECAST'],         _any,         'earliest'),
+    ('Oct',           ['YEAR - OCT FORECAST'],         _any,         'earliest'),
+    ('Nov',           ['YEAR - NOV FORECAST'],         _any,         'earliest'),
+    ('Final (Jan)',   ['YEAR'],                        _final_year,  'earliest'),
 ]
 
 # Brand styling
@@ -95,53 +106,45 @@ ALT_FILL    = PatternFill(start_color='F4F8F1', end_color='F4F8F1', fill_type='s
 
 
 def fetch_vintage(commodity_db: str, class_db: str, statistic: str,
-                  short_desc: str) -> dict:
-    """Pull all (crop_year, reference_period, source_report) -> latest value.
-    Returns dict[(crop_year, ref_period, source_report)] -> (value, unit, release_date)."""
+                  short_desc: str) -> list:
+    """Pull all rows. Returns list of (crop_year, ref_period, release_date,
+    value, unit) tuples — no deduplication, caller picks per-vintage rule."""
     sql = """
-        WITH ranked AS (
-            SELECT
-                crop_year, reference_period, source_report,
-                value, unit, release_date,
-                ROW_NUMBER() OVER (
-                    PARTITION BY crop_year, reference_period, source_report
-                    ORDER BY release_date DESC
-                ) AS rn
-            FROM silver.crop_production
-            WHERE commodity = %s AND class = %s
-              AND statistic = %s AND short_desc = %s
-              AND agg_level = 'NATIONAL'
-              AND value IS NOT NULL
-        )
-        SELECT crop_year, reference_period, source_report, value, unit, release_date
-        FROM ranked WHERE rn = 1
-        ORDER BY crop_year
+        SELECT crop_year, reference_period, release_date, value, unit
+        FROM silver.crop_production
+        WHERE commodity = %s AND class = %s
+          AND statistic = %s AND short_desc = %s
+          AND agg_level = 'NATIONAL'
+          AND value IS NOT NULL
+        ORDER BY crop_year, release_date
     """
-    out = {}
+    out = []
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(sql, (commodity_db, class_db, statistic, short_desc))
             for r in cur.fetchall():
                 d = dict(r)
-                key = (int(d['crop_year']), d['reference_period'], d['source_report'])
-                out[key] = (float(d['value']), d['unit'], d['release_date'])
+                out.append((int(d['crop_year']), d['reference_period'],
+                            d['release_date'], float(d['value']), d['unit']))
     return out
 
 
-def match_value(rows: dict, year: int, ref_periods: list,
-                source_report: str | None) -> tuple | None:
-    """Find a row matching (year, one of ref_periods, source_report or any).
-    Returns the (value, unit, release_date) tuple or None."""
-    for rp in ref_periods:
-        if source_report is not None:
-            key = (year, rp, source_report)
-            if key in rows:
-                return rows[key]
-        else:
-            # Match any source_report for this (year, ref_period)
-            for k, v in rows.items():
-                if k[0] == year and k[1] == rp:
-                    return v
+def match_value(rows: list, year: int, ref_periods: list,
+                rel_filter, mode: str) -> tuple | None:
+    """Find a row matching (year, ref_period in ref_periods, rel_filter passes).
+    Returns (value, unit, release_date) per pick mode ('earliest' or 'latest').
+    Tries each ref_period in order; once any matches, that's the column's source."""
+    for ref_period in ref_periods:
+        candidates = [
+            (rel, val, unit) for (cy, rp, rel, val, unit) in rows
+            if cy == year and rp == ref_period and rel_filter(rel, year)
+        ]
+        if not candidates:
+            continue
+        candidates.sort(key=lambda x: x[0])
+        chosen = candidates[0] if mode == 'earliest' else candidates[-1]
+        rel, val, unit = chosen
+        return (val, unit, rel)
     return None
 
 
@@ -151,14 +154,14 @@ def build_tab(ws, statistic: str, short_desc: str, col_specs: list,
     rows = fetch_vintage('soybeans', 'all_classes', statistic, short_desc)
 
     # Determine units (should be consistent within one short_desc)
-    units = sorted({r[1] for r in rows.values()})
+    units = sorted({r[4] for r in rows})
     unit_label = units[0] if len(units) == 1 else f'mixed: {units}'
 
     # Headers
     ws.cell(1, 1, value='Year').font = HEADER_FONT
     ws.cell(1, 1).fill = HEADER_FILL
     ws.cell(1, 1).alignment = Alignment(horizontal='center')
-    for i, (label, _, _) in enumerate(col_specs, start=2):
+    for i, (label, _, _, _) in enumerate(col_specs, start=2):
         c = ws.cell(1, i, value=label)
         c.font = HEADER_FONT
         c.fill = HEADER_FILL
@@ -171,8 +174,8 @@ def build_tab(ws, statistic: str, short_desc: str, col_specs: list,
         c.font = YEAR_FONT
         if year % 2 == 1:
             c.fill = ALT_FILL
-        for i, (_, ref_periods, src_rep) in enumerate(col_specs, start=2):
-            match = match_value(rows, year, ref_periods, src_rep)
+        for i, (_, ref_periods, rel_filter, mode) in enumerate(col_specs, start=2):
+            match = match_value(rows, year, ref_periods, rel_filter, mode)
             cell = ws.cell(row, i)
             if year % 2 == 1:
                 cell.fill = ALT_FILL
