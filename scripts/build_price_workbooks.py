@@ -221,21 +221,31 @@ def fetch_table_column(table: str, column: str) -> dict:
     """Generic fetcher for bronze.fuel_prices and bronze.credit_prices.
     Returns dict[price_date] -> (value, source).
 
-    NOTE: credit_prices includes forward-curve data going to 2050 (used for
-    45Z economics modeling). Filter to price_date <= today so it doesn't
-    bleed into the historical weekly grid.
+    For 'fuel' we read from silver.fuel_prices_consolidated (mig 128),
+    which UNIONs EIA v2 observations with legacy fastmarkets. That way
+    ULSD/WTI/Jet A automatically pick up EIA data alongside any
+    fastmarkets coverage that remains relevant.
+
+    For 'credit' we still read from bronze.credit_prices and filter to
+    weekly to skip the forward-curve rows (frequency='monthly' going to 2050).
     """
-    # Forward-curve rows in credit_prices have frequency='monthly' and run
-    # through 2050 (used for 45Z economics modeling). Historical observations
-    # have frequency='weekly'. Filter to weekly to drop the projections.
-    sql = f"""
-        SELECT price_date, {column} AS val, source
-        FROM bronze.{table}_prices
-        WHERE {column} IS NOT NULL
-          AND price_date <= CURRENT_DATE
-          AND frequency = 'weekly'
-        ORDER BY price_date
-    """
+    if table == 'fuel':
+        sql = f"""
+            SELECT price_date, {column} AS val, source
+            FROM silver.fuel_prices_consolidated
+            WHERE {column} IS NOT NULL
+              AND price_date <= CURRENT_DATE
+            ORDER BY price_date
+        """
+    else:
+        sql = f"""
+            SELECT price_date, {column} AS val, source
+            FROM bronze.{table}_prices
+            WHERE {column} IS NOT NULL
+              AND price_date <= CURRENT_DATE
+              AND frequency = 'weekly'
+            ORDER BY price_date
+        """
     out = {}
     with get_connection() as conn:
         with conn.cursor() as cur:
