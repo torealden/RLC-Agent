@@ -68,24 +68,26 @@ SERIES_CATALOG: Dict[str, Dict] = {
                                'description': 'Henry Hub spot $/MMBtu'},
 
     # ============ REFINED WHOLESALE SPOT (WEEKLY) ============
-    'rbob_gulf':              {'series_id': 'EER_EPMRR_PF4_RGC_DPG',    'route': 'petroleum/pri/spt/data', 'frequency': 'weekly',
-                               'description': 'RBOB Gulf Coast spot $/gal'},
-    'rbob_nyh':               {'series_id': 'EER_EPMR_PF4_Y35NY_DPG',   'route': 'petroleum/pri/spt/data', 'frequency': 'weekly',
-                               'description': 'RBOB NY Harbor spot $/gal'},
+    # Note: RBOB Gulf spot does not exist as an EIA series — EIA only publishes
+    # RBOB at LA and NY Harbor (and Gulf conventional, which is a different
+    # product). For Gulf gasoline benchmark use ULSD Gulf paired with the
+    # NY Harbor RBOB spread.
+    'rbob_la':                {'series_id': 'EER_EPMRR_PF4_Y05LA_DPG', 'route': 'petroleum/pri/spt/data', 'frequency': 'weekly',
+                               'description': 'LA Reformulated RBOB spot $/gal'},
     'ulsd_gulf':              {'series_id': 'EER_EPD2DXL0_PF4_RGC_DPG',  'route': 'petroleum/pri/spt/data', 'frequency': 'weekly',
                                'description': 'ULSD Gulf Coast spot $/gal'},
     'ulsd_nyh':               {'series_id': 'EER_EPD2DXL0_PF4_Y35NY_DPG','route': 'petroleum/pri/spt/data', 'frequency': 'weekly',
                                'description': 'ULSD NY Harbor spot $/gal'},
     'jet_a_gulf':             {'series_id': 'EER_EPJK_PF4_RGC_DPG',     'route': 'petroleum/pri/spt/data', 'frequency': 'weekly',
                                'description': 'Jet A Gulf Coast spot $/gal'},
-    'propane_mb':             {'series_id': 'EER_EPLLPA_PF4_RGC_DPG',   'route': 'petroleum/pri/spt/data', 'frequency': 'weekly',
+    'propane_mb':             {'series_id': 'EER_EPLLPA_PF4_Y44MB_DPG', 'route': 'petroleum/pri/spt/data', 'frequency': 'weekly',
                                'description': 'Mont Belvieu propane spot $/gal'},
 
     # ============ RETAIL PRICES (WEEKLY) ============
     'retail_gasoline_us':     {'series_id': 'EMM_EPM0_PTE_NUS_DPG',     'route': 'petroleum/pri/gnd/data', 'frequency': 'weekly',
                                'description': 'US retail gasoline avg $/gal'},
-    'retail_diesel_us':       {'series_id': 'EMD_EPD0_PTE_NUS_DPG',     'route': 'petroleum/pri/gnd/data', 'frequency': 'weekly',
-                               'description': 'US retail diesel avg $/gal'},
+    'retail_diesel_us':       {'series_id': 'EMD_EPD2D_PTE_NUS_DPG',    'route': 'petroleum/pri/gnd/data', 'frequency': 'weekly',
+                               'description': 'US retail No 2 diesel avg $/gal'},
 
     # ============ CRUDE BALANCE (WEEKLY) ============
     'crude_production_us':    {'series_id': 'WCRFPUS2',  'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
@@ -122,7 +124,7 @@ SERIES_CATALOG: Dict[str, Dict] = {
                                'description': 'US distillate imports kbd'},
 
     # ============ JET FUEL BALANCE (WEEKLY) ============
-    'jet_stocks_us':          {'series_id': 'W_EPJK_SAE_NUS_MBBL', 'route': 'petroleum/stoc/wstk/data', 'frequency': 'weekly',
+    'jet_stocks_us':          {'series_id': 'WKJSTUS1', 'route': 'petroleum/stoc/wstk/data', 'frequency': 'weekly',
                                'description': 'US jet fuel stocks kb'},
     'jet_supplied_us':        {'series_id': 'WKJUPUS2',  'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
                                'description': 'US jet fuel supplied kbd'},
