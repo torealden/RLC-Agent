@@ -80,8 +80,13 @@ def _final_year(rel, yr):
     return rel.year >= yr + 1
 
 AP_COLS = [
-    ('PP (Mar)',      ['YEAR - MAR ACREAGE', 'YEAR'], _in_month(3),  'earliest'),
-    ('Acreage (Jun)', ['YEAR - JUN ACREAGE', 'YEAR'], _in_month(6),  'earliest'),
+    # Tore confirmed (2026-05-31) that NASS does NOT actually revise the
+    # original PP/Acreage values — they just reset load_time in a
+    # 2018-01-23 database migration. Spot-checked 2012/2013/2014 against
+    # the actual USDA press releases; values match to the unit. So we
+    # trust reference_period as the discriminator (no release-month filter).
+    ('PP (Mar)',      ['YEAR - MAR ACREAGE'],          _any,         'earliest'),
+    ('Acreage (Jun)', ['YEAR - JUN ACREAGE'],          _any,         'earliest'),
     ('Aug WASDE',     ['YEAR - AUG FORECAST'],         _any,         'earliest'),
     ('Sep',           ['YEAR - SEP FORECAST'],         _any,         'earliest'),
     ('Oct',           ['YEAR - OCT FORECAST'],         _any,         'earliest'),
