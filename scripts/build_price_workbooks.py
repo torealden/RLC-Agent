@@ -43,6 +43,13 @@ log = logging.getLogger('build_price_workbooks')
 
 VEG_OIL_TABS = {
     'sbo': {
+        # AMS 3511 weekly regional (live, public-domain)
+        'Iowa (AMS)':            ('SBO', 'iowa'),
+        'Illinois (AMS)':        ('SBO', 'illinois'),
+        'Indiana-Ohio (AMS)':    ('SBO', 'indiana_ohio'),
+        'Minnesota (AMS)':       ('SBO', 'minnesota'),
+        'Minneapolis (AMS)':     ('SBO', 'minneapolis'),
+        # Legacy fastmarkets (frozen ~2025-12)
         'Central IL (cash)':     ('SBO', 'central_il'),
         'Central IL (basis)':    ('SBO', 'central_il_basis'),
         'Central IL (crude)':    ('SBO', 'central_il_crude'),
@@ -180,6 +187,59 @@ CREDIT_TABS = {
         'California LCFS':      'lcfs_ca',
         'Oregon CFP':           'cfp_or',
         'Washington CFS':       'cfs_wa',
+    },
+}
+
+# AMS 3511-based protein meal + minor-oilseed feedstuff prices. All from
+# the weekly National Grain & Oilseed Processor Feedstuff Report.
+PROTEIN_MEAL_TABS = {
+    'safflower_meal': {
+        'Minneapolis (AMS)':    ('SAFM', 'minneapolis'),
+        'CA-SJV (AMS)':         ('SAFM', 'ca_sjv'),
+    },
+    'linseed_meal': {
+        'Minneapolis (AMS)':    ('LSM', 'minneapolis'),
+        'Min-Dak (AMS)':        ('LSM', 'min_dak'),
+    },
+    'sunflower_meal': {
+        'Minneapolis (AMS)':    ('SFM', 'minneapolis'),
+        'Min-Dak (AMS)':        ('SFM', 'min_dak'),
+    },
+    'canola_meal': {
+        'Minneapolis (AMS)':    ('CM', 'minneapolis'),
+        'CA-SJV (AMS)':         ('CM', 'ca_sjv'),
+        'Min-Dak (AMS)':        ('CM', 'min_dak'),
+        'PNW (AMS)':            ('CM', 'us_pnw'),
+        'Portland OR (AMS)':    ('CM', 'portland_or'),
+    },
+    'cottonseed_meal': {
+        'Minneapolis (AMS)':    ('CSM', 'minneapolis'),
+        'CA-SJV (AMS)':         ('CSM', 'ca_sjv'),
+    },
+    'soybean_meal_regional': {
+        'Minneapolis (AMS)':    ('SBM', 'minneapolis'),
+        'Iowa (AMS)':           ('SBM', 'iowa'),
+        'Illinois (AMS)':       ('SBM', 'illinois'),
+        'Indiana-Ohio (AMS)':   ('SBM', 'indiana_ohio'),
+        'Minnesota (AMS)':      ('SBM', 'minnesota'),
+        'KC Region (AMS)':      ('SBM', 'kc'),
+        'CA-South (AMS)':       ('SBM', 'ca_south'),
+        'PNW (AMS)':            ('SBM', 'us_pnw'),
+        'Portland OR (AMS)':    ('SBM', 'portland_or'),
+    },
+    'corn_distillers': {
+        'Minneapolis (AMS)':    ('DDGS', 'minneapolis'),
+        'Iowa (AMS)':           ('DDGS', 'iowa'),
+        'Illinois (AMS)':       ('DDGS', 'illinois'),
+        'Indiana-Ohio (AMS)':   ('DDGS', 'indiana_ohio'),
+        'Kansas (AMS)':         ('DDGS', 'kansas'),
+        'Nebraska (AMS)':       ('DDGS', 'nebraska'),
+        'Michigan (AMS)':       ('DDGS', 'michigan'),
+        'Missouri (AMS)':       ('DDGS', 'missouri'),
+        'South Dakota (AMS)':   ('DDGS', 'south_dakota'),
+        'Wisconsin (AMS)':      ('DDGS', 'wisconsin'),
+        'California (AMS)':     ('DDGS', 'california'),
+        'PNW (AMS)':            ('DDGS', 'us_pnw'),
     },
 }
 
@@ -471,6 +531,11 @@ def main():
         PROJECT_ROOT / 'models/Biofuels/us_credit_prices.xlsx',
         CREDIT_TABS, credit_fetch, start, end,
         'US biofuel credit prices (RIN / LCFS / CFP / CFS)',
+    )
+    build_workbook(
+        PROJECT_ROOT / 'models/Oilseeds/us_protein_meal_prices.xlsx',
+        PROTEIN_MEAL_TABS, fetch_feedstock_series, start, end,
+        'US protein meal + minor-oilseed feedstuff prices (AMS 3511)',
     )
 
 
