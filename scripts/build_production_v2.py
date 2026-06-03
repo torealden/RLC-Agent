@@ -127,6 +127,33 @@ COMMODITY_CONFIG = {
             'production':     ('all_classes', 'COTTON - PRODUCTION, MEASURED IN 480 LB BALES'),
         },
     },
+    'safflower': {
+        'file': 'models/Oilseeds/us_safflower_production.xlsx',
+        'stats': {
+            'area_planted':   ('all_classes', 'SAFFLOWER - ACRES PLANTED'),
+            'area_harvested': ('all_classes', 'SAFFLOWER - ACRES HARVESTED'),
+            'yield':          ('all_classes', 'SAFFLOWER - YIELD, MEASURED IN LB / ACRE'),
+            'production':     ('all_classes', 'SAFFLOWER - PRODUCTION, MEASURED IN LB'),
+        },
+    },
+    'flaxseed': {
+        'file': 'models/Oilseeds/us_flaxseed_production.xlsx',
+        'stats': {
+            'area_planted':   ('all_classes', 'FLAXSEED - ACRES PLANTED'),
+            'area_harvested': ('all_classes', 'FLAXSEED - ACRES HARVESTED'),
+            'yield':          ('all_classes', 'FLAXSEED - YIELD, MEASURED IN BU / ACRE'),
+            'production':     ('all_classes', 'FLAXSEED - PRODUCTION, MEASURED IN BU'),
+        },
+    },
+    'mustard': {
+        'file': 'models/Oilseeds/us_mustard_production.xlsx',
+        'stats': {
+            'area_planted':   ('all_classes', 'MUSTARD - ACRES PLANTED'),
+            'area_harvested': ('all_classes', 'MUSTARD - ACRES HARVESTED'),
+            'yield':          ('all_classes', 'MUSTARD - YIELD, MEASURED IN LB / ACRE'),
+            'production':     ('all_classes', 'MUSTARD - PRODUCTION, MEASURED IN LB'),
+        },
+    },
 }
 
 

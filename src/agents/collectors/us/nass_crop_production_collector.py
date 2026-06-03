@@ -95,6 +95,18 @@ COMMODITIES: Dict[str, Dict] = {
         'nass_commodity': 'PEANUTS',
         'classes': [None, 'RUNNERS', 'SPANISH', 'VIRGINIAS & VALENCIAS'],
     },
+    'safflower': {
+        'nass_commodity': 'SAFFLOWER',
+        'classes': [None],
+    },
+    'flaxseed': {
+        'nass_commodity': 'FLAXSEED',
+        'classes': [None],
+    },
+    'mustard': {
+        'nass_commodity': 'MUSTARD',
+        'classes': [None],
+    },
 }
 
 STATISTICS = ['AREA PLANTED', 'AREA HARVESTED', 'YIELD', 'PRODUCTION', 'PRODUCTION VALUE']
