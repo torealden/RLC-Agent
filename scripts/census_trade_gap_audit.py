@@ -89,6 +89,20 @@ def load_verified_empty():
     return verified
 
 
+def load_acknowledged():
+    """Returns set of (hs_code, flow) pairs analyst has acknowledged as
+    real-world residual gaps (mig 132)."""
+    ack = set()
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                'SELECT hs_code, flow FROM bronze.census_trade_audit_acknowledged'
+            )
+            for r in cur.fetchall():
+                ack.add((r['hs_code'], r['flow']))
+    return ack
+
+
 def record_verified_empty(hs_code: str, flow: str, year: int):
     """Mark (hs_code, flow, year) as verified empty by Census API.
     Idempotent via the unique constraint."""
@@ -184,10 +198,13 @@ def main():
 
     log.info(f'Auditing (min_gap={args.min_gap})...')
     fix_list = audit(min_gap=args.min_gap)
-    print(f'\n{len(fix_list)} HS/flow pairs flagged:')
+    ack = load_acknowledged()
+    active = [r for r in fix_list if (r[0], r[1]) not in ack]
+    acked  = [r for r in fix_list if (r[0], r[1]) in ack]
+    print(f'\n{len(active)} HS/flow pairs need attention (+ {len(acked)} acknowledged real-world):')
     n_to_fill = 0
     n_verified_already = 0
-    for hs, flow, years_to_fill, total, years_verified in fix_list:
+    for hs, flow, years_to_fill, total, years_verified in active:
         bits = []
         if years_to_fill:
             bits.append(f'fill: {years_to_fill}')
@@ -196,27 +213,30 @@ def main():
             bits.append(f'verified-empty: {years_verified}')
             n_verified_already += len(years_verified)
         print(f'  {hs:14s} {flow:8s} {total:>3} months  |  {"  ".join(bits)}')
+    if acked:
+        print(f'\nAcknowledged real-world residual-gap pairs (suppressed from attention list):')
+        for hs, flow, _, total, _ in acked:
+            print(f'  {hs:14s} {flow:8s} {total:>3} months  (acknowledged)')
     print(f'\nAPI calls needed: {n_to_fill}  (already verified-empty: {n_verified_already})')
 
-    if args.fix and fix_list and n_to_fill > 0:
-        log.info(f'\nBackfilling {n_to_fill} (hs_code, year) requests...')
-        added, verified = fix(fix_list)
+    if args.fix and active and n_to_fill > 0:
+        log.info(f'\nBackfilling {n_to_fill} (hs_code, year) requests on active pairs...')
+        added, verified = fix(active)
         log.info(f'Records added: {added}')
         log.info(f'New verified-empty tuples: {verified}')
 
         log.info('\nRe-auditing post-fix...')
         remaining = audit(min_gap=args.min_gap)
-        unverified_remaining = [(hs, flow, ytf, tot, yv)
-                                 for hs, flow, ytf, tot, yv in remaining
-                                 if ytf]  # only show ones with unverified years left
-        if not unverified_remaining:
-            log.info('All gaps either filled or verified-empty.')
+        remaining_active = [r for r in remaining
+                             if (r[0], r[1]) not in ack and r[2]]  # not ack'd and has fill years
+        if not remaining_active:
+            log.info('All active gaps either filled or verified-empty.')
         else:
-            log.warning(f'{len(unverified_remaining)} pairs have unverified gap years remaining:')
-            for hs, flow, years_to_fill, total, _ in unverified_remaining:
+            log.warning(f'{len(remaining_active)} pairs have unverified gap years remaining:')
+            for hs, flow, years_to_fill, total, _ in remaining_active:
                 print(f'  {hs:14s} {flow:8s} fill: {years_to_fill}')
     elif args.fix:
-        log.info('Nothing to backfill — all flagged gaps are verified-empty.')
+        log.info('Nothing to backfill on active pairs.')
 
 
 if __name__ == '__main__':
