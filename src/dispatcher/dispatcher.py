@@ -406,11 +406,19 @@ class Dispatcher:
         minute = release.release_time.minute if release.release_time else 0
 
         if release.frequency == ReleaseFrequency.DAILY:
-            return CronTrigger(
+            kwargs = dict(
                 day_of_week='mon-fri',
                 hour=hour,
                 minute=minute,
             )
+            # day_range='1-10' restricts a DAILY trigger to the first 10 days
+            # of the month (Mon-Fri). Used for monthly-release collectors where
+            # we want multiple shots at catching a release window or recovering
+            # from a transient failure without spamming the API all month.
+            day_range = getattr(release, 'day_range', None)
+            if day_range:
+                kwargs['day'] = day_range
+            return CronTrigger(**kwargs)
 
         elif release.frequency == ReleaseFrequency.WEEKLY:
             if release.day_of_week is None:

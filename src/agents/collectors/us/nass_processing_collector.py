@@ -296,14 +296,42 @@ class NASSProcessingCollector:
         try:
             year = kwargs.get('year', dt.now().year)
             totals = self.save_to_monthly_realized(report_type='all', year=year)
-            total_bronze = sum(v.get('bronze', 0) for v in totals.values())
-            total_silver = sum(v.get('silver', 0) for v in totals.values())
-            result.success = True
+            errors = totals.pop('errors', [])
+            total_bronze = sum(
+                v.get('bronze', 0) for v in totals.values() if isinstance(v, dict)
+            )
+            total_silver = sum(
+                v.get('silver', 0) for v in totals.values() if isinstance(v, dict)
+            )
+
+            # Success = at least one report type persisted data.
+            # Partial failures appear as warnings; full failures set success=False
+            # so the dispatcher records status='failed' instead of silently
+            # claiming success while the data was rolled back.
+            if total_bronze > 0:
+                result.success = True
+                if errors:
+                    result.warnings = [
+                        f"{rt}: {msg}" for rt, msg in errors
+                    ]
+            else:
+                result.success = False
+                if errors:
+                    result.error_message = '; '.join(
+                        f"{rt}: {msg}" for rt, msg in errors
+                    )
+                else:
+                    result.error_message = (
+                        f"No records persisted for year={year} "
+                        f"(API returned nothing for all 5 report types)"
+                    )
+
             result.records_fetched = total_bronze + total_silver
             result.data_as_of = str(year)
             self.logger.info(
                 f"Collected {total_bronze} bronze + {total_silver} silver "
-                f"across {len(totals)} report types"
+                f"across {len(totals)} report types "
+                f"({len(errors)} errors)"
             )
         except Exception as e:
             result.error_message = str(e)
@@ -992,11 +1020,17 @@ class NASSProcessingCollector:
         report_type: str = 'all',
         year: int = None,
         conn=None
-    ) -> Dict[str, int]:
+    ) -> Dict[str, Any]:
         """
         Collect and save processing data to both bronze and silver layers.
 
         Pipeline: API -> bronze.nass_processing -> silver.monthly_realized
+
+        Commits per report type so a failure in one (e.g., grain_crushings
+        API timeout) does not roll back the successful ones (e.g., soy_crush).
+        Pre-fix behavior wrapped all five reports in a single transaction and
+        a late failure silently discarded earlier writes while the dispatcher
+        recorded the run as 'success'.
 
         Args:
             report_type: 'fats_oils', 'grain_crushings', 'flour_milling',
@@ -1005,7 +1039,9 @@ class NASSProcessingCollector:
             conn: Optional database connection
 
         Returns:
-            Dict with counts by report type
+            Dict with per-report-type results. Each entry has bronze/silver
+            counts and optionally an 'error' key. Also includes a top-level
+            'errors' list of (report_type, message) pairs.
         """
         year = year or datetime.now().year
         close_conn = False
@@ -1014,74 +1050,94 @@ class NASSProcessingCollector:
             conn = self.get_connection()
             close_conn = True
 
-        results = {}
+        results: Dict[str, Any] = {}
+        errors: List[tuple] = []
+        session_id = None
+
+        report_specs = [
+            ('fats_oils',         self.fetch_fats_oils),
+            ('soy_crush',         self.fetch_soy_crush),
+            ('grain_crushings',   self.fetch_grain_crushings),
+            ('flour_milling',     self.fetch_flour_milling),
+            ('peanut_processing', self.fetch_peanut_processing),
+        ]
 
         try:
-            # Start audit session
             session_id = self._start_audit_session(conn, report_type, year)
-
-            if report_type in ('all', 'fats_oils'):
-                df = self.fetch_fats_oils(year=year)
-                if df is not None:
-                    bronze_count = self.save_to_bronze(df, 'fats_oils', conn)
-                    silver_count = self._save_to_realized(df, 'fats_oils', conn)
-                    results['fats_oils'] = {
-                        'bronze': bronze_count, 'silver': silver_count
-                    }
-
-            if report_type in ('all', 'soy_crush'):
-                df = self.fetch_soy_crush(year=year)
-                if df is not None:
-                    bronze_count = self.save_to_bronze(df, 'soy_crush', conn)
-                    silver_count = self._save_to_realized(df, 'soy_crush', conn)
-                    results['soy_crush'] = {
-                        'bronze': bronze_count, 'silver': silver_count
-                    }
-
-            if report_type in ('all', 'grain_crushings'):
-                df = self.fetch_grain_crushings(year=year)
-                if df is not None:
-                    bronze_count = self.save_to_bronze(df, 'grain_crushings', conn)
-                    silver_count = self._save_to_realized(df, 'grain_crushings', conn)
-                    results['grain_crushings'] = {
-                        'bronze': bronze_count, 'silver': silver_count
-                    }
-
-            if report_type in ('all', 'flour_milling'):
-                df = self.fetch_flour_milling(year=year)
-                if df is not None:
-                    bronze_count = self.save_to_bronze(df, 'flour_milling', conn)
-                    silver_count = self._save_to_realized(df, 'flour_milling', conn)
-                    results['flour_milling'] = {
-                        'bronze': bronze_count, 'silver': silver_count
-                    }
-
-            if report_type in ('all', 'peanut_processing'):
-                df = self.fetch_peanut_processing(year=year)
-                if df is not None:
-                    bronze_count = self.save_to_bronze(df, 'peanut_processing', conn)
-                    silver_count = self._save_to_realized(df, 'peanut_processing', conn)
-                    results['peanut_processing'] = {
-                        'bronze': bronze_count, 'silver': silver_count
-                    }
-
-            # Complete audit session
-            self._complete_audit_session(conn, session_id, results)
-
-            conn.commit()
-            self.logger.info("Saved to bronze + silver: {}".format(results))
-
+            conn.commit()  # commit audit row so it survives later rollbacks
         except Exception as e:
-            conn.rollback()
-            self.logger.error("Error saving data: {}".format(e))
-            if session_id:
-                self._fail_audit_session(conn, session_id, str(e))
-                conn.commit()
-            raise
-        finally:
-            if close_conn:
-                conn.close()
+            self.logger.warning(f"Could not start audit session: {e}")
+            try:
+                conn.rollback()
+            except Exception:
+                pass
 
+        for rt_name, fetch_func in report_specs:
+            if report_type not in ('all', rt_name):
+                continue
+
+            try:
+                df = fetch_func(year=year)
+            except Exception as e:
+                msg = f"fetch failed: {e}"
+                self.logger.error(f"[{rt_name}] {msg}")
+                errors.append((rt_name, msg))
+                results[rt_name] = {'bronze': 0, 'silver': 0, 'error': msg}
+                continue
+
+            if df is None or len(df) == 0:
+                self.logger.warning(f"[{rt_name}] no records returned by API")
+                results[rt_name] = {'bronze': 0, 'silver': 0}
+                continue
+
+            try:
+                bronze_count = self.save_to_bronze(df, rt_name, conn)
+                silver_count = self._save_to_realized(df, rt_name, conn)
+                conn.commit()  # per-report commit: isolates failures
+                results[rt_name] = {'bronze': bronze_count, 'silver': silver_count}
+                self.logger.info(
+                    f"[{rt_name}] committed bronze={bronze_count} silver={silver_count}"
+                )
+            except Exception as e:
+                msg = f"save failed: {e}"
+                self.logger.error(f"[{rt_name}] {msg}")
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                errors.append((rt_name, msg))
+                results[rt_name] = {'bronze': 0, 'silver': 0, 'error': msg}
+
+        # Audit session: complete or fail based on whether anything succeeded
+        try:
+            if session_id is not None:
+                if errors and not any(r.get('bronze', 0) > 0 for r in results.values()):
+                    self._fail_audit_session(
+                        conn, session_id,
+                        '; '.join(f"{rt}: {m}" for rt, m in errors)
+                    )
+                else:
+                    self._complete_audit_session(conn, session_id, results)
+                conn.commit()
+        except Exception as e:
+            self.logger.warning(f"Could not close audit session: {e}")
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+
+        if close_conn:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+        results['errors'] = errors
+        if errors:
+            self.logger.warning(
+                f"save_to_monthly_realized completed with {len(errors)} report-type "
+                f"error(s): {errors}"
+            )
         return results
 
     def _save_to_realized(

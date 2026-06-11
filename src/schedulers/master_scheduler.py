@@ -54,6 +54,7 @@ class ReleaseSchedule:
     lag_days: int = 0                              # Days after period end data is released
     description: str = ""
     release_dates: Optional[Dict] = None           # {year: [month_day, ...]} for exact dates
+    day_range: Optional[str] = None                # APScheduler day expr (e.g. '1-10'). With DAILY: run Mon-Fri only on these days of month
 
 
 # Known WASDE release dates by year (from USDA OCE)
@@ -547,15 +548,23 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['corn', 'soybeans', 'wheat', 'sorghum', 'cotton', 'barley', 'oats', 'sunflower', 'canola'],
     ),
 
-    # ── NASS Processing (Fats & Oils, Grain Crush, Peanut — monthly ~10th) ──
+    # ── NASS Processing (Fats & Oils, Grain Crush, Peanut) ──
+    # USDA actual release: Fats & Oils ~1st Tuesday at 3 PM ET, Grain Crushings
+    # ~1st business day, Peanut Stocks ~25th. Old schedule was monthly day 10,
+    # which (a) lagged the release by a week+ and (b) had a single point of
+    # failure: the 2026-06-10 run reported "success" while silently rolling
+    # back, so April data was missing until the silent-rollback bug was fixed.
+    # Now: daily Mon-Fri, first 10 days of month, 2:05 PM ET. Upserts are
+    # idempotent so the extra runs are free; multiple attempts catch any
+    # release-delay or transient-failure window.
     'nass_processing': CollectorSchedule(
         collector_name='nass_processing',
         collector_class='NASSProcessingCollector',
         release_schedule=ReleaseSchedule(
-            frequency=ReleaseFrequency.MONTHLY,
-            day_of_month=10,
-            release_time=time(15, 0),  # 3:00 PM ET
-            description="NASS Fats & Oils, Grain Crushings, Flour Milling, Peanut Processing"
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(14, 5),  # 2:05 PM ET
+            day_range='1-10',          # only first 10 days of month, Mon-Fri
+            description="NASS Fats & Oils, Grain Crushings, Flour Milling, Peanut Processing (daily Mon-Fri days 1-10)"
         ),
         priority=1,
         commodities=['soybeans', 'canola', 'corn', 'cottonseed', 'sunflower', 'peanuts', 'sorghum'],
