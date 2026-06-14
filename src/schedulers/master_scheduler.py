@@ -70,10 +70,18 @@ WASDE_RELEASE_DATES: Dict[int, List[date]] = {
 # Known Census FT-900 release dates by year (from Census Bureau schedule)
 CENSUS_RELEASE_DATES: Dict[int, List[date]] = {
     2026: [
+        # Each date is when Census posts the FT-900 for the reference month
+        # noted alongside. Jun 2026+ are the official Census release calendar
+        # (confirmed by Tore 2026-06-14); Jan–May are historical.
         date(2026, 1, 7),  date(2026, 2, 5),  date(2026, 3, 12),
-        date(2026, 4, 2),  date(2026, 5, 6),  date(2026, 6, 4),
-        date(2026, 7, 2),  date(2026, 8, 5),  date(2026, 9, 3),
-        date(2026, 10, 7), date(2026, 11, 5), date(2026, 12, 3),
+        date(2026, 4, 2),  date(2026, 5, 6),
+        date(2026, 6, 9),    # Apr 2026 data
+        date(2026, 7, 7),    # May 2026 data
+        date(2026, 8, 4),    # Jun 2026 data
+        date(2026, 9, 3),    # Jul 2026 data
+        date(2026, 10, 6),   # Aug 2026 data
+        date(2026, 11, 4),   # Sep 2026 data
+        date(2026, 12, 8),   # Oct 2026 data
     ],
 }
 
@@ -403,8 +411,11 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_class='CensusTradeCollector',
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.MONTHLY,
-            day_of_month=7,  # Fallback ~7th if no exact date
-            release_time=time(10, 0),
+            day_of_month=9,  # Fallback ~9th if no exact date
+            # Exports post 8:30 AM ET; imports + state data by noon ET. Run at
+            # 12:30 PM ET so both flows are captured (a 10 AM run grabbed
+            # exports but missed imports).
+            release_time=time(12, 30),
             lag_days=45,
             description="US Census International Trade Monthly (FT-900, ~6 week lag)",
             release_dates=CENSUS_RELEASE_DATES,
