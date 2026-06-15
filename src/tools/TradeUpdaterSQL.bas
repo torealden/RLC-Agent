@@ -95,6 +95,12 @@ Private Function GetConnection() As Object
 
     On Error GoTo ConnError
     conn.Open connString
+    ' gold.trade_export_matrix is an expensive view (WORLD TOTAL aggregation +
+    ' regional synthesis materialize before the date filter applies — a quick
+    ' 3-month corn pull still scans ~27s). The ADODB/ODBC default CommandTimeout
+    ' is 30s, so the query intermittently gets cancelled ("statement timeout").
+    ' Bump to 300s, matching ExportSalesUpdaterSQL.
+    conn.CommandTimeout = 300
     Set GetConnection = conn
     Exit Function
 
@@ -507,6 +513,12 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         commodity = "WHEAT"
     ElseIf InStr(sheetLower, "ddgs") > 0 Then
         commodity = "DDGS"
+    ElseIf InStr(sheetLower, "sorghum") > 0 Or InStr(sheetLower, "milo") > 0 Then
+        commodity = "SORGHUM"
+    ElseIf InStr(sheetLower, "barley") > 0 Then
+        commodity = "BARLEY"
+    ' Note: Census trade has no oats or rye commodity group — those tabs have
+    ' no trade source (inspections covers oats/rye instead).
     ElseIf InStr(sheetLower, "canola") > 0 And InStr(sheetLower, "meal") > 0 Then
         commodity = "CANOLA_MEAL"
     ElseIf InStr(sheetLower, "canola") > 0 And InStr(sheetLower, "oil") > 0 Then

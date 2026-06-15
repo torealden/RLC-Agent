@@ -296,6 +296,21 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
         commodity = "soybean_oil"
     ElseIf InStr(s, "soy") > 0 Then
         commodity = "soybeans"
+    ' --- Grains. ESR (gold.export_sales_matrix) carries corn, sorghum, and
+    ' wheat SPLIT BY CLASS (wheat_hrw/hrs/srw). There is no barley/oats/rye
+    ' ESR data, and no generic 'wheat' — a wheat ESR sheet must name its class.
+    ElseIf InStr(s, "corn") > 0 Or InStr(s, "maize") > 0 Then
+        commodity = "corn"
+    ElseIf InStr(s, "sorghum") > 0 Or InStr(s, "milo") > 0 Then
+        commodity = "sorghum"
+    ElseIf InStr(s, "wheat") > 0 Then
+        If InStr(s, "hrw") > 0 Or InStr(s, "hard red winter") > 0 Then
+            commodity = "wheat_hrw"
+        ElseIf InStr(s, "hrs") > 0 Or InStr(s, "hard red spring") > 0 Then
+            commodity = "wheat_hrs"
+        ElseIf InStr(s, "srw") > 0 Or InStr(s, "soft red winter") > 0 Then
+            commodity = "wheat_srw"
+        End If   ' generic/other-class wheat (white, durum) stays UNKNOWN — no ESR data
     End If
 
     ' Flow detection — check NMY first since "NMY Sales" contains "Sales"

@@ -510,6 +510,10 @@ Private Function GetGrainFromSheet(sheetName As String) As String
         GetGrainFromSheet = "SORGHUM"
     ElseIf InStr(sheetLower, "barley") > 0 Then
         GetGrainFromSheet = "BARLEY"
+    ElseIf InStr(sheetLower, "oat") > 0 Then
+        GetGrainFromSheet = "OATS"
+    ElseIf InStr(sheetLower, "rye") > 0 Then
+        GetGrainFromSheet = "RYE"
     ElseIf InStr(sheetLower, "canola") > 0 Or InStr(sheetLower, "rapeseed") > 0 Then
         GetGrainFromSheet = "CANOLA"
     Else
