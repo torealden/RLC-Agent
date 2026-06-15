@@ -303,59 +303,61 @@ class CensusTradeCollector(BaseCollector):
 
         all_records = []
 
-        # Fetch month by month for more reliable results
-        current = date(start_date.year, start_date.month, 1)
-        while current <= end_date:
-            time_str = f"{current.year}-{current.month:02d}"
+        # Census timeseries accepts a multi-month range in ONE request
+        # (time=from YYYY-MM to YYYY-MM), which auto-returns a 'time' column.
+        # This replaces the old month-by-month loop (~162 calls for a 13-year
+        # backfill -> hours). Chunked to bound response size. Year/month are
+        # read from the returned 'time' column, not the request.
+        def _chunks(s: date, e: date, span_years: int = 6):
+            cur = date(s.year, s.month, 1)
+            while cur <= e:
+                end_year = min(cur.year + span_years - 1, e.year)
+                ce = date(e.year, e.month, 1) if end_year >= e.year else date(end_year, 12, 1)
+                yield cur, ce
+                cur = date(end_year + 1, 1, 1)
 
+        for cs, ce in _chunks(start_date, end_date):
             params = {
                 'get': f'{value_field},{qty_field},CTY_CODE,CTY_NAME',
                 commodity_field: hs_code,
-                'time': time_str,
+                'time': f'from {cs.year}-{cs.month:02d} to {ce.year}-{ce.month:02d}',
             }
-
             if self.config.api_key:
                 params['key'] = self.config.api_key
-
             if partner_country:
                 params['CTY_CODE'] = partner_country
 
             response, error = self._make_request(url, params=params)
-
-            if error:
-                # Move to next month
-                if current.month == 12:
-                    current = date(current.year + 1, 1, 1)
-                else:
-                    current = date(current.year, current.month + 1, 1)
+            if error or response.status_code != 200:
+                continue
+            try:
+                data = response.json()
+            except Exception:
+                continue
+            if not data or len(data) < 2:
                 continue
 
-            if response.status_code == 200:
+            headers = data[0]
+            for row in data[1:]:
+                record = dict(zip(headers, row))
+                t = record.get('time', '')
+                if not t or '-' not in t:
+                    continue  # need the time dimension to assign the month
                 try:
-                    data = response.json()
-                    if data and len(data) > 1:
-                        headers = data[0]
-                        for row in data[1:]:
-                            record = dict(zip(headers, row))
-                            all_records.append({
-                                'year': current.year,
-                                'month': current.month,
-                                'flow': flow,
-                                'hs_code': hs_code,
-                                'country_code': record.get('CTY_CODE'),
-                                'country_name': record.get('CTY_NAME'),
-                                'value_usd': self._safe_float(record.get(value_field)),
-                                'quantity': self._safe_float(record.get(qty_field)),
-                                'source': 'CENSUS_TRADE',
-                            })
-                except Exception:
-                    pass
-
-            # Move to next month
-            if current.month == 12:
-                current = date(current.year + 1, 1, 1)
-            else:
-                current = date(current.year, current.month + 1, 1)
+                    yr, mo = int(t[:4]), int(t[5:7])
+                except ValueError:
+                    continue
+                all_records.append({
+                    'year': yr,
+                    'month': mo,
+                    'flow': flow,
+                    'hs_code': hs_code,
+                    'country_code': record.get('CTY_CODE'),
+                    'country_name': record.get('CTY_NAME'),
+                    'value_usd': self._safe_float(record.get(value_field)),
+                    'quantity': self._safe_float(record.get(qty_field)),
+                    'source': 'CENSUS_TRADE',
+                })
 
         if all_records:
             return {'success': True, 'records': all_records}
