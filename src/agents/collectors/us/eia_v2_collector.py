@@ -148,6 +148,37 @@ SERIES_CATALOG: Dict[str, Dict] = {
                                'description': 'US ethanol stocks kb'},
     'ethanol_blender_input':  {'series_id': 'W_EPOOX_YIB_NUS_MBBLD',  'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
                                'description': 'US ethanol blender input kbd'},
+    # --- weekly_ethanol_production tab series (us_grain_crush) ---
+    'ethanol_imports_wk':      {'series_id': 'W_EPOOXE_IM0_NUS-Z00_MBBLD', 'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
+                               'description': 'US ethanol imports kbd'},
+    'ethanol_refiner_input_wk':{'series_id': 'W_EPOOXE_YIR_NUS_MBBLD', 'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
+                               'description': 'US ethanol refiner/blender net input kbd'},
+    'gaso_finished_net_prod_wk':{'series_id': 'W_EPM0F_YPR_NUS_MBBLD', 'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
+                               'description': 'US finished motor gasoline net production kbd'},
+    'gaso_reformulated_prod_wk':{'series_id': 'WGRRPUS2',  'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
+                               'description': 'US finished reformulated gasoline net production kbd'},
+    'gaso_reform_w_eth_prod_wk':{'series_id': 'WG1TP_NUS_2', 'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
+                               'description': 'US reformulated gasoline w/ ethanol net production kbd'},
+    'gaso_conventional_prod_wk':{'series_id': 'WG4TP_NUS_2', 'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
+                               'description': 'US finished conventional gasoline net production kbd'},
+    'gaso_conv_other_prod_wk': {'series_id': 'WG5TP_NUS_2', 'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
+                               'description': 'US conventional gasoline (other) net production kbd'},
+    'gaso_conv_ed55_prod_wk':  {'series_id': 'W_EPM0CAL55_YPT_NUS_MBBLD', 'route': 'petroleum/sum/sndw/data', 'frequency': 'weekly',
+                               'description': 'US conventional gasoline Ed55 net production kbd'},
+
+    # ============ ETHANOL & GASOLINE (MONTHLY) - monthly_ethanol_data tab ============
+    'ethanol_imports_m':       {'series_id': 'MFEIMUS1', 'route': 'petroleum/sum/snd/data', 'frequency': 'monthly',
+                               'description': 'US fuel ethanol imports kb'},
+    'ethanol_supply_adj_m':    {'series_id': 'M_EPOOXE_VUA_NUS_MBBL', 'route': 'petroleum/sum/snd/data', 'frequency': 'monthly',
+                               'description': 'US fuel ethanol supply adjustment kb'},
+    'ethanol_refiner_input_m': {'series_id': 'MFERIUS1', 'route': 'petroleum/sum/snd/data', 'frequency': 'monthly',
+                               'description': 'US fuel ethanol refiner/blender net input kb'},
+    'ethanol_exports_m':       {'series_id': 'M_EPOOXE_EEX_NUS-Z00_MBBL', 'route': 'petroleum/sum/snd/data', 'frequency': 'monthly',
+                               'description': 'US fuel ethanol exports kb'},
+    'ethanol_stocks_m':        {'series_id': 'MFESTUS1', 'route': 'petroleum/sum/snd/data', 'frequency': 'monthly',
+                               'description': 'US fuel ethanol ending stocks kb'},
+    'gaso_supplied_m':         {'series_id': 'MGFUPUS1', 'route': 'petroleum/sum/snd/data', 'frequency': 'monthly',
+                               'description': 'US finished motor gasoline product supplied kb'},
 
     # ============ NATURAL GAS BALANCE (WEEKLY) ============
     'natgas_storage_l48':     {'series_id': 'NW2_EPG0_SWO_R48_BCF',  'route': 'natural-gas/stor/wkly/data', 'frequency': 'weekly',
@@ -252,6 +283,12 @@ class EIAV2Collector:
             period = raw.get('period')
             if not period:
                 continue
+            # bronze.eia_observations.period is DATE. EIA monthly periods are
+            # 'YYYY-MM' and annual 'YYYY' -> pad to a valid first-of-period date.
+            if len(period) == 7:        # YYYY-MM
+                period = period + '-01'
+            elif len(period) == 4:      # YYYY
+                period = period + '-01-01'
             batch.append((
                 spec['series_id'], period, v,
                 raw.get('units'),
