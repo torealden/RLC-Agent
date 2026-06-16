@@ -99,6 +99,12 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'class': 'NASSProcessingCollector',
     },
 
+    # === Monthly: NASS Grain Crushings & Co-Products PDF (co-products + mill split) ===
+    'nass_grain_crush_pdf': {
+        'module': 'src.agents.collectors.us.nass_grain_crush_pdf_collector',
+        'class': 'NASSGrainCrushPDFCollector',
+    },
+
     # === Monthly: EIA Biofuel finished-fuel production/stocks/trade ===
     'eia_biofuels_monthly': {
         'module': 'src.agents.collectors.us.eia_biofuels_monthly_collector',

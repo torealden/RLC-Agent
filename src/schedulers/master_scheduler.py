@@ -424,6 +424,23 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['all'],
     ),
 
+    # ── NASS Grain Crushings & Co-Products PDF (co-products + mill split) ──
+    # Co-products (DDGS, gluten, germ meal, CDS, DCO) and the dry/wet-mill split
+    # are PDF-only (not in QuickStats). Released ~1st business day, 3 PM ET,
+    # covering data ~2 months prior. Feeds the us_grain_crush corn_grind tab.
+    'nass_grain_crush_pdf': CollectorSchedule(
+        collector_name='nass_grain_crush_pdf',
+        collector_class='NASSGrainCrushPDFCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=3,
+            release_time=time(15, 0),
+            description="NASS Grain Crushings & Co-Products PDF (corn co-products + mill split)"
+        ),
+        priority=3,
+        commodities=['corn'],
+    ),
+
     'epa_rfs': CollectorSchedule(
         collector_name='epa_rfs',
         collector_class='EPARFSCollector',

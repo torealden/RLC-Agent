@@ -94,6 +94,55 @@ class NASSGrainCrushPDFCollector:
     def __init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)
 
+    # ---- dispatcher entry point -------------------------------------------
+    def collect(self, **kwargs):
+        """Dispatcher entry point. Fetch the current + prior release month
+        (GCCP lands ~1st business day; over-fetching is safe — upserts are
+        idempotent), parse, save to bronze."""
+        from dataclasses import dataclass, field as dc_field
+        from datetime import datetime as dt
+
+        @dataclass
+        class _Result:
+            success: bool = False
+            source: str = "nass_grain_crush_pdf"
+            records_fetched: int = 0
+            error_message: Optional[str] = None
+            warnings: list = dc_field(default_factory=list)
+            collected_at: dt = dc_field(default_factory=dt.now)
+            data_as_of: Optional[str] = None
+
+        res = _Result()
+        now = dt.now()
+        targets, y, m = [], now.year, now.month
+        for _ in range(2):  # current + prior release month
+            targets.append((y, m))
+            m -= 1
+            if m == 0:
+                m, y = 12, y - 1
+        total, periods = 0, []
+        for ry, rm in targets:
+            raw = self.download(rm, ry)
+            if not raw:
+                continue
+            try:
+                pr = self.parse(raw)
+            except Exception as e:
+                res.warnings.append(f"{ry}-{rm:02d}: parse error {e}")
+                continue
+            if not pr.success:
+                res.warnings.append(f"{ry}-{rm:02d}: {pr.error_message}")
+                continue
+            total += self.save_to_bronze(pr.records)
+            res.warnings += pr.warnings
+            periods.append(f"{pr.year}-{pr.month:02d}")
+        res.records_fetched = total
+        res.data_as_of = ",".join(periods) if periods else None
+        res.success = total > 0
+        if not res.success:
+            res.error_message = "no GCCP release available/parsed for current or prior month"
+        return res
+
     # ---- fetch -------------------------------------------------------------
     def download(self, release_month: int, release_year: int) -> Optional[bytes]:
         url = GCCP_URL.format(mm=release_month, yy=release_year % 100)
