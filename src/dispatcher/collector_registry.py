@@ -105,6 +105,12 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'class': 'NASSGrainCrushPDFCollector',
     },
 
+    # === ERS Sugar & Sweeteners (corn sweetener supply/use -> corn_products tab) ===
+    'ers_corn_sweetener': {
+        'module': 'src.agents.collectors.us.ers_corn_sweetener_collector',
+        'class': 'ERSCornSweetenerCollector',
+    },
+
     # === Monthly: EIA Biofuel finished-fuel production/stocks/trade ===
     'eia_biofuels_monthly': {
         'module': 'src.agents.collectors.us.eia_biofuels_monthly_collector',

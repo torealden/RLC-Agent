@@ -441,6 +441,24 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['corn'],
     ),
 
+    # ── ERS Sugar & Sweeteners (corn sweetener supply/use) ──
+    # Feeds the us_grain_crush corn_products tab (HFCS-42/55, glucose, dextrose
+    # production). ERS revises a few times/year; a monthly idempotent check is
+    # free. NOTE: after this refreshes bronze, run the silver transform
+    # src/transforms/build_corn_products_monthly.py to re-monthlyize.
+    'ers_corn_sweetener': CollectorSchedule(
+        collector_name='ers_corn_sweetener',
+        collector_class='ERSCornSweetenerCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=20,
+            release_time=time(14, 0),
+            description="ERS Sugar & Sweeteners Yearbook: corn sweetener supply/use"
+        ),
+        priority=4,
+        commodities=['corn'],
+    ),
+
     'epa_rfs': CollectorSchedule(
         collector_name='epa_rfs',
         collector_class='EPARFSCollector',
