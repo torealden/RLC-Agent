@@ -183,7 +183,11 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
 
     On Error GoTo QueryError
     Set rs = CreateObject("ADODB.Recordset")
-    rs.Open sql, conn
+    ' adOpenStatic (3) so the second pass can rs.MoveFirst. A forward-only
+    ' cursor (the old default here) does NOT support MoveFirst on psqlODBC, so
+    ' the write pass ran erratically -- some months populated, some not,
+    ' unrelated to zeros. Matches ExportSalesUpdaterSQL / TradeUpdaterSQL.
+    rs.Open sql, conn, 3, 1   ' adOpenStatic, adLockReadOnly
 
     ' First pass: identify all columns that will be updated
     Application.StatusBar = "Identifying columns to update..."
