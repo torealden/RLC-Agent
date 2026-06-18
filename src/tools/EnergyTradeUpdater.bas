@@ -150,19 +150,36 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     ' Query for latest months of data
     ' Exclude regional totals (sheet calculates those) except WORLD TOTAL
     ' Include zeros so columns are properly cleared when no trade occurs
-    sql = "SELECT " & _
-          "    year, month, country_name, spreadsheet_row, quantity " & _
-          "FROM gold.trade_export_matrix " & _
-          "WHERE commodity_group = '" & commodity & "' " & _
-          "  AND flow = '" & flow & "' " & _
-          "  AND (is_regional_total = FALSE OR country_name = 'WORLD TOTAL') " & _
-          "  AND (year, month) IN ( " & _
-          "      SELECT DISTINCT year, month " & _
-          "      FROM bronze.census_trade " & _
-          "      ORDER BY year DESC, month DESC " & _
-          "      LIMIT " & monthCount & _
-          "  ) " & _
-          "ORDER BY year, month, spreadsheet_row"
+    If commodity = "SAF" Then
+        ' SAF has no clean HS code -> price/volume heuristic candidates view.
+        ' quantity_gal is actual gallons; the fuel sheets are '000 gallons', so
+        ' /1000. Multiple flagged cargoes per country/month are summed. Latest
+        ' months come from the SAF view itself (sparse, distinct coverage).
+        sql = "SELECT year, month, country_name, spreadsheet_row, " & _
+              "       SUM(quantity_gal)/1000.0 AS quantity " & _
+              "FROM gold.saf_trade_candidates " & _
+              "WHERE flow = '" & flow & "' " & _
+              "  AND (year, month) IN ( " & _
+              "      SELECT DISTINCT year, month FROM gold.saf_trade_candidates " & _
+              "      ORDER BY year DESC, month DESC LIMIT " & monthCount & _
+              "  ) " & _
+              "GROUP BY year, month, country_name, spreadsheet_row " & _
+              "ORDER BY year, month, spreadsheet_row"
+    Else
+        sql = "SELECT " & _
+              "    year, month, country_name, spreadsheet_row, quantity " & _
+              "FROM gold.trade_export_matrix " & _
+              "WHERE commodity_group = '" & commodity & "' " & _
+              "  AND flow = '" & flow & "' " & _
+              "  AND (is_regional_total = FALSE OR country_name = 'WORLD TOTAL') " & _
+              "  AND (year, month) IN ( " & _
+              "      SELECT DISTINCT year, month " & _
+              "      FROM bronze.census_trade " & _
+              "      ORDER BY year DESC, month DESC " & _
+              "      LIMIT " & monthCount & _
+              "  ) " & _
+              "ORDER BY year, month, spreadsheet_row"
+    End If
 
     On Error GoTo QueryError
     Set rs = CreateObject("ADODB.Recordset")
@@ -358,7 +375,11 @@ Private Sub GetCommodityAndFlow(sheetName As String, ByRef commodity As String, 
     End If
 
     ' Determine commodity
-    If InStr(sheetLower, "renewable diesel") > 0 Or InStr(sheetLower, "rd") > 0 Then
+    ' SAF first: it has no HS code (price/volume heuristic view), and its name
+    ' must not fall through to the RD/BD checks.
+    If InStr(sheetLower, "saf") > 0 Or InStr(sheetLower, "sustainable avia") > 0 Then
+        commodity = "SAF"
+    ElseIf InStr(sheetLower, "renewable diesel") > 0 Or InStr(sheetLower, "rd") > 0 Then
         commodity = "RENEWABLE_DIESEL"
     ElseIf InStr(sheetLower, "biodiesel") > 0 Or InStr(sheetLower, "fame") > 0 Then
         commodity = "BIODIESEL"
