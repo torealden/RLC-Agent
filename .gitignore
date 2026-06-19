@@ -154,3 +154,4 @@ data/raw/state_air_permits/*/*_wimn_page.html
 # Local-only; restore from .bak.{date} backups the updater scripts create.
 Models/
 models/
+data/permits/

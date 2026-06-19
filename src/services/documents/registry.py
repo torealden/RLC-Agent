@@ -54,11 +54,8 @@ def register(source: str, doc_type: str, source_key: Optional[str] = None,
         sha = sha256_of(p)
         if str(p).lower().endswith(".pdf"):
             pages = _page_count(p)
-    close = conn is None
-    if conn is None:
-        conn = get_connection()
-    try:
-        cur = conn.cursor()
+    def _do(c):
+        cur = c.cursor()
         cur.execute("""
             INSERT INTO bronze.source_documents
                 (source, source_key, doc_type, title, url, local_path, sha256,
@@ -70,21 +67,19 @@ def register(source: str, doc_type: str, source_key: Optional[str] = None,
         """, (source, source_key, doc_type, title, url, local_path, sha,
               pages, published_date, vintage))
         row = cur.fetchone()
-        if close:
-            conn.commit()
         return (row['id'], row['is_new']) if isinstance(row, dict) else (row[0], row[1])
-    finally:
-        if close:
-            conn.close()
+    if conn is not None:
+        return _do(conn)
+    with get_connection() as c:
+        out = _do(c)
+        c.commit()
+        return out
 
 
 def list_pending(doc_type: Optional[str] = None, source: Optional[str] = None,
                  limit: Optional[int] = None, conn=None) -> List[Dict]:
-    close = conn is None
-    if conn is None:
-        conn = get_connection()
-    try:
-        cur = conn.cursor()
+    def _do(c):
+        cur = c.cursor()
         q = "SELECT * FROM bronze.source_documents WHERE parse_status='pending'"
         params = []
         if doc_type:
@@ -96,21 +91,18 @@ def list_pending(doc_type: Optional[str] = None, source: Optional[str] = None,
             q += " LIMIT %s"; params.append(limit)
         cur.execute(q, params)
         return [dict(r) for r in cur.fetchall()]
-    finally:
-        if close:
-            conn.close()
+    if conn is not None:
+        return _do(conn)
+    with get_connection() as c:
+        return _do(c)
 
 
 def mark(doc_id: int, status: str, method: Optional[str] = None,
          model: Optional[str] = None, confidence: Optional[str] = None,
          output_ref: Optional[str] = None, error: Optional[str] = None,
          conn=None) -> None:
-    close = conn is None
-    if conn is None:
-        conn = get_connection()
-    try:
-        cur = conn.cursor()
-        cur.execute("""
+    def _do(c):
+        c.cursor().execute("""
             UPDATE bronze.source_documents SET
                 parse_status=%s, parse_method=COALESCE(%s,parse_method),
                 parse_model=COALESCE(%s,parse_model), parse_confidence=COALESCE(%s,parse_confidence),
@@ -119,8 +111,9 @@ def mark(doc_id: int, status: str, method: Optional[str] = None,
                 parsed_at = CASE WHEN %s='parsed' THEN NOW() ELSE parsed_at END
             WHERE id=%s
         """, (status, method, model, confidence, output_ref, error, status, status, doc_id))
-        if close:
-            conn.commit()
-    finally:
-        if close:
-            conn.close()
+    if conn is not None:
+        _do(conn)
+        return
+    with get_connection() as c:
+        _do(c)
+        c.commit()
