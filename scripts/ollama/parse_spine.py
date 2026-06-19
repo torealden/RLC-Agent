@@ -41,11 +41,21 @@ LOADER = ROOT / "scripts" / "load_titlev_extractions_to_bronze.py"
 CANONICAL = ROOT / "collectors" / "epa_echo" / "output" / "llm_titlev"   # loader reads here
 
 ENDPOINTS = [
-    {"url": "http://localhost:11434",      "model": "qwen3-coder:30b", "name": "desktop"},
-    {"url": "http://100.73.98.127:11434",  "model": "qwen2.5:7b",      "name": "laptop"},
+    # Desktop 5080 has 16GB VRAM; qwen3-coder:30b (18GB) only partially fits and spills to
+    # CPU. qwen2.5:7b fits fully on GPU and is the model the working legacy batch used.
+    # best-of-N=3 union compensates for 7b's weaker single-run accuracy. (2026-06-19)
+    {"url": "http://localhost:11434",      "model": "qwen2.5:7b", "name": "desktop"},
+    # Laptop 4060 (8GB) can't hold 7b + 32k KV on-GPU -> spills to CPU -> 12 min/run vs the
+    # desktop's 27s (2026-06-19). Pull-based queue means it'd handle only ~10 permits while
+    # adding timeout risk, so it's disabled. Re-enable with a smaller model/ctx if needed.
+    # {"url": "http://100.73.98.127:11434",  "model": "qwen2.5:7b", "name": "laptop"},
 ]
 N_RUNS = 3                       # best-of-N (variance memory: N>=3)
 RUN_TIMEOUT = 1500               # per extraction subprocess (s)
+NUM_CTX = 32768                  # qwen2.5:7b native context (n_ctx_train); the extractor's
+                                 # 64k default forces RoPE extension + a KV cache that spills
+                                 # to CPU on 8-16GB cards -> 25-min timeouts. 32k holds the
+                                 # ~22k-token permit input and runs ~27s/run on GPU. (2026-06-19)
 
 
 def _already_parsed_shas() -> set:
@@ -60,7 +70,7 @@ def _extract_once(pdf: Path, endpoint: Dict, run_dir: Path) -> Optional[Dict]:
     run_dir.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, str(EXTRACTOR), str(pdf),
            "--ollama-url", endpoint["url"], "--model", endpoint["model"],
-           "--out-dir", str(run_dir), "--force"]
+           "--num-ctx", str(NUM_CTX), "--out-dir", str(run_dir), "--force"]
     try:
         subprocess.run(cmd, timeout=RUN_TIMEOUT, capture_output=True, text=True)
     except subprocess.TimeoutExpired:
