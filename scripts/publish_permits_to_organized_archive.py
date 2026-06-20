@@ -216,19 +216,42 @@ def slugify_facility_id(facility_id: str) -> str:
 
 
 def industry_for(industry: str | None, fallback_op: str | None) -> str:
-    """Normalize / default. For now everything we have is oilseed_crush."""
-    if industry:
-        s = industry.lower().replace(" ", "_")
-        if "soy" in s or "oilseed" in s or "crush" in s:
-            return "oilseed_crush"
-        if "biodiesel" in s:
-            return "biodiesel"
-        if "renewable" in s and "diesel" in s:
-            return "renewable_diesel"
-        if "ethanol" in s or "wet_mill" in s or "dry_mill" in s:
-            return "ethanol"
-        return s
-    return "oilseed_crush"  # default for current dataset
+    """Normalize the LLM's free-text industry tag to a canonical folder bucket.
+
+    The extraction prompt asks for an enum, but the model frequently ignores it
+    and emits free text with SIC/NAICS codes, varied spellings, and the
+    occasional mis-tag. This collapses the variants so the archive doesn't sprawl
+    into singleton folders (gypsum x3, electric x3, etc.). Routing happens here at
+    the publish layer ONLY; bronze keeps the raw tag (medallion: bronze = raw).
+
+    Canonical buckets are RLC's focus industries + 'other' for everything outside
+    scope (the acquirer grabbed ALL IA Title V permits, not just ag/energy)."""
+    if not industry:
+        return "other"
+    s = industry.lower()
+
+    # Order matters: check more specific buckets before generic ones.
+    # Each entry: canonical bucket -> list of substrings that route to it.
+    RULES = [
+        ("renewable_diesel",    ["renewable diesel", "renewable_diesel", "rd/saf", "hefa"]),
+        ("biodiesel",           ["biodiesel", "fame", "fatty acid methyl"]),
+        ("oilseed_crush",       ["oilseed", "crush", "soybean oil", "soy oil", "soy_processing",
+                                 "soy processing", "soybean processing", "canola", "rapeseed"]),
+        ("corn_wet_milling",    ["wet corn", "corn wet", "wet mill", "corn milling", "corn_milling",
+                                 "corn processing", "corn_processing", "corn refining", "wet_corn"]),
+        ("ethanol",             ["ethanol", "distillery", "distilling", "biorefinery", "dry mill", "dry_mill"]),
+        ("wheat_milling",       ["wheat mill", "wheat_mill", "flour mill", "flour_mill", "grain milling"]),
+        ("livestock_processing",["meat", "pork", "beef", "poultry", "slaughter", "rendering",
+                                 "animal", "egg", "protein"]),
+        ("oil_refining",        ["petroleum refin", "oil refining", "oil_refining", "refinery"]),
+    ]
+    for bucket, needles in RULES:
+        if any(n in s for n in needles):
+            return bucket
+    # Everything else (gypsum, steel, tire, glass, paper, electric, landfill,
+    # wastewater, wood products, food mfg, machine shops, data centers, ...) is
+    # outside RLC's target industries -> 'other'. Raw tag preserved in bronze.
+    return "other"
 
 
 def find_source_pdf(facility_id: str, raw_pdf_path: str | None) -> Path | None:
@@ -450,8 +473,9 @@ def main():
         slug = (r["facility_id"] or "?")
         if "." in slug:
             slug = slug.split(".", 1)[1]
+        cov = f"{r['coverage_pct']:>3.0f}%" if r['coverage_pct'] is not None else "  —"
         print(f"  {r['industry']:<16s} {r['state']:<3s} {slug[:34]:<35s} "
-              f"{r['n_units']:>4d}  {r['coverage_pct']:>3.0f}%")
+              f"{r['n_units']:>4d}  {cov}")
 
 
 if __name__ == "__main__":
