@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-5","generators","Emergency Generator","","","","","CE-1"
+"EU-6","generators","Emergency Generator","7134","BHP","","","CE-2"
+"EU-7","generators","GE Diesel Turbine","20600000","W","","","CE-3"
+"EU-8","generators","GE Diesel Turbine with Water Injection","20800000","W","","","CE-4"
+"EU-9","generators","Diesel Generator","1000000","W","","","CE-5"

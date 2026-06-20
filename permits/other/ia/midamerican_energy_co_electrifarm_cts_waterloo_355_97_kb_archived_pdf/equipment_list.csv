@@ -1,0 +1,4 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-001","boilers","Unit 1 Turbine, 69.9 MW - (@ 59°F, 14.7 psia)","68.5","MW - Oil; 69.9 MW - Natural Gas","","","CE-001"
+"EU-002","boilers","Unit 2 Turbine, 73.9 MW - (@ 59°F, 14.7 psia)","72","MW - Oil; 73.9 MW - Natural Gas","","","CE-002"
+"EU-003","boilers","Unit 3 Turbine, 79.3 MW - (@ 59°F, 14.7 psia)","77.6","MW - Oil; 79.3 MW - Natural Gas","","","CE-003"

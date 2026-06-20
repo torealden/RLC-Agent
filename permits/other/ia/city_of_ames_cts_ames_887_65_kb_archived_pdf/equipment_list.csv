@@ -1,0 +1,3 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-1","boilers","Combustion Turbine (GT1)","","","","","CE-1"
+"EU-3","boilers","Combustion Turbine (GT2)","353.41","MMBtu/hr","","","CE-3"

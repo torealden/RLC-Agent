@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"01-AUX-A","generators","Backup Compressor (Emergency Generator) #1","85","kW","","",""
+"01-ENG-A","boilers","Natural Gas Turbine #1","169","MBBtu/hr","","",""
+"02-AUX-A","generators","Backup Compressor (Emergency Generator) #2","140","kW","","",""
+"02-ENG-A","boilers","Natural Gas Turbine #2","169","MBBtu/hr","","",""

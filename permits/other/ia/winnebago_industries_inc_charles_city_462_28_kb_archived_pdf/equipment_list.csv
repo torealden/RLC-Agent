@@ -1,0 +1,7 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"956-F01-F","application_of_process_chemicals","Application of Process Chemicals - Internally Vented","","","","","956-F01-F"
+"993-D02-P","sawdust_collection","Sawdust Collection","3.0","MMCf/hr","","","993-D02-C"
+"993-F01-F","application_of_process_chemicals","Application of Process Chemicals – Internally Vented","","hand applied","","","993-F01-F"
+"993-G01-P","oven","Rollcoater #4 Oven – Adhesive Application","166","lb/hr","","","993-G01-U"
+"993-G02-P","hot_glue_machine","Hot Glue Machine - Adhesive Application","166","lb/hr","","","993-G02-C"
+"993-O01-P","oven","Sealer/Topcoat Cure Oven","1.6","MMBtu/hr","","","993-O01-U"

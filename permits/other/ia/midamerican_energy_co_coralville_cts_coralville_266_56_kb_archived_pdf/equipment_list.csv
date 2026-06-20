@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-1","boilers","Combustion Turbine - #2 Fuel Oil/ Natural Gas","","","20","MW","CE-1, CE-2"
+"EU-2","boilers","Combustion Turbine - #2 Fuel Oil/ Natural Gas","","","20","MW","CE-3, CE-4"
+"EU-3","boilers","Combustion Turbine - #2 Fuel Oil/ Natural Gas","","","20","MW","CE-5, CE-6"
+"EU-4","boilers","Combustion Turbine - #2 Fuel Oil/ Natural Gas","","","20","MW","CE-7, CE-8"
+"EU-6","boilers","Diesel Engine (300 BHP)","3.84","MMBtu/hr","","","CE-9"

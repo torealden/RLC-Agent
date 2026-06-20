@@ -1,0 +1,3 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-01","boilers","WB Flare","","","","","CE-01"
+"EU-02","refining","Oxidation Unit","1288.5","scfm","","","CE-02"

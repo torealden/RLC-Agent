@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EP-13","blasting","Plate Blast","480","feet per hour of steel plate","","","CE-IA-CD-01"
+"EP-15A","blasting","Blast Booth","480","feet per hour of steel plate cleaned","","","CE-Blastec-GS60"
+"EP-1, EP-2, EP-3, EP-4, EP-5, EP-6","painting","Paint Spray Booths #1 and #2","","","","","CE-08-A-076-S4, CE-08-A-077-S4, CE-08-A-078-S4, CE-08-A-079-S4, CE-08-A-080-S4, CE-08-A-081-S4"
+"EP-7, EP-8, EP-9, EP-10, EP-11, EP-12","painting","Paint Spray Booths #1 and #2","","","","","CE-08-A-082-S4, CE-08-A-083-S4, CE-08-A-084-S4, CE-08-A-085-S4, CE-08-A-086-S4, CE-08-A-087-S4"

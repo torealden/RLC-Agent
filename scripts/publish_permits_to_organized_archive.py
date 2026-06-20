@@ -18,10 +18,14 @@ from __future__ import annotations
 
 import csv
 import shutil
+import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(ROOT / ".env")
 
 import psycopg2.extras
 from src.services.database.db_config import get_connection
@@ -280,7 +284,7 @@ def write_equipment_csv(folder: Path, units: list[dict]) -> None:
                 u.get("rated_capacity_unit") or "",
                 u.get("throughput_limit") if u.get("throughput_limit") is not None else "",
                 u.get("throughput_limit_unit") or "",
-                ", ".join(u.get("control_devices") or []) if isinstance(u.get("control_devices"), list) else (u.get("control_devices") or ""),
+                ", ".join(str(x) for x in (u.get("control_devices") or [])) if isinstance(u.get("control_devices"), list) else (u.get("control_devices") or ""),
             ])
 
 
@@ -419,8 +423,15 @@ def main():
             # Narrative summary
             write_summary_md(folder, dict(permit), units)
 
-            # Process flow coverage
-            coverage = coverage_report(folder, units)
+            # Process flow coverage — only meaningful for oilseed_crush, the one
+            # industry with a canonical flow defined. Generating a soybean-crush
+            # checklist for a machine shop / data center / gypsum plant would be
+            # misleading, so skip it for everything else. (2026-06-20)
+            if industry == "oilseed_crush":
+                coverage = coverage_report(folder, units)
+                cov_pct = round(sum(1 for v in coverage.values() if v) / len(coverage) * 100, 0)
+            else:
+                cov_pct = None
 
             written.append({
                 "facility_id": permit["facility_id"],
@@ -428,9 +439,7 @@ def main():
                 "state": state,
                 "folder": str(folder),
                 "n_units": len(units),
-                "coverage_pct": round(
-                    sum(1 for v in coverage.values() if v) / len(coverage) * 100, 0
-                ),
+                "coverage_pct": cov_pct,
             })
 
     print(f"Wrote organized archive for {len(written)} facilities under {PERMITS_ROOT}/")

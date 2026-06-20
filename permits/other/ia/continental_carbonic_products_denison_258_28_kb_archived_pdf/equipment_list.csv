@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-10","other","Ammonia Refrigeration System (Fugitive Losses)","","","24000","lb/hr",""
+"EU-100","other","Haul Roads (Fugitive)","109500","tons/yr","","",""
+"EU-11","cooling","Evaporative Condenser (4 Cells)","2480","gal/min","","","CE-ME1"
+"EU-30","other","Non-Condensable Vent","30800","lb/hr","","",""
+"EU-41","other","Regeneration Vent","32775","lb/hr","","",""

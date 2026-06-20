@@ -1,0 +1,8 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-1","boilers","Standby Diesel Generator, 1600 kW","","","129","gal/hr","CE-01"
+"EU-2","boilers","Standby Diesel Generator, 1600 kW","","","131","gal/hr","CE-02"
+"EU-3","boilers","Standby Diesel Generator, 1600 kW","","","129","gal/hr","CE-03"
+"EU-4","boilers","Standby Diesel Generator, 1600 kW","","","129","gal/hr","CE-04"
+"EU-5","boilers","Standby Diesel Generator, 1600 kW","","","131","gal/hr","CE-05"
+"EU-6","boilers","Standby Diesel Generator, 1600 kW","","","137","gal/hr","CE-06"
+"EU-7","boilers","Standby Diesel Generator, 1825 kW","","","140","gal/hr","CE-07"

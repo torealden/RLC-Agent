@@ -1,0 +1,4 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-101","spray booth","Spraying of Vinyl Ester Resin with fiberglass chop, roll out, and cure (First Laminate Station)","","","35.0","lbs/min","CE-101"
+"EU-102","spray booth","Spraying of Polyester Resin with fiberglass chop, roll out, and cure (Second Laminate Station)","","","35.0","lbs/min","CE-101"
+"EU-104","assembly line","Assembly Operations for Spa Manufacturing","30.0","spas/day","","",""

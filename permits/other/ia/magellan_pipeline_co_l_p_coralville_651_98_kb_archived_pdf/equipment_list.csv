@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"2-14, 17-19, 22-23, 25-26, and 28","other","Valves, Pumps, Flanges, and Equipment Leaks","","","","",""
+"31","other","Valves, Pumps, Flanges, and Equipment Leaks (for Emission Units 2-14, 17-19, 22-23, 25-26, and 28)","","","","",""
+"41","other","Floating Roof Landing Losses for Emission Units 2-14, 17-19, 22-23, 25-26, and 28","","","","",""
+"EU-1","trucking","Truck Loading System","","","","","CE-01"

@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"01-AUX-A","boilers","Emergency Generator - Natural Gas, 773 HP","","","","",""
+"01-BOL-A","boilers","Boiler - Natural Gas, 16.75 MMBtu/hr","16.75","MMBtu/hr","","",""
+"02-GEN","boilers","Emergency Engine - Natural Gas, 56 HP","56","HP","","",""
+"108-H5","boilers","Line Heater - Natural Gas, 1.00 MMBtu/hr","1.0","MMBtu/hr","","",""
+"11-ENG-A, 12-ENG-A, 12-ENG-B, 13-ENG-A, 14-ENG-A, 15-ENG-A","boilers","Compressor Engine - Natural Gas, 6,875 HP each","","","","",""

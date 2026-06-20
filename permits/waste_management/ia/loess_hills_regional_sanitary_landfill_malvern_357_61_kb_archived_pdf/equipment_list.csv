@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-1","receiving","Municipal Solid Waste Landfill","","","7240102","megagrams","Landfill Gas Collection and Control System"
+"EU-14","processing","Renewable Natural Gas facility","1355","cfm","","","CE-14, CE-15"
+"EU-16","power generation","Diesel Emergency Generator","324","hp","","",""
+"EU-8","storage","300 Gallon Gasoline Tank","300","gallons","","",""

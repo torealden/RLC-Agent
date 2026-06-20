@@ -1,0 +1,7 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-1","trucking","Truck Loading Rack for Gasoline and Distillates","","","630720000","gallons/year","CE-1"
+"EU-19","storage","Tank 1512; 2,814,000 Gallons, Internal Floating Roof, Gasoline","33410","gallons/hour","","",""
+"EU-20","storage","Tank 207-2; 27,090 Gallons, Vertical Fixed Roof, Gasoline","54180","gallons/hour","","",""
+"EU-27","other","Floating Roof Landings","","","","",""
+"EU-32","storage","Tank 207-3; 48,006 Gallons, Vertical Fixed Roof Relief Tank, Gasoline","29400","gallons/hour","","",""
+"EU-4","storage","Tank 635; 840,000 Gallons, Domed External Floating Roof, Gasoline","9970","gallons/hour","","",""

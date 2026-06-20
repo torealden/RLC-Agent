@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-01","fabrication","Filament Winding Tank Fabrication","200","lb/hr resin, 22 lb/hr gelcoat, 2.5 lb/hr catalyst","","","CE-01"
+"EU-02","fabrication","Tank End Cap Lay-Up","50","lb/hr resin, 5 lb/hr gelcoat, 0.7 lb/hr catalyst","","","CE-02"
+"EU-03","fabrication","Final Tank Assembly","","","","",""
+"EU-04a, EU-04b, EU-04c","storage","Three Resin Tanks","6000","gallons/tank","","",""
+"EU-05","welding","GMAW Welders – Maximum of 6","780","in/hr","","","CE-05"

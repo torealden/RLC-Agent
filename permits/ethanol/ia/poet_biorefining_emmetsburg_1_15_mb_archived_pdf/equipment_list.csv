@@ -1,0 +1,7 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU19","cooling","DDG Fluid Bed Cooler","23","tons/hr","","","CE012"
+"EU1, EU2, EU3","receiving","Grain Receiving, Handling and Storage","","","840","tons/hr","CS1"
+"EU24","boiler","Caterpillar Model 3508 Diesel Internal Combustion Engine","1000","kW (Bhp)","","","CE Flare"
+"EU69","boiler","Solid Fuel Boiler","290","MMBtu/hr","","","CE034, CE035, CE036"
+"EU70","boiler","Diesel Generator","2937","Bhp","","","CE059"
+"EU9, EU10, EU11, EU12, EU13, EU14, RTO Stack, 6 Fermenters, Centrifuges","distillation","RTO Bypass Stack: Fermenters, Beer Wells, Distillation Equipment, Grain Dryers & Fluid Bed Cooler","","","570000","gallons/hr (fermenters) / tons/hr (centrifuges)","CE011, CE007"

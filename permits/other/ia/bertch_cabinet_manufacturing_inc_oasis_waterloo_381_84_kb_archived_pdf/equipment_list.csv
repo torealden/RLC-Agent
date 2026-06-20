@@ -1,0 +1,8 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-OAS-001","boilers, dryers, baghouses, scrubbers, cooling","Gel Coat Booth","","","","","CE-OAS-001"
+"EU-OAS-002","boilers, dryers, baghouses, scrubbers, cooling","Gel Coat Booth","","","","","CE-OAS-002"
+"EU-OAS-003","other","Casting Machine","","","","",""
+"EU-OAS-005A","storage","Resin Storage Tank","4606","gallons","","",""
+"EU-OAS-007(A)","drying, conditioning, dehulling, expansion, extraction, desolventization, refining, bleaching, deodorizing, packaging","Sinktop Sanding/Grinding Baghouse","32","units/hr","","","CE-OAS-007"
+"EU-OAS-007(B)","drying, conditioning, dehulling, expansion, extraction, desolventization, refining, bleaching, deodorizing, packaging","Sinktop Sanding/Grinding Baghouse","32","units/hr","","","CE-OAS-008"
+"EU-OAS-i-10","boilers","Gel Coat Oven (Natural Gas Fired 0.42 MMBtu/hr)","0.42","MMBtu/hr","","",""

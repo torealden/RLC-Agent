@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"FP-1","other","Emergency Fire Water Pump","200","hp","","",""
+"U-1","boilers","Combustion Turbine – Unit 1","","","","","CE-1, ME-1"
+"U-2","boilers","Combustion Turbine – Unit 2","","","","","CE-2, ME-2"
+"U-3","boilers","Combustion Turbine – Unit 3","","","","","CE-3, ME-3"

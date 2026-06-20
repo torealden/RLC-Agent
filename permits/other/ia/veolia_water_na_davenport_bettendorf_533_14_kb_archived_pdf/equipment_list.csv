@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU T-12","other","UFC Muck Tank","3000","gallons","","","CE-1.0 Replacement"
+"EU T-5","storage","UFC Oil Cooker Tank","","","10100","gallons","CE-1.0 Replacement"
+"EU T-6","storage","UFC Wash Tank","","","10100","gallons","CE-1.0 Replacement"
+"EU T-7","storage","UFC Wash Tank","","","10100","gallons","CE-1.0 Replacement"
+"EU T-8","storage","Wastewater Tank","","","10920","gallons","CE-1.0 Replacement"

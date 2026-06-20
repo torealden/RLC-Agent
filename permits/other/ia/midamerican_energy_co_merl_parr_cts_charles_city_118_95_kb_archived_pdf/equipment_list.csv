@@ -1,0 +1,4 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-001","boilers","Unit 1 Turbine","","","","","CE-001, CE-002"
+"EU-002","boilers","Unit 2 Turbine","","","","","CE-003, CE-004"
+"EU-006","other","Unit 1 Starting Diesel Engine","20","gallons per hour","","","CE-005"

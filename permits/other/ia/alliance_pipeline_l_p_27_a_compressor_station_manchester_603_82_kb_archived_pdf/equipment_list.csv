@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"S01","boilers","Combustion Gas Turbine","207.15","MMBtu/hr","","","98-A-1171-S3"
+"S03","boilers","Auxiliary Power Unit (APU)","4.8","MMBtu/hr","","","98-A-1172-S1"
+"STN-BDV","other","Station Blowdown","5.703","mmcf/hr","","","19-A-155"
+"U01-BDV","other","Unit Blowdown","308.66","cf/hr","","","19-A-156"
+"U01-SEAL","other","Dry Seal Vent","1.2","mmcf/hr","","","19-A-154"

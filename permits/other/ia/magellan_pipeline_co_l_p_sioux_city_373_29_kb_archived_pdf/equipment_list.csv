@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-1","trucking","Truck Loading Rack System","","","72000","gallons/hour","CE-1"
+"EU-22, EU-23, EU-24, EU-25, EU-32, EU-33, EU-35","storage","Internal Floating Roof Tanks (IFR)","","","","",""
+"EU-38","boilers","Pipe Line Pump #2","7056","MBBtu/hr","","","CE-38"
+"EU-59","storage","Storage Tank 59, Vertical Fixed Roof","2115","gallons","","",""

@@ -1,0 +1,7 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"GDMEC-EU 1","boilers","Combustion Turbine Unit 1","","","","","GDMEC-ME 1A, GDMEC-ME 1B, GDMEC-ME 1C, GDMEC-ME 1D"
+"GDMEC-EU 2","boilers","Combustion Turbine Unit 2","","","","","GDMEC-ME 2A, GDMEC-ME 2B, GDMEC-ME 2C, GDMEC-ME 2D"
+"GDMEC-EU 20","pumps","Diesel Fired Fire Pump (265 bhp)","14.2","gal/hr or MMBtu/hr","","",""
+"GDMEC-EU 3","boilers","Nebraska Auxiliary Boiler","43.3","MMBtu/hr","","",""
+"GDMEC-EU 6","generators","Emergency Generator (700 kW)","49.7","gal/hr or MMBtu/hr","24850","gallons/12 months",""
+"GDMEC-EU 7","heaters","Dew Point Heater (7.16 MMBtu/hr)","7.16","MMBtu/hr","","",""

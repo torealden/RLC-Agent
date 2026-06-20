@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-01","other","Membrane Separation Facility (Biogas Upgrade)","","","750","SCFM","CE-01"
+"EU-02","other","Hoogland Digester","2500000","gallons","","","CE-02"
+"EU-03","other","Maassen Digester","2500000","gallons","","","CE-03"
+"EU-05","other","Hoogland Emergency Generator","85","BHP","","","CE-04"
+"EU-07","other","Maassen Emergency Generator","85","BHP","","","CE-05"

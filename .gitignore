@@ -155,3 +155,10 @@ data/raw/state_air_permits/*/*_wimn_page.html
 Models/
 models/
 data/permits/
+
+# Organized permit archive: keep the curated text artifacts (equipment_list.csv,
+# extraction_summary.md, process_flow_coverage.md) in git, but NOT the source PDF
+# copies (272MB across 288 facilities) or the regenerable _auto CSVs. The PDFs are
+# copies of the gitignored data/permits/ originals; publish script recreates them.
+permits/**/source.pdf
+permits/**/equipment_list_auto.csv

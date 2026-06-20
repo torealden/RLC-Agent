@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"01-AUX-A","generators","Emergency Generator","75","kW","","",""
+"02-AUX-A","generators","Emergency Generator","75","kW","","",""
+"02-ENG-A","boilers","Turbine Compressor","","","","","02-ENG"
+"02-GEN","generators","Backup Communications Generator","35","kW","","",""

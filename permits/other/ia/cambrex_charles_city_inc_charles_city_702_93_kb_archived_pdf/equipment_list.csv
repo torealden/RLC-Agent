@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EP-303","reactor","Pharma I Production Reactor (Bypass)","","","2000","gallons","C-3109: Main Scrubber"
+"EP-304","reactor","Pharma I Production Reactor (Bypass)","","","2000","gallons",""
+"EP-306","tank","Pharma I Production Reactor Tanks (Bypass)","4000","gallons","","",""
+"EP-308","reactor","Pharma I Production Reactor (Bypass for Hydrogen)","1000","gallons","","",""
+"EP-309","reactor","Pharma I Production Reactors and Tanks (Bypass)","500","gallons","","",""

@@ -1,0 +1,7 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EP-51, EP-52, EP-59, EP-60, EP-61","other","Internal Combustion Engines (7.84 MMBtu/hr each)","7.84","MMBtu/hr","","",""
+"EU-1","other","Landfill (Fugitive Emissions)","","","","","CE-02-A-819-S1"
+"EU-10","other","Landfill Gas Flare","0.12","MMcf/hr","","",""
+"EU-2","other","Unpaved Roads (Fugitive Emissions)","85.8","VMT/hr","171600","VMT/yr",""
+"EU-4 and EU-5","other","Fill/Cover Material Removal (Fugitive Emissions) and Fill/Cover Material Truck Dumping (Fugitive Emissions)","232.5","tons/hr per emission unit","","",""
+"EU-51, EU-52, EU-59, EU-60, EU-61","other","Internal Combustion Engines (Landfill Gas)","7.84","MMBtu/hr","","",""

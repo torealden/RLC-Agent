@@ -1,0 +1,3 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-1","refining","Biogas Upgrade System","1400","scfm","","","CE-1"
+"EU-2","refining","Unitized Biogas Cleaning Skid","600","cfm","","",""

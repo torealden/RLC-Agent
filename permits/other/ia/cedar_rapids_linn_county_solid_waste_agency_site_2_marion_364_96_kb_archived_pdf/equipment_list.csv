@@ -1,0 +1,7 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EP-01","other","Fugitive Landfill Emissions","","","","",""
+"EP-02","boilers","Landfill Gas Engine","2242","HP","","",""
+"EP-03","other","Landfill Flare","","","","",""
+"EU-01","other","Fugitive Landfill Emissions","","","","",""
+"EU-02","boilers","Landfill Gas Engine","2242","HP","","",""
+"EU-03","other","Landfill Flare","","","","",""

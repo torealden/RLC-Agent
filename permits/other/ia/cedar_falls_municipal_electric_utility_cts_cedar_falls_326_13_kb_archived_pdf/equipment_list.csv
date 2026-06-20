@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"10.18","boilers","Combustion Turbine Generator #1","320","MMBtu/hr","","","CE-00-A-583-S1"
+"10.20","boilers","CTG #1 Starter Engine","6.12","MMBtu/hr","","","CE-00-A-593-S1"
+"10.21","boilers","Aux Station Service Diesel Generator","3.23","MMBtu/hr","","","CE-00-A-594-S1"
+"10.22","boilers","Combustion Turbine Generator #2","371","MMBtu/hr","","","CE-00-A-584-S1"
+"10.23","boilers","CTG #2 Starter Engine","4.8","MMBtu/hr","","","CE-00-A-585-S1"

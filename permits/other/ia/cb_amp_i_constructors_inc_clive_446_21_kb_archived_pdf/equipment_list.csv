@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"2","other","Welding Area","","","","",""
+"20","other","Schmidt Portable Blast Unit","1700","lbs/hr","","","CE-4"
+"21","other","Clemco Abrasive Blast Booth","20600","scfm","","","CE-21"
+"3","other","Graco Paint Booth","0.42","gpm","","","CE-2, CE-3"
+"EU-1","other","Wheelabrator Model 4 Wheel Vertical Plate Grit Blaster","","","","","CE-1"

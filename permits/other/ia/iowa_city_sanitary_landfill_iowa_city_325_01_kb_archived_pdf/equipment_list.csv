@@ -1,0 +1,7 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EP-5.2","scrubbers","Municipal Solid Waste Landfill Enclosed Flare","","","","","CE-5.2"
+"EU-05","boilers","Municipal Solid Waste Landfill Gas Collection and Control System","","","7160901","Megagrams","CE-5"
+"EU-6","dryers","Portable Grinder and Conveyor Belt for Wood Waste Processing","100","ton/hr","","",""
+"EU-7","boilers","Portable Diesel Engine for Processing","950","bhp","","",""
+"EU-F01","other","Unpaved Haul Roads Dust Suppression","","","9.13","VMT/hr",""
+"EU-F13","other","Soil Stripping of Contaminated Soil","","","3.59","tons/hr",""

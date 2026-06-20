@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"CT1 LCT1","boilers","Internal Combustion Engine Turbine","421","MMBtu/hr","","","WI1"
+"CT2 LCT2","boilers","Internal Combustion Engine Turbine","421","MMBtu/hr","","","WI2"
+"D1 LCD1","boilers","Internal Combustion Engine Reciprocating Diesel","4.72","MMBtu/hr","","",""
+"D2 LCD2","boilers","Internal Combustion Engine Reciprocating Diesel","4.72","MMBtu/hr","","",""

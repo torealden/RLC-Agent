@@ -1,0 +1,3 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-35","landfill","Municipal Solid Waste Landfill","","","9172195","Megagrams","CE-34.1"
+"EU-35.1","flare","Municipal Solid Waste Landfill Flare","60","MMBtu/hr","","","CE-34.1"

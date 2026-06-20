@@ -1,0 +1,7 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"EU-01","other","Non-Condensable Stripping Tower – Plant 1","","","","","06-A-189-S3"
+"EU-02","other","Non-Condensable Stripping Tower – Plant 2","","","","","06-A-190-S4"
+"EU-03","other","Dryer Vent – Plant 1","","","","","06-A-191-S3"
+"EU-04","other","Dryer Vent – Plant 2","","","","","06-A-192-S3"
+"EU-06","other","Evaporative Condenser – Plant 2","2000","gal/min","","","06-A-194-S4"
+"EU-08","other","Feedstock Vent (Bypass Vent) – Plant 2","115000","scf/hr","","","06-A-617-S2"

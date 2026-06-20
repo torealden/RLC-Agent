@@ -1,0 +1,5 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"3","boilers","Natural Gas Boiler #1","27.5","MMBtu/hr","","","13-A-450-S2"
+"4","boilers","Natural Gas Boiler #2","27.5","MMBtu/hr","","","14-A-504-S1"
+"5","engines","500 kW Kohler Emergency Generator Engine","755","hp","","","N/A"
+"7","engines","Fire Pump Engine","327","hp","","","N/A"

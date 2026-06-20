@@ -1,0 +1,6 @@
+"unit_id","category","description","rated_capacity","rated_capacity_unit","throughput_limit","throughput_limit_unit","control_devices"
+"BDO-01","boilers","Cummins Diesel Emergency Generator Engine","","","350","hours/12-month rolling average","CE-BDO-01"
+"BDO-02","boilers","Fire Pump 1 Engine","","","500","hours/12-month rolling average","CE-BDO-02"
+"BDO-03","boilers","Fire Pump 2 Engine","","","500","hours/12-month rolling average","CE-BDO-03"
+"BDO-21, BDO-21a, BDO-21b","storage","Fermentation Waste Tank (BDO-21), Viscous Byproduct Tanks (BDO-21a and BDO-21b)","","","","","CE-BDO21, CE-BDO31"
+"BDO-31","storage","Process Waste Tank (Separation Tank 10)","","","","","CE-BDO31"
