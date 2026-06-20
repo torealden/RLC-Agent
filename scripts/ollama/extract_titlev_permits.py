@@ -313,9 +313,68 @@ def detect_state(pdf_path: Path) -> str:
     return "UNKNOWN"
 
 
+def _split_into_chunks(text: str, chunk_chars: int) -> list[str]:
+    """Split filtered text on '=== PAGE n ===' boundaries into chunks no larger
+    than chunk_chars (a single oversized page becomes its own chunk)."""
+    blocks = re.split(r"(?=^=== PAGE \d+ ===$)", text, flags=re.M)
+    blocks = [b for b in blocks if b.strip()]
+    chunks, cur = [], ""
+    for b in blocks:
+        if cur and len(cur) + len(b) > chunk_chars:
+            chunks.append(cur)
+            cur = b
+        else:
+            cur += b
+    if cur.strip():
+        chunks.append(cur)
+    return chunks
+
+
+def _merge_chunks(results: list[dict]) -> dict:
+    """Union emission_units by unit_id across chunk results; take the first
+    non-empty facility / facility_totals."""
+    merged = {"facility": {}, "emission_units": [], "facility_totals": {},
+              "extraction_notes": ""}
+    units: dict[str, dict] = {}
+    for r in results:
+        if not r:
+            continue
+        if not merged["facility"] and (r.get("facility") or {}).get("name"):
+            merged["facility"] = r["facility"]
+        if not merged["facility_totals"] and r.get("facility_totals"):
+            merged["facility_totals"] = r["facility_totals"]
+        for u in r.get("emission_units", []) or []:
+            uid = str(u.get("unit_id") or u.get("description", ""))[:120]
+            if not uid:
+                continue
+            # keep the richest version (most non-empty fields)
+            if uid not in units or sum(1 for v in u.values() if v) > sum(1 for v in units[uid].values() if v):
+                units[uid] = u
+    merged["emission_units"] = list(units.values())
+    return merged
+
+
+def _chunked_extract(facility_key: str, text: str, model: str, num_ctx: int,
+                     chunk_chars: int) -> dict:
+    """Extract from a large permit by running the model per page-chunk and
+    unioning the units. Each chunk is small enough that the JSON output never
+    overflows num_predict — the failure mode that sinks big multi-unit permits
+    in a single-shot call. (2026-06-20)"""
+    chunks = _split_into_chunks(text, chunk_chars)
+    print(f"[{facility_key}]   chunked into {len(chunks)} pieces (~{chunk_chars:,} chars each)", flush=True)
+    results = []
+    for i, ch in enumerate(chunks):
+        raw = call_ollama(model, PROMPT, ch, num_ctx=num_ctx)
+        parsed = parse_json_response(raw)
+        nu = len((parsed or {}).get("emission_units", []))
+        print(f"[{facility_key}]     chunk {i+1}/{len(chunks)} ({len(ch):,} chars) -> {nu} units", flush=True)
+        results.append(parsed)
+    return _merge_chunks(results)
+
+
 def process_pdf(pdf_path: Path, model: str, out_dir: Path, force: bool = False,
                 char_budget: int = 80_000, num_ctx: int = 65536,
-                run_tag: str = "") -> dict:
+                run_tag: str = "", chunk_chars: int = 0) -> dict:
     state = detect_state(pdf_path)
     facility_key = pdf_path.stem.replace("_titlev", "")
     suffix = f"_{run_tag}" if run_tag else ""
@@ -329,16 +388,20 @@ def process_pdf(pdf_path: Path, model: str, out_dir: Path, force: bool = False,
     t0 = time.time()
     print(f"[{facility_key}] reading PDF ({pdf_path.name})...", flush=True)
     text, n_kept, n_total = filter_relevant_pages(pdf_path, char_budget=char_budget)
-    print(f"[{facility_key}]   filtered {n_kept}/{n_total} pages -> {len(text):,} chars; sending to {model}...", flush=True)
+    mode = f"chunked@{chunk_chars}" if chunk_chars else "single-shot"
+    print(f"[{facility_key}]   filtered {n_kept}/{n_total} pages -> {len(text):,} chars; {mode} to {model}...", flush=True)
 
     try:
-        raw = call_ollama(model, PROMPT, text, num_ctx=num_ctx)
+        if chunk_chars:
+            parsed = _chunked_extract(facility_key, text, model, num_ctx, chunk_chars)
+        else:
+            raw = call_ollama(model, PROMPT, text, num_ctx=num_ctx)
+            parsed = parse_json_response(raw)
     except requests.exceptions.Timeout:
         return {"status": "err:timeout", "facility": facility_key}
     except Exception as e:
         return {"status": f"err:{type(e).__name__}", "msg": str(e)[:200], "facility": facility_key}
 
-    parsed = parse_json_response(raw)
     if parsed is None:
         # Save raw response for debugging
         debug_path = out_dir / state / f"{facility_key}.raw.txt"
@@ -411,6 +474,11 @@ def main():
                     help="Max chars to send to LLM after page filter (default: 80,000)")
     ap.add_argument("--num-ctx", type=int, default=65536,
                     help="Ollama num_ctx context window (default: 65536)")
+    ap.add_argument("--chunk-chars", type=int, default=0,
+                    help="If >0, split the filtered text into page-chunks of this "
+                         "size and extract+union per chunk. Use for large multi-unit "
+                         "permits where a single-shot JSON overflows the output budget "
+                         "(e.g. --chunk-chars 18000). 0 = single-shot (default).")
     args = ap.parse_args()
 
     global OLLAMA_BASE_URL
@@ -461,7 +529,7 @@ def main():
     for pdf in pdfs:
         r = process_pdf(pdf, args.model, args.out_dir, force=args.force,
                         char_budget=args.char_budget, num_ctx=args.num_ctx,
-                        run_tag=args.run_tag)
+                        run_tag=args.run_tag, chunk_chars=args.chunk_chars)
         results.append(r)
 
     elapsed = time.time() - t_total
