@@ -133,8 +133,15 @@ def _process(doc: Dict, endpoint: Dict) -> str:
         canon.mkdir(parents=True, exist_ok=True)
         cpath = canon / f"{key}.json"
         cpath.write_text(json.dumps(merged, indent=2), encoding="utf-8")
-        subprocess.run([sys.executable, str(LOADER), "--state", state],
-                       capture_output=True, text=True, timeout=300)
+        # Load to bronze and FAIL LOUD if the loader errors. (A swallowed loader
+        # crash once marked 256 permits 'parsed' while loading 0 rows. 2026-06-19)
+        lr = subprocess.run([sys.executable, str(LOADER), "--state", state],
+                            capture_output=True, text=True, timeout=300)
+        if lr.returncode != 0:
+            registry.mark(doc["id"], "failed", method="ollama_bestofn",
+                          model=endpoint["model"],
+                          error=f"loader rc={lr.returncode}: {(lr.stderr or '')[:160]}")
+            return f"FAIL {doc['source_key']} (loader rc={lr.returncode}, {endpoint['name']})"
         registry.mark(doc["id"], "parsed", method="ollama_bestofn",
                       model=endpoint["model"], confidence=conf, output_ref=str(cpath))
         return f"OK   {doc['source_key']} ({len(merged['emission_units'])}u {conf}, {endpoint['name']})"
