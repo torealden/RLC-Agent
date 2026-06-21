@@ -44,6 +44,25 @@ an IA-type (easy) or MN-type (FOIA) source and what the lead time is.
 
 ---
 
+## Key findings (research pass 2026-06-21, first 11 states)
+
+- **The IA acquirer will NOT transfer cleanly — this is the real cost of going national.**
+  Each state runs a different backend: Oracle WebCenter (TX), ASPX/session (LA, GA, OH),
+  Hyland OnBase Angular+JSON (NE), Drupal media fields (MO), report-driven forms (NJ),
+  open IIS directory (PA). Realistic architecture = a small set of **per-backend adapter
+  types**, not one universal scraper. (Directly answers the "did we generalize at MN?"
+  question: generalization means ~5-6 adapter patterns, not one.)
+- **Build order by ease:** PA and IN are plain HTTP GETs (Tier 1) — build those first.
+  PA is the single best target (one scrape ≈ 7,300 statewide permit PDFs).
+- **FOIA is rare:** of the first 11, only **Kansas** needs a records request for issued
+  permits. MN (from Batch 2) is Tier 2 recent / Tier 3 older — also not pure-FOIA. The
+  "everything is FOIA" fear is overblown; most states are scrapable with per-backend effort.
+- **GATING CAVEAT (applies to every state):** confidence is high on the *access
+  mechanism*, NOT on whether the equipment/capacity tables live in the issued permit PDF
+  vs. a separate application/"specific conditions" attachment. Since equipment-list DEPTH
+  is the whole point, **one manual spot-check per state on a known facility is a gating
+  step before building that state's scraper** — not a nicety.
+
 ## US state table
 
 Facility counts from `bronze.epa_echo_facility` (2026-06-21), `n` = total / `op` = operating.
@@ -52,17 +71,17 @@ Access tier + portal columns populated by research pass (in progress 2026-06-21)
 | State | ECHO n/op | Tier | Agency / portal | Notes |
 |---|---|---|---|---|
 | IA | 158/127 | **1 — DONE** | Iowa DNR permit document repository | Drained: 288 facilities, 8,847 units. Reference implementation. |
-| IL | 281/143 | _TBD_ | | highest facility count |
-| TX | 244/208 | _TBD_ | | |
-| LA | 181/117 | _TBD_ | | |
-| NJ | 137/119 | _TBD_ | | high count likely blending terminals |
-| GA | 131/62 | _TBD_ | | |
-| KS | 112/62 | _TBD_ | | |
-| MO | 106/56 | _TBD_ | | |
-| NE | 106/48 | _TBD_ | | ethanol-dense |
-| PA | 94/64 | _TBD_ | | |
-| IN | 93/66 | _TBD_ | | next deep-dive target |
-| OH | 83/71 | _TBD_ | | |
+| PA | 94/64 | **1** | PA DEP Bureau of Air Quality | `files.dep.state.pa.us/air/AirQuality/AQPortalFiles/Permits/PermitDocuments/` | **Best target.** Open IIS dir, 7,318 `*_Issued_v#.pdf`, nightly-refreshed, Title V = `-05` infix. Excl. Allegheny + Philadelphia (self-admin). Plain GET. |
+| IN | 93/66 | **1** | IDEM Office of Air Quality | PDFs `permits.air.idem.in.gov/<permitno>f.pdf`; lookup `caats.idem.in.gov` | **Next deep-dive.** Cleanest predictable PDF pattern; harvest permit#s from CAATS then GET. ~1-2 days. Plain GET. |
+| IL | 281/143 | 2 | Illinois EPA Bureau of Air (CAAPP) | `webapps.illinois.gov/EPA/DocumentExplorer/Attributes` + `GetAirPermitDocument/{id}` API | Live doc API confirmed. Map facility→doc IDs. Pre-~2015 → FOIA. |
+| TX | 244/208 | 2 | TCEQ | CFR Online `records.tceq.texas.gov` + Central Registry RN lookup | 2-step (RN→docs), Oracle WebCenter session. Pre-2012 = FOIA. |
+| LA | 181/117 | 2 | LDEQ Air Permits (Part 70) | EDMS `edms.deq.louisiana.gov/edmsv2`; quarterly issued XLSX as AI-number seed | Resolve facility→AI#, query EDMS. ASPX/session. Check if equipment tbl in main PDF vs attachment. |
+| NJ | 137/119 | 2 | NJDEP Bureau of Stationary Sources | DocMiner `docminer.nj.gov` | Built to replace OPRA; serves native PDFs. Report-driven forms, no static URLs. High count likely blending terminals. |
+| GA | 131/62 | 2 (T1-adjacent) | Georgia EPD Air Protection Branch | `permitsearch.gaepd.org`; PDFs `permit.aspx?id=PDF-OP-#####` | Predictable PDF URL + AIRS addressing → nearly enumerable. No bulk API. |
+| KS | 112/62 | **3** (partial 2) | KDHE Bureau of Air (Class I) | KEIMS (account-gated) `keims.kdhe.ks.gov`; public notices show drafts only | **Only hard one.** Issued permits need KORA records request (days-weeks). Drafts opportunistic. 5-min manual check to confirm. |
+| MO | 106/56 | 2 (T1-adjacent) | MoDNR Air Pollution Control | `dnr.mo.gov/air/business-industry/permits/issued`; PDFs at stable VFC path | Walk Drupal table → stable PDF href. 1996+. ethanol/BD = `OPYYYY-NNN`. |
+| NE | 106/48 | 2 | NDEE Air Quality Division | ECMP `ecmp.nebraska.gov` (OnBase); lookup `deq-iis.ne.gov/zs/permit/main_search.php` | OnBase Angular+JSON; reverse-engineer query API. ethanol-dense. |
+| OH | 83/71 | 2 | Ohio EPA Div. Air Pollution Control | eDoc `edocpub.epa.ohio.gov/publicportal`; PDFs `ViewDocument.aspx?docid=` | Returns application/pdf confirmed; opaque docids → scrape result list. Watch delegated local agencies (RAPCA etc.). |
 | TN | 78/49 | _TBD_ | | |
 | CO | 73/20 | _TBD_ | | |
 | AL | 73/55 | _TBD_ | | |
