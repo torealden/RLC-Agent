@@ -44,7 +44,12 @@ an IA-type (easy) or MN-type (FOIA) source and what the lead time is.
 
 ---
 
-## Key findings (research pass 2026-06-21, first 11 states)
+## Key findings (research pass 2026-06-21, 22 of 33 priority states; VA/OK/FL/WV/MS/MA/SD/WI/CT/MD/ND pending)
+
+- **Tier 1 (Iowa-twins, scrapable end-to-end — build these first):** PA (open dir, ~7,300 PDFs),
+  NY (Socrata + deterministic PDFs), AR (predictable PDFs + bulk Access DB), IN (predictable
+  PDF URL), CO (Google Drive by company). Five clean targets already — more than enough to
+  start national depth-acquisition without solving the hard backends.
 
 - **The IA acquirer will NOT transfer cleanly — this is the real cost of going national.**
   Each state runs a different backend: Oracle WebCenter (TX), ASPX/session (LA, GA, OH),
@@ -52,11 +57,15 @@ an IA-type (easy) or MN-type (FOIA) source and what the lead time is.
   open IIS directory (PA). Realistic architecture = a small set of **per-backend adapter
   types**, not one universal scraper. (Directly answers the "did we generalize at MN?"
   question: generalization means ~5-6 adapter patterns, not one.)
-- **Build order by ease:** PA and IN are plain HTTP GETs (Tier 1) — build those first.
-  PA is the single best target (one scrape ≈ 7,300 statewide permit PDFs).
-- **FOIA is rare:** of the first 11, only **Kansas** needs a records request for issued
-  permits. MN (from Batch 2) is Tier 2 recent / Tier 3 older — also not pure-FOIA. The
-  "everything is FOIA" fear is overblown; most states are scrapable with per-backend effort.
+- **FOIA is rare:** across 22 states, **zero are purely Tier 3.** Only Kansas (issued
+  permits) needs a records request outright; Tier-3 *edges* exist for MN historical, KY's
+  Jefferson County (LMAPCD), and CA's small rural districts. The "everything is FOIA" fear
+  is overblown — most states are scrapable with per-backend effort.
+- **California is the structural outlier:** no statewide repository — ~35 local Air
+  Districts, each its own portal. Per-district adapters (start SCAQMD); small districts → CPRA.
+- **Jurisdictional gaps to track:** state systems often exclude self-administered local
+  programs — Allegheny/Philadelphia (PA), Jefferson Co. (KY), 4 TN county programs, OH
+  delegated locals. Source these separately.
 - **GATING CAVEAT (applies to every state):** confidence is high on the *access
   mechanism*, NOT on whether the equipment/capacity tables live in the issued permit PDF
   vs. a separate application/"specific conditions" attachment. Since equipment-list DEPTH
@@ -82,17 +91,17 @@ Access tier + portal columns populated by research pass (in progress 2026-06-21)
 | MO | 106/56 | 2 (T1-adjacent) | MoDNR Air Pollution Control | `dnr.mo.gov/air/business-industry/permits/issued`; PDFs at stable VFC path | Walk Drupal table → stable PDF href. 1996+. ethanol/BD = `OPYYYY-NNN`. |
 | NE | 106/48 | 2 | NDEE Air Quality Division | ECMP `ecmp.nebraska.gov` (OnBase); lookup `deq-iis.ne.gov/zs/permit/main_search.php` | OnBase Angular+JSON; reverse-engineer query API. ethanol-dense. |
 | OH | 83/71 | 2 | Ohio EPA Div. Air Pollution Control | eDoc `edocpub.epa.ohio.gov/publicportal`; PDFs `ViewDocument.aspx?docid=` | Returns application/pdf confirmed; opaque docids → scrape result list. Watch delegated local agencies (RAPCA etc.). |
-| TN | 78/49 | _TBD_ | | |
-| CO | 73/20 | _TBD_ | | |
-| AL | 73/55 | _TBD_ | | |
-| CA | 66/50 | _TBD_ | | LCFS-relevant (RD/SAF) |
-| MN | 62/44 | _TBD (suspect 3)_ | MPCA | suspected FOIA-type — verify |
-| AR | 61/41 | _TBD_ | | |
-| NC | 57/38 | _TBD_ | | |
-| NY | 55/45 | _TBD_ | | |
-| SC | 50/34 | _TBD_ | | |
-| KY | 49/40 | _TBD_ | | |
-| MI | 48/41 | _TBD_ | | |
+| NY | 55/45 | **1** | NYSDEC Bureau of Stationary Sources | Socrata `data.ny.gov/.../4n3a-en4b` + PDFs `extapps.dec.ny.gov/data/dar/afs/permits/{facility_id}_{rev}.pdf` | **Iowa twin.** Socrata API/CSV index + deterministic PDF path. Build early. |
+| AR | 61/41 | **1** | ADEQ Office of Air Quality | PDS `adeq.state.ar.us/home/pdssql/pds.aspx`; PDFs `.../PermitsOnline/Air/<PermitNo>.pdf`; bulk `Air_Permitting_web.zip` | Deterministic PDF URL + full Access DB ZIP (facility→permit→AFIN). Fully scrapable. |
+| CO | 73/20 | **1** | CDPHE Air Pollution Control | Title V company index → public Google Drive; construction perms on Hyland Cloud portal | Title V docs bulk-downloadable from Drive by company. Two systems if minor perms needed. |
+| TN | 78/49 | 2 | TDEC Div. Air Pollution Control | Oracle APEX viewer `dataviewers.tdec.tn.gov/.../19031:34001`; docs `BGAPC.GET_DOCUMENTS?p_file=<id>` | Predictable `p_file` pattern (seed index). Excl. 4 local county programs (Nashville, Chattanooga, Knox, Memphis). |
+| AL | 73/55 | 2 | ADEM | eFile `app.adem.alabama.gov/efile/` (Media=Air, DocType=Permitting) | 1M+ docs; one-at-a-time, no API. |
+| CA | 66/50 | 2 (fragmented) | ~35 local Air Districts (CARB oversees only) | SCAQMD/BAAQMD/SJVAPCD/SacMetro each separate | **Special case.** No statewide repo. Per-district adapters; start SCAQMD. Small rural districts → CPRA (Tier 3). LCFS-relevant (RD/SAF). |
+| MN | 62/44 | 2 recent / 3 historical | MPCA Air Quality | "What's in My Neighborhood" `webapp.pca.state.mn.us/wimn/` (site/`<id>`) | **Not pure-FOIA** (corrects the memory). Recent PDFs online; full historical via records request / in-person St. Paul. |
+| NC | 57/38 | 2 | NC DEQ Div. Air Quality | Laserfiche `edocs.deq.nc.gov/AirQuality/` | Final signed PDFs searchable by Facility ID/Name; script WebLink per facility, no bulk. |
+| SC | 50/34 | 2 | SCDES Bureau of Air Quality (ex-DHEC) | ePermitting `epermitting.des.sc.gov`; legacy DHEC portal | Title V since 2023-24; DHEC→DES URL-stability risk. |
+| KY | 49/40 | 2 | KY Div. for Air Quality (+ Louisville Metro APCD for Jefferson Co.) | DEP Gateway `dep.gateway.ky.gov/eSearch/Approvals/Issued` (program=Air) | One-by-one; no bulk. Jefferson Co. separate (LMAPCD, partial Tier 3). |
+| MI | 48/41 | 2 | EGLE Air Quality Division | MiEnviro Site Explorer + master ROP/PTI index PDFs | Master active-permit PDFs = seed index; per-facility download, no bulk. |
 | VA | 41/29 | _TBD_ | | |
 | OK | 37/20 | _TBD_ | | |
 | FL | 36/17 | _TBD_ | | |
