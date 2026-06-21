@@ -108,7 +108,7 @@ Access tier + portal columns populated by research pass (in progress 2026-06-21)
 |---|---|---|---|---|
 | IA | 158/127 | **1 — DONE** | Iowa DNR permit document repository | Drained: 288 facilities, 8,847 units. Reference implementation. |
 | PA | 94/64 | **1** | PA DEP Bureau of Air Quality | `files.dep.state.pa.us/air/AirQuality/AQPortalFiles/Permits/PermitDocuments/` | **Best target.** Open IIS dir, 7,318 `*_Issued_v#.pdf`, nightly-refreshed, Title V = `-05` infix. Excl. Allegheny + Philadelphia (self-admin). Plain GET. |
-| IN | 93/66 | **1** | IDEM Office of Air Quality | PDFs `permits.air.idem.in.gov/<permitno>f.pdf`; lookup `caats.idem.in.gov` | **Next deep-dive.** Cleanest predictable PDF pattern; harvest permit#s from CAATS then GET. ~1-2 days. Plain GET. |
+| IN | 93/66 | **2** (verified) | IDEM | Oracle WebCenter ECM `ecm.idem.in.gov/cs/idcplg` (anonymous) | **CRACKED + download-verified 2026-06-21.** Research's `permits.air.idem.in.gov/<permitno>f.pdf` is WRONG (403). CAATS = JSF, ignore. Real recipe in `reference_idem_oracle_webcenter_permits`. 43 majors. Reusable for TX. |
 | IL | 281/143 | 2 | Illinois EPA Bureau of Air (CAAPP) | `webapps.illinois.gov/EPA/DocumentExplorer/Attributes` + `GetAirPermitDocument/{id}` API | Live doc API confirmed. Map facility→doc IDs. Pre-~2015 → FOIA. |
 | TX | 244/208 | 2 | TCEQ | CFR Online `records.tceq.texas.gov` + Central Registry RN lookup | 2-step (RN→docs), Oracle WebCenter session. Pre-2012 = FOIA. |
 | LA | 181/117 | 2 | LDEQ Air Permits (Part 70) | EDMS `edms.deq.louisiana.gov/edmsv2`; quarterly issued XLSX as AI-number seed | Resolve facility→AI#, query EDMS. ASPX/session. Check if equipment tbl in main PDF vs attachment. |
