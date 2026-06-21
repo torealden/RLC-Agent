@@ -60,8 +60,15 @@ modeling Iowa→IN/NE→industries→country; we're just front-loading the cheap
 - Forecast tracking (`deployment/forecast_tracker.py`, `core.forecasts`) — scaffold.
 - Facility agent L1–L4 (strategic/daily/signal/aggregation) — designed, not built.
 
+**Correction (2026-06-21): the national facility CENSUS already exists.**
+- `bronze.epa_echo_facility` = 2,865 facilities across 53 jurisdictions (1,925 operating),
+  industry-tagged, with CAA permit handles. EPA ECHO is the canonical facility source (no
+  hand-curated lists — see `reference_echo_canonical_facility_source`). What is IA-only is
+  the state Title V *equipment-list DEPTH* (288 facilities / 8,847 units). So "Phase A" below
+  is really *depth acquisition per state*, not census-building. Sourcing strategy lives in
+  `state_permit_data_source_inventory.md`.
+
 **Not built:**
-- National facility census (only IA permits drained so far).
 - Facility *state* layer, catchment topology, decision-execution shell (Phase Two's 5 gaps).
 - Symbiotic reconciliation (facility roll-up vs balance sheets) end-to-end.
 - **BioTrack** railcar detection — Planning only (YOLOv8/OCR design exists, no data feed).
