@@ -44,6 +44,33 @@ an IA-type (easy) or MN-type (FOIA) source and what the lead time is.
 
 ---
 
+## ⚠️ CRITICAL FINDING (2026-06-21, from verifying NY): "Title V" ≠ "our facilities"
+
+Verified the NY source directly (the gating spot-check). The NY Socrata "Issued Title V"
+dataset (297 records) contains **ZERO** of our ag/biofuel facilities — no ADM, Cargill,
+ConAgra, ethanol, grain, or crush. Why:
+- **Many of our target facilities are MINOR / synthetic-minor sources, not Title V majors.**
+  In NY only **9 of 55** ECHO target facilities are "Major Emissions"; 25 are Minor, 11
+  synthetic-minor. Minor sources don't get Title V permits — their equipment-list depth
+  lives in a state's *minor-source / State Facility permit* system, a DIFFERENT dataset.
+- **IA worked because its DNR repository was COMPREHENSIVE** (Title V + minor operating
+  permits — that's why we got machine shops + data centers among the 288). NY's Socrata is
+  Title-V-only, so it misses our minor sources entirely.
+- **ECHO industry tags have false positives.** NY "ethanol" is mostly chemical plants
+  (Occidental, Chemours, Arch Chemicals) caught by the SIC 2869 sweep — not ethanol producers.
+
+**Reframe (drives sequencing):**
+1. **For economic MODELING, we primarily want MAJOR sources** (big crush/ethanol/RD/mill
+   plants) — and those ARE Title V, so Title-V sources cover the modeling-critical targets.
+   Minor sources (small elevators, feed mills) are lower priority — defer their depth.
+2. **Prioritize states by MAJOR-source target density, not raw ECHO count.** NY (9 majors,
+   barely ag) is low-value despite 55 ECHO rows. IN (43 ethanol incl. 22 major + crush
+   majors) is high-value. The raw-count column below overstates low-major states.
+3. **Per state, the real question is two-dimensional:** (a) Title V access tier [done below]
+   AND (b) does the source also cover minor sources, or Title-V-only? IA = comprehensive;
+   NY = Title-V-only. Flag this as we verify each.
+4. **Verify before building, always** — this finding would have wasted a full NY adapter.
+
 ## Key findings (research pass 2026-06-21, 22 of 33 priority states; VA/OK/FL/WV/MS/MA/SD/WI/CT/MD/ND pending)
 
 - **Tier 1 (Iowa-twins, scrapable end-to-end — build these first):** PA (open dir, ~7,300 PDFs),
