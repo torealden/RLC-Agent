@@ -56,4 +56,29 @@ Stop treating per-state permit portals as the critical path. Instead:
 - **The crush economic model can be built NOW** on the 137 crush facilities (capacity+status
   in hand) + the 288-facility IA permit depth we already drained.
 
+## DECISION (2026-06-22, after testing NY + IN + PA)
+Bulk per-state permit acquisition is OFF the critical path. Confirmed across 3 states that
+the **crosswalk problem is universal**: each state's permit repository enumerates by a
+state-specific facility/permit ID that (a) doesn't join to ECHO's `caa_permit_ids`, and
+(b) lacks facility names in the enumeration — so you can't cheaply tell which docs are our
+targets. PA is enumerable but its "ethanol" facilities are mostly ECHO SIC false-positives
+(refineries/chemicals), not ag. IN's metadata is inconsistent. NY is Title-V-only. None is a
+clean ag win, and we don't need them — capacity + status are in hand (above).
+
+**But we explicitly do NOT disregard permits (Tore's safeguard against missing something):**
+- **Surgical, not bulk.** For a specific facility we model, pull its permit on demand
+  (crosswalk solved per-facility via FRS or a one-off lookup — tractable for a handful even
+  on messy portals). This is the "2-3 permits/day for Tore to visually examine" workflow.
+- **Capacity-confirmation cross-check.** Whenever we do pull a permit, compare its
+  equipment-implied capacity against our curated nameplate — that's how we catch a stale or
+  wrong number. Discrepancy = signal.
+- **Diagnostic trigger.** When a facility's modeled economics look off, pull its permit and
+  have Tore examine it. Permits become a targeted diagnostic + expert-examination tool, not a
+  bulk prerequisite. Tore's eye catches what the LLM schema drops (actual-vs-permitted cap,
+  debottlenecking, fuel-switching, enforcement, co-location).
+- **IA depth retained.** The 288-facility / 8,847-unit IA archive stays as the worked example.
+
+**"Did we miss a facility entirely?" is caught by reconciliation, not permits** — unifying
+the curated lists (586) ∪ ECHO (2,870) surfaces facilities present in one but not the other.
+
 See `state_permit_data_source_inventory.md` (access tiers) and `us_model_completion_plan.md`.
