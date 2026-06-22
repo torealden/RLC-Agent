@@ -1,8 +1,8 @@
-# Implied Feedstock Value — kg_callable Spec (v3 — HOBO-anchored, layered with crush_economics)
+# Implied Feedstock Value — kg_callable Spec (v3 — BBD-anchored, layered with crush_economics)
 
 > **Purpose**: codify the signature analytical model from section 05 of the BBD weekly report as an executable kg_callable so it runs every week with auditable inputs and the same logic.
 >
-> **Anchored to the HOBO Renewables price stack** (KG node `rd_price_stack`, context `price_stack_decomposition`). The structural form, default values, and sensitivity calibration come from the HOBO Section 8 framework.
+> **Anchored to the RLC BBD price stack** (KG node `rd_price_stack`, context `price_stack_decomposition`). The structural form, default values, and sensitivity calibration come from the BBD calibration framework.
 
 ## Architectural layering (per Iowa Crush Agent spec review 2026-04-26)
 
@@ -40,9 +40,9 @@
 
 ---
 
-## 1. The Model — HOBO Price Stack
+## 1. The Model — BBD Price Stack
 
-For a given **(refined fuel, region, feedstock, as_of_date)** the model computes effective selling price by adding the four-component HOBO stack, then backs into a per-lb feedstock bid by subtracting non-feedstock costs and dividing by yield.
+For a given **(refined fuel, region, feedstock, as_of_date)** the model computes effective selling price by adding the four-component BBD stack, then backs into a per-lb feedstock bid by subtracting non-feedstock costs and dividing by yield.
 
 ### 1.1 Effective Selling Price (per gal of refined fuel)
 
@@ -73,7 +73,7 @@ production_cost_per_gal =
   + fixed_cost_per_gal                # capex amortization + insurance + property
 ```
 
-**HOBO calibration** (`feedstock_sensitivity_rule.feedstock_cost_is_everything`):
+**BBD calibration** (`feedstock_sensitivity_rule.feedstock_cost_is_everything`):
 - Feedstock = **70–80% of cash cost**
 - $0.05/lb feedstock change → $0.35–0.40/gal margin change
 - 1¢/lb feedstock = $0.08/gal margin
@@ -103,7 +103,7 @@ Per KG node `cfpc_45z`, four scenarios materially reshape the stack. The model t
 | `extension_2031` (bullish) | Full credit through 2031, ILUC remains | Base case for 2026 reports |
 | `expiry_2027` (bearish, SAF cliff) | Credit set to 0 for as_of_date > 2027-12-31 | Stress test post-cliff |
 | `iluc_removed` | Recompute pathway CI without ILUC; narrows waste-vs-crop differential | Scenario test for soybean oil competitiveness |
-| `domestic_restriction` | Apply CI penalty (or set to 0) for non-domestic feedstock pathways | Favors Midwest US plants like HOBO |
+| `domestic_restriction` | Apply CI penalty (or set to 0) for non-domestic feedstock pathways | Favors domestic-feedstock Midwest plants |
 | `none` | 45Z = 0 in cost stack | Pre-IRA baseline / counterfactual |
 
 The `breakdown_per_gal` output (§3) **always returns 45Z value separately** so subscribers see the policy sensitivity at a glance.
@@ -113,7 +113,7 @@ The `breakdown_per_gal` output (§3) **always returns 45Z value separately** so 
 | Mode | Behavior |
 |---|---|
 | `breakeven` | target_margin = 0; returns ceiling bid |
-| `target_margin` | target_margin = user-supplied (e.g., HOBO base case $0.50/gal IL) |
+| `target_margin` | target_margin = user-supplied (e.g., calibration base case $0.50/gal IL) |
 | `cash_compare` | Computes breakeven AND compares to observed cash; flags margin opportunity vs compression |
 | `scenario_grid` | Runs all 4 policy scenarios + best/base/worst margin cases (per `base_case_margins`) — returns a 4×3 grid |
 
@@ -130,7 +130,7 @@ def run(
     feedstock_code: str,        # canonical from silver.bbd_feedstock_dim
     as_of_date: date,           # the trading day to compute for
     mode: str = 'breakeven',    # 'breakeven' | 'target_margin' | 'cash_compare' | 'scenario_grid'
-    policy_scenario: str = 'extension_2031',  # see §1.4 (default: HOBO bullish base)
+    policy_scenario: str = 'extension_2031',  # see §1.4 (default: bullish base case)
     target_margin_per_gal: float = 0.0,       # used when mode='target_margin'
     observed_cash_per_lb: float | None = None, # used when mode='cash_compare'
 ) -> dict
@@ -168,10 +168,10 @@ If a DB input is missing, the callable looks up the corresponding KG node via `s
 {
   'implied_bid_per_lb': 0.4521,           # headline number, $/lb feedstock
   'implied_bid_per_short_ton': 904.20,
-  'yield_lb_per_gal': 7.7,                # HOBO default for HEFA RD; varies by fuel/feedstock
+  'yield_lb_per_gal': 7.7,                # BBD default for HEFA RD; varies by fuel/feedstock
   'policy_scenario': 'extension_2031',    # which 45Z branch was used
   'breakdown_per_gal': {
-      # The HOBO four-component price stack — supply side
+      # The BBD four-component price stack — supply side
       'base_refined_product':    2.50,    # ULSD or jet
       'd4_rin_value':            2.55,    # = $1.50 × 1.7 (equiv ratio)
       'lcfs_value':              0.62,    # = $65/MT × 55 g/MJ × conversion
@@ -183,7 +183,7 @@ If a DB input is missing, the callable looks up the corresponding KG node via `s
       'target_margin':           0.00,    # nonzero only when mode='target_margin'
       'net_available_for_feedstock': 6.02, # (effective_selling - opex - fixed - target_margin)
   },
-  # Built-in HOBO scenario context for the report
+  # Built-in scenario context for the report
   'margin_case': 'base',                  # 'best' | 'base' | 'worst' (per base_case_margins KG node)
   'inputs_used': {...},                   # echoed for audit
   'fallback_inputs': [...],               # which inputs came from KG default vs live DB
@@ -201,13 +201,13 @@ If a DB input is missing, the callable looks up the corresponding KG node via `s
       'interpretation': 'Implied bid 1.2 c/lb above observed — margin opportunity vs spot',
   },
   'scenario_grid': {                      # populated only when mode='scenario_grid'
-      # 4 policy scenarios × 3 margin cases (HOBO best/base/worst)
+      # 4 policy scenarios × 3 margin cases (best/base/worst margin cases)
       'extension_2031':       {'best': ..., 'base': ..., 'worst': ...},
       'expiry_2027':          {'best': ..., 'base': ..., 'worst': ...},
       'iluc_removed':         {'best': ..., 'base': ..., 'worst': ...},
       'domestic_restriction': {'best': ..., 'base': ..., 'worst': ...},
   },
-  'reasoning':  '<HOBO-style narrative: "RD GoM base case at $X.XX/gal under extension_2031;
+  'reasoning':  '<BBD-style narrative: "RD GoM base case at $X.XX/gal under extension_2031;
                   D4 contributes 38% of revenue; feedstock-cost-is-everything implies $Y.YY/lb
                   ceiling, observed UCO at $Z.ZZ → margin opportunity / compression of N c/gal">',
   'confidence': 0.78,
@@ -272,12 +272,12 @@ Backtest hook: every Friday the prior week's `cash_compare` calls are evaluated 
 ## 8. Open questions for review
 
 1. **Cost reference scope** — one variable-cost benchmark per (fuel, technology), or per-region? My instinct: per (fuel, technology) is enough for MVP; regional differentiation is mostly logistics + utilities.
-2. ~~45Z handling~~ — **resolved by HOBO anchor**: 4 first-class policy scenarios (extension_2031 / expiry_2027 / iluc_removed / domestic_restriction). Default to `extension_2031` (HOBO bullish base); always emit 45Z value as a separate breakdown line for clarity.
+2. ~~45Z handling~~ — **resolved by BBD anchor**: 4 first-class policy scenarios (extension_2031 / expiry_2027 / iluc_removed / domestic_restriction). Default to `extension_2031` (bullish base case); always emit 45Z value as a separate breakdown line for clarity.
 3. **CI scoring source** — CARB pathway database has gaps for newer feedstocks (UCO from China). Use CARB defaults, or our own CI estimate where CARB has no certified pathway? The latter is editorially riskier but probably what subscribers want. *My recommendation: own estimate, with confidence flag and "CARB-pending" annotation.*
-4. **Region scope for MVP** — Gulf BD, Gulf RD, Midwest BD, West Coast RD covers ~80% of the action. Add SAF West Coast and Midwest RD in v2? *My recommendation: include SAF West Coast in MVP — HOBO's signature deliverable depends on it.*
+4. **Region scope for MVP** — Gulf BD, Gulf RD, Midwest BD, West Coast RD covers ~80% of the action. Add SAF West Coast and Midwest RD in v2? *My recommendation: include SAF West Coast in MVP — the calibration's signature deliverable depends on it.*
 5. **Cash spread normalization** — implied bid in $/lb vs cash in $/lb is straightforward, but BD futures are quoted in $/gal at notional 7.5 lb/gal. Output both $/lb and $/gal? *My recommendation: yes, both — cheap addition.*
-6. **Margin case default** — `mode=scenario_grid` returns the 4×3 grid (4 policy × best/base/worst margin cases per HOBO `base_case_margins`). For the standard weekly run, do you want `base` as the headline number with the grid in a sidebar, or something else?
-7. **Feedstock-specific OPEX** — HOBO defaults assume soft soybean-oil-grade processing. Tougher feedstocks (high FFA tallow, contaminated UCO) raise OPEX 5-15 c/gal. Do you want a feedstock_quality_factor multiplier on OPEX, or hold OPEX constant in MVP? *My recommendation: hold constant in MVP; add quality factor in v2 once we have HOBO actuals.*
+6. **Margin case default** — `mode=scenario_grid` returns the 4×3 grid (4 policy × best/base/worst margin cases per BBD calibration `base_case_margins`). For the standard weekly run, do you want `base` as the headline number with the grid in a sidebar, or something else?
+7. **Feedstock-specific OPEX** — BBD defaults assume soft soybean-oil-grade processing. Tougher feedstocks (high FFA tallow, contaminated UCO) raise OPEX 5-15 c/gal. Do you want a feedstock_quality_factor multiplier on OPEX, or hold OPEX constant in MVP? *My recommendation: hold constant in MVP; add quality factor in v2 once we have representative plant actuals.*
 
 ---
 
