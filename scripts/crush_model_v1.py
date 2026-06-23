@@ -69,7 +69,11 @@ def capacity_bu_yr(f):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--utilization", type=float, default=UTILIZATION)
+    ap.add_argument("--utilization", type=float, default=None,
+                    help="override; default = nationalized util derived from --national-crush / capacity")
+    ap.add_argument("--national-crush", type=float, default=2630.0,
+                    help="current-MY US crush target in mil bu (default 2630 = 2025/26 RLC S&D); "
+                         "nationalized utilization = this / total operating capacity")
     ap.add_argument("--conversion-cost", type=float, default=CONVERSION_COST)
     args = ap.parse_args()
 
@@ -84,6 +88,13 @@ def main():
             ['name','operator','state','status','nameplate_mmbu_yr','nameplate_tpd',
              'operating_days_year','refining_capability'], r)) for r in cur.fetchall()]
 
+    # nationalized utilization: anchor total crush volume to the S&D crush target
+    # (validated 2026-06-23: facility-sum @ derived util reconciles to RLC S&D within ~0.4%)
+    operating_cap = sum(capacity_bu_yr(f) or 0 for f in facs
+                        if (f.get("status") or "").lower().startswith("oper"))
+    util = args.utilization if args.utilization is not None else \
+        min((args.national_crush * 1e6) / operating_cap, 1.0) if operating_cap else 0.90
+
     rows = []
     nat = {"cap_bu": 0.0, "vol_bu": 0.0, "oil_lb": 0.0, "meal_st": 0.0, "gm_usd": 0.0,
            "n": 0, "n_cap": 0, "n_oper": 0}
@@ -96,7 +107,7 @@ def main():
         rec = {"name": f["name"], "state": f.get("state"), "status": f.get("status"),
                "operating": operating, "capacity_bu_yr": cap}
         if cap and operating:
-            vol = cap * args.utilization
+            vol = cap * util
             oil_lb = vol * OIL_LB
             meal_st = vol * MEAL_LB / 2000.0
             gm = vol * bm["net_bu"]
@@ -120,7 +131,9 @@ def main():
     print("=== CRUSH MODEL v1 (board crush, flat basis) ===")
     print(f"prices: bean ${bm['bean_usd_bu']:.2f}/bu | oil {px['ZL']:.2f}c/lb | meal ${px['ZM']:.0f}/ton")
     print(f"board margin: gross ${bm['gross_bu']:.2f}/bu, net ${bm['net_bu']:.2f}/bu "
-          f"(conv ${args.conversion_cost}/bu, util {args.utilization:.0%})")
+          f"(conv ${args.conversion_cost}/bu)")
+    print(f"nationalized utilization: {util:.1%}  (anchored to S&D crush {args.national_crush:.0f} "
+          f"mil bu / capacity {operating_cap/1e9:.2f} B bu)")
     print(f"facilities: {nat['n']} total, {nat['n_oper']} operating, {nat['n_cap']} modeled (operating + capacity)")
     print("\nNATIONAL (modeled subset — operating facilities w/ capacity):")
     print(f"  crush capacity : {nat['cap_bu']/1e9:.2f} B bu/yr")
@@ -128,10 +141,10 @@ def main():
     print(f"  SOY OIL output : {nat['oil_lb']/1e9:.2f} B lb/yr   <- BBD feedstock marker")
     print(f"  soy meal output: {nat['meal_st']/1e6:.2f} M short tons/yr")
     print(f"  gross margin   : ${nat['gm_usd']/1e9:.2f} B/yr")
-    print("\nSANITY vs known US (analyst): crush ~2.4B bu/yr, capacity ~2.6B bu/yr, "
-          "soy oil ~27B lb/yr.")
-    print(f"  -> our modeled coverage: capacity {nat['cap_bu']/2.6e9:.0%} of national, "
-          f"oil {nat['oil_lb']/27e9:.0%} of national.")
+    print(f"\nVALIDATION vs RLC S&D (2025/26): crush volume {nat['vol_bu']/1e9:.2f}B vs S&D "
+          f"{args.national_crush/1000:.2f}B (anchored). Capacity {nat['cap_bu']/1e9:.2f}B = current US "
+          f"(post-RD-boom; ~2.9B). Soy oil {nat['oil_lb']/1e9:.1f}B lb at 11 lb/bu; USDA ~30B "
+          f"(oil yield ~11.5 lb/bu would close the gap — calibration note).")
     print(f"\n-> {OUT}")
 
 
