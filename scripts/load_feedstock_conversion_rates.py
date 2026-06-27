@@ -29,6 +29,9 @@ RATES = [
     ("renewable_diesel","corn_oil",9.38,9.6),("renewable_diesel","fish_oil",9.38,3.2),
     ("renewable_diesel","other",9.38,0.0),("renewable_diesel","tallow",9.38,69.5),
     ("renewable_diesel","uco_yellow_grease",8.01,17.6),
+    # RD veg oils absent from the 2021 file (RD didn't use them then); RLC estimate ~BD yield,
+    # pending Tore's more-recent RD veg-oil yields. Flagged via EST_RD note below.
+    ("renewable_diesel","soybean_oil",7.60,0.0),("renewable_diesel","canola_oil",7.60,0.0),
     # co-processing
     ("co_processing","soybean_oil",7.40,50.0),("co_processing","canola_oil",7.45,25.0),
     ("co_processing","tallow",7.75,10.0),("co_processing","uco_yellow_grease",8.01,10.0),
@@ -45,9 +48,15 @@ def main():
             historical_share_pct numeric, source text, as_of text,
             notes text, PRIMARY KEY (fuel_type, feedstock))""")
         cur.execute("TRUNCATE reference.feedstock_conversion_rates")
+        EST_RD = {("renewable_diesel","soybean_oil"), ("renewable_diesel","canola_oil")}
         for ft, fs, y, sh in RATES:
-            note = (f"Tore stated blended-total yield for {ft}={BLENDED_NOTE[ft]} (different "
-                    f"basis, below components; not used)") if ft in BLENDED_NOTE else None
+            if (ft, fs) in EST_RD:
+                note = "RLC ESTIMATE (~BD yield); 2021 file predates RD veg-oil use — replace w/ Tore's RD yields when found"
+            elif ft in BLENDED_NOTE:
+                note = (f"Tore stated blended-total yield for {ft}={BLENDED_NOTE[ft]} (different "
+                        f"basis, below components; not used)")
+            else:
+                note = None
             cur.execute("""INSERT INTO reference.feedstock_conversion_rates
                 (fuel_type,feedstock,yield_lb_per_gal,historical_share_pct,source,as_of,notes)
                 VALUES (%s,%s,%s,%s,%s,%s,%s)""", (ft, fs, y, sh, SOURCE, "2021", note))
