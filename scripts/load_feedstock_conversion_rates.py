@@ -15,30 +15,28 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
 
-SOURCE = "RLC (Tore, Jacobsen-era 2021)"
-# (fuel_type, feedstock, yield_lb_per_gal, historical_share_pct)
+# CANON yields lb feedstock/gal (Tore, 2026 — "use as canon, won't move much").
+# (fuel_type, feedstock, yield_lb_per_gal, historical_share_pct or None)
 RATES = [
-    # biodiesel (FAME)
-    ("biodiesel","canola_oil",7.45,10.8),("biodiesel","corn_oil",8.20,12.3),
-    ("biodiesel","cottonseed_oil",7.45,0.0),("biodiesel","palm_oil",7.45,0.0),
-    ("biodiesel","soybean_oil",7.40,52.5),("biodiesel","sunflower_oil",7.45,0.3),
-    ("biodiesel","poultry_fat",7.45,1.7),("biodiesel","tallow",7.75,3.1),
-    ("biodiesel","white_grease",7.86,5.0),("biodiesel","lard",7.80,0.6),
-    ("biodiesel","uco_yellow_grease",8.23,12.2),("biodiesel","other_grease",8.40,0.9),
-    # renewable diesel (HEFA)
-    ("renewable_diesel","corn_oil",9.38,9.6),("renewable_diesel","fish_oil",9.38,3.2),
-    ("renewable_diesel","other",9.38,0.0),("renewable_diesel","tallow",9.38,69.5),
-    ("renewable_diesel","uco_yellow_grease",8.01,17.6),
-    # RD veg oils absent from the 2021 file (RD didn't use them then); RLC estimate ~BD yield,
-    # pending Tore's more-recent RD veg-oil yields. Flagged via EST_RD note below.
-    ("renewable_diesel","soybean_oil",7.60,0.0),("renewable_diesel","canola_oil",7.60,0.0),
-    # co-processing
+    # biodiesel (FAME) — canon yields; shares not specified (mix comes from EIA/S&D)
+    ("biodiesel","canola_oil",7.45,None),("biodiesel","corn_oil",8.20,None),
+    ("biodiesel","cottonseed_oil",7.45,None),("biodiesel","palm_oil",7.45,None),
+    ("biodiesel","soybean_oil",7.50,None),("biodiesel","sunflower_oil",7.45,None),
+    ("biodiesel","poultry_fat",7.45,None),("biodiesel","tallow",7.75,None),
+    ("biodiesel","white_grease",7.86,None),("biodiesel","lard",7.80,None),
+    ("biodiesel","yellow_grease",8.23,None),("biodiesel","other_grease",8.40,None),
+    # renewable diesel (HEFA) — canon yields (yellow grease + UCO now split; DCO 9.20)
+    ("renewable_diesel","yellow_grease",8.50,None),("renewable_diesel","used_cooking_oil",8.01,None),
+    ("renewable_diesel","soybean_oil",7.50,None),("renewable_diesel","canola_oil",7.55,None),
+    ("renewable_diesel","tallow",9.38,None),("renewable_diesel","distillers_corn_oil",9.20,None),
+    ("renewable_diesel","choice_white_grease",9.38,None),("renewable_diesel","poultry_fat",8.12,None),
+    # co-processing — 2021 era (not re-specified in 2026 canon; yields + shares retained)
     ("co_processing","soybean_oil",7.40,50.0),("co_processing","canola_oil",7.45,25.0),
     ("co_processing","tallow",7.75,10.0),("co_processing","uco_yellow_grease",8.01,10.0),
     ("co_processing","corn_oil",8.20,1.7),("co_processing","white_grease",7.86,1.7),
     ("co_processing","poultry_fat",7.45,1.7),
 ]
-BLENDED_NOTE = {"biodiesel": 7.20, "renewable_diesel": 7.58}  # Tore's stated totals (diff basis; not used)
+CANON_FUELS = {"biodiesel", "renewable_diesel"}  # 2026 canon; co_processing = 2021
 
 def main():
     with get_connection() as c:
@@ -48,18 +46,14 @@ def main():
             historical_share_pct numeric, source text, as_of text,
             notes text, PRIMARY KEY (fuel_type, feedstock))""")
         cur.execute("TRUNCATE reference.feedstock_conversion_rates")
-        EST_RD = {("renewable_diesel","soybean_oil"), ("renewable_diesel","canola_oil")}
         for ft, fs, y, sh in RATES:
-            if (ft, fs) in EST_RD:
-                note = "RLC ESTIMATE (~BD yield); 2021 file predates RD veg-oil use — replace w/ Tore's RD yields when found"
-            elif ft in BLENDED_NOTE:
-                note = (f"Tore stated blended-total yield for {ft}={BLENDED_NOTE[ft]} (different "
-                        f"basis, below components; not used)")
-            else:
-                note = None
+            canon = ft in CANON_FUELS
+            src = "RLC canon (Tore 2026)" if canon else "RLC (Tore 2021)"
+            asof = "2026" if canon else "2021"
+            note = None if canon else "co-processing yields/shares from 2021; not re-specified in 2026 canon"
             cur.execute("""INSERT INTO reference.feedstock_conversion_rates
                 (fuel_type,feedstock,yield_lb_per_gal,historical_share_pct,source,as_of,notes)
-                VALUES (%s,%s,%s,%s,%s,%s,%s)""", (ft, fs, y, sh, SOURCE, "2021", note))
+                VALUES (%s,%s,%s,%s,%s,%s,%s)""", (ft, fs, y, sh, src, asof, note))
         c.commit()
         cur.execute("SELECT fuel_type, count(*), round(avg(yield_lb_per_gal),2) FROM reference.feedstock_conversion_rates GROUP BY 1 ORDER BY 1")
         print("loaded reference.feedstock_conversion_rates:")
