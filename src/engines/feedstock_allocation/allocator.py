@@ -656,6 +656,15 @@ class FeedstockAllocator:
         tallow_result = self.run_tallow_split(period, prices, supply)
         self._last_tallow_result = tallow_result  # Stored for save_tallow_split
 
+        # 1a-fix: retire the legacy generic BFT bucket. Tallow must flow ONLY through the
+        # EBFT/IBFT grades, which the EIA guardrail caps. BFT-eligible plants already get
+        # EBFT/IBFT added to eligibility (load_facilities), so no tallow capability is lost.
+        # Without this, BFT supply (from silver.feedstock_supply) was allocated ON TOP of the
+        # capped grade split -> total tallow overshot the EIA guardrail and starved soybean oil
+        # (Jan-2025: BFT 477 + EBFT/IBFT 508 = 985 vs guardrail 710; soy only 19% vs EIA ~34%).
+        for _k in [k for k in supply if k[0] == 'BFT']:
+            del supply[_k]
+
         if not facilities:
             logger.warning("  No active facilities — skipping")
             return []
