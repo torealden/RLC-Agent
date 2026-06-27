@@ -43,15 +43,25 @@ def main():
         prod = {k: float(v or 0) for k, v in p.items()}
         bbd_total = sum(prod.values())
 
-        # 2. feedstock demand + mix from allocation, trailing 12 mo (mil lbs)
-        cur.execute("""SELECT feedstock_name, sum(total_mil_lbs) lbs
-            FROM gold.feedstock_allocation_national
-            WHERE scenario='base' AND fuel_type IN ('biodiesel','renewable_diesel','saf')
-              AND period > (SELECT max(period) FROM gold.feedstock_allocation_national) - interval '12 months'
-            GROUP BY feedstock_name ORDER BY 2 DESC""")
+        # 2. feedstock demand + mix from EIA ACTUALS (canonical; plant_type='total' =
+        #    biodiesel+RD, derived from reported production). Exclude ethanol feedstocks
+        #    (corn, sorghum) and non-oil/fat. Trailing 12 mo.
+        EXCL = "('Corn','Grain Sorghum','Biogas','Energy Crops','Municipal Solid Waste','Yard Food Waste','Algae Oil','Other Waste')"
+        W = "year*100+month > (SELECT max(year*100+month)-100 FROM bronze.eia_feedstock_monthly)"
+        cur.execute(f"""SELECT feedstock_name, round(sum(quantity_mil_lbs)) lbs
+            FROM bronze.eia_feedstock_monthly
+            WHERE plant_type='total' AND {W} AND quantity_mil_lbs IS NOT NULL
+              AND feedstock_name NOT IN {EXCL}
+            GROUP BY feedstock_name ORDER BY 2 DESC NULLS LAST""")
         feed = [(r[0], float(r[1] or 0)) if not isinstance(r, dict) else (r['feedstock_name'], float(r['lbs'] or 0)) for r in cur.fetchall()]
         feed_total = sum(l for _, l in feed)
         soy_oil_demand = next((l for n, l in feed if 'soy' in (n or '').lower()), 0.0)
+        # allocation-engine soy oil (for the calibration-gap flag)
+        cur.execute("""SELECT sum(total_mil_lbs) FROM gold.feedstock_allocation_national
+            WHERE scenario='base' AND fuel_type IN ('biodiesel','renewable_diesel','saf')
+              AND feedstock_name ILIKE '%soy%'
+              AND period > (SELECT max(period) FROM gold.feedstock_allocation_national) - interval '12 months'""")
+        r = cur.fetchone(); alloc_soy = float((r[0] if not isinstance(r, dict) else list(r.values())[0]) or 0)
 
         # 3. crush soy oil SUPPLY (national, from crush logic)
         cur.execute("""SELECT sum(coalesce(nameplate_mmbu_yr*1e6, nameplate_tpd*365*2000/60.0)) cap
@@ -80,17 +90,20 @@ def main():
     print(f"\nCAPACITY (operating nameplate): RD {rd_cap/1000:.2f} B gal ({rd_n} fac), "
           f"BD {bd_cap/1000:.2f} B gal ({bd_n} fac)")
     if (rd_cap+bd_cap): print(f"  implied BBD utilization: {bbd_total/(rd_cap+bd_cap):.0%}")
-    print(f"\nFEEDSTOCK DEMAND (trailing 12mo, allocation): {feed_total/1000:.2f} B lb total")
+    print(f"\nFEEDSTOCK DEMAND (trailing 12mo, EIA actuals — CANONICAL): {feed_total/1000:.2f} B lb (oils+fats)")
     print(f"  vs production x {args.lb_per_gal} lb/gal = {bbd_total*args.lb_per_gal/1000:.2f} B lb (consistency check)")
     print("  mix:")
     for n, l in feed[:8]:
         print(f"    {n:22s} {l/1000:6.2f} B lb  ({100*l/feed_total:4.1f}%)")
     print(f"\n*** SOYBEAN OIL BALANCE (the BBD-feedstock connection) ***")
     print(f"  crush SOY OIL SUPPLY (national):  {crush_soy_oil/1000:.2f} B lb/yr  (crush {crush_vol/1e9:.2f}B bu x {OIL_LB_PER_BU} lb, util {crush_util:.0%})")
-    print(f"  BBD SOY OIL DEMAND:               {soy_oil_demand/1000:.2f} B lb/yr  ({100*soy_oil_demand/crush_soy_oil:.0f}% of crush oil)")
+    print(f"  BBD SOY OIL DEMAND (EIA):         {soy_oil_demand/1000:.2f} B lb/yr  ({100*soy_oil_demand/crush_soy_oil:.0f}% of crush oil)")
     print(f"  -> available for food/export:     {(crush_soy_oil-soy_oil_demand)/1000:.2f} B lb/yr")
-    print(f"\n  Soy oil = {100*soy_oil_demand/feed_total:.0f}% of BBD feedstock; BBD consumes "
+    print(f"\n  Soy oil = {100*soy_oil_demand/feed_total:.0f}% of BBD oils/fats feedstock; BBD consumes "
           f"{100*soy_oil_demand/crush_soy_oil:.0f}% of US crush soy oil output.")
+    print(f"\n  CALIBRATION FLAG: allocation engine gave soy oil {alloc_soy/1000:.2f} B lb vs EIA {soy_oil_demand/1000:.2f} B "
+          f"({100*(soy_oil_demand-alloc_soy)/soy_oil_demand:.0f}% under). Engine needs recalibration to EIA "
+          f"(esp RD soy oil). Use EIA for history; engine for forecast only.")
 
 
 if __name__ == "__main__":
