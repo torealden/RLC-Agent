@@ -136,7 +136,7 @@ def main():
             tier = 'TIER1_pathway'; assigned = carb_set                 # authoritative (coastal/low-CI RD)
         elif carb_set and best_s >= args.weak:
             tier = 'TIER1_ambiguous'; assigned = carb_set; uncal = True
-            ambiguous.append((fname, comp, best['name'], round(best_s,2), carb_set))
+            ambiguous.append((fname, mstate, best['name'], best.get('state'), round(best_s,2), carb_set))
         elif is_bd:
             # generic BD fleet: default ASSUMED mix to soy oil (easy, experienced, Midwest supply);
             # keep eligible set broad so the allocator can still pick fats on economics. FLAG uncalibrated.
@@ -158,9 +158,17 @@ def main():
     for t in ['TIER0_curated','TIER0_carb_override','TIER1_pathway','TIER1_ambiguous','TIER2_bd_soy','TIER2_rd_tech','NON_LIPID','UNRESOLVED']:
         print(f"  {t:20s} {tier_count[t]:3d}")
     print(f"\nAmbiguous CARB matches (score {args.weak}-{args.strong}) — REVIEW THESE:")
+    print(f"  {'master facility':32s} {'mST':>3} | {'CARB candidate':28s} {'cST':>3} | need")
     if not ambiguous: print("  (none)")
-    for fn, comp, carbn, s, codes in sorted(ambiguous, key=lambda x: -x[3]):
-        print(f"  [{s}] master '{str(fn)[:30]}' (co {str(comp)[:18]}) ~ CARB '{str(carbn)[:30]}' -> {codes}")
+    for fn, mst, carbn, cst, s, codes in sorted(ambiguous, key=lambda x: -x[4]):
+        mst = mst or '--'; cst = cst or '--'
+        if mst == '--':
+            need = "STATE (you) -> auto-resolves"
+        elif cst != '--' and mst != cst:
+            need = f"REJECT? cross-state ({mst}!={cst})"
+        else:
+            need = "SAME SITE? yes/no"
+        print(f"  {str(fn)[:32]:32s} {mst:>3} | {str(carbn)[:28]:28s} {cst:>3} | {need}")
     print(f"\nCurated-vs-CARB conflicts (strong match, different set) — REVIEW:")
     if not conflicts: print("  (none)")
     for fn, cur_set, carb_set, s, carbn in conflicts:

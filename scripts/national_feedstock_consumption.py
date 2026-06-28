@@ -48,7 +48,7 @@ def main():
                        WHERE f.status ILIKE '%oper%' AND f.nameplate_mmgy IS NOT NULL
                          AND (f.padd IS NULL OR f.padd <> 'NON-US')""")
         facs = cur.fetchall()
-        cur.execute("SELECT facility_id, feedstock_code, pct FROM reference.facility_assumed_mix WHERE source='rd_buildup_xlsx'")
+        cur.execute("SELECT facility_id, feedstock_code, pct FROM reference.facility_assumed_mix")  # all sources (xlsx + screenshot est)
         mix = defaultdict(dict)
         for r in cur.fetchall():
             mix[g(r,'facility_id',0)][g(r,'feedstock_code',1)] = float(g(r,'pct',2)) / 100.0
