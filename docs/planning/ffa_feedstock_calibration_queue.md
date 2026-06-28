@@ -9,62 +9,68 @@ Facilities with an UNCALIBRATED assumed feedstock mix (auto-defaulted), needing 
 | tier | facility | company | state | padd | tech | fuel | mmgy | assumed_primary | eligible |
 |------|----------|---------|-------|------|------|------|-----:|-----------------|----------|
 | TIER1_ambiguous | World Energy Paramount- Houston, T | World Energy Paramount |  |  | hefa | renewable_diesel | 250 |  | BFT,DCO,SBO,UCO |
-| TIER1_ambiguous | HF Sinclair Renewables Holding Co  | HF Sinclair Renewables | NEW MEXICO |  | hefa | renewable_diesel | 141 |  | SBO |
 | TIER1_ambiguous | Shell Oil Products U.S. 1 - Norco | Shell Oil Products U.S |  |  | hefa | renewable_diesel | 54 |  | BFT |
-| TIER1_ambiguous | REG Ralston LLC | REG Ralston LLC | IA | PADD2 | transesterification | biodiesel | 49 |  | CO |
+| TIER1_ambiguous | REG Ralston LLC | REG Ralston LLC | IA | PADD2 | transesterification | biodiesel | 49 |  | CAN,SBO,UCO |
 | TIER1_ambiguous | Western Dubuque Biodiesel  LLC - F | Western Dubuque Biodie |  |  | transesterification | biodiesel | 45 |  | BFT,CO,SBO,UCO |
-| TIER1_ambiguous | Seaboard Energy Oklahoma LLC - Guy | Seaboard Energy Oklaho | OKLAHOMA |  | transesterification | biodiesel | 42 |  | BFT,DCO |
-| TIER1_ambiguous | Seaboard Energy Oklahoma LLC | Seaboard Energy Oklaho | OK | PADD2 | transesterification | biodiesel | 38 |  | BFT,DCO |
-| TIER1_ambiguous | Western Dubuque Biodiesel LLC | Western Dubuque Biodie | IA | PADD2 | transesterification | biodiesel | 36 |  | BFT,CO,SBO,UCO |
-| TIER1_ambiguous | Seaboard Energy Missouri LLC | Seaboard Energy Missou | MO | PADD2 | transesterification | biodiesel | 35 |  | BFT,DCO |
+| TIER1_ambiguous | Western Dubuque Biodiesel LLC | Western Dubuque Biodie | IA | PADD2 | transesterification | biodiesel | 36 |  | BFT,CAN,CO,DCO,SBO,UCO |
 | TIER1_ambiguous | Seaboard Energy Missouri LLC - St. | Seaboard Energy Missou |  |  | transesterification | biodiesel | 35 |  | BFT,DCO |
-| TIER1_ambiguous | REG Madison LLC | REG Madison LLC | WI | PADD2 | transesterification | biodiesel | 28 |  | CO |
-| TIER1_ambiguous | Par Pacific - Kapolei, HI | Par Pacific | HI | PADD5 | hefa | renewable_diesel | 24 |  | UCO |
-| TIER1_ambiguous | Hero BX Alabama LLC - Moundville | Hero BX Alabama LLC | ALABAMA |  | transesterification | biodiesel | 20 |  | BFT,CAN,DCO,SBO |
-| TIER1_ambiguous | Rio Valley Biofuels LLC | Rio Valley Biofuels LL | TX | PADD3 | transesterification | biodiesel | 15 |  | BFT,CAN,DCO,SBO,UCO |
+| TIER1_ambiguous | REG Madison LLC | REG Madison LLC | WI | PADD2 | transesterification | biodiesel | 28 |  | CAN,SBO,UCO |
+| TIER1_ambiguous | Hero BX Alabama LLC - Moundville | Hero BX Alabama LLC | AL | PADD3 | transesterification | biodiesel | 20 |  | BFT,CAN,DCO,SBO |
+| TIER1_ambiguous | Western Iowa Energy - Agron Bioene | Western Iowa Energy | CA | PADD5 | transesterification | biodiesel | 15 |  | BFT,CO,SBO,UCO |
 | TIER2_bd_soy | RBF Port Neches LLC | RBF Port Neches LLC | TX | PADD3 | transesterification | biodiesel | 144 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | RBF Port Neches LLC - Houston | RBF Port Neches LLC |  |  | transesterification | biodiesel | 144 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Cargill-Wichita - Wichita | Cargill-Wichita | KS | PADD2 | transesterification | biodiesel | 100 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Louis Dreyfus Agricultural Industr | Louis Dreyfus Agricult | IN | PADD2 | transesterification | biodiesel | 99 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Louis Dreyfus Agri Industries LLC  | Louis Dreyfus Agri Ind | INDIANA |  | transesterification | biodiesel | 99 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Louis Dreyfus Agri Industries LLC  | Louis Dreyfus Agri Ind | IN | PADD2 | transesterification | biodiesel | 99 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Cargill - Wichita | Cargill | KS | PADD2 | transesterification | biodiesel | 90 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Incobrasa Industries LTD. - Gilman | Incobrasa Industries L |  |  | transesterification | biodiesel | 75 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | World Energy - Natchez | World Energy | MS | PADD3 | transesterification | biodiesel | 72 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Incobrasa Industries Ltd. | Incobrasa Industries L | IL | PADD2 | transesterification | biodiesel | 62 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Deerfield Energy LLC - Deerfield | Deerfield Energy LLC |  |  | transesterification | biodiesel | 60 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Cargill - Kansas City | Cargill | MO | PADD2 | transesterification | biodiesel | 56 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Owensboro Grain Biodiesel LLC | Owensboro Grain Biodie | KY | PADD2 | transesterification | biodiesel | 54 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Mid-America Biofuels | Mid-America Biofuels | MO | PADD2 | transesterification | biodiesel | 50 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Hero BX - Erie | Hero BX | PA | PADD1 | transesterification | biodiesel | 50 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Mid-America Biofuels LLC - Mexico | Mid-America Biofuels L |  |  | transesterification | biodiesel | 50 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Lake Erie Biofuels LLC - Erie | Lake Erie Biofuels LLC | PENNSYLVANIA |  | transesterification | biodiesel | 45 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Lake Erie Biofuels LLC - Erie | Lake Erie Biofuels LLC | PA | PADD1 | transesterification | biodiesel | 45 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Seaboard Energy Oklahoma LLC - Guy | Seaboard Energy Oklaho | OK | PADD2 | transesterification | biodiesel | 42 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Green Energy Biofuel (GEB3) | Green Energy Biofuel ( | SC | PADD1 | transesterification | biodiesel | 40 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Seaboard Energy Oklahoma LLC | Seaboard Energy Oklaho | OK | PADD2 | transesterification | biodiesel | 38 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Minnesota Soybean Processors - Bre | Minnesota Soybean Proc | MN | PADD2 | transesterification | biodiesel | 36 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Minnesota Soybean Processors | Minnesota Soybean Proc | MN | PADD2 | transesterification | biodiesel | 36 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Minnesota Soybean Processors - Bre | Minnesota Soybean Proc | MINNESOTA |  | transesterification | biodiesel | 36 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Seaboard Energy Missouri LLC | Seaboard Energy Missou | MO | PADD2 | transesterification | biodiesel | 35 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Hero BX - Moundville | Hero BX | AL | PADD3 | transesterification | biodiesel | 20 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Adrian LVA Biofuel LLC - Adrian | Adrian LVA Biofuel LLC | MI | PADD2 | transesterification | biodiesel | 15 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Rio Valley Biofuels LLC | Rio Valley Biofuels LL | TX | PADD3 | transesterification | biodiesel | 15 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | W2Fuel - Adrian | W2Fuel | MI | PADD2 | transesterification | biodiesel | 15 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Adrian LVA Biofuel LLC - Adrian | Adrian LVA Biofuel LLC | MICHIGAN |  | transesterification | biodiesel | 15 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Hero BX - Clinton | Hero BX | IA | PADD2 | transesterification | biodiesel | 10 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | W2Fuel - Crawfordsville | W2Fuel | IA | PADD2 | transesterification | biodiesel | 10 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Genuine Bio-Fuel Inc. | Genuine Bio-Fuel Inc. | FL | PADD1 | transesterification | biodiesel | 9 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | White Mountain Biodiesel LLC | White Mountain Biodies | NH | PADD1 | transesterification | biodiesel | 8 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Biodiesel Las Americas LLC - Doral | Biodiesel Las Americas | FLORIDA |  | transesterification | biodiesel | 8 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Renewable Fuels by Peterson - Nort | Renewable Fuels by Pet | NEW HAMPSHIRE |  | transesterification | biodiesel | 8 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Big Island Biodiesel LLC - Keaau | Big Island Biodiesel L | HAWAII |  | transesterification | biodiesel | 6 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Biodiesel Las Americas LLC - Doral | Biodiesel Las Americas | FL | PADD1 | transesterification | biodiesel | 8 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Renewable Fuels by Peterson - Nort | Renewable Fuels by Pet | NH | PADD1 | transesterification | biodiesel | 8 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Pacific Biodiesel | Pacific Biodiesel | HI | PADD5 | transesterification | biodiesel | 6 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Big Island Biodiesel LLC - Keaau | Big Island Biodiesel L | HI | PADD5 | transesterification | biodiesel | 6 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Continental Refining Company - Som | Continental Refining C | KY | PADD2 | transesterification | biodiesel | 5 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Virginia Biodiesel Refinery LLC -  | Virginia Biodiesel Ref | VA | PADD1 | transesterification | biodiesel | 5 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Virginia Biodiesel Refinery LLC | Virginia Biodiesel Ref | VA | PADD1 | transesterification | biodiesel | 5 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | SMES Dublin LLC | SMES Dublin LLC | GA | PADD1 | transesterification | biodiesel | 5 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Walsh BioFuels LLC | Walsh BioFuels LLC | WI | PADD2 | transesterification | biodiesel | 5 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Southeast Biodiesel | Southeast Biodiesel | SC | PADD1 | transesterification | biodiesel | 5 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Continental Refining Company - Som | Continental Refining C | KENTUCKY |  | transesterification | biodiesel | 5 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Virginia Biodiesel Refinery LLC -  | Virginia Biodiesel Ref | VIRGINIA |  | transesterification | biodiesel | 5 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Blue Ridge Biofuels LLC - Newton | Blue Ridge Biofuels LL | NORTH CAROLINA |  | transesterification | biodiesel | 2 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Maine Bio-Fuel Inc. - Portland | Maine Bio-Fuel Inc. | MAINE |  | transesterification | biodiesel | 1 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Cape Cod Biofuels Inc. - Sandwich | Cape Cod Biofuels Inc. | MASSACHUSETTS |  | transesterification | biodiesel | 1 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Blue Ridge Biofuels LLC - Newton | Blue Ridge Biofuels LL | NC | PADD1 | transesterification | biodiesel | 2 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Maine Bio-Fuel Inc. - Portland | Maine Bio-Fuel Inc. | ME | PADD1 | transesterification | biodiesel | 1 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Cape Cod Biofuels Inc. - Sandwich | Cape Cod Biofuels Inc. | MA | PADD1 | transesterification | biodiesel | 1 | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | BE8 S.A. | BE8 S.A. | Brazil | NON-US |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Consolidated Biofuels Ltd. | Consolidated Biofuels  | British Columbia, Canada | NON-US |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Eberle Biodiesel LLC - Liverpool | Eberle Biodiesel LLC | TX | PADD3 | transesterification | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Dansuk Industrial Co., Ltd | Dansuk Industrial Co., | South Korea |  |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Pyeongtaek 2 | Dansuk Industrial Co., | South Korea |  |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Biocom Energia | Biocom Energia | Spain |  |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Ensyn Ontario Facility | Ensyn Technologies Inc | Ontario, Canada |  | fast_pyrolysis | biodiesel/renewable_diesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Just Biodiesel Pty. Ltd. | Just Biodiesel Pty. Lt | Australia |  |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | BE8 S.A. | BE8 S.A. | Brazil |  |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_bd_soy | Eco Solutions Co., Ltd | Eco Solutions Co., Ltd | South Korea |  |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Consolidated Biofuels Ltd. | Consolidated Biofuels  | British Columbia, Canada |  |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
-| TIER2_bd_soy | Eberle Biodiesel LLC - Liverpool | Eberle Biodiesel LLC | TEXAS |  | transesterification | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | JC Chemical Co., Ltd. | JC Chemical Co., Ltd. | South Korea |  |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | ADM Agri-Industries | Archer Daniels Midland | Canada | NON-US |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Ensyn Ontario Facility | Ensyn Technologies Inc | Ontario, Canada | NON-US | fast_pyrolysis | biodiesel/renewable_diesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
+| TIER2_bd_soy | Just Biodiesel Pty. Ltd. | Just Biodiesel Pty. Lt | Australia | NON-US |  | biodiesel |  | SBO | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO |
 | TIER2_rd_tech | BP - Stage 2 - Cherry Point, WA | BP | WA | PADD5 | coprocessing | coprocessing | 2020 |  | DCO,CO,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | BP - Stage 1 - Cherry Point, WA | BP | WA | PADD5 | coprocessing | coprocessing | 2018 |  | DCO,CO,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Neste - Porvoo | Neste |  |  | hefa | renewable_diesel | 495 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
@@ -72,14 +78,15 @@ Facilities with an UNCALIBRATED assumed feedstock mix (auto-defaulted), needing 
 | TIER2_rd_tech | Neste - Rotterdam | Neste |  |  | hefa | renewable_diesel | 264 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Sulzer (tech provider - who is ope | Sulzer (tech provider  |  |  | hefa | renewable_diesel | 165 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | ECB Group -Omega Green project - V | ECB Group -Omega Green |  |  | hefa | renewable_diesel | 147 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Bakersfield Renewable Fuels LLC -  | Bakersfield Renewable  | CALIFORNIA |  | hefa | renewable_diesel | 138 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
+| TIER2_rd_tech | HF Sinclair Renewables Holding Co  | HF Sinclair Renewables | NM | PADD3 | hefa | renewable_diesel | 141 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
+| TIER2_rd_tech | Bakersfield Renewable Fuels LLC -  | Bakersfield Renewable  | CA | PADD5 | hefa | renewable_diesel | 138 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Shell - Rotterdam | Shell |  |  | hefa | renewable_diesel | 135 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Jiaao Enprotech/ BP(15%) - Lianyun | Jiaao Enprotech/ BP(15 |  |  | hefa | renewable_diesel | 125 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Refinaria Riograndense - Rio Grand | Refinaria Riograndense |  |  | hefa | renewable_diesel | 123 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | HOBO Renewables #1 | HOBO Renewables #1 |  |  | hefa | renewable_diesel | 120 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | LanzaJet Marquis - Hennepin, IL | LanzaJet Marquis | IL | PADD2 | hefa | renewable_diesel | 120 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Edgewood | Edgewood |  |  | hefa | renewable_diesel | 120 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | BP Products North America 1 - Blai | BP Products North Amer | WASHINGTON |  | hefa | renewable_diesel | 111 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
+| TIER2_rd_tech | BP Products North America 1 - Blai | BP Products North Amer | WA | PADD5 | hefa | renewable_diesel | 111 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Moeve (formerly Cepsa)/Apical - Bi | Moeve (formerly Cepsa) |  |  | hefa | renewable_diesel | 83 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Acelen Renewables - Mataripe, Bahi | Acelen Renewables |  |  | hefa | renewable_diesel | 82 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Preem ProjectViking - Lysekil | Preem ProjectViking |  |  | hefa | renewable_diesel | 76 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
@@ -108,6 +115,7 @@ Facilities with an UNCALIBRATED assumed feedstock mix (auto-defaulted), needing 
 | TIER2_rd_tech | Strategic Biofuels - Port of Colom | Strategic Biofuels |  |  | hefa | renewable_diesel | 32 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Zhouyue New Energy | Zhouyue New Energy |  |  | hefa | renewable_diesel | 26 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | ENI - Gela | ENI |  |  | hefa | renewable_diesel | 25 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
+| TIER2_rd_tech | Par Pacific - Kapolei, HI | Par Pacific | HI | PADD5 | hefa | renewable_diesel | 24 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | CountryMark - Indiana | CountryMark | US |  | coprocessing | renewable_diesel | 22 |  | DCO,CO,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | TotalEnergies - Grandpuits | TotalEnergies |  |  | hefa | renewable_diesel | 17 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Sinopec - Zhenhai, Zhejiang | Sinopec |  |  | hefa | renewable_diesel | 16 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
@@ -115,22 +123,6 @@ Facilities with an UNCALIBRATED assumed feedstock mix (auto-defaulted), needing 
 | TIER2_rd_tech | Fulcrum Bioenergy - Sierra - Reno  | Fulcrum Bioenergy |  |  | hefa | renewable_diesel | 11 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | Preem Synsat - Lysekil | Preem Synsat |  |  | coprocessing | renewable_diesel | 8 |  | DCO,CO,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | EniLive - Livorno | EniLive |  |  | hefa | renewable_diesel | 2 |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | EIA Reported Capacity | EIA Reported Capacity |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | D4 Domestic RD | D4 Domestic RD |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | D4 - Domestic Renewable Jet Fuel | D4 |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Capacity Utilization | Capacity Utilization |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Pre-Treatment Capacity | Pre-Treatment Capacity |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Implied Monthly RD Yield | Implied Monthly RD Yie |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Implied Monthly RD Yield ex. SAF | Implied Monthly RD Yie |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Biodiesel | Biodiesel |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Implied Monthly BD Yield | Implied Monthly BD Yie |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | RD Percent | RD Percent |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | BD Percent | BD Percent |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | SAF | SAF |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Total Feedstock Use | Total Feedstock Use |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Implied Monthly SAF Yield | Implied Monthly SAF Yi |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Biodiesel Annual Capacity (mmgal/y | Biodiesel Annual Capac |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
-| TIER2_rd_tech | Pre-Aug Revisions | Pre-Aug Revisions |  |  | hefa | renewable_diesel |  |  | SBO,DCO,CO,CAN,BFT,CWG,PLT,UCO,YG |
 | TIER2_rd_tech | BP - Cherry Point, WA | BP | WA | PADD5 | coprocessing | renewable_diesel |  |  | DCO,CO,BFT,CWG,PLT,UCO,YG |
-| UNRESOLVED | Prince George Renewable Diesel | Tidewater Renewables L | British Columbia, Canada |  |  | renewable_diesel |  |  |  |
-| UNRESOLVED | Come By Chance Refinery | Braya Renewable Fuels  | Newfoundland and Labrador, Canada |  |  | renewable_diesel |  |  |  |
+| UNRESOLVED | Prince George Renewable Diesel | Tidewater Renewables L | British Columbia, Canada | NON-US |  | renewable_diesel |  |  |  |
+| UNRESOLVED | Come By Chance Refinery | Braya Renewable Fuels  | Newfoundland and Labrador, Canada | NON-US |  | renewable_diesel |  |  |  |

@@ -24,13 +24,16 @@ import sys, argparse, re
 from collections import defaultdict
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent))   # for clean_facility_master import
 from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
+from clean_facility_master import norm_state           # reuse the state normalizer
 
-# Feedstock code legend (master vocab — precise, fats are NOT interchangeable):
+# Feedstock code legend (master vocab — precise, fats are NOT interchangeable; use real
+# commodity names, NOT an "advanced" bucket — camelina/carinata are being commercialized):
 #   SBO soybean oil | CO corn oil | DCO distillers corn oil | CAN canola/rapeseed oil
 #   UCO used cooking oil | BFT beef tallow (CATTLE) | CWG choice white grease (PORK)
-#   PLT poultry fat (small volumes) | YG yellow grease
+#   PLT poultry fat (small volumes) | YG yellow grease | CAM camelina | CAR carinata | FSH fish oil
 CARB2MASTER = {
     'soybean_oil': 'SBO', 'canola_oil': 'CAN', 'distillers_corn_oil': 'DCO',
     'corn_oil': 'CO', 'used_cooking_oil': 'UCO', 'white_grease': 'CWG',
@@ -89,7 +92,8 @@ def main():
             key = (g(r,'fuel_producer',0), g(r,'facility_name',1))
             code = CARB2MASTER.get(g(r,'feedstock_code',3))
             if not code: continue
-            e = carb.setdefault(key, {'codes': {}, 'name': g(r,'fuel_producer',0) or g(r,'facility_name',1)})
+            e = carb.setdefault(key, {'codes': {}, 'name': g(r,'fuel_producer',0) or g(r,'facility_name',1),
+                                      'state': norm_state(g(r,'facility_location',2))[0]})
             ci = g(r,'min_ci',4)
             e['codes'][code] = min(e['codes'].get(code, 999), ci) if ci is not None else e['codes'].get(code, None)
 
@@ -107,9 +111,13 @@ def main():
         fid = g(f,'facility_id',0); comp = g(f,'company',1); fname = g(f,'facility_name',2)
         tech = g(f,'technology',5); curated = g(f,'eligible_feedstocks',9)
 
-        # best CARB match
+        # best CARB match — gated on state agreement (kills cross-state false matches like
+        # Iowa 'Western Dubuque' ~ California 'Imperial Western', and same-company-other-site)
+        mstate = g(f,'state',3)
         best, best_s = None, 0.0
         for e in carb_list:
+            if e.get('state') and mstate and e['state'] != mstate:
+                continue
             s = match_score(e['name'], fname, comp)
             if s > best_s: best, best_s = e, s
         carb_set = sorted(best['codes'].keys()) if (best and best_s >= args.weak) else None
@@ -119,9 +127,11 @@ def main():
         primary, uncal = None, False
 
         if curated:
-            tier = 'TIER0_curated'; assigned = sorted(curated)
             if carb_set and best_s >= args.strong and set(carb_set) != set(curated):
+                tier = 'TIER0_carb_override'; assigned = carb_set    # CARB wins (Tore: always defer to CARB)
                 conflicts.append((fname, sorted(curated), carb_set, round(best_s,2), best['name']))
+            else:
+                tier = 'TIER0_curated'; assigned = sorted(curated)
         elif carb_set and best_s >= args.strong:
             tier = 'TIER1_pathway'; assigned = carb_set                 # authoritative (coastal/low-CI RD)
         elif carb_set and best_s >= args.weak:
@@ -145,8 +155,8 @@ def main():
     # ---- report ----
     print(f"=== FFA two-tier feedstock-eligibility build — {len(facs)} facilities (DRY-RUN={'no' if args.write else 'yes'}) ===\n")
     print("Tier coverage:")
-    for t in ['TIER0_curated','TIER1_pathway','TIER1_ambiguous','TIER2_bd_soy','TIER2_rd_tech','NON_LIPID','UNRESOLVED']:
-        print(f"  {t:18s} {tier_count[t]:3d}")
+    for t in ['TIER0_curated','TIER0_carb_override','TIER1_pathway','TIER1_ambiguous','TIER2_bd_soy','TIER2_rd_tech','NON_LIPID','UNRESOLVED']:
+        print(f"  {t:20s} {tier_count[t]:3d}")
     print(f"\nAmbiguous CARB matches (score {args.weak}-{args.strong}) — REVIEW THESE:")
     if not ambiguous: print("  (none)")
     for fn, comp, carbn, s, codes in sorted(ambiguous, key=lambda x: -x[3]):
@@ -199,14 +209,19 @@ def main():
 
     if args.write:
         with get_connection() as c:
-            cur = c.cursor(); n = 0
+            cur = c.cursor(); n = ov = 0
             for r in rows:
-                if r['tier'] in ('TIER1_pathway','TIER2_tech') and r['elig']:
+                if r['tier'] == 'TIER0_carb_override' and r['elig']:
+                    cur.execute("UPDATE reference.biofuel_facilities SET eligible_feedstocks=%s, updated_at=now() "
+                                "WHERE facility_id=%s", (r['elig'], r['fid']))      # CARB overwrites curated
+                    ov += cur.rowcount
+                elif r['tier'] in ('TIER1_pathway','TIER2_bd_soy','TIER2_rd_tech') and r['elig']:
                     cur.execute("UPDATE reference.biofuel_facilities SET eligible_feedstocks=%s, updated_at=now() "
                                 "WHERE facility_id=%s AND eligible_feedstocks IS NULL", (r['elig'], r['fid']))
                     n += cur.rowcount
             c.commit()
-        print(f"\n[WROTE] filled {n} NULL eligible_feedstocks (curated preserved; ambiguous/conflicts skipped)")
+        print(f"\n[WROTE] filled {n} NULL eligible_feedstocks + {ov} CARB overrides "
+              f"(uncurated preserved where no strong match; ambiguous skipped for review)")
     else:
         print(f"\n[DRY-RUN] no DB writes. Review ambiguous + conflicts above, then re-run with --write.")
 
