@@ -48,6 +48,15 @@ NAT_FOOD_EXPORT = 16.5
 BD_SHARE   = {'PADD1':0.04,'PADD2':0.75,'PADD3':0.10,'PADD4':0.03,'PADD5':0.08}  # BD Midwest-concentrated
 FOOD_SHARE = {'PADD1':0.22,'PADD2':0.30,'PADD3':0.25,'PADD4':0.03,'PADD5':0.20}  # pop + Gulf/PNW export ports
 
+# Regional RD SOY-INTENSITY (FLAGGED, grounded in EIA national slate + known plant feedstocks).
+# WHY: EIA national 'total' slate is 34% soy but ~43% waste fats (tallow 25% + yellow grease 16%
+# + white grease/poultry), and waste fats are overwhelmingly an RD feedstock concentrated at the
+# COASTS (DGD Louisiana, West-Coast converters import tallow/UCO; LCFS rewards low-CI fats).
+# Midwest RD sits next to crush + ethanol DCO -> soy/corn-oil-rich. So RD-soy must NOT be allocated
+# by raw capacity share (that overstates soy into the coasts). Allocate by capacity x soy-intensity,
+# renormalized to the EIA national RD-soy control total. Intensity = soy-richness vs the average region.
+SOY_INTENSITY = {'PADD1':1.0,'PADD2':1.8,'PADD3':0.65,'PADD4':1.1,'PADD5':0.45}
+
 def padd_of(st):
     for p, s in PADD.items():
         if st in s: return p
@@ -82,16 +91,23 @@ def main():
             p = padd_of(g(r,'state',0))
             if p in rd_cap: rd_cap[p] += cap
 
+    # Intensity-weighted RD-soy allocation: weight = capacity_share x soy_intensity, renormalized
+    # so total RD-soy still = NAT_RD_SOY (HARD national control; only the regional split changes).
+    rd_weight = {p: (rd_cap[p] / rd_tot if rd_tot else 0) * SOY_INTENSITY.get(p, 1.0) for p in PADD}
+    w_tot = sum(rd_weight.values()) or 1.0
+
     # Build per-PADD balance
     rows = {}
     for p in PADD:
-        rd_share = rd_cap[p] / rd_tot if rd_tot else 0
+        rd_share = rd_cap[p] / rd_tot if rd_tot else 0     # raw capacity share (HARD)
         bd  = NAT_BD_SOY * BD_SHARE.get(p, 0)
-        rd  = NAT_RD_SOY * rd_share
+        rd_cap_soy = NAT_RD_SOY * rd_share                 # v1 method (capacity-only) — kept for comparison
+        rd  = NAT_RD_SOY * rd_weight[p] / w_tot            # v2 method (intensity-weighted) — the model
         food = NAT_FOOD_EXPORT * FOOD_SHARE.get(p, 0)
         supply = crush_oil[p]
         net_out = supply - bd - rd - food         # + = ships OUT, - = net IN
-        rows[p] = dict(supply=supply, bd=bd, rd=rd, food=food, net_out=net_out, rd_share=rd_share)
+        rows[p] = dict(supply=supply, bd=bd, rd=rd, rd_cap_soy=rd_cap_soy, food=food,
+                       net_out=net_out, rd_share=rd_share)
 
     # ---- Detailed balances for requested PADDs ----
     for p in args.detail:
@@ -103,14 +119,19 @@ def main():
         print(f"  >> NET SHIPMENTS IN           {net_in:6.2f}   [balance <- imported from crush belt (PADD2) / ports]")
         print(f"  {'TOTAL SUPPLY':28s}  {d['supply']+net_in:6.2f}\n")
         print("DEMAND")
-        print(f"  BBD — renewable diesel        {d['rd']:6.2f}   [{d['rd_share']:.0%} of nat RD soy {NAT_RD_SOY} — RD capacity share, HARD]")
+        print(f"  BBD — renewable diesel        {d['rd']:6.2f}   [soy-intensity-weighted; cap-only would be "
+              f"{d['rd_cap_soy']:.2f} (cap {d['rd_share']:.0%} x intensity {SOY_INTENSITY.get(p,1.0)})]")
         print(f"  BBD — biodiesel               {d['bd']:6.2f}   [{BD_SHARE.get(p,0):.0%} of nat BD soy {NAT_BD_SOY} — FLAGGED]")
         print(f"  Food / industrial / export    {d['food']:6.2f}   [{FOOD_SHARE.get(p,0):.0%} of nat food/export — FLAGGED]")
         print(f"  {'TOTAL DEMAND':28s}  {d['rd']+d['bd']+d['food']:6.2f}\n")
+        soy_note = ("soy-poor (waste-fat/UCO-heavy RD)" if SOY_INTENSITY.get(p,1.0) < 1
+                    else "soy-rich (crush-adjacent RD)" if SOY_INTENSITY.get(p,1.0) > 1 else "avg soy-intensity")
         print(f"HEADLINE: {PADD_NAME[p]} crushes only {d['supply']:.1f}B lb soy oil but consumes "
               f"{d['rd']+d['bd']+d['food']:.1f}B (RD {d['rd']:.1f} + BD {d['bd']:.1f} + food {d['food']:.1f}),")
-        print(f"  so it must IMPORT {net_in:.1f}B lb/yr. It holds {d['rd_share']:.0%} of US RD capacity on "
-              f"~{100*d['supply']/NAT_CRUSH_OIL:.0f}% of US crush -> structural feedstock-deficit region.\n")
+        print(f"  so it must IMPORT {net_in:.1f}B lb soy oil/yr. It holds {d['rd_share']:.0%} of US RD capacity "
+              f"on ~{100*d['supply']/NAT_CRUSH_OIL:.0f}% of US crush, and is {soy_note} ->")
+        print(f"  its soy-oil import is {abs(d['rd']-d['rd_cap_soy']):.1f}B {'LOWER' if d['rd']<d['rd_cap_soy'] else 'HIGHER'} "
+              f"than a naive capacity split implies (rest of its RD feedstock is waste fat / canola).\n")
 
     # ---- National reconciliation: net-ship must sum to ~0 ----
     print("=== NATIONAL RECONCILIATION — net shipments sum to zero (B lb/yr) ===\n")
@@ -129,10 +150,16 @@ def main():
     chk = abs(tot['net_out'])
     print(f"  net-ship checksum: {tot['net_out']:+.2f}B  -> {'BALANCED (sums to ~0)' if chk < 0.5 else 'IMBALANCE - shares need retuning'}")
     out = sum(d['net_out'] for d in rows.values() if d['net_out'] > 0)
-    print(f"\n  HEADLINE: crush belt ships OUT {rows['PADD2']['net_out']:.1f}B lb; absorbed as net-IN by "
+    # v1 (capacity-only) crush-belt net-out, for the correction magnitude
+    p2 = rows['PADD2']
+    p2_out_caponly = p2['supply'] - p2['bd'] - p2['rd_cap_soy'] - p2['food']
+    print(f"\n  HEADLINE: crush belt ships OUT {p2['net_out']:.1f}B lb soy oil; absorbed as net-IN by "
           f"Gulf {-rows['PADD3']['net_out']:.1f} + West Coast {-rows['PADD5']['net_out']:.1f} + "
           f"East {-rows['PADD1']['net_out']:.1f} + Rockies {-rows['PADD4']['net_out']:.1f}.")
-    print(f"  That {out:.0f}B lb interregional flow is the soy-oil feedstock-logistics signal.")
+    print(f"  That {out:.1f}B lb interregional flow is the soy-oil feedstock-logistics signal.")
+    print(f"  vs naive capacity-only split (crush-belt out {p2_out_caponly:.1f}B): intensity weighting keeps "
+          f"{abs(p2['net_out']-p2_out_caponly):.1f}B more soy IN the Midwest,")
+    print(f"  because coastal RD runs on waste fat (tallow 8.7B + yellow grease 5.6B nat'l) and canola, not soy.")
 
 if __name__ == "__main__":
     main()
