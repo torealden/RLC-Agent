@@ -21,7 +21,9 @@ from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
 
 YIELD = {'bd': 7.60, 'rd': 8.60}                 # lb feedstock / gal (from bbd_national_feedstock)
-BD_DEFAULT = {'SBO': 0.90, 'CAN': 0.06, 'CO': 0.04}   # EIA national BD mix for uncovered BD plants
+BD_DEFAULT = {'SBO': 0.904, 'CAN': 0.057, 'CO': 0.038}  # EIA plant_type='biodiesel' veg-oil mix, trailing 12mo.
+# NOTE: bronze.eia_feedstock_monthly has NO fats/greases broken out by plant_type (only 'total'), so this
+# veg-oil-only split likely overstates BD soy — BD plants do run some tallow/UCO we can't yet quantify here.
 # my code -> EIA 'total' feedstock_name, for reconciliation (EIA lumps DCO into Corn Oil, UCO~Yellow Grease)
 CODE2EIA = {'SBO':'Soybean Oil','CAN':'Canola Oil','CO':'Corn Oil','DCO':'Corn Oil',
             'BFT':'Tallow','CWG':'White Grease','PLT':'Poultry','YG':'Yellow Grease','UCO':'Yellow Grease'}
@@ -46,7 +48,10 @@ def main():
         cur.execute("""SELECT f.facility_id, f.facility_name, f.padd, f.fuel_type, f.nameplate_mmgy
                        FROM reference.biofuel_facilities f
                        WHERE f.status ILIKE '%oper%' AND f.nameplate_mmgy IS NOT NULL
-                         AND (f.padd IS NULL OR f.padd <> 'NON-US')""")
+                         AND (f.padd IS NULL OR f.padd <> 'NON-US')
+                         -- exclude non-lipid technologies (consume no oils/fats)
+                         AND (f.technology IS NULL OR lower(f.technology) NOT IN
+                              ('fractionation','pyrolysis','fischer_tropsch','atj','gasification','fermentation'))""")
         facs = cur.fetchall()
         cur.execute("SELECT facility_id, feedstock_code, pct FROM reference.facility_assumed_mix")  # all sources (xlsx + screenshot est)
         mix = defaultdict(dict)
