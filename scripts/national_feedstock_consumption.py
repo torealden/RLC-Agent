@@ -43,7 +43,11 @@ def derive_defaults(cur, prod_bd, prod_rd):
             WHERE plant_type=%s AND {W} AND quantity_mil_lbs IS NOT NULL AND feedstock_name = ANY(%s)
             GROUP BY 1""", (pt, list(names)))
         return {g(r, 'feedstock_name', 0): float(g(r, 'q', 1) or 0) for r in cur.fetchall()}
-    bd_veg = pull('biodiesel', VEG_NAME); rd_veg = pull('renewable_diesel', VEG_NAME)
+    bd_veg = pull('biodiesel', VEG_NAME)
+    # EIA redacts canola & corn oil by plant_type (few plants -> confidential), so the 'renewable_diesel'
+    # column undercounts them badly. Derive RD veg as total - biodiesel (both complete on the total side).
+    total_veg = pull('total', VEG_NAME)
+    rd_veg = {nm: max(0.0, total_veg.get(nm, 0.0) - bd_veg.get(nm, 0.0)) for nm in VEG_NAME}
     tot_fat = pull('total', FAT_NAME)
     fat_sum = sum(tot_fat.values()) or 1.0
     bd_fats = max(0.0, prod_bd * YIELD['bd'] - sum(bd_veg.values()))   # BD's fats = its total feedstock minus its veg
