@@ -18,8 +18,20 @@ COLS = ['commodity','class','series','marketing_year','period_type','period',
 
 with get_connection() as c:
     cur = c.cursor()
-    cur.execute(f"""SELECT {','.join(COLS)} FROM silver.wheat_series
-                    ORDER BY series, class, marketing_year, period, vintage_rank""")
+    # Uniqueness guarantee (flat_file_contract §7): exactly ONE row per
+    # (commodity, class, series, marketing_year, period, vintage_rank), keeping the latest
+    # release_date (then revision, then load). Without this, SUMIFS-on-max-rank double-counts a
+    # FINAL + later revision that share the same rank. DISTINCT ON collapses; then re-sort per §2.
+    cur.execute(f"""
+        WITH deduped AS (
+          SELECT DISTINCT ON (commodity, class, series, marketing_year, period, vintage_rank)
+                 {','.join(COLS)}
+          FROM silver.wheat_series
+          ORDER BY commodity, class, series, marketing_year, period, vintage_rank,
+                   release_date DESC NULLS LAST, revision DESC NULLS LAST, loaded_at DESC
+        )
+        SELECT {','.join(COLS)} FROM deduped
+        ORDER BY series, class, marketing_year, period, vintage_rank""")
     rows = cur.fetchall()
     cur.execute("""SELECT series, min(source) source, string_agg(DISTINCT vintage, ', ' ORDER BY vintage) vintages,
                    min(unit) unit, max(loaded_at)::date upd, count(*) n

@@ -29,7 +29,7 @@ Fixed column order, row 1 = headers, data from row 2 down, sorted ascending by
 | 3 | `series` | `area_planted`, `area_harvested`, `yield`, `production`, `seed_use`, `stocks`, `wheat_ground`, `flour_production`, `millfeed_production`, … |
 | 4 | `marketing_year` | **numeric MY start year** (wheat MY starts Jun 1 → 2024 = 2024/25). Primary time key. |
 | 5 | `period_type` | `annual` \| `quarter` \| `month` \| `week` |
-| 6 | `period` | annual→`ANNUAL`; quarter→`Q1..Q4`; month→`1..12`; week→ISO `week_ending` date. Non-blank. |
+| 6 | `period` | annual→`ANNUAL`; quarter→`Q1..Q4` (**MY-relative**: wheat Q1=Jun-Aug…Q4=Mar-May); month→**calendar month `1..12`** (NOT MY-relative); week→ISO `week_ending` date. Non-blank. |
 | 7 | `vintage` | named estimate vintage (§3). Realized/actual data → `ACTUAL`. |
 | 8 | `vintage_rank` | integer ordering; **balance sheet always takes MAX(rank)** for a key. `ACTUAL`/final = 99. |
 | 9 | `value` | **RAW base units** (balance sheet does display scaling ÷1e6 etc.) |
@@ -75,6 +75,19 @@ Derivation from bronze: NASS `reference_period` already encodes most of this
   writer fills new rows — no formula change ever needed.
 - **Monthly/quarterly realized** (milling, stocks): `SUMIFS(value, year=y, period=p)` (`vintage=ACTUAL`).
 - Desktop owns the exact formula; it must bind only to the §2 key columns + `vintage_rank`.
+- **Safe only because of §7** — `SUMIFS`-on-max-rank returns a single value iff the writer guarantees
+  one row at that rank. See §7.
+
+### 7. Uniqueness guarantee (writer-enforced — makes SUMIFS single-valued)
+
+The writer emits **exactly one row per `(commodity, class, series, marketing_year, period,
+vintage_rank)`**, keeping the row with the latest `release_date` (then highest `revision`, then
+latest load). Without this, a `FINAL` plus a later revision — or two rows sharing a
+`reference_period` that maps to the same rank — sit at the same max rank and `SUMIFS` **silently
+double-counts** (the formula can't see `release_date`/`revision` as tiebreakers; only the data can).
+Enforced in `write_wheat_flat_files.py` via `DISTINCT ON (...vintage_rank) ORDER BY release_date
+DESC …`. Populating `release_date` from the NASS publication date is a follow-up; until then the
+guarantee holds structurally because each vintage name maps to a distinct rank.
 
 ---
 
