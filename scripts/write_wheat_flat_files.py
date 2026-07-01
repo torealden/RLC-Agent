@@ -12,7 +12,7 @@ ROOT = Path(r"C:/dev/RLC-Agent"); sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
 
-OUT = ROOT / "models" / "Food Grains" / "us_wheat_production_LONG.xlsx"
+OUT = ROOT / "models" / "Food Grains" / "us_wheat_production.xlsx"  # canonical target (Desktop's balance sheet links here)
 COLS = ['commodity','class','series','marketing_year','period_type','period',
         'vintage','vintage_rank','value','unit','source','release_date','revision']
 
