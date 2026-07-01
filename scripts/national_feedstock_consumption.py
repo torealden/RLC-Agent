@@ -21,9 +21,11 @@ from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
 
 YIELD = {'bd': 7.60, 'rd': 8.60}                 # lb feedstock / gal (from bbd_national_feedstock)
-BD_DEFAULT = {'SBO': 0.904, 'CAN': 0.057, 'CO': 0.038}  # EIA plant_type='biodiesel' veg-oil mix, trailing 12mo.
-# NOTE: bronze.eia_feedstock_monthly has NO fats/greases broken out by plant_type (only 'total'), so this
-# veg-oil-only split likely overstates BD soy — BD plants do run some tallow/UCO we can't yet quantify here.
+# EIA Form 819 splits ONLY vegetable oils by plant type (Table 2c); fats/greases (Table 2b) are total-only.
+# So BD/RD default mixes are DERIVED fats-inclusive (see derive_defaults): veg from the plant_type split,
+# fats apportioned via BD_fats = BD_prod*yield - BD_veg, RD_fats = total_fats - BD_fats.
+VEG_NAME = {'Soybean Oil': 'SBO', 'Canola Oil': 'CAN', 'Corn Oil': 'CO'}
+FAT_NAME = {'Tallow': 'BFT', 'Yellow Grease': 'UCO', 'White Grease': 'CWG', 'Poultry': 'PLT'}
 # my code -> EIA 'total' feedstock_name, for reconciliation (EIA lumps DCO into Corn Oil, UCO~Yellow Grease)
 CODE2EIA = {'SBO':'Soybean Oil','CAN':'Canola Oil','CO':'Corn Oil','DCO':'Corn Oil',
             'BFT':'Tallow','CWG':'White Grease','PLT':'Poultry','YG':'Yellow Grease','UCO':'Yellow Grease'}
@@ -31,6 +33,29 @@ CODE2EIA = {'SBO':'Soybean Oil','CAN':'Canola Oil','CO':'Corn Oil','DCO':'Corn O
 def g(r, k, i):
     try: return r[k]
     except Exception: return r[i]
+
+def derive_defaults(cur, prod_bd, prod_rd):
+    """Fats-inclusive BD/RD default mixes from EIA Form 819 (veg split from plant_type + apportioned
+    total fats). Returns (bd_default, rd_default), each a dict of my codes -> share summing to 1.0."""
+    W = "year*100+month > (SELECT max(year*100+month)-100 FROM bronze.eia_feedstock_monthly)"
+    def pull(pt, names):
+        cur.execute(f"""SELECT feedstock_name, sum(quantity_mil_lbs) q FROM bronze.eia_feedstock_monthly
+            WHERE plant_type=%s AND {W} AND quantity_mil_lbs IS NOT NULL AND feedstock_name = ANY(%s)
+            GROUP BY 1""", (pt, list(names)))
+        return {g(r, 'feedstock_name', 0): float(g(r, 'q', 1) or 0) for r in cur.fetchall()}
+    bd_veg = pull('biodiesel', VEG_NAME); rd_veg = pull('renewable_diesel', VEG_NAME)
+    tot_fat = pull('total', FAT_NAME)
+    fat_sum = sum(tot_fat.values()) or 1.0
+    bd_fats = max(0.0, prod_bd * YIELD['bd'] - sum(bd_veg.values()))   # BD's fats = its total feedstock minus its veg
+    rd_fats = max(0.0, fat_sum - bd_fats)                              # rest of national fats -> RD (+SAF/coproc)
+    fatcomp = {FAT_NAME[k]: v / fat_sum for k, v in tot_fat.items()}   # tallow/YG/WG/poultry shares of total fats
+    def build(veg, fats):
+        m = defaultdict(float)
+        for nm, q in veg.items(): m[VEG_NAME[nm]] += q
+        for code, sh in fatcomp.items(): m[code] += fats * sh
+        s = sum(m.values()) or 1.0
+        return {k: v / s for k, v in m.items()}
+    return build(bd_veg, bd_fats), build(rd_veg, rd_fats)
 
 def main():
     with get_connection() as c:
@@ -43,6 +68,7 @@ def main():
         r = cur.fetchone()
         prod_bd = float(g(r,'bd',0) or 0)
         prod_rd = float(g(r,'rd',1) or 0) + float(g(r,'saf',2) or 0) + float(g(r,'cop',3) or 0)  # RD+SAF+coproc share yield ~8.6
+        bd_default, rd_default = derive_defaults(cur, prod_bd, prod_rd)  # EIA-derived fats-inclusive priors
 
         # 2. operating facilities + assumed mix
         cur.execute("""SELECT f.facility_id, f.facility_name, f.padd, f.fuel_type, f.nameplate_mmgy
@@ -68,17 +94,10 @@ def main():
     cap_bd = sum(float(g(f,'nameplate_mmgy',4)) for f in facs if is_bd(g(f,'fuel_type',3)))
     cap_rd = sum(float(g(f,'nameplate_mmgy',4)) for f in facs if not is_bd(g(f,'fuel_type',3)))
 
-    # covered-RD capacity-weighted average mix -> default for uncovered RD (data-driven, not a guess)
     def norm(m):                                   # normalize a mix to shares summing to 1.0
         s = sum(m.values()) or 1.0
         return {k: v/s for k, v in m.items()}
-    rd_acc, rd_w = defaultdict(float), 0.0
-    for f in facs:
-        fid = g(f,'facility_id',0); cap = float(g(f,'nameplate_mmgy',4))
-        if not is_bd(g(f,'fuel_type',3)) and fid in mix:
-            for code, sh in norm(mix[fid]).items(): rd_acc[code] += sh * cap
-            rd_w += cap
-    rd_default = {k: v/rd_w for k, v in rd_acc.items()} if rd_w else {'SBO':0.4,'DCO':0.2,'UCO':0.2,'BFT':0.2}
+    # bd_default / rd_default are EIA-derived fats-inclusive priors (computed above via derive_defaults)
 
     # 3. distribute
     by_comm = defaultdict(float); by_padd_comm = defaultdict(lambda: defaultdict(float))
@@ -88,7 +107,7 @@ def main():
         bd = is_bd(g(f,'fuel_type',3))
         prod = (prod_bd * cap/cap_bd) if bd else (prod_rd * cap/cap_rd if cap_rd else 0)
         lbs = prod * (YIELD['bd'] if bd else YIELD['rd'])
-        fmix = norm(mix.get(fid) or (BD_DEFAULT if bd else rd_default))   # shares sum to 1.0
+        fmix = norm(mix.get(fid) or (bd_default if bd else rd_default))   # shares sum to 1.0
         if fid in mix: covered_cap += cap
         else: uncovered_cap += cap
         for code, sh in fmix.items():
