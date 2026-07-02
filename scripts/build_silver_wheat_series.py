@@ -52,10 +52,23 @@ def vintage_of(refp):
 
 SERIES = {'AREA PLANTED': ('area_planted', 'ACRES'), 'AREA HARVESTED': ('area_harvested', 'ACRES')}
 
+def class_of(short_desc):
+    """NASS short_desc -> agronomic class key. Aggregate 'WHEAT - ...' = ALL.
+    NOTE: NASS reports AREA by winter/spring/durum (agronomic), NOT the HRW/HRS/SRW/WHITE market
+    classes. Market-class breakdown is a production-by-class series (Small Grains Summary) — a
+    separate source not yet in bronze."""
+    s = (short_desc or '').upper()
+    if 'WINTER' in s: return 'WINTER'
+    if 'EXCL DURUM' in s: return 'SPRING'   # 'SPRING, (EXCL DURUM)'
+    if 'DURUM' in s: return 'DURUM'
+    if 'SPRING' in s: return 'SPRING'
+    return 'ALL'                             # 'WHEAT - ACRES ...' (aggregate)
+
 with get_connection() as c:
     cur = c.cursor()
     cur.execute(DDL)
-    cur.execute("""SELECT year, reference_period, statisticcat, value
+    cur.execute("TRUNCATE silver.wheat_series")   # clean rebuild (prior run conflated aggregate + class rows)
+    cur.execute("""SELECT year, reference_period, statisticcat, short_desc, value
                    FROM bronze.nass_acreage
                    WHERE commodity ILIKE 'wheat' AND agg_level='NATIONAL'
                      AND statisticcat = ANY(%s) AND value IS NOT NULL""",
@@ -68,25 +81,30 @@ with get_connection() as c:
         if not v or not sc:
             skipped += 1; continue
         vintage, rank = v; series, unit = sc
+        cls = class_of(r['short_desc'])
         try:
             my = int(r['year']); val = float(r['value'])
         except (TypeError, ValueError):
             skipped += 1; continue
         cur.execute("""INSERT INTO silver.wheat_series
             (commodity,class,series,marketing_year,period_type,period,vintage,vintage_rank,value,unit,source,loaded_at)
-            VALUES ('wheat','ALL',%s,%s,'annual','ANNUAL',%s,%s,%s,%s,'NASS_QUICKSTATS',now())
+            VALUES ('wheat',%s,%s,%s,'annual','ANNUAL',%s,%s,%s,%s,'NASS_QUICKSTATS',now())
             ON CONFLICT (commodity,class,series,marketing_year,period_type,period,vintage)
             DO UPDATE SET value=EXCLUDED.value, vintage_rank=EXCLUDED.vintage_rank, loaded_at=now()""",
-            (series, my, vintage, rank, val, unit))
+            (cls, series, my, vintage, rank, val, unit))
         ins += 1
     c.commit()
 
     print(f"ingested {ins} rows, skipped {skipped} (unmapped refperiod)")
-    cur.execute("SELECT series, count(*) n, min(marketing_year) mn, max(marketing_year) mx, count(distinct vintage) nv FROM silver.wheat_series GROUP BY 1")
+    cur.execute("SELECT series, class, count(*) n, min(marketing_year) mn, max(marketing_year) mx FROM silver.wheat_series GROUP BY 1,2 ORDER BY 1,2")
     for r in cur.fetchall():
-        print(f"  {r['series']:16} rows={r['n']:4} MY {r['mn']}-{r['mx']} vintages={r['nv']}")
-    print("\n=== vintage march for area_planted MY2024 (should climb rank) ===")
-    cur.execute("""SELECT vintage, vintage_rank, value FROM silver.wheat_series
-                   WHERE series='area_planted' AND marketing_year=2024 ORDER BY vintage_rank""")
+        print(f"  {r['series']:16} {r['class']:7} rows={r['n']:4} MY {r['mn']}-{r['mx']}")
+    print("\n=== area_planted MY2024 by class @ FINAL (ALL should ~= WINTER+SPRING+DURUM) ===")
+    cur.execute("""SELECT class, value FROM silver.wheat_series
+                   WHERE series='area_planted' AND marketing_year=2024 AND vintage='FINAL' ORDER BY class""")
+    tot=0; agg=0
     for r in cur.fetchall():
-        print(f"  {r['vintage']:16} rank={r['vintage_rank']:2}  {float(r['value'])/1e6:7.3f} M acres")
+        v=float(r['value']); print(f"  {r['class']:7} {v/1e6:7.3f} M acres")
+        if r['class']=='ALL': agg=v
+        else: tot+=v
+    print(f"  -> classes sum {tot/1e6:.3f}M vs ALL {agg/1e6:.3f}M (delta {(tot-agg)/1e6:+.3f}M)")
