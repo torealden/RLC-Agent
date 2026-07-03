@@ -736,6 +736,30 @@ class NASSProcessingCollector:
                     if record:
                         all_records.append(record)
 
+        # Additional milling-report series (same report, distinct commodity_desc/statisticcat):
+        #   millfeed production (MILLFEED/PRODUCTION, tons) and wheat ground for flour = Food use
+        #   (WHEAT/USAGE, bushels). Natural key (commodity_desc, statisticcat, short_desc) keeps
+        #   these separate from FLOUR rows.
+        for spec in ({'commodity_desc': 'MILLFEED', 'class_desc': 'WHEAT', 'statisticcat_desc': 'PRODUCTION', 'key': 'wheat_millfeed'},
+                     {'commodity_desc': 'WHEAT', 'statisticcat_desc': 'USAGE', 'key': 'wheat_ground'}):
+            params = {
+                'commodity_desc': spec['commodity_desc'],
+                'source_desc': 'SURVEY',
+                'freq_desc': 'MONTHLY',
+                'year__GE': str(year - 1),
+                'year__LE': str(year),
+                'agg_level_desc': 'NATIONAL',
+                'statisticcat_desc': spec['statisticcat_desc'],
+            }
+            if spec.get('class_desc'):
+                params['class_desc'] = spec['class_desc']
+            data = self._make_request(params)
+            if data and 'data' in data:
+                for item in data['data']:
+                    record = self._parse_flour_milling_record(item, spec['key'])
+                    if record:
+                        all_records.append(record)
+
         if not all_records:
             self.logger.warning("No Flour Milling data retrieved")
             return None

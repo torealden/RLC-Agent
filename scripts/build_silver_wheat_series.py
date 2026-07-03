@@ -130,6 +130,40 @@ with get_connection() as c:
     for r in cur.fetchall():
         upsert(cur, 'ALL', 'yield', r['my'], 'annual', 'ANNUAL', r['vintage'], r['vintage_rank'], round(float(r['y']),2), 'BU/ACRE', 'DERIVED'); n['yield'] += 1
 
+    # 5. MILLING (Flour Milling Products) — wheat_ground (=Food use), flour_production, millfeed.
+    #    NASS reports CALENDAR quarters (Jan-Mar…) + calendar YEAR, so marketing_year here = CALENDAR
+    #    year and quarters are CALENDAR (Q1=Jan-Mar). Mapping calendar->wheat-MY (Jun-May) is a
+    #    downstream decision, deliberately NOT forced here. vintage=ACTUAL (realized).
+    MILL = {
+        ('WHEAT','USAGE','WHEAT, FOR FLOUR - USAGE, MEASURED IN BU'): ('wheat_ground','ALL','BU'),
+        ('WHEAT','USAGE','WHEAT, SPRING, DURUM, FOR FLOUR & SEMOLINA - USAGE, MEASURED IN BU'): ('wheat_ground','DURUM','BU'),
+        ('FLOUR','PRODUCTION','FLOUR, WHEAT - PRODUCTION, MEASURED IN CWT'): ('flour_production','ALL','CWT'),
+        ('FLOUR','PRODUCTION','FLOUR, WHEAT, SPRING, DURUM, INCL SEMOLINA - PRODUCTION, MEASURED IN CWT'): ('flour_production','DURUM','CWT'),
+        ('MILLFEED','PRODUCTION','MILLFEED, WHEAT - PRODUCTION, MEASURED IN TONS'): ('millfeed_production','ALL','TONS'),
+    }
+    CQ = {'JAN THRU MAR':'Q1','APR THRU JUN':'Q2','JUL THRU SEP':'Q3','OCT THRU DEC':'Q4'}
+    cur.execute("""SELECT commodity_desc, statisticcat_desc, short_desc, year, reference_period_desc, value
+                   FROM bronze.nass_processing WHERE source='NASS_FLOUR_MILL' AND value IS NOT NULL""")
+    for r in cur.fetchall():
+        m = MILL.get((r['commodity_desc'], r['statisticcat_desc'], r['short_desc']))
+        if not m: continue
+        series, cls, unit = m; rp = str(r['reference_period_desc']).upper()
+        try: yr = int(r['year']); val = float(r['value'])
+        except (TypeError, ValueError): continue
+        if rp in CQ:
+            upsert(cur, cls, series, yr, 'quarter', CQ[rp], 'ACTUAL', 99, val, unit, 'NASS_FLOUR_MILL'); n['milling'] += 1
+        elif rp == 'YEAR':
+            upsert(cur, cls, series, yr, 'annual', 'ANNUAL', 'ACTUAL', 99, val, unit, 'NASS_FLOUR_MILL'); n['milling'] += 1
+
+    # 5b. extraction_rate (ALL) = flour lb / wheat lb, per matched period
+    cur.execute("""SELECT f.marketing_year my, f.period_type pt, f.period p, (f.value*100.0)/(w.value*60.0) ext
+                   FROM silver.wheat_series f JOIN silver.wheat_series w
+                     ON f.marketing_year=w.marketing_year AND f.period_type=w.period_type AND f.period=w.period
+                    AND f.class='ALL' AND w.class='ALL' AND f.series='flour_production' AND w.series='wheat_ground'
+                   WHERE w.value>0""")
+    for r in cur.fetchall():
+        upsert(cur, 'ALL', 'extraction_rate', r['my'], r['pt'], r['p'], 'ACTUAL', 99, round(float(r['ext']),4), 'LB/LB', 'DERIVED'); n['extraction'] += 1
+
     c.commit()
 
     print(f"ingested: {dict(n)}")
