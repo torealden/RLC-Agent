@@ -151,9 +151,9 @@ with get_connection() as c:
         try: yr = int(r['year']); val = float(r['value'])
         except (TypeError, ValueError): continue
         if rp in CQ:
-            upsert(cur, cls, series, yr, 'quarter', CQ[rp], 'ACTUAL', 99, val, unit, 'NASS_FLOUR_MILL'); n['milling'] += 1
+            upsert(cur, cls, series, yr, 'cal_quarter', CQ[rp], 'ACTUAL', 99, val, unit, 'NASS_FLOUR_MILL'); n['milling'] += 1
         elif rp == 'YEAR':
-            upsert(cur, cls, series, yr, 'annual', 'ANNUAL', 'ACTUAL', 99, val, unit, 'NASS_FLOUR_MILL'); n['milling'] += 1
+            upsert(cur, cls, series, yr, 'cal_annual', 'ANNUAL', 'ACTUAL', 99, val, unit, 'NASS_FLOUR_MILL'); n['milling'] += 1
 
     # 5b. extraction_rate (ALL) = flour lb / wheat lb, per matched period
     cur.execute("""SELECT f.marketing_year my, f.period_type pt, f.period p, (f.value*100.0)/(w.value*60.0) ext
@@ -169,17 +169,32 @@ with get_connection() as c:
     #     analyst decision — NASS milling is calendar-basis and doesn't align to Jun-based MY quarters.
     cur.execute("""SELECT series, class, marketing_year my, min(unit) unit, sum(value) v, count(*) nq
                    FROM silver.wheat_series
-                   WHERE series IN ('wheat_ground','flour_production','millfeed_production') AND period_type='quarter'
+                   WHERE series IN ('wheat_ground','flour_production','millfeed_production') AND period_type='cal_quarter'
                    GROUP BY 1,2,3""")
     for r in cur.fetchall():
         if r['nq'] == 4:
-            upsert(cur, r['class'], r['series'], r['my'], 'annual', 'ANNUAL', 'ACTUAL', 99, float(r['v']), r['unit'], 'NASS_FLOUR_MILL_CY'); n['mill_annual'] += 1
+            upsert(cur, r['class'], r['series'], r['my'], 'cal_annual', 'ANNUAL', 'ACTUAL', 99, float(r['v']), r['unit'], 'NASS_FLOUR_MILL_CY'); n['mill_annual'] += 1
     # annual extraction from annual flour/wheat_ground
     cur.execute("""SELECT f.marketing_year my, (f.value*100.0)/(w.value*60.0) ext FROM silver.wheat_series f
                    JOIN silver.wheat_series w ON f.marketing_year=w.marketing_year AND f.period='ANNUAL' AND w.period='ANNUAL'
                     AND f.class='ALL' AND w.class='ALL' AND f.series='flour_production' AND w.series='wheat_ground' WHERE w.value>0""")
     for r in cur.fetchall():
-        upsert(cur, 'ALL', 'extraction_rate', r['my'], 'annual', 'ANNUAL', 'ACTUAL', 99, round(float(r['ext']),4), 'LB/LB', 'DERIVED'); n['extraction'] += 1
+        upsert(cur, 'ALL', 'extraction_rate', r['my'], 'cal_annual', 'ANNUAL', 'ACTUAL', 99, round(float(r['ext']),4), 'LB/LB', 'DERIVED'); n['extraction'] += 1
+
+    # 6. FOOD USE — authoritative WASDE food use from the ERS Wheat Yearbook (All wheat, MY basis,
+    #    already in bushels -> matches WASDE Food 969.5M for 2024/25). Cleaner than PSD: it's the Food
+    #    line directly (not FSI, no seed subtraction) and already bushels (no MT conversion). ERS carries
+    #    one current estimate per MY (no monthly WASDE ladder in bronze) -> one row/MY: FINAL rank 90 for
+    #    closed MYs, WASDE_CURRENT rank 50 for the open MY. A monthly-WASDE collector would enrich the ladder.
+    CURRENT_MY = 2025
+    cur.execute("""SELECT marketing_year my, amount FROM bronze.ers_wheat_raw
+                   WHERE commodity_desc='Wheat' AND commodity_desc2='All wheat' AND attribute_desc='Food use'
+                     AND geography_desc ILIKE '%united states%' AND timeperiod_desc ILIKE 'MY%' AND amount IS NOT NULL""")
+    for r in cur.fetchall():
+        try: my = int(str(r['my']).split('/')[0])
+        except (TypeError, ValueError): continue
+        vin, rank = ('FINAL', 90) if my < CURRENT_MY else ('WASDE_CURRENT', 50)
+        upsert(cur, 'ALL', 'food_use', my, 'annual', 'ANNUAL', vin, rank, float(r['amount'])*1e6, 'BU', 'ERS_WHEAT_YEARBOOK'); n['food_use'] += 1
 
     c.commit()
 

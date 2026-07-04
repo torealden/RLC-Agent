@@ -45,13 +45,27 @@ for cell in ws[1]: cell.font = Font(bold=True)
 for r in rows:
     ws.append([r[k] for k in COLS])
 
+# Per-series provenance + basis (fixes the min(source) DERIVED_RESIDUAL mislabel — production ALL is
+# NASS-published, only WHITE class is a residual — and the copy-pasted "acres" unit note).
+SERIES_META = {  # series: (source, basis, unit_note)
+    'area_planted':       ('NASS QuickStats',                       'marketing-year',                    'RAW acres'),
+    'area_harvested':     ('NASS QuickStats',                       'marketing-year',                    'RAW acres'),
+    'production':         ('NASS QuickStats (WHITE=ALL-HRW-SRW-HRS-DURUM residual)', 'marketing-year',   'RAW bushels; 2024 FINAL 1978.7M = Small Grains 2025 revision'),
+    'yield':              ('derived: production/harvested',         'marketing-year',                    'bu/acre (unused by sheet; it derives yield)'),
+    'stocks':             ('NASS QuickStats Grain Stocks',          'marketing-year (Q1=Jun1,Q2=Sep1,Q3=Dec1,Q4=Mar1)', 'RAW bushels'),
+    'wheat_ground':       ('NASS Flour Milling Products',           'CALENDAR (cal_quarter/cal_annual)', 'RAW bushels'),
+    'flour_production':   ('NASS Flour Milling Products',           'CALENDAR (cal_quarter/cal_annual)', 'RAW hundredweight (CWT)'),
+    'millfeed_production':('NASS Flour Milling Products',           'CALENDAR (cal_quarter/cal_annual)', 'RAW short tons'),
+    'extraction_rate':    ('derived: flour_lb / wheat_lb',          'CALENDAR (cal_quarter/cal_annual)', 'LB/LB ratio'),
+    'food_use':           ('ERS Wheat Yearbook (All wheat = WASDE Food line)', 'marketing-year',         'RAW bushels; already bu (no MT conversion); one estimate/MY'),
+}
 wm = wb.create_sheet("_meta")
-wm.append(['series','source','api','unit','vintage_set','rows','last_updated','notes'])
+wm.append(['series','source','basis','unit','vintage_set','rows','last_updated','notes'])
 for cell in wm[1]: cell.font = Font(bold=True)
 for m in meta:
-    wm.append([m['series'], m['source'], 'quickstats.nass.usda.gov/api', m['unit'],
-               m['vintages'], m['n'], str(m['upd']),
-               'RAW units (acres); balance sheet picks MAX(vintage_rank) per (series,class,MY)'])
+    src, basis, unitnote = SERIES_META.get(m['series'], (m['source'], '?', 'RAW'))
+    wm.append([m['series'], src, basis, m['unit'], m['vintages'], m['n'], str(m['upd']),
+               f'{unitnote}; sheet picks MAX(vintage_rank) per (series,class,MY)'])
 
 wb.save(OUT)
 print(f"wrote {OUT.name}: {len(rows)} long rows, {len(meta)} series")
