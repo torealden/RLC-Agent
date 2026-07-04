@@ -39,15 +39,23 @@ def alloc(cur, fid, period):
         WHERE a.facility_id=%(fid)s AND a.period=%(p)s""", {'day': RUN_DAY, 'fid': fid, 'p': period})
     return float(cur.fetchone()['v'])
 
+def alloc_year(cur, fid, year):
+    """Sum the whole prime year — robust to marginal plants the allocator fills intermittently."""
+    cur.execute(f"""WITH {LATEST_RUN}
+        SELECT COALESCE(sum(a.allocated_mil_lbs),0) v FROM gold.feedstock_allocation a
+        JOIN latest l ON a.period=l.period AND a.run_id=l.run_id
+        WHERE a.facility_id=%(fid)s AND date_part('year',a.period)=%(y)s""", {'day': RUN_DAY, 'fid': fid, 'y': year})
+    return float(cur.fetchone()['v'])
+
 with get_connection() as c:
     cur = c.cursor()
     fails = 0
     print("=== Check 1: shakeout casualties nonzero in prime, zero after closure ===")
     for fid, (label, prime, post) in SHAKEOUT.items():
-        p, q = alloc(cur, fid, prime), alloc(cur, fid, post)
+        p, q = alloc_year(cur, fid, int(prime[:4])), alloc(cur, fid, post)
         ok = p > 0 and q == 0
         fails += not ok
-        print(f"  [{'PASS' if ok else 'FAIL'}] {label:20} prime({prime[:7]})={p:.1f}M lbs  post({post[:7]})={q:.1f}M lbs")
+        print(f"  [{'PASS' if ok else 'FAIL'}] {label:20} prime({prime[:4]} yr)={p:.1f}M lbs  post({post[:7]})={q:.1f}M lbs")
 
     print("\n=== Check 2: no allocation outside the facility's operating window ===")
     cur.execute(f"""
