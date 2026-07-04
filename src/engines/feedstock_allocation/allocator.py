@@ -166,21 +166,27 @@ class FeedstockAllocator:
         facilities = []
         with get_connection() as conn:
             with conn.cursor() as cur:
+                # As-of-period facility state from the effective-dated history (design v1.6 §3.2):
+                # the latest change-log row on/before the period. A plant idle today is 'operating'
+                # in the periods it actually ran; plants not yet online don't join.
                 cur.execute("""
-                    SELECT facility_id, company, facility_name, state, padd,
-                           fuel_type, technology, nameplate_mmgy, status,
-                           year_online, eligible_feedstocks, primary_feedstock,
-                           feedstock_mix
-                    FROM reference.biofuel_facilities
-                    WHERE status IN ('operating', 'under_construction')
-                      AND nameplate_mmgy > 0
-                    ORDER BY nameplate_mmgy DESC
-                """)
+                    SELECT f.facility_id, f.company, f.facility_name, f.state, f.padd,
+                           f.fuel_type, f.technology, h.nameplate_mmgy, h.status,
+                           f.year_online, f.eligible_feedstocks, f.primary_feedstock,
+                           f.feedstock_mix
+                    FROM reference.biofuel_facilities f
+                    JOIN LATERAL (
+                        SELECT nameplate_mmgy, status
+                        FROM reference.facility_capacity_history hh
+                        WHERE hh.facility_id = f.facility_id AND hh.effective_date <= %s
+                        ORDER BY hh.effective_date DESC LIMIT 1
+                    ) h ON true
+                    WHERE h.status IN ('operating', 'under_construction')
+                      AND h.nameplate_mmgy > 0
+                    ORDER BY h.nameplate_mmgy DESC
+                """, (period,))
                 for row in cur.fetchall():
-                    # Skip plants not yet online
                     yr = row['year_online']
-                    if yr and yr > period.year:
-                        continue
 
                     # Expand BFT → EBFT/IBFT in eligible feedstocks
                     eligible = list(row['eligible_feedstocks'] or [])
