@@ -164,6 +164,23 @@ with get_connection() as c:
     for r in cur.fetchall():
         upsert(cur, 'ALL', 'extraction_rate', r['my'], r['pt'], r['p'], 'ACTUAL', 99, round(float(r['ext']),4), 'LB/LB', 'DERIVED'); n['extraction'] += 1
 
+    # 5c. Calendar-year annual milling = sum of the 4 calendar quarters (full years only). Labeled
+    #     CALENDAR-year (source suffix _CY); the wheat-MY (Jun-May) Food-use figure is a downstream
+    #     analyst decision — NASS milling is calendar-basis and doesn't align to Jun-based MY quarters.
+    cur.execute("""SELECT series, class, marketing_year my, min(unit) unit, sum(value) v, count(*) nq
+                   FROM silver.wheat_series
+                   WHERE series IN ('wheat_ground','flour_production','millfeed_production') AND period_type='quarter'
+                   GROUP BY 1,2,3""")
+    for r in cur.fetchall():
+        if r['nq'] == 4:
+            upsert(cur, r['class'], r['series'], r['my'], 'annual', 'ANNUAL', 'ACTUAL', 99, float(r['v']), r['unit'], 'NASS_FLOUR_MILL_CY'); n['mill_annual'] += 1
+    # annual extraction from annual flour/wheat_ground
+    cur.execute("""SELECT f.marketing_year my, (f.value*100.0)/(w.value*60.0) ext FROM silver.wheat_series f
+                   JOIN silver.wheat_series w ON f.marketing_year=w.marketing_year AND f.period='ANNUAL' AND w.period='ANNUAL'
+                    AND f.class='ALL' AND w.class='ALL' AND f.series='flour_production' AND w.series='wheat_ground' WHERE w.value>0""")
+    for r in cur.fetchall():
+        upsert(cur, 'ALL', 'extraction_rate', r['my'], 'annual', 'ANNUAL', 'ACTUAL', 99, round(float(r['ext']),4), 'LB/LB', 'DERIVED'); n['extraction'] += 1
+
     c.commit()
 
     print(f"ingested: {dict(n)}")
