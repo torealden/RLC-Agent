@@ -92,7 +92,7 @@ INSERT INTO reference.feedstock_codes (code,name,category,status,eia_group,notes
  ('MSW','Municipal Solid Waste (biogenic)','advanced','reserved',NULL,NULL),
 -- Control codes
  ('OTH','Other / Unspecified','control','active',NULL,'explicit catch-all; PALM/CSO/SFO/LARD roll here until volumes justify promotion'),
- ('LCI','Low-CI (unspecified) placeholder','control','deprecated',NULL,'NEEDS_RULING: only on HF Sinclair Artesia+Cheyenne (rd_buildup_xlsx). Recommend retire+backfill.'),
+ ('LCI','Low-CI (unspecified) placeholder','control','retired',NULL,'RETIRED (Tore 2026-07-04): placeholder on 2 HF Sinclair RD plants, backfilled to BFT/UCO/DCO. Never reused.'),
  ('CO','Crude Corn Oil (RETIRED)','control','retired',NULL,'POISONED: meant Corn Oil in mix, Canola in allocator. Never reused. No crude corn oil is a fuel feedstock.')
 ON CONFLICT (code) DO UPDATE SET name=EXCLUDED.name, category=EXCLUDED.category, status=EXCLUDED.status, eia_group=EXCLUDED.eia_group, notes=EXCLUDED.notes;
 
@@ -112,7 +112,7 @@ INSERT INTO reference.feedstock_code_xref (source_vocab,source_code,canonical_co
  ('mix','UCO','UCO','map','desktop','2026-07-04',NULL),
  ('mix','CAM','CAM','map','desktop','2026-07-04',NULL),
  ('mix','CAR','CAR','map','desktop','2026-07-04',NULL),
- ('mix','LCI','LCI','needs_ruling',NULL,NULL,'retire+backfill (2 HF Sinclair plants) vs define as CI bucket — Tore'),
+ ('mix','LCI','LCI','retire','tore','2026-07-04','retired+backfilled to BFT12/UCO8/DCO5 on HF Sinclair Artesia+Cheyenne'),
 -- allocator (feedstock_properties + gold.feedstock_allocation)
  ('allocator','SBO','SBO','map','desktop','2026-07-04',NULL),
  ('allocator','CO','CAN','map','code','2026-07-04','feedstock_properties documents CO=Canola; 4256 rows'),
