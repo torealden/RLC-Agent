@@ -60,11 +60,47 @@ YG_other(t) = EIA_Yellow_Grease(t) − UCO_biofuel(t)               (floored at 
 - **The 2050 forecast method** — project FAFH (trend + seasonality) and imports forward → `UCO_biofuel` to
   2050, monthly, with non-bio held at 0 by construction.
 
+## 4b. Multi-country generalization (Tore, 2026-07-04 — this reframes the whole model)
+
+UCO collection is **not a US-only problem** — imported UCO (China above all) dominates US supply, so we must
+model **exporters' collection** to understand and forecast the US import leg. The collection model generalizes
+to a **consumer-strength → UCO-collection** function, per country:
+
+- **US:** food-spending / FAFH proxy (§3) — the richest signal.
+- **Every other country (China, Canada, Mexico, EU, …):** **per-capita GDP × population** as the consumer-
+  strength proxy, where food-spending isn't available. This is exactly what Tore's macro workbook already does:
+  `RLC Dropbox/…/Models/Macro/World Macro Economic and Population Data.xlsx` carries US Food Expenditure +
+  Canada/Mexico **GDP, per-capita GDP, and population**, sourced from **OECD GDP/Population Projections**
+  (+ StatsCan), as a template to extend country-by-country.
+
+Structure:
+```
+UCO_collection[country](t) = intensity[country] · consumer_strength[country](t)
+   consumer_strength = FAFH (US)  |  per_capita_GDP · population (others)
+US_UCO_imports(t)  ≈ Σ_exporters ( exportable_surplus[c](t) )   [collection − domestic bio use, e.g. China]
+```
+- **The import leg becomes a modeled quantity**, not just a Census read: China's collection − China's own
+  biofuel use = its exportable surplus → the dominant term in US UCO imports. Census (§3) is then the
+  *validation/anchor* for the modeled import leg, not the sole source — and it lets us forecast imports past
+  the last Census print.
+- **Forecastable to 2050 by construction:** OECD/World-Bank GDP and population series are **projections**, so
+  the consumer-strength proxy already extends forward — no separate import forecast needed.
+- **`intensity[country]`** (UCO collected per unit of consumer strength) is the per-country coefficient Desktop
+  calibrates — likely a small set of archetypes (high-income food-service-heavy vs developing) rather than 190
+  bespoke fits. China's intensity is calibrated to its observed export volumes.
+
+**Data for this layer** (Code ingests): Tore's macro workbook as the seed (US food + Canada/Mexico GDP/pop),
+scaling to **OECD + World Bank/IMF GDP & population** for all relevant countries (China especially). Same
+vintage-ladder discipline: actuals → OECD projections → biotracker.
+
 ## 5. Labor division (dual-Claude pattern)
 
 **Code (me) — plumbing:**
 - `silver.food_expenditure` from bronze (FAH/FAFH, monthly, real+nominal, tidy).
-- Census UCO import series cleaned (import-only, kg→lb, right HS scope per Desktop's ruling).
+- **Macro ingestion** (§4b): Tore's macro workbook → `bronze/silver.country_macro` (GDP, per-capita GDP,
+  population by country/year), scaling to OECD + World Bank/IMF pulls for China + other exporters.
+- Census UCO import series cleaned (import-only, kg→lb, right HS scope per Desktop's ruling) — becomes the
+  **validation anchor** for the modeled import leg, not just the source.
 - Implement Desktop's `k`/split methodology → **`UCO_biofuel` + `YG_other` series**.
 - Split `silver.feedstock_supply`: add UCO rows, set `YG = EIA_YG − UCO_biofuel` (preserve the combined total).
 - Re-run allocator (UCO now allocated to the RD fleet) → re-rake → re-run acceptance.
