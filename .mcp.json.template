@@ -1,4 +1,5 @@
 {
+  "_comment": "Template for .mcp.json (which is gitignored — it holds live secrets). Copy to .mcp.json and replace the ${...} placeholders with real values, or export them as env vars. NEVER commit the filled-in .mcp.json.",
   "mcpServers": {
     "commodities-db": {
       "command": "REPLACE_WITH_YOUR_PYTHON_PATH",
@@ -10,8 +11,15 @@
         "RLC_PG_PORT": "5432",
         "RLC_PG_DATABASE": "rlc_commodities",
         "RLC_PG_USER": "postgres",
-        "RLC_PG_PASSWORD": "SoupBoss1",
+        "RLC_PG_PASSWORD": "${RLC_PG_PASSWORD}",
         "RLC_PG_SSLMODE": "require"
+      }
+    },
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer ${NOTION_API_TOKEN}\", \"Notion-Version\": \"2025-09-03\"}"
       }
     }
   }
