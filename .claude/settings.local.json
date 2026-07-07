@@ -48,7 +48,12 @@
       "Bash(grep -v \"~$\")",
       "Bash(grep:*)",
       "Bash(python3:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(tailscale status:*)",
+      "Bash(ping -n 2 100.103.174.2)",
+      "Bash(net view:*)",
+      "Bash(powershell.exe -Command \"Test-WSMan -ComputerName 100.103.174.2 -ErrorAction SilentlyContinue\")",
+      "Bash(echo \"EXIT: $?\")"
     ]
   },
   "enableAllProjectMcpServers": true,
