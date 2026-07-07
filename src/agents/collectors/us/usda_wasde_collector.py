@@ -126,6 +126,15 @@ DEFAULT_WASDE_COUNTRIES = [
 # PSD API base URL
 PSD_API_BASE = "https://api.fas.usda.gov"
 
+# Actual WASDE release calendar (day of month release goes public at noon ET).
+# Mirrors src/schedulers/master_scheduler.py::WASDE_RELEASE_DATES -- keep in sync.
+# Used to resolve the true report_date (the vintage tag) instead of the day the
+# collector happens to run, since PSD's /dataReleaseDates only gives year+month.
+WASDE_RELEASE_DATES: Dict[int, Dict[int, int]] = {
+    2025: {1: 10, 2: 11, 3: 11, 4: 9, 5: 12, 6: 11, 7: 11, 8: 12, 9: 12, 10: 9, 11: 14, 12: 9},
+    2026: {1: 12, 2: 10, 3: 10, 4: 9, 5: 12, 6: 11, 7: 10, 8: 12, 9: 11, 10: 9, 11: 10, 12: 10},
+}
+
 
 @dataclass
 class USDAWASPEConfig(CollectorConfig):
@@ -235,6 +244,88 @@ class USDAWASPECollector(BaseCollector):
                 self.logger.error(f"Bronze save failed (data still returned): {e}")
         return result
 
+    def _resolve_report_date(self, commodity: str, country_code: str, marketing_year: int) -> date:
+        """
+        Resolve the true WASDE report_date (vintage tag) for one commodity/
+        country/marketing_year triple.
+
+        PSD's /dataReleaseDates is keyed by (country, marketYear) and gives the
+        releaseYear/releaseMonth that marketing year's numbers were *last
+        revised* -- not a single "report release date" (older marketing years
+        show old revision dates; only the current MY reflects this month's
+        WASDE). We must match on the exact MY, not take a global mode across
+        all rows, or old marketing years dominate and give a garbage date.
+        Falls back loudly (never silently) if the lookup or calendar entry is
+        missing.
+        """
+        cache = getattr(self, "_report_date_cache", None)
+        if cache is None:
+            cache = self._report_date_cache = {}
+        cache_key = (commodity, country_code, marketing_year)
+        if cache_key in cache:
+            return cache[cache_key]
+
+        # Cache the (large, ~thousands of rows) raw release-dates list per
+        # commodity -- resolving N (country, marketing_year) keys must not
+        # mean N repeat calls to the same heavy endpoint.
+        releases_cache = getattr(self, "_releases_list_cache", None)
+        if releases_cache is None:
+            releases_cache = self._releases_list_cache = {}
+        if commodity not in releases_cache:
+            try:
+                releases_cache[commodity] = self.get_data_release_dates(commodity)
+            except Exception as e:
+                self.logger.warning(f"{commodity}: /dataReleaseDates lookup failed ({e})")
+                releases_cache[commodity] = None
+        releases = releases_cache[commodity]
+
+        resolved: Optional[date] = None
+        if releases is None:
+            self.logger.warning(
+                f"{commodity}/{country_code}/MY{marketing_year}: /dataReleaseDates "
+                f"lookup returned nothing (API error or empty response)."
+            )
+        else:
+            match = None
+            for r in releases:
+                if (r.get("countryCode") == country_code
+                        and self._safe_int(r.get("marketYear")) == marketing_year):
+                    match = r
+                    break
+            if match:
+                ry = self._safe_int(match.get("releaseYear"))
+                rm = self._safe_int(match.get("releaseMonth"))
+                if ry and rm:
+                    day = WASDE_RELEASE_DATES.get(ry, {}).get(rm)
+                    if day:
+                        resolved = date(ry, rm, day)
+                    else:
+                        self.logger.warning(
+                            f"{commodity}/{country_code}/MY{marketing_year}: no "
+                            f"WASDE_RELEASE_DATES entry for {ry}-{rm:02d}; falling back "
+                            f"to day 12 (typical release day). Verify and add the real "
+                            f"date to WASDE_RELEASE_DATES."
+                        )
+                        resolved = date(ry, rm, 12)
+            else:
+                self.logger.warning(
+                    f"{commodity}/{country_code}/MY{marketing_year}: no entry for this "
+                    f"exact country+marketing_year in /dataReleaseDates (expected for "
+                    f"world aggregate 'WD', which PSD doesn't track separately)."
+                )
+
+        if resolved is None:
+            self.logger.warning(
+                f"{commodity}/{country_code}/MY{marketing_year}: could not resolve true "
+                f"WASDE release date; falling back to today's date ({date.today()}). This "
+                f"will misdate the vintage if run on a non-release day -- verify before "
+                f"relying on it."
+            )
+            resolved = date.today()
+
+        cache[cache_key] = resolved
+        return resolved
+
     def save_to_bronze(self, records: list) -> int:
         """Pivot attribute-level records and upsert to bronze.fas_psd."""
         if not records:
@@ -242,7 +333,6 @@ class USDAWASPECollector(BaseCollector):
 
         # Group by (commodity, commodity_code, country_code, marketing_year, month)
         groups = {}
-        report_date = date.today()
 
         for rec in records:
             attr_id = rec.get("attribute_id")
@@ -271,7 +361,7 @@ class USDAWASPECollector(BaseCollector):
                     "marketing_year": key[4],
                     "calendar_year": None,
                     "month": key[5],
-                    "report_date": report_date,
+                    "report_date": self._resolve_report_date(key[0], key[2], key[4]),
                     "unit": rec.get("unit", "1000 MT"),
                 }
                 for c in self.BALANCE_COLS:
