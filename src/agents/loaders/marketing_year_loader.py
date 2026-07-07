@@ -5,9 +5,13 @@ Loads the comprehensive USDA PSD marketing year definitions from
 domain_knowledge/data_dictionaries/usda_psd_marketing_years_reference.json
 """
 
+import os
 import json
 import psycopg2
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -19,7 +23,7 @@ DB_CONFIG = {
     'port': 5432,
     'database': 'rlc_commodities',
     'user': 'postgres',
-    'password': 'SoupBoss1'
+    'password': os.getenv("RLC_PG_PASSWORD")
 }
 
 

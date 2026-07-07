@@ -73,7 +73,7 @@ RDS_HOST = "rlc-commodities.c16c6wm826t7.us-east-2.rds.amazonaws.com"
 RDS_PORT = "5432"
 RDS_DATABASE = "rlc_commodities"
 RDS_USER = "postgres"
-RDS_PASSWORD = "SoupBoss1"
+RDS_PASSWORD = os.getenv("RLC_PG_PASSWORD")
 
 
 def get_rds_connection():

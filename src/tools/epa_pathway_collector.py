@@ -27,6 +27,9 @@ import psycopg2.extras
 import requests
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # =============================================================================
 # Configuration
@@ -37,7 +40,7 @@ DB_CONFIG = {
     'port': 5432,
     'database': 'rlc_commodities',
     'user': 'postgres',
-    'password': 'SoupBoss1',
+    'password': os.getenv("RLC_PG_PASSWORD"),
 }
 
 EPA_URL = 'https://www.epa.gov/renewable-fuel-standard/approved-pathways-renewable-fuel'

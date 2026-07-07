@@ -1,6 +1,10 @@
 """Generate analyst_database_setup_guide.docx for Felipe onboarding."""
+import os
 from docx import Document
 from docx.shared import Pt
+from dotenv import load_dotenv
+
+load_dotenv()
 
 doc = Document()
 
@@ -30,7 +34,7 @@ for i, (k, v) in enumerate([
     ('Port', '5432'),
     ('Database', 'rlc_commodities'),
     ('Username', 'postgres'),
-    ('Password', 'SoupBoss1'),
+    ('Password', os.getenv("RLC_PG_PASSWORD")),
     ('SSL Mode', 'Require'),
 ]):
     table.rows[i].cells[0].text = k

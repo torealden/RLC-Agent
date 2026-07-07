@@ -10,12 +10,16 @@ Usage:
 """
 
 import argparse
+import os
 import re
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Optional
 import pandas as pd
 from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # === CONFIGURATION ===
 # Update these paths for your system
@@ -23,7 +27,7 @@ from sqlalchemy import create_engine, text
 FEED_GRAINS_DIR = Path(r"C:\Users\torem\Dropbox\RLC Documents\LLM Model and Documents\Projects\RLC-Agent\Models\Feed Grains")
 
 # PostgreSQL connection
-PG_PASSWORD = "SoupBoss1"  # PostgreSQL password
+PG_PASSWORD = os.getenv("RLC_PG_PASSWORD")  # PostgreSQL password
 PG_URL = f"postgresql://postgres:{PG_PASSWORD}@localhost:5432/rlc_commodities"
 
 # Files to extract (balance sheets only - skip price files for now)

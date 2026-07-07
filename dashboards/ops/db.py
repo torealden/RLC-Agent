@@ -24,7 +24,7 @@ _PG_HOST = os.getenv("RLC_PG_HOST", "localhost")
 _PG_PORT = os.getenv("RLC_PG_PORT", "5432")
 _PG_DB = os.getenv("RLC_PG_DATABASE", "rlc_commodities")
 _PG_USER = os.getenv("RLC_PG_USER", "postgres")
-_PG_PASS = os.getenv("RLC_PG_PASSWORD", "SoupBoss1")
+_PG_PASS = os.getenv("RLC_PG_PASSWORD")
 
 DB_CONFIG = {"host": _PG_HOST, "port": _PG_PORT, "database": _PG_DB,
              "user": _PG_USER, "password": _PG_PASS}

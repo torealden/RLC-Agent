@@ -9,15 +9,19 @@ Traditional Balance Sheet:
   Beginning Stocks (current year) = Ending Stocks (prior year)
 """
 
+import os
 import psycopg2
 from collections import defaultdict
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Database configuration
 PG_HOST = "localhost"
 PG_PORT = "5432"
 PG_DATABASE = "rlc_commodities"
 PG_USER = "postgres"
-PG_PASSWORD = "SoupBoss1"
+PG_PASSWORD = os.getenv("RLC_PG_PASSWORD")
 
 
 def main():

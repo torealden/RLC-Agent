@@ -6,16 +6,20 @@ Usage:
     python 02_deploy_medallion_schema.py
 """
 
+import os
 import psycopg2
 from pathlib import Path
 import sys
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Database configuration
 PG_HOST = "localhost"
 PG_PORT = "5432"
 PG_DATABASE = "rlc_commodities"
 PG_USER = "postgres"
-PG_PASSWORD = "SoupBoss1"
+PG_PASSWORD = os.getenv("RLC_PG_PASSWORD")
 
 # Path to SQL files
 SCRIPT_DIR = Path(__file__).parent.parent

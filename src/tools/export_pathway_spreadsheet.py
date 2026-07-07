@@ -1,15 +1,19 @@
 """Export EPA pathway determination data to Excel spreadsheet."""
 
+import os
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 import psycopg2
 import psycopg2.extras
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DB_CONFIG = {
     'host': 'localhost', 'port': 5432, 'database': 'rlc_commodities',
-    'user': 'postgres', 'password': 'SoupBoss1',
+    'user': 'postgres', 'password': os.getenv("RLC_PG_PASSWORD"),
 }
 
 OUTPUT_DIR = Path(__file__).resolve().parent.parent.parent / 'data' / 'epa_pathways'

@@ -6,17 +6,21 @@ Usage:
     python 01_inventory_postgres.py
 """
 
+import os
 import psycopg2
 import psycopg2.extras
 from pathlib import Path
 import json
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Database configuration - update if different
 PG_HOST = "localhost"
 PG_PORT = "5432"
 PG_DATABASE = "rlc_commodities"
 PG_USER = "postgres"
-PG_PASSWORD = "SoupBoss1"
+PG_PASSWORD = os.getenv("RLC_PG_PASSWORD")
 
 def inventory_database():
     """Connect to PostgreSQL and inventory all schemas, tables, and row counts."""

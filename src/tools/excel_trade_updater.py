@@ -12,11 +12,16 @@ Can also be called from VBA (see TradeUpdater.bas for full implementation)
 """
 
 import argparse
+import os
 import sys
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Tuple, Optional
 import logging
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Third-party imports
 try:
@@ -43,7 +48,7 @@ DB_CONFIG = {
     'port': 5432,
     'database': 'rlc_commodities',
     'user': 'postgres',
-    'password': 'SoupBoss1'  # Consider using environment variable
+    'password': os.getenv("RLC_PG_PASSWORD")
 }
 
 # Spreadsheet structure constants

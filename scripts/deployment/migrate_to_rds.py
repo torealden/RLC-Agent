@@ -31,12 +31,15 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
+from dotenv import load_dotenv
+load_dotenv(PROJECT_ROOT / ".env")
+
 # Local database settings
 LOCAL_HOST = "localhost"
 LOCAL_PORT = "5432"
 LOCAL_DB = "rlc_commodities"
 LOCAL_USER = "postgres"
-LOCAL_PASSWORD = "SoupBoss1"
+LOCAL_PASSWORD = os.getenv("RLC_PG_PASSWORD")
 
 DUMP_FILE = PROJECT_ROOT / "database" / "exports" / f"rlc_commodities_{datetime.now().strftime('%Y%m%d_%H%M%S')}.dump"
 

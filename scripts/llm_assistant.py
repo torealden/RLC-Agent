@@ -16,6 +16,9 @@ import argparse
 import requests
 from pathlib import Path
 from typing import Optional, List, Dict, Generator
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ============================================================================
 # CONFIGURATION
@@ -34,7 +37,7 @@ PG_CONFIG = {
     "port": "5432",
     "database": "rlc_commodities",
     "user": "postgres",
-    "password": "SoupBoss1"
+    "password": os.getenv("RLC_PG_PASSWORD")
 }
 
 # ============================================================================

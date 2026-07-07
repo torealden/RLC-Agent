@@ -17,6 +17,9 @@ from typing import Dict, List, Tuple, Optional
 import pandas as pd
 import psycopg2
 from psycopg2.extras import execute_values
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ============================================================================
 # CONFIGURATION
@@ -34,7 +37,7 @@ PG_HOST = "localhost"
 PG_PORT = "5432"
 PG_DATABASE = "rlc_commodities"
 PG_USER = "postgres"
-PG_PASSWORD = "SoupBoss1"
+PG_PASSWORD = os.getenv("RLC_PG_PASSWORD")
 
 # ============================================================================
 # TRAINING DATA CUTOFF

@@ -6,16 +6,20 @@ Usage:
     python 03_migrate_existing_to_bronze.py
 """
 
+import os
 import psycopg2
 import psycopg2.extras
 from datetime import datetime
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Database configuration
 PG_HOST = "localhost"
 PG_PORT = "5432"
 PG_DATABASE = "rlc_commodities"
 PG_USER = "postgres"
-PG_PASSWORD = "SoupBoss1"
+PG_PASSWORD = os.getenv("RLC_PG_PASSWORD")
 
 
 def migrate_to_bronze():

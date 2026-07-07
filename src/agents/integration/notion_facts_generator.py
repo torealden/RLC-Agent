@@ -508,7 +508,7 @@ class NotionFactsGenerator:
                         "Category": {"type": "select", "value": "Security"},
                         "Symptom": {
                             "type": "rich_text",
-                            "value": "Database password 'SoupBoss1' was hardcoded in 8 Python files "
+                            "value": "The database password was hardcoded in multiple Python files "
                             "instead of using environment variables.",
                         },
                         "Root Cause": {

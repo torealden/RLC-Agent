@@ -37,6 +37,10 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
+# Load .env so DB credentials come from the environment
+from dotenv import load_dotenv
+load_dotenv(PROJECT_ROOT / ".env")
+
 # Directories
 LOG_DIR = PROJECT_ROOT / "output" / "logs"
 REPORT_DIR = PROJECT_ROOT / "output" / "reports"
@@ -85,7 +89,7 @@ class LogReviewConfig:
     db_port: str = "5432"
     db_name: str = "rlc_commodities"
     db_user: str = "postgres"
-    db_password: str = "SoupBoss1"
+    db_password: str = os.getenv("RLC_PG_PASSWORD")
 
 
 # =============================================================================

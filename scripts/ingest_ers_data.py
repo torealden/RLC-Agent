@@ -19,6 +19,9 @@ from datetime import datetime
 from typing import Dict, List, Optional
 import psycopg2
 from psycopg2.extras import execute_values
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ============================================================================
 # CONFIGURATION
@@ -34,7 +37,7 @@ PG_CONFIG = {
     "port": "5432",
     "database": "rlc_commodities",
     "user": "postgres",
-    "password": "SoupBoss1"
+    "password": os.getenv("RLC_PG_PASSWORD")
 }
 
 # ============================================================================

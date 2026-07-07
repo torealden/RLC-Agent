@@ -20,6 +20,9 @@ import logging
 import argparse
 
 import psycopg2
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -29,7 +32,7 @@ DB_CONFIG = {
     'port': 5432,
     'database': 'rlc_commodities',
     'user': 'postgres',
-    'password': 'SoupBoss1',
+    'password': os.getenv("RLC_PG_PASSWORD"),
 }
 
 LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'emts_loader.log')
