@@ -18,6 +18,13 @@ A2E = {'SBO':'Soybean Oil','CO':'Canola Oil','CAN':'Canola Oil','DCO':'Corn Oil'
        'EBFT':'Tallow','IBFT':'Tallow','BFT':'Tallow','YG':'Yellow Grease','UCO':'Yellow Grease',
        'CWG':'White Grease','PF':'Poultry','PLT':'Poultry','CSO':'Cottonseed Oil'}
 
+# RLC-canonical feedstocks (Ruling 1): RLC supply build is authoritative, EIA disregarded.
+# These are EXEMPT from the rake — kept at allocator totals, rake_factor forced to 1.0.
+# Tallow only for now; UCO joins when its canonical supply is wired (allocator currently
+# allocates ~0 UCO, so exempting it now would drop it from output). CWG stays raked (treat
+# like PF, per Tore 2026-07-07). Veg oils (SBO/CO/DCO) stay EIA-pinned.
+RLC_CANONICAL = {'EBFT', 'IBFT', 'BFT'}
+
 DDL = """
 CREATE TABLE IF NOT EXISTS gold.bbd_feedstock_raked (
     facility_id int, period date, feedstock_code text, fuel_type text,
@@ -64,7 +71,8 @@ with get_connection() as c:
     for r in rows:
         eia = A2E.get(r['feedstock_code'])
         if not eia: continue
-        rf = rake.get((r['period'], eia), 1.0)
+        # RLC-canonical: exempt from rake (keep allocator total, don't scale to EIA)
+        rf = 1.0 if r['feedstock_code'] in RLC_CANONICAL else rake.get((r['period'], eia), 1.0)
         pre = float(r['allocated_mil_lbs'] or 0)
         cur.execute("""INSERT INTO gold.bbd_feedstock_raked
             (facility_id,period,feedstock_code,fuel_type,raked_mil_lbs,pre_rake_mil_lbs,rake_factor,eia_feedstock,run_day)

@@ -532,6 +532,35 @@ class FeedstockAllocator:
 
         return prices
 
+    def load_rlc_tallow_guardrail(self, period: date) -> Optional[float]:
+        """
+        RLC-canonical tallow biofuel-available guardrail (Tallow Ruling §2).
+
+        Reads silver.tallow_balance series='tallow_biofuel_use' (class 'ALL') — the
+        production + net-imports − non-bio series that lands ~5B for 2024 vs EIA's
+        inflated 8.65B. RLC-canonical: NOT min()'d against EIA. Returns million lbs,
+        or None if no RLC data for the period (pre-2013 falls back to EIA).
+
+        NOTE: the modern non-bio nowcast is PENDING_DESKTOP (see
+        docs/specs/tallow_nonbio_nowcast_code_to_desktop.md). Values are usable and
+        clearly flagged in-table; refinement is a data change, not a code change here.
+        """
+        from src.services.database.db_config import get_connection
+
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT value_lbs FROM silver.tallow_balance
+                    WHERE series = 'tallow_biofuel_use' AND class = 'ALL'
+                      AND period = %s
+                """, (period,))
+                row = cur.fetchone()
+                if row and row['value_lbs'] is not None:
+                    mil_lbs = float(row['value_lbs']) / 1e6  # raw lb -> million lb
+                    logger.info(f"  Tallow guardrail: {mil_lbs:.1f} mil lbs (RLC-canonical, silver.tallow_balance)")
+                    return mil_lbs
+        return None
+
     def load_eia_tallow(self, period: date) -> Optional[float]:
         """
         Load tallow consumption as a guardrail for the EBFT/IBFT split.
@@ -584,12 +613,15 @@ class FeedstockAllocator:
         """
         Run the tallow grade split and update supply dict with EBFT/IBFT volumes.
 
-        If EIA data exists, uses it as the guardrail and allocates between grades
-        based on economic pull. If no EIA data, uses default supply estimates.
+        Guardrail source (Tallow Ruling §2, Ruling 1 — RLC-canonical, EIA disregarded):
+        prefer RLC biofuel-available tallow from silver.tallow_balance; fall back to the
+        EIA guardrail only where RLC has no data (pre-2013, before Census trade). The
+        total is then split between grades based on economic pull.
 
         Returns the tallow split result dict, or None if using defaults.
         """
-        eia_total = self.load_eia_tallow(period)
+        rlc_total = self.load_rlc_tallow_guardrail(period)
+        eia_total = rlc_total if rlc_total is not None else self.load_eia_tallow(period)
 
         if eia_total is None or eia_total <= 0:
             return None  # Use default supply estimates (EBFT/IBFT already in supply dict)
