@@ -18,12 +18,13 @@ A2E = {'SBO':'Soybean Oil','CO':'Canola Oil','CAN':'Canola Oil','DCO':'Corn Oil'
        'EBFT':'Tallow','IBFT':'Tallow','BFT':'Tallow','YG':'Yellow Grease','UCO':'Yellow Grease',
        'CWG':'White Grease','PF':'Poultry','PLT':'Poultry','CSO':'Cottonseed Oil'}
 
-# RLC-canonical feedstocks (Ruling 1): RLC supply build is authoritative, EIA disregarded.
-# These are EXEMPT from the rake — kept at allocator totals, rake_factor forced to 1.0.
-# Tallow only for now; UCO joins when its canonical supply is wired (allocator currently
-# allocates ~0 UCO, so exempting it now would drop it from output). CWG stays raked (treat
-# like PF, per Tore 2026-07-07). Veg oils (SBO/CO/DCO) stay EIA-pinned.
-RLC_CANONICAL = {'EBFT', 'IBFT', 'BFT'}
+# RLC-canonical feedstocks (Ruling 1 + UCO Amendment 1): RLC supply build is authoritative,
+# EIA disregarded. EXEMPT from the rake — kept at allocator totals, rake_factor forced to 1.0.
+# Tallow (BFT grades) + UCO + YG: the EIA "Yellow Grease" line is a mislabeled bucket (UCO +
+# swap-misbooked volume), so no physical supply rakes to it (Amendment 1 R2). YG_BIOFUEL=0 so
+# YG here only guards against a stray raked row. CWG + poultry (PF/PLT) stay EIA-pinned (small,
+# specific, not swap-implicated). Veg oils (SBO/CO/DCO) stay EIA-pinned.
+RLC_CANONICAL = {'EBFT', 'IBFT', 'BFT', 'UCO', 'YG'}
 
 DDL = """
 CREATE TABLE IF NOT EXISTS gold.bbd_feedstock_raked (
