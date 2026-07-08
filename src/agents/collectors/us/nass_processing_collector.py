@@ -105,6 +105,24 @@ FATS_OILS_COMMODITIES = {
     },
 }
 
+# Animal fats / greases / rendered meals — the "Low CI" biofuel feedstocks.
+# Part of the NASS Fats & Oils report (source_desc='SURVEY'), keyed by
+# commodity_desc with no class filter. NASS returns every short_desc variant
+# (edible/inedible/technical, choice-white/yellow, feather/meat&bone, etc.)
+# in one query. These land in silver.monthly_realized under source
+# 'NASS_FATS_OILS' with commodity=commodity_desc.lower().replace(' ','_') and
+# attribute=the raw NASS short_desc — matching the one-time
+# NASS_FATS_OILS_BACKFILL forms so gold.nass_low_ci_matrix picks them up with
+# no view change. See _map_commodity / _map_attribute for the mapping.
+ANIMAL_FATS_COMMODITIES = {
+    'grease': {'commodity_desc': 'GREASE'},
+    'lard': {'commodity_desc': 'LARD'},
+    'tallow': {'commodity_desc': 'TALLOW'},
+    'poultry_fats': {'commodity_desc': 'POULTRY FATS'},
+    'poultry_by-product_meals': {'commodity_desc': 'POULTRY BY-PRODUCT MEALS'},
+    'meal': {'commodity_desc': 'MEAL'},  # feather meal + meat & bone meal
+}
+
 # Crush, cake/meal, millfeed data — uses different commodity_desc than oil
 # Part of the NASS Fats & Oils report but keyed by seed commodity
 CRUSH_MEAL_COMMODITIES = {
@@ -460,6 +478,68 @@ class NASSProcessingCollector:
         except Exception as e:
             self.logger.warning("Error parsing record: {}".format(e))
             return None
+
+    # =========================================================================
+    # ANIMAL FATS / GREASES / RENDERED MEALS (Low CI feedstocks)
+    # =========================================================================
+
+    def fetch_animal_fats(
+        self,
+        year: int = None,
+    ) -> Optional[pd.DataFrame]:
+        """
+        Fetch animal-fat / grease / rendered-meal series from the NASS Fats &
+        Oils report (GREASE, LARD, TALLOW, POULTRY FATS, POULTRY BY-PRODUCT
+        MEALS, MEAL). Queries by commodity_desc with no class/statisticcat
+        filter so every short_desc variant (production, stocks, removal for
+        processing, incl. edible/inedible/technical splits) comes back in one
+        request per commodity.
+
+        Rows are written to silver.monthly_realized under source
+        'NASS_FATS_OILS' with commodity=lowercased commodity_desc and
+        attribute=the raw NASS short_desc, matching NASS_FATS_OILS_BACKFILL so
+        gold.nass_low_ci_matrix refreshes with no view change.
+
+        Args:
+            year: Year to fetch (default: current and prior year)
+
+        Returns:
+            DataFrame with monthly animal-fat production/stocks/removal data
+        """
+        if not self.api_key:
+            return None
+
+        year = year or datetime.now().year
+        all_records = []
+
+        for comm_key, config in ANIMAL_FATS_COMMODITIES.items():
+            params = {
+                'commodity_desc': config['commodity_desc'],
+                'source_desc': 'SURVEY',
+                'freq_desc': 'MONTHLY',
+                'year__GE': str(year - 1),
+                'year__LE': str(year),
+                'agg_level_desc': 'NATIONAL',
+            }
+
+            data = self._make_request(params)
+            if data and 'data' in data:
+                for item in data['data']:
+                    # Reuse the generic parser; source fixed to NASS_FATS_OILS
+                    # so recurring rows merge with the backfill forms.
+                    record = self._parse_generic_record(
+                        item, 'animal_fats', 'NASS_FATS_OILS'
+                    )
+                    if record:
+                        all_records.append(record)
+
+        if not all_records:
+            self.logger.warning("No Animal Fats data retrieved")
+            return None
+
+        df = pd.DataFrame(all_records)
+        self.logger.info("Retrieved {} Animal Fats records".format(len(df)))
+        return df
 
     # =========================================================================
     # SOY CRUSH (soybeans crushed + soybean meal)
@@ -1080,6 +1160,7 @@ class NASSProcessingCollector:
 
         report_specs = [
             ('fats_oils',         self.fetch_fats_oils),
+            ('animal_fats',       self.fetch_animal_fats),
             ('soy_crush',         self.fetch_soy_crush),
             ('grain_crushings',   self.fetch_grain_crushings),
             ('flour_milling',     self.fetch_flour_milling),
@@ -1223,6 +1304,16 @@ class NASSProcessingCollector:
         commodity_desc = row.get('commodity_desc', '').upper()
         class_desc = row.get('class_desc', '').upper()
 
+        # Animal fats / greases / rendered meals: commodity is the lowercased
+        # commodity_desc (grease/lard/tallow/poultry_fats/poultry_by-product_meals/meal),
+        # matching NASS_FATS_OILS_BACKFILL. Must precede the generic OIL/CAKE &
+        # MEAL/MILLFEED handling below ('MEAL' alone != 'CAKE & MEAL').
+        if commodity_desc in (
+            'GREASE', 'LARD', 'TALLOW', 'POULTRY FATS',
+            'POULTRY BY-PRODUCT MEALS', 'MEAL',
+        ):
+            return commodity_desc.lower().replace(' ', '_')
+
         if commodity_desc == 'SOYBEANS':
             return 'soybeans'
         if commodity_desc == 'CANOLA':
@@ -1282,6 +1373,15 @@ class NASSProcessingCollector:
         comm = row.get('commodity', row.get('commodity_desc', '')).lower()
         short_desc = row.get('short_desc', '').upper()
         commodity_desc = row.get('commodity_desc', '').upper()
+
+        # Animal fats / greases / rendered meals: attribute is the raw NASS
+        # short_desc (NASS short_descs are uppercase, matching the backfill).
+        # gold.nass_low_ci_matrix keys off LIKE patterns on this string.
+        if commodity_desc in (
+            'GREASE', 'LARD', 'TALLOW', 'POULTRY FATS',
+            'POULTRY BY-PRODUCT MEALS', 'MEAL',
+        ):
+            return row.get('short_desc', '') or None
 
         # Seeds crushed (soybeans, canola, cottonseed)
         if commodity_desc in ('SOYBEANS', 'CANOLA', 'COTTONSEED') and stat_cat == 'CRUSHED':
@@ -1486,7 +1586,7 @@ def main():
 
     parser.add_argument(
         'report',
-        choices=['fats_oils', 'soy_crush', 'grain_crushings',
+        choices=['fats_oils', 'animal_fats', 'soy_crush', 'grain_crushings',
                  'flour_milling', 'peanut_processing', 'all'],
         help='Report type to fetch'
     )
@@ -1540,6 +1640,8 @@ def main():
         df = None
         if args.report == 'fats_oils':
             df = collector.fetch_fats_oils(year=args.year)
+        elif args.report == 'animal_fats':
+            df = collector.fetch_animal_fats(year=args.year)
         elif args.report == 'soy_crush':
             df = collector.fetch_soy_crush(year=args.year)
         elif args.report == 'grain_crushings':
@@ -1550,10 +1652,12 @@ def main():
             df = collector.fetch_peanut_processing(year=args.year)
         else:  # all
             dfs = []
-            for rpt in ['fats_oils', 'soy_crush', 'grain_crushings',
+            for rpt in ['fats_oils', 'animal_fats', 'soy_crush', 'grain_crushings',
                          'flour_milling', 'peanut_processing']:
                 if rpt == 'fats_oils':
                     d = collector.fetch_fats_oils(year=args.year)
+                elif rpt == 'animal_fats':
+                    d = collector.fetch_animal_fats(year=args.year)
                 elif rpt == 'soy_crush':
                     d = collector.fetch_soy_crush(year=args.year)
                 elif rpt == 'grain_crushings':
