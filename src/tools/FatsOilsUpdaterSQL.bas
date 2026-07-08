@@ -739,6 +739,7 @@ Private Function BuildNASSLowCIFieldMap() As Object
     m("choice white grease|production") = "cwg_production"
     m("choice white grease|processing use") = "cwg_processing_use"
     m("choice white grease|removal for processing") = "cwg_processing_use"
+    m("choice white grease|removed for inedible use") = "cwg_processing_use"
     m("choice white grease|end-of-month stocks") = "cwg_stocks"
     m("choice white grease|stocks") = "cwg_stocks"
     m("cwg|production") = "cwg_production"
@@ -833,9 +834,15 @@ Private Function ScanLowCIColumnLayout(ws As Worksheet, fieldMap As Object) As O
     Dim layout As Object
     Set layout = CreateObject("Scripting.Dictionary")  ' col -> field_name
 
-    Dim lastCol As Long
-    lastCol = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
-    If lastCol < 2 Then lastCol = ws.Cells(2, ws.Columns.Count).End(xlToLeft).Column
+    ' Row 1 (commodity) headers are sparse — merged across each block, so the
+    ' rightmost row-1 cell is only the LAST commodity's anchor and truncates its
+    ' trailing metric columns. Row 2 (attribute) has a value in every data column,
+    ' so take the wider of the two as the true last column.
+    Dim lastCol As Long, lc1 As Long, lc2 As Long
+    lc1 = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
+    lc2 = ws.Cells(2, ws.Columns.Count).End(xlToLeft).Column
+    lastCol = IIf(lc2 > lc1, lc2, lc1)
+    If lastCol < 2 Then lastCol = 2
 
     Dim currentCommodity As String
     currentCommodity = ""
@@ -957,6 +964,12 @@ Private Function UpdateNASSLowCI(ByVal monthCount As Integer) As CommodityUpdate
         conn.Close
         Application.StatusBar = False
         Application.Cursor = xlDefault
+        MsgBox "NASS Low CI: the query to gold.nass_low_ci_matrix returned NO rows." & vbCrLf & vbCrLf & _
+               "The " & layout.Count & " sheet columns were matched fine, so this is a data/connection" & vbCrLf & _
+               "issue, not a header problem. Check that this workbook's ODBC connection points at" & vbCrLf & _
+               "the RDS host (RLC_PG_HOST) where gold.nass_low_ci_matrix is populated, not a stale/local DB.", _
+               vbExclamation, "Fats & Oils Updater"
+        res.unmatchedList = vbCrLf & "  gold.nass_low_ci_matrix returned 0 rows (columns mapped OK: " & layout.Count & ")."
         UpdateNASSLowCI = res
         Exit Function
     End If
@@ -969,16 +982,22 @@ Private Function UpdateNASSLowCI(ByVal monthCount As Integer) As CommodityUpdate
     Dim writtenCells As Object
     Set writtenCells = CreateObject("Scripting.Dictionary")
 
+    Dim rowsFetched As Long, rowsMatchedToDate As Long
+    rowsFetched = 0
+    rowsMatchedToDate = 0
+
     Application.StatusBar = "Updating cells (raw lbs / 1000 -> 000 lbs)..."
     DoEvents
 
     Do While Not rs.EOF
+        rowsFetched = rowsFetched + 1
         Dim yr As Integer, mo As Integer
         yr = rs("calendar_year")
         mo = rs("month")
 
         Dim targetRow As Integer
         targetRow = FindRowForDate(ws, yr, mo, dataStartRow)
+        If targetRow > 0 Then rowsMatchedToDate = rowsMatchedToDate + 1
 
         If targetRow > 0 Then
             Dim colVar As Variant
@@ -1013,6 +1032,15 @@ Private Function UpdateNASSLowCI(ByVal monthCount As Integer) As CommodityUpdate
     For Each col2 In layout.Keys
         ws.Cells(3, CInt(col2)).Value = "000 lbs"
     Next col2
+
+    ' Self-diagnosis when nothing landed despite a successful map + fetch: name the
+    ' stage that failed (date matching) so a zero result is never a silent mystery.
+    If res.cellsUpdated = 0 Then
+        res.unmatchedList = res.unmatchedList & vbCrLf & _
+            "  0 cells written: mapped " & layout.Count & " columns, fetched " & rowsFetched & _
+            " DB month-rows, but " & rowsMatchedToDate & " matched a date in column A." & vbCrLf & _
+            "  -> If 0 matched, the col-A dates don't line up with the matrix year/month."
+    End If
 
     Application.StatusBar = False
     Application.Cursor = xlDefault
