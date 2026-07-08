@@ -1,14 +1,18 @@
-"""Emit contract-compliant (flat_file_contract.md v1.1 LONG) fats/UCO supply+demand flat files.
+"""Emit contract-compliant (flat_file_contract.md v1.1 LONG) fats/greases/DCO supply+demand flat files.
 
-Two workbooks, each with a supply tab, a demand tab, and a _meta tab:
-  1. models/Oilseeds/us_tallow_supply_demand.xlsx  -> tallow_supply, tallow_demand, _meta
-  2. models/Oilseeds/us_uco_supply_demand.xlsx     -> uco_supply,   uco_demand,   _meta
+Six workbooks, each with a supply tab, a demand tab, and a _meta tab:
+  1. models/Oilseeds/us_tallow_supply_demand.xlsx        -> tallow_supply,       tallow_demand,       _meta
+  2. models/Oilseeds/us_uco_supply_demand.xlsx           -> uco_supply,          uco_demand,          _meta
+  3. models/Oilseeds/us_poultry_fat_supply_demand.xlsx   -> poultry_fat_supply,  poultry_fat_demand,  _meta
+  4. models/Oilseeds/us_white_grease_supply_demand.xlsx  -> white_grease_supply, white_grease_demand, _meta
+  5. models/Oilseeds/us_yellow_grease_supply_demand.xlsx -> yellow_grease_supply,yellow_grease_demand,_meta
+  6. models/Oilseeds/us_dco_supply_demand.xlsx           -> dco_supply,          dco_demand,          _meta
 
-Supply tabs are near-passthroughs / assembly from silver.* balance tables (the vintage ladder is
+Supply tabs are near-passthroughs / assembly from silver.* / gold.* tables (the vintage ladder is
 preserved so Desktop's MAXIFS picks the top-ranked vintage per key). Demand tabs are the raked
 allocator output (gold.bbd_feedstock_raked, latest run_day). 13-col LONG schema, value = RAW pounds.
 
-Idempotent: rewrites both files each run. Does NOT commit/push.
+Idempotent: rewrites all six files each run. Does NOT commit/push.
 """
 import sys
 from pathlib import Path
@@ -33,6 +37,33 @@ TALLOW_SUPPLY_SERIES = (
     'cir_ibft_biodiesel_comparison',
 )
 
+# NASS Fats & Oils supply mapping: commodity -> [(matrix_column, output_series), ...]
+NASS_SUPPLY_SPEC = {
+    'poultry_fat': [('poultry_fat_production', 'production'),
+                    ('poultry_fat_processing_use', 'processing_use'),
+                    ('poultry_fat_stocks', 'stocks')],
+    'white_grease': [('cwg_production', 'production'),
+                     ('cwg_processing_use', 'processing_use'),
+                     ('cwg_stocks', 'stocks')],
+    'yellow_grease': [('yellow_grease_production', 'production'),
+                      ('yellow_grease_processing_use', 'processing_use'),
+                      ('yellow_grease_stocks', 'stocks')],
+}
+
+# demand feedstock_code filter per commodity
+DEMAND_CODES = {
+    'tallow': ('EBFT', 'IBFT', 'BFT'),
+    'uco_yg': ('UCO', 'YG'),
+    'poultry_fat': ('PF', 'PLT'),
+    'white_grease': ('CWG',),
+    'yellow_grease': ('YG',),
+    'dco': ('DCO',),
+}
+
+STALE_NASS = ('Supply from NASS Fats & Oils via gold.nass_low_ci_matrix; recurring collector live '
+              '(2026-07-08) so it refreshes monthly to the latest NASS release. Demand (raked) '
+              'runs through Dec 2025.')
+
 NOTES = {
     # tallow supply
     'tallow_production': 'NASS/CENSUS_CIR/SLAUGHTER vintage ladder (rank 90/80/60)',
@@ -51,7 +82,16 @@ NOTES = {
     'uco_exports': 'Census gross UCO exports (TOTAL)',
     'uco_biofuel_use': 'derived UCO biofuel consumption',
     'yg_biofuel_use': 'ruled 0 per UCO Amendment 1',
-    # demand (both)
+    # NASS fats/greases supply (generic series names)
+    'production': 'NASS Fats & Oils production (raw lb)',
+    'processing_use': 'NASS Fats & Oils consumption/processing use (raw lb)',
+    'stocks': 'NASS Fats & Oils ending stocks (raw lb)',
+    # dco supply
+    'dco_production': 'GCCP distillers corn oil co-product: gold.corn_grind_monthly target_col=K '
+                      '"Corn oil (DCO)" (thousand short tons -> LB x 2e6)',
+    'dco_imports': 'Census DCO imports: gold.dco_trade_monthly trade_category=DCO (000 lb -> LB x 1000)',
+    'dco_exports': 'Census DCO exports: gold.dco_trade_monthly trade_category=DCO (000 lb -> LB x 1000)',
+    # demand (all)
     'biofuel_use_biodiesel': 'raked allocator: biodiesel feedstock use',
     'biofuel_use_renewable_diesel': 'raked allocator: renewable diesel feedstock use',
     'biofuel_use_saf': 'raked allocator: SAF feedstock use',
@@ -91,8 +131,9 @@ def write_tab(wb, title, rows):
     return ws
 
 
-def write_meta(wb, series_rows, note_override=None):
-    """series_rows: list of dicts w/ series, source, unit, vintage_set."""
+def write_meta(wb, series_rows, note_override=None, extra_meta=None):
+    """series_rows: list of dicts w/ series, source, unit, vintage_set.
+    extra_meta: list of full meta dicts (series/source/unit/vintage_set/notes) appended verbatim."""
     wm = wb.create_sheet("_meta")
     wm.append(['series', 'source', 'unit', 'vintage_set', 'last_updated', 'notes'])
     for cell in wm[1]:
@@ -100,6 +141,8 @@ def write_meta(wb, series_rows, note_override=None):
     for m in series_rows:
         note = (note_override or {}).get(m['series'], NOTES.get(m['series'], ''))
         wm.append([m['series'], m['source'], m['unit'], m['vintage_set'], '', note])
+    for m in (extra_meta or []):
+        wm.append([m['series'], m['source'], m['unit'], m['vintage_set'], '', m.get('notes', '')])
 
 
 def meta_from_rows(rows):
@@ -127,7 +170,6 @@ def meta_from_rows(rows):
 # ---------------------------------------------------------------- build data
 with get_connection() as conn:
     cur = conn.cursor()
-    max_run = None
     cur.execute("SELECT max(run_day) m FROM gold.bbd_feedstock_raked")
     max_run = cur.fetchone()['m']
 
@@ -152,11 +194,10 @@ with get_connection() as conn:
                 'vintage': vintage, 'vintage_rank': UCO_RANK[vintage], 'value': value,
                 'unit': 'LB', 'source': vintage, 'release_date': '', 'revision': ''}
 
-    # uco_collection + yg_collection from silver.uco_yg_balance
     cur.execute("SELECT series, year, month, value_lbs, vintage FROM silver.uco_yg_balance "
                 "WHERE series IN ('uco_collection','yg_collection','uco_biofuel_use')")
-    yg_collection_rows = []   # keep for non_bio_use + yg_biofuel_use derivation
-    uco_collection_keys = []  # (year,month) where uco_collection exists
+    yg_collection_rows = []
+    uco_collection_keys = []
     for r in cur.fetchall():
         uco_supply.append(uco_row(r['series'], r['year'], r['month'], r['value_lbs'], r['vintage']))
         if r['series'] == 'yg_collection':
@@ -164,20 +205,73 @@ with get_connection() as conn:
         if r['series'] == 'uco_collection':
             uco_collection_keys.append((r['year'], r['month']))
 
-    # uco_imports / uco_exports GROSS from silver.uco_imports (country='TOTAL'), mil_lbs*1e6
     cur.execute("SELECT year, month, flow, mil_lbs FROM silver.uco_imports WHERE country='TOTAL'")
-    imp_rows = cur.fetchall()
-    for r in imp_rows:
+    for r in cur.fetchall():
         series = 'uco_imports' if r['flow'] == 'import' else 'uco_exports'
         uco_supply.append(uco_row(series, r['year'], r['month'], float(r['mil_lbs']) * 1e6, 'CENSUS'))
 
-    # yg_biofuel_use = 0 for every (year,month) that uco_collection exists (Amendment 1 R1)
     for (y, m) in uco_collection_keys:
         uco_supply.append(uco_row('yg_biofuel_use', y, m, 0, 'RULED_AMENDMENT1'))
-
-    # non_bio_use = yg_collection values (YG-grade collection flows to non-bio)
     for (y, m, v) in yg_collection_rows:
         uco_supply.append(uco_row('non_bio_use', y, m, v, 'DERIVED'))
+
+    # ---- NASS FATS & OILS SUPPLY (poultry_fat, white_grease, yellow_grease) ----
+    def nass_supply(commodity):
+        spec = NASS_SUPPLY_SPEC[commodity]
+        matrix_cols = [c for c, _ in spec]
+        cur.execute(
+            "SELECT calendar_year, month, " + ", ".join(matrix_cols) +
+            " FROM gold.nass_low_ci_matrix ORDER BY calendar_year, month")
+        rows = []
+        for r in cur.fetchall():
+            for mcol, series in spec:
+                v = r[mcol]
+                if v is None:
+                    continue
+                rows.append({
+                    'commodity': commodity, 'class': 'ALL', 'series': series,
+                    'marketing_year': r['calendar_year'], 'period_type': 'cal_month',
+                    'period': pm(r['month']), 'vintage': 'NASS_FATS_OILS', 'vintage_rank': 90,
+                    'value': float(v), 'unit': 'LB', 'source': 'NASS_FATS_OILS',
+                    'release_date': '', 'revision': '',
+                })
+        return rows
+
+    poultry_fat_supply = nass_supply('poultry_fat')
+    white_grease_supply = nass_supply('white_grease')
+    yellow_grease_supply = nass_supply('yellow_grease')
+
+    # ---- DCO SUPPLY (production from GCCP corn_grind_monthly K; trade from dco_trade_monthly) ----
+    dco_supply = []
+    # production: target_col='K' "Corn oil (DCO)" thousand short tons -> LB (x 1000 x 2000 = x 2e6)
+    cur.execute("SELECT year, month, display_value, display_unit FROM gold.corn_grind_monthly "
+                "WHERE target_col = 'K' ORDER BY year, month")
+    dco_prod_unit = None
+    for r in cur.fetchall():
+        if r['display_value'] is None:
+            continue
+        dco_prod_unit = r['display_unit']
+        dco_supply.append({
+            'commodity': 'dco', 'class': 'ALL', 'series': 'dco_production',
+            'marketing_year': r['year'], 'period_type': 'cal_month', 'period': pm(r['month']),
+            'vintage': 'NASS_GRAIN_CRUSH', 'vintage_rank': 90,
+            'value': float(r['display_value']) * 2_000_000.0, 'unit': 'LB',
+            'source': 'GCCP_corn_grind_monthly.K', 'release_date': '', 'revision': '',
+        })
+    # trade: gold.dco_trade_monthly trade_category='DCO', total_000_lbs -> LB (x 1000)
+    cur.execute("SELECT year, month, flow, total_000_lbs FROM gold.dco_trade_monthly "
+                "WHERE trade_category = 'DCO' ORDER BY year, month, flow")
+    for r in cur.fetchall():
+        if r['total_000_lbs'] is None:
+            continue
+        series = 'dco_imports' if str(r['flow']).lower().startswith('import') else 'dco_exports'
+        dco_supply.append({
+            'commodity': 'dco', 'class': 'ALL', 'series': series,
+            'marketing_year': r['year'], 'period_type': 'cal_month', 'period': pm(r['month']),
+            'vintage': 'CENSUS', 'vintage_rank': 90,
+            'value': float(r['total_000_lbs']) * 1000.0, 'unit': 'LB',
+            'source': 'CENSUS_dco_trade_monthly', 'release_date': '', 'revision': '',
+        })
 
     # ---- DEMAND (raked allocator) ----
     def demand_rows(commodity, codes):
@@ -188,7 +282,7 @@ with get_connection() as conn:
             "GROUP BY 1,2,3", (max_run, list(codes)))
         raw = cur.fetchall()
         rows = []
-        totals = {}  # (yr,mo) -> sum
+        totals = {}
         for r in raw:
             series = 'biofuel_use_' + str(r['fuel_type']).lower().replace(' ', '_')
             val = float(r['mil']) * 1e6
@@ -204,81 +298,126 @@ with get_connection() as conn:
                          'source': 'ALLOCATOR_RAKED', 'release_date': '', 'revision': ''})
         return rows
 
-    tallow_demand = demand_rows('tallow', ('EBFT', 'IBFT', 'BFT'))
-    uco_demand = demand_rows('uco_yg', ('UCO', 'YG'))
+    tallow_demand = demand_rows('tallow', DEMAND_CODES['tallow'])
+    uco_demand = demand_rows('uco_yg', DEMAND_CODES['uco_yg'])
+    poultry_fat_demand = demand_rows('poultry_fat', DEMAND_CODES['poultry_fat'])
+    white_grease_demand = demand_rows('white_grease', DEMAND_CODES['white_grease'])
+    yellow_grease_demand = demand_rows('yellow_grease', DEMAND_CODES['yellow_grease'])
+    dco_demand = demand_rows('dco', DEMAND_CODES['dco'])
+
+print(f"DCO production source unit read from corn_grind_monthly.K: {dco_prod_unit!r} "
+      f"(converted to LB via x 2,000,000)")
 
 # ---------------------------------------------------------------- write files
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
+
+def build_meta_rows(supply_rows, demand_rows_):
+    return meta_from_rows(sorted(dedupe(supply_rows), key=sort_key) +
+                          sorted(dedupe(demand_rows_), key=sort_key))
+
+
+written = []
+
 # File 1: tallow
-wb1 = openpyxl.Workbook(); wb1.remove(wb1.active)
-write_tab(wb1, 'tallow_supply', tallow_supply)
-write_tab(wb1, 'tallow_demand', tallow_demand)
-write_meta(wb1, meta_from_rows(sorted(dedupe(tallow_supply), key=sort_key) +
-                               sorted(dedupe(tallow_demand), key=sort_key)))
-f1 = OUTDIR / "us_tallow_supply_demand.xlsx"
-wb1.save(f1)
+wb = openpyxl.Workbook(); wb.remove(wb.active)
+write_tab(wb, 'tallow_supply', tallow_supply)
+write_tab(wb, 'tallow_demand', tallow_demand)
+write_meta(wb, build_meta_rows(tallow_supply, tallow_demand))
+f = OUTDIR / "us_tallow_supply_demand.xlsx"; wb.save(f); written.append(f)
 
 # File 2: uco
-wb2 = openpyxl.Workbook(); wb2.remove(wb2.active)
-write_tab(wb2, 'uco_supply', uco_supply)
-write_tab(wb2, 'uco_demand', uco_demand)
-write_meta(wb2, meta_from_rows(sorted(dedupe(uco_supply), key=sort_key) +
-                               sorted(dedupe(uco_demand), key=sort_key)),
+wb = openpyxl.Workbook(); wb.remove(wb.active)
+write_tab(wb, 'uco_supply', uco_supply)
+write_tab(wb, 'uco_demand', uco_demand)
+write_meta(wb, build_meta_rows(uco_supply, uco_demand),
            note_override={'non_bio_use': UCO_NONBIO_NOTE})
-f2 = OUTDIR / "us_uco_supply_demand.xlsx"
-wb2.save(f2)
+f = OUTDIR / "us_uco_supply_demand.xlsx"; wb.save(f); written.append(f)
 
-print(f"wrote {f1}")
-print(f"wrote {f2}")
+# NASS staleness note override for the three frozen-supply commodities
+nass_stale_override = {s: NOTES[s] + ' | ' + STALE_NASS for s in ('production', 'processing_use', 'stocks')}
+
+# File 3: poultry_fat
+wb = openpyxl.Workbook(); wb.remove(wb.active)
+write_tab(wb, 'poultry_fat_supply', poultry_fat_supply)
+write_tab(wb, 'poultry_fat_demand', poultry_fat_demand)
+write_meta(wb, build_meta_rows(poultry_fat_supply, poultry_fat_demand),
+           note_override=nass_stale_override)
+f = OUTDIR / "us_poultry_fat_supply_demand.xlsx"; wb.save(f); written.append(f)
+
+# File 4: white_grease (Choice White Grease)
+wb = openpyxl.Workbook(); wb.remove(wb.active)
+write_tab(wb, 'white_grease_supply', white_grease_supply)
+write_tab(wb, 'white_grease_demand', white_grease_demand)
+write_meta(wb, build_meta_rows(white_grease_supply, white_grease_demand),
+           note_override=nass_stale_override)
+f = OUTDIR / "us_white_grease_supply_demand.xlsx"; wb.save(f); written.append(f)
+
+# File 5: yellow_grease (demand empty by design -- Amendment 1 folds YG biofuel use into UCO pool)
+wb = openpyxl.Workbook(); wb.remove(wb.active)
+write_tab(wb, 'yellow_grease_supply', yellow_grease_supply)
+write_tab(wb, 'yellow_grease_demand', yellow_grease_demand)
+yg_extra = []
+if not yellow_grease_demand:
+    yg_extra = [{'series': 'biofuel_use_total', 'source': 'ALLOCATOR_RAKED', 'unit': 'LB',
+                 'vintage_set': '(none)',
+                 'notes': 'EMPTY BY DESIGN: UCO Amendment 1 rules YG biofuel use = 0 (folded into the '
+                          'UCO pool). No YG feedstock_code emerges from the raked allocator -- an empty '
+                          'demand tab is expected, not an error.'}]
+write_meta(wb, build_meta_rows(yellow_grease_supply, yellow_grease_demand),
+           note_override=nass_stale_override, extra_meta=yg_extra)
+f = OUTDIR / "us_yellow_grease_supply_demand.xlsx"; wb.save(f); written.append(f)
+
+# File 6: dco (distillers corn oil)
+wb = openpyxl.Workbook(); wb.remove(wb.active)
+write_tab(wb, 'dco_supply', dco_supply)
+write_tab(wb, 'dco_demand', dco_demand)
+write_meta(wb, build_meta_rows(dco_supply, dco_demand))
+f = OUTDIR / "us_dco_supply_demand.xlsx"; wb.save(f); written.append(f)
+
+for f in written:
+    print(f"wrote {f}")
 
 # ---------------------------------------------------------------- verify
-def verify(path):
-    wb = openpyxl.load_workbook(path)
-    print(f"\n===== {path.name} =====")
-    print("sheets:", wb.sheetnames)
-    for name in wb.sheetnames:
-        if name == '_meta':
-            continue
-        ws = wb[name]
-        header = [c.value for c in ws[1]]
-        assert header == COLS, f"HEADER MISMATCH on {name}: {header}"
-        data = list(ws.iter_rows(min_row=2, values_only=True))
-        series = sorted({row[2] for row in data})
-        print(f"  [{name}] header OK | {len(data)} data rows | series: {series}")
-    return wb
+FILES = [
+    ("us_tallow_supply_demand.xlsx",        'tallow_supply',        'tallow_demand',        'tallow_production', 4.1),
+    ("us_uco_supply_demand.xlsx",           'uco_supply',           'uco_demand',           'uco_collection',    8.6),
+    ("us_poultry_fat_supply_demand.xlsx",   'poultry_fat_supply',   'poultry_fat_demand',   'production',        0.2),
+    ("us_white_grease_supply_demand.xlsx",  'white_grease_supply',  'white_grease_demand',  'production',        0.7),
+    ("us_yellow_grease_supply_demand.xlsx", 'yellow_grease_supply', 'yellow_grease_demand', 'production',        0.0),
+    ("us_dco_supply_demand.xlsx",           'dco_supply',           'dco_demand',           'dco_production',    4.3),
+]
 
 
-wb1v = verify(f1)
-wb2v = verify(f2)
-
-# Spot-check: tallow_production IBFT M06 MY2024
-print("\n-- spot: tallow_production IBFT M06 MY2024 --")
-for row in wb1v['tallow_supply'].iter_rows(min_row=2, values_only=True):
-    d = dict(zip(COLS, row))
-    if d['series'] == 'tallow_production' and d['class'] == 'IBFT' and d['period'] == 'M06' and d['marketing_year'] == 2024:
-        print("  ", d['vintage'], "rank", d['vintage_rank'], "value", d['value'])
-
-def cy_sum(wb, tab, series, cls=None, year=2024):
+def cy_sum(ws, series, year=2024):
     tot = 0.0
-    for row in wb[tab].iter_rows(min_row=2, values_only=True):
+    for row in ws.iter_rows(min_row=2, values_only=True):
         d = dict(zip(COLS, row))
-        if d['series'] == series and d['marketing_year'] == year and (cls is None or d['class'] == cls):
+        if d['series'] == series and d['marketing_year'] == year:
             tot += float(d['value'] or 0)
     return tot
 
-print("\n-- CY2024 control totals --")
-print(f"  tallow tallow_biofuel_use (ALL): {cy_sum(wb1v,'tallow_supply','tallow_biofuel_use','ALL')/1e9:.3f} B lb  (expect ~4.6-4.7)")
-print(f"  tallow biofuel_use_total (demand): {cy_sum(wb1v,'tallow_demand','biofuel_use_total')/1e9:.3f} B lb  (expect ~4.4-4.7)")
-print(f"  uco    uco_biofuel_use: {cy_sum(wb2v,'uco_supply','uco_biofuel_use')/1e9:.3f} B lb  (expect ~8.7)")
-print(f"  uco    biofuel_use_total (demand): {cy_sum(wb2v,'uco_demand','biofuel_use_total')/1e9:.3f} B lb  (expect ~8+)")
 
-# yg_biofuel_use all zeros?
-yg_vals = [dict(zip(COLS, row))['value'] for row in wb2v['uco_supply'].iter_rows(min_row=2, values_only=True)
-           if dict(zip(COLS, row))['series'] == 'yg_biofuel_use']
-print(f"\n  yg_biofuel_use rows: {len(yg_vals)}, all zero: {all((v or 0) == 0 for v in yg_vals)}")
-
-# distinct fuel-type demand series
-for label, wb, tab in [('tallow', wb1v, 'tallow_demand'), ('uco', wb2v, 'uco_demand')]:
-    s = sorted({dict(zip(COLS, row))['series'] for row in wb[tab].iter_rows(min_row=2, values_only=True)})
-    print(f"  {label} demand series: {s}")
+for fname, sup_tab, dem_tab, main_series, exp_dem in FILES:
+    path = OUTDIR / fname
+    wb = openpyxl.load_workbook(path)
+    print(f"\n===== {fname} =====")
+    print("  sheets:", wb.sheetnames)
+    for name in wb.sheetnames:
+        ws = wb[name]
+        nrows = ws.max_row - 1
+        if name == '_meta':
+            print(f"  [{name}] {max(nrows, 0)} rows")
+            continue
+        header = [c.value for c in ws[1]]
+        ok = header == COLS
+        data = list(ws.iter_rows(min_row=2, values_only=True))
+        series = sorted({row[2] for row in data if row[2] is not None})
+        print(f"  [{name}] 13-col header {'OK' if ok else 'MISMATCH!'} | {len(data)} data rows | series: {series}")
+        assert ok, f"HEADER MISMATCH on {name}: {header}"
+    sup_prod = cy_sum(wb[sup_tab], main_series)
+    dem_tot = cy_sum(wb[dem_tab], 'biofuel_use_total')
+    print(f"  CY2024 supply '{main_series}': {sup_prod/1e9:.3f} B lb")
+    print(f"  CY2024 demand 'biofuel_use_total': {dem_tot/1e9:.3f} B lb  (expect ~{exp_dem} B)")
+    if wb[dem_tab].max_row <= 1:
+        print(f"  NOTE: {dem_tab} is EMPTY (expected -- see _meta).")
