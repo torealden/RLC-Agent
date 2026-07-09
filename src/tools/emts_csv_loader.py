@@ -27,12 +27,15 @@ load_dotenv()
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
+# Read from env (RLC_PG_HOST = RDS) per project convention — never hardcode localhost,
+# or a reload silently targets a local DB instead of RDS. sslmode=require for RDS.
 DB_CONFIG = {
-    'host': 'localhost',
-    'port': 5432,
-    'database': 'rlc_commodities',
-    'user': 'postgres',
+    'host': os.getenv("RLC_PG_HOST", "localhost"),
+    'port': int(os.getenv("RLC_PG_PORT", "5432")),
+    'database': os.getenv("RLC_PG_DATABASE", "rlc_commodities"),
+    'user': os.getenv("RLC_PG_USER", "postgres"),
     'password': os.getenv("RLC_PG_PASSWORD"),
+    'sslmode': os.getenv("RLC_PG_SSLMODE", "require"),
 }
 
 LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'emts_loader.log')
