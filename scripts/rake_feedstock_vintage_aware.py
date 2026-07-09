@@ -37,7 +37,7 @@ ROOT = Path(r"C:/dev/RLC-Agent"); sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
 
-RUN_DAY = '2026-07-07'  # allocation vintage to re-rake (matches v1)
+RUN_DAY = '2026-07-09'  # output vintage tag for this rake (fixed; incremental-run friendly)
 
 # allocator feedstock_code -> EIA feedstock_name (EIA lumps UCO into Yellow Grease, tallow combined)
 A2E = {'SBO':'Soybean Oil','CO':'Canola Oil','CAN':'Canola Oil','DCO':'Corn Oil',
@@ -69,13 +69,16 @@ with get_connection() as c:
     cur.execute("ALTER TABLE gold.bbd_feedstock_raked ADD COLUMN IF NOT EXISTS control_basis text")
     cur.execute("DELETE FROM gold.bbd_feedstock_raked WHERE run_day=%s", (RUN_DAY,))
 
-    # 1. latest run per period, per-facility allocation
+    # 1. latest run per period, per-facility allocation.
+    #    Take the newest run per period across ALL run dates (not just today's), so re-running a
+    #    single month later is picked up without re-running every month. This is the correct
+    #    architecture for month-at-a-time incremental allocator runs.
     cur.execute("""
         WITH latest AS (SELECT DISTINCT ON (period) period, run_id FROM gold.feedstock_allocation
-                        WHERE created_at::date=%s ORDER BY period, created_at DESC)
+                        ORDER BY period, created_at DESC)
         SELECT a.facility_id, a.period, a.feedstock_code, a.fuel_type, a.allocated_mil_lbs
         FROM gold.feedstock_allocation a JOIN latest l ON a.period=l.period AND a.run_id=l.run_id
-    """, (RUN_DAY,))
+    """)
     rows = cur.fetchall()
 
     # 2. allocator totals per (period, eia_name)
