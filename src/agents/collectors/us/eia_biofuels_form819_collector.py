@@ -53,6 +53,11 @@ class EIABiofuelsForm819Config(CollectorConfig):
     table1_url: str = TABLE1_URL
     table2_url: str = TABLE2_URL
     download_dir: str = field(default_factory=lambda: str(DATA_DIR))
+    # Table 2 (feedstock-by-type) is retired: EIA froze the animal-fat rows in
+    # table2.xlsx at Dec 2020. Feedstock now comes from EIAFeedstockAPICollector
+    # (v2 API, petroleum/pnp/feedbiofuel). This collector keeps table1 (capacity)
+    # only. Flip to True to re-enable the legacy xlsx feedstock ingest.
+    ingest_feedstock: bool = False
 
 
 class EIABiofuelsForm819Collector(BaseCollector):
@@ -114,20 +119,26 @@ class EIABiofuelsForm819Collector(BaseCollector):
             self.logger.error(f"Table 1 failed: {e}")
             warnings.append(f"Table 1: {e}")
 
-        # --- Table 2: Feedstocks ---
-        try:
-            download_file(self.config.table2_url, table2_path)
-            feed_records = parse_table2(table2_path)
-            self.logger.info(f"Table 2 parsed: {len(feed_records)} feedstock records")
-            if feed_records:
-                ins, upd, err = save_feedstock_records(feed_records, os.path.basename(table2_path))
-                self.logger.info(f"Table 2 saved: {ins} inserted, {upd} updated, {err} errors")
-                feed_total = ins + upd
-                if err > 0:
-                    warnings.append(f"Table 2: {err} save errors")
-        except Exception as e:
-            self.logger.error(f"Table 2 failed: {e}")
-            warnings.append(f"Table 2: {e}")
+        # --- Table 2: Feedstocks (RETIRED — now sourced from EIAFeedstockAPICollector) ---
+        if self.config.ingest_feedstock:
+            try:
+                download_file(self.config.table2_url, table2_path)
+                feed_records = parse_table2(table2_path)
+                self.logger.info(f"Table 2 parsed: {len(feed_records)} feedstock records")
+                if feed_records:
+                    ins, upd, err = save_feedstock_records(feed_records, os.path.basename(table2_path))
+                    self.logger.info(f"Table 2 saved: {ins} inserted, {upd} updated, {err} errors")
+                    feed_total = ins + upd
+                    if err > 0:
+                        warnings.append(f"Table 2: {err} save errors")
+            except Exception as e:
+                self.logger.error(f"Table 2 failed: {e}")
+                warnings.append(f"Table 2: {e}")
+        else:
+            self.logger.info(
+                "Table 2 feedstock ingest disabled — feedstock now via "
+                "EIAFeedstockAPICollector (petroleum/pnp/feedbiofuel)"
+            )
 
         total = cap_total + feed_total
         if total == 0:

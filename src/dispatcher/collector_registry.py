@@ -267,11 +267,21 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
     },
 
     # === EIA Form 819 (xlsx) ===
-    # Feedstock-by-type (table2.xlsx) and operable capacity (table1.xlsx).
-    # NOT available via EIA v2 API — xlsx is the only public source.
+    # Operable capacity (table1.xlsx). The table2.xlsx feedstock path is retired
+    # (stale animal fats frozen at Dec 2020) — feedstock now comes from the v2
+    # API via eia_feedstock_api below.
     'eia_biofuels_form819': {
         'module': 'src.agents.collectors.us.eia_biofuels_form819_collector',
         'class': 'EIABiofuelsForm819Collector',
+    },
+
+    # === EIA Biofuel Feedstock Inputs (v2 API) ===
+    # petroleum/pnp/feedbiofuel — "Inputs to Biodiesel/Renewable Diesel/Other
+    # Biofuels". Writes bronze.eia_feedstock_monthly through the latest month,
+    # split by BD vs RD process. Replaces the stale table2.xlsx feedstock source.
+    'eia_feedstock_api': {
+        'module': 'src.agents.collectors.us.eia_feedstock_api_collector',
+        'class': 'EIAFeedstockAPICollector',
     },
 
     # === EPA ECHO Facility Intelligence ===

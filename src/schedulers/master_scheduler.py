@@ -506,6 +506,28 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
                      'soybean_oil', 'canola_oil', 'tallow', 'uco', 'distillers_corn_oil'],
     ),
 
+    # ── EIA Biofuel Feedstock Inputs (v2 API — petroleum/pnp/feedbiofuel) ──
+    # "Inputs to Biodiesel/Renewable Diesel/Other Biofuels". Writes
+    # bronze.eia_feedstock_monthly (BD/RD split for veg oils, combined total for
+    # animal fats + everything else). Replaces the stale table2.xlsx feedstock
+    # source (which froze animal fats at Dec 2020).
+    'eia_feedstock_api': CollectorSchedule(
+        collector_name='eia_feedstock_api',
+        collector_class='EIAFeedstockAPICollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.MONTHLY,
+            day_of_month=28,
+            release_time=time(15, 30),
+            description="EIA v2 API biofuel feedstock inputs by type "
+                        "(soy/corn/canola oil BD+RD split; animal fats, greases, "
+                        "ag, waste as combined total)"
+        ),
+        priority=1,
+        commodities=['biodiesel', 'renewable_diesel', 'soybean_oil', 'corn_oil',
+                     'canola_oil', 'tallow', 'yellow_grease', 'white_grease',
+                     'poultry_fat', 'uco', 'distillers_corn_oil'],
+    ),
+
     # ── EIA Monthly Biofuels (Form 819 + PSM — released ~end-of-month) ──
     'eia_biofuels_monthly': CollectorSchedule(
         collector_name='eia_biofuels_monthly',
