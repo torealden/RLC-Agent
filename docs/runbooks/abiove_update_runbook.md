@@ -42,7 +42,7 @@ silver.monthly_realized     (country='BR', source='ABIOVE', unit='1000 MT')
         ▼
 scripts/write_abiove_flat_file.py
         ▼
-models/Oilseeds/brazil_soy_complex.xlsx   ← Desktop links the balance sheet here
+models/Oilseeds/Brazil/brazil_soy_complex_monthly.xlsx   ← Desktop links the balance sheet here
 ```
 
 ## Steps

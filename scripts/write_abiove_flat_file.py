@@ -1,6 +1,6 @@
 """Write the Abiove Brazil soy-complex flat file from gold.abiove_soy_complex_monthly.
 
-Output: models/Oilseeds/brazil_soy_complex.xlsx
+Output: models/Oilseeds/Brazil/brazil_soy_complex_monthly.xlsx
   - soy_complex : 13-column LONG (flat_file_contract.md), sorted ascending, thousand MT
   - _meta       : one row per series (coverage, source, unit, vintage set, notes)
 
@@ -17,7 +17,10 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill
 from src.services.database.db_config import get_connection
 
-OUT = ROOT / "models/Oilseeds/brazil_soy_complex.xlsx"
+# Flat-file DATA FEED (not the balance sheet). Desktop links its balance-sheet
+# workbook's monthly blocks to this via SUMIFS/MAXIFS on the key columns.
+# Brazil balance-sheet files live under models/Oilseeds/Brazil/ (per Tore, 2026-07-10).
+OUT = ROOT / "models/Oilseeds/Brazil/brazil_soy_complex_monthly.xlsx"
 COLS = ['commodity', 'class', 'series', 'marketing_year', 'period_type', 'period',
         'vintage', 'vintage_rank', 'value', 'unit', 'source', 'release_date', 'revision']
 HDR_FILL = PatternFill("solid", fgColor="3C7D22")   # internal-model green
