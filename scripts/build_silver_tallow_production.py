@@ -33,5 +33,5 @@ with get_connection() as c:
     for r in cur.fetchall(): print(f"  {r['vintage']:18} {r['n']:5} {r['mn']}-{r['mx']}")
     # MAXIFS-picked annual total (measured wins 2000-2011, slaughter elsewhere)
     cur.execute("""WITH pick AS (SELECT DISTINCT ON (period,class) period,class,value_lbs FROM silver.tallow_production ORDER BY period,class,vintage_rank DESC)
-        SELECT year, round(sum(value_lbs)/1e9,2) bn FROM (SELECT extract(year from period) year, value_lbs FROM pick) x GROUP BY 1 HAVING year IN (2008,2018,2024) ORDER BY 1""")
-    print("MAXIFS-picked tallow production (B lb):", [(int(r['year']),float(r['bn'])) for r in cur.fetchall()])
+        SELECT y, round(sum(value_lbs)/1e9,2) bn FROM (SELECT extract(year from period)::int y, value_lbs FROM pick) x WHERE y IN (2008,2018,2024) GROUP BY 1 ORDER BY 1""")
+    print("MAXIFS-picked tallow production (B lb):", [(int(r['y']),float(r['bn'])) for r in cur.fetchall()])
