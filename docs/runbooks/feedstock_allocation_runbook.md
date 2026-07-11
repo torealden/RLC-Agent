@@ -18,6 +18,8 @@ the EIA reconciliation caught it. See **Lessons** below.
 RAW SOURCES (collectors / manual)                  must be current for the target month
   ├─ NASS Fats & Oils      → silver.monthly_realized (source='NASS_FATS_OILS')
   │                          production + REMOVAL FOR PROCESSING + stocks
+  ├─ NASS Livestock Slaughter → bronze.nass_livestock_slaughter  (gates tallow; see L9)
+  │                          collect_nass_livestock_slaughter.py — releases ~end of next month
   ├─ EIA feedbiofuel (v2)  → bronze.eia_feedstock_monthly (plant_type='total')
   ├─ Census trade HS1502   → bronze.census_trade   ←— tallow + UCO imports/exports
   │                          (HIDDEN DEPENDENCY — gates tallow & UCO; see L3)
@@ -27,6 +29,9 @@ RAW SOURCES (collectors / manual)                  must be current for the targe
         │
         ▼
 DERIVED REBUILDS (scripts/, STRICT ORDER)
+  0a. collect_nass_livestock_slaughter.py    NASS API → bronze.nass_livestock_slaughter (step 0, L9)
+  0b. build_silver_animal_slaughter.py       → silver.animal_slaughter
+  0c. build_silver_tallow_production.py       → silver.tallow_production (SLAUGHTER_DERIVED)
   1. build_silver_animal_fat_production.py   NASS F&O → silver.animal_fat_production
   2. build_silver_tallow_balance.py          (TRUNCATES) factual tallow series incl. trade
   3. build_tallow_biofuel_use.py             adds series 'tallow_biofuel_use' (guardrail)
@@ -69,6 +74,7 @@ with get_connection() as conn:
     cur=conn.cursor()
     q=lambda s,a=(): (cur.execute(s,a), cur.fetchone())[1]
     print('NASS F&O   ', q("SELECT max(calendar_year*100+month) m FROM silver.monthly_realized WHERE source='NASS_FATS_OILS'"))
+    print('Slaughter  ', q("SELECT max(year*100+month) m FROM bronze.nass_livestock_slaughter"))
     print('EIA total  ', q("SELECT max(year*100+month) m FROM bronze.eia_feedstock_monthly WHERE plant_type='total'"))
     print('Census 1502', q("SELECT max(year*100+month) m FROM bronze.census_trade WHERE hs_code LIKE '1502%%'"))
     print('Fuel prod  ', q("SELECT to_char(max(period),'YYYY-MM') m FROM silver.fuel_production_forecast"))
@@ -90,6 +96,13 @@ or load from `models/Biofuels/rfs_data.xlsm` (`fuel_prod_by_type`) via
 ## 2. Run the derived rebuilds (strict order)
 
 ```bash
+# 0. Slaughter driver (step 0, L9) — refresh + rebuild BEFORE the tallow chain.
+#    Without this, SLAUGHTER_DERIVED tallow stalls at its frontier and tallow_biofuel_use
+#    (the allocator's tallow guardrail) halts there, zero-allocating tallow past that month.
+python scripts/collect_nass_livestock_slaughter.py        # NASS API → bronze (current+prior yr)
+python scripts/build_silver_animal_slaughter.py           # → silver.animal_slaughter
+python scripts/build_silver_tallow_production.py          # → silver.tallow_production SLAUGHTER
+
 # 1. NASS Fats & Oils → animal fat production (rank 90)
 python scripts/build_silver_animal_fat_production.py
 
@@ -132,36 +145,25 @@ python scripts/write_fats_supply_flat_files.py
 
 ## 4. Validation gate (MANDATORY — do not skip, bands are not enough)
 
-Reconcile the raked monthly total against the **EIA BBD control**. The EIA feedbiofuel dataset
-includes **Corn and Grain Sorghum**, which are *ethanol* feedstocks — **exclude them**, or the
-control total is ~10× too high and the check is meaningless.
+Run the gate script (exit 0 = pass, exit 1 = publish blocker):
 
 ```bash
-python - <<'PY'
-from dotenv import load_dotenv; load_dotenv('.env')
-from src.services.database.db_config import get_connection
-BBD=['Soybean Oil','Tallow','Corn Oil','Yellow Grease','Canola Oil','Other Vegetable Oil','White Grease']
-with get_connection() as conn:
-    cur=conn.cursor()
-    cur.execute("""SELECT month, round(sum(quantity_mil_lbs)/1e3,2) bn FROM bronze.eia_feedstock_monthly
-                   WHERE plant_type='total' AND is_withheld=FALSE AND quantity_mil_lbs IS NOT NULL
-                     AND year=2026 AND feedstock_name = ANY(%s) GROUP BY month ORDER BY month""",(BBD,))
-    eia={r['month']:float(r['bn']) for r in cur.fetchall()}
-    cur.execute("""SELECT extract(month from period)::int m, round(sum(raked_mil_lbs)/1e3,2) bn
-                   FROM gold.bbd_feedstock_raked WHERE run_day=CURRENT_DATE AND period>='2026-01-01'
-                   GROUP BY 1 ORDER BY 1""")
-    for r in cur.fetchall():
-        m=r['m']; rk=float(r['bn']); e=eia.get(m); pct=(rk/e*100) if e else None
-        print(f"  2026-{m:02d} raked={rk:.2f} EIA_BBD={e} {'%.0f%%'%pct if pct else 'n/a'}"
-              + ('' if pct and 95<=pct<=105 else '  <-- OUT'))
-PY
+python scripts/validate_feedstock_gate.py --run-day <today> --year 2026
 ```
 
-**Pass criteria:**
-- Raked total within **±5%** of EIA BBD control for months where EIA is available.
-- **Per-feedstock presence check:** SBO, DCO, CO, CWG, EBFT, IBFT, UCO all present in
-  `gold.bbd_feedstock_raked` for the target month. If **tallow (EBFT/IBFT) or UCO is missing**,
-  a derived step was skipped (3 or 5) or census trade is stale (L3). Do not publish.
+**Corrected spec (see L10).** The gate does NOT compare the raked *total* to the full EIA BBD
+control — that would include Tallow and Yellow Grease, which the rake deliberately leaves
+`EXEMPT_RLC` (RLC's supply build is authoritative there). The gate instead:
+1. **Rake-controlled** feedstocks (`control_basis` EIA_TOTAL / EIA_BDRD / USDA_SEASONAL) reconcile
+   to their EIA control within **±5%** — the meaningful check.
+2. **Presence:** SBO, DCO, CO, CWG, EBFT, IBFT, UCO all present. If tallow or UCO is missing, a
+   derived step was skipped (3 or 5), census trade is stale (L3), **the slaughter collector is
+   stale (L9)**, or the UCO canonical source lags without the bridge (L8). Do not publish.
+3. **RLC_CANONICAL vs EIA** (tallow, UCO/YG) reported as *information*, not pass/fail. A large
+   tallow RLC/EIA divergence (currently ~50–73%) is an analyst flag, not a pipeline failure.
+
+The EIA feedbiofuel dataset includes **Corn and Grain Sorghum** (ethanol feedstocks); the BBD list
+in the script already excludes them. Publish (`write_fats_supply_flat_files.py`) only after exit 0.
 
 ---
 
@@ -189,6 +191,23 @@ PY
   `refresh_feedstock_chain.py --period YYYY-MM` that runs steps 1–8 in declared order (with the
   EIA gate as a hard stop) makes skip/order/staleness errors structurally impossible. Until it
   exists, this runbook is the manual substitute — follow it exactly.
+- **L8 — UCO canonical source stops at Dec 2024; `wire_uco` is net-destructive past it without a
+  bridge.** `wire_uco` DELETEs all UCO/YG rows then rewrites UCO only for periods in
+  `silver.uco_yg_balance` (canonical frontier = Dec 2024). For 2025+ it stripped EIA's Yellow
+  Grease and left NO UCO — UCO silently absent from the allocator for all of 2025–26. Fixed
+  2026-07-11: `wire_uco` now backfills UCO from EIA Yellow Grease (`source='EIA_YG_BRIDGE'`) for
+  months after the canonical frontier. Reversible; auto-retires as the canonical UCO build extends.
+- **L9 — the slaughter driver is a collector now (was an orphan frozen at Feb 2026).**
+  `bronze.nass_livestock_slaughter` feeds SLAUGHTER_DERIVED tallow production — the oleo-trend
+  estimator base the `tallow_biofuel_use` guardrail halts on. It had NO collector and was frozen at
+  Feb, silently capping tallow allocation. Built `scripts/collect_nass_livestock_slaughter.py`
+  (2026-07-11). Run it as **step 0** before the tallow chain; then rebuild
+  `build_silver_animal_slaughter.py` → `build_silver_tallow_production.py` before steps 1–3.
+- **L10 — the old ±5% gate was mis-specified.** It compared the raked TOTAL to the full EIA BBD
+  control including tallow, but tallow is `EXEMPT_RLC` (never scaled to EIA), so the gate failed by
+  exactly the intended RLC/EIA divergence every month even when every rake-controlled feedstock was
+  a perfect 100%. Replaced by `scripts/validate_feedstock_gate.py` (checks controlled feedstocks
+  vs EIA, presence, and reports canonical divergence separately). See §4.
 
 ---
 

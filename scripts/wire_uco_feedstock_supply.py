@@ -67,8 +67,31 @@ with get_connection() as c:
                 VALUES (%s,'UCO',%s,%s,%s,%s,%s,%s)""",
                 (p,padd, mil*w, pr, (t12m_coll(p)/1e6)*w, (ni/1e6)*w, mil*w))
             rows+=1
+    # --- 3b. EIA Yellow Grease BRIDGE for periods past the canonical frontier ---
+    # silver.uco_yg_balance (canonical collection) stops at the resolution frontier (Dec 2024).
+    # Without a bridge, the DELETE above strips EIA's Yellow Grease and leaves 2025+ with NO UCO
+    # supply, so the allocator zero-allocates UCO for every recent month. Per the reconciliation
+    # hierarchy (EIA = canon), backfill UCO from EIA Yellow Grease (plant_type='total', not withheld)
+    # for months AFTER the canonical frontier. Tagged source='EIA_YG_BRIDGE' — traceable and
+    # reversible; retires automatically as the canonical UCO resolution extends past 2024.
+    canon_frontier = max(cperiods)
+    cur.execute("""SELECT make_date(year,month,1) p, quantity_mil_lbs AS mil
+                   FROM bronze.eia_feedstock_monthly
+                   WHERE plant_type='total' AND feedstock_name='Yellow Grease'
+                     AND NOT is_withheld AND quantity_mil_lbs IS NOT NULL
+                     AND make_date(year,month,1) > %s ORDER BY 1""", (canon_frontier,))
+    bridge = 0
+    for r in cur.fetchall():
+        p = r['p']; mil = float(r['mil']); pr = uco_price(p)
+        for padd, w in PADD_W.items():
+            cur.execute("""INSERT INTO silver.feedstock_supply
+                (period,feedstock_code,region,net_available_biofuel,avg_price_per_lb,domestic_production,imports,total_available,source)
+                VALUES (%s,'UCO',%s,%s,%s,%s,%s,%s,'EIA_YG_BRIDGE')""",
+                (p, padd, mil*w, pr, mil*w, 0.0, mil*w))
+            bridge += 1
     c.commit()
     print(f"\nwrote {rows} UCO rows to feedstock_supply ({PROV}); YG rows deleted (YG_BIOFUEL=0)")
+    print(f"  EIA-YG bridge: {bridge} UCO rows for periods > {canon_frontier} (source EIA_YG_BRIDGE)")
 
     # --- acceptance check 1: CY2024 UCO = 8.73B, YG = 0 ---
     cur.execute("""SELECT feedstock_code, round(sum(net_available_biofuel)/1e3,2) bn
