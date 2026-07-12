@@ -159,8 +159,10 @@ control — that would include Tallow and Yellow Grease, which the rake delibera
 2. **Presence:** SBO, DCO, CO, CWG, EBFT, IBFT, UCO all present. If tallow or UCO is missing, a
    derived step was skipped (3 or 5), census trade is stale (L3), **the slaughter collector is
    stale (L9)**, or the UCO canonical source lags without the bridge (L8). Do not publish.
-3. **RLC_CANONICAL vs EIA** (tallow, UCO/YG) reported as *information*, not pass/fail. A large
-   tallow RLC/EIA divergence (currently ~50–73%) is an analyst flag, not a pipeline failure.
+3. **RLC_CANONICAL vs EIA** (tallow, UCO/YG) reported as *information*, not pass/fail. Tallow
+   RLC/EIA at ~50–73% is the **ruled swap-hypothesis residual** (`tallow_ruling_doc §2/§6`): EIA
+   over-counts tallow / under-counts UCO (waste-oil booked as tallow), and RLC tallow below EIA is
+   the intended correction. Report the residual — do NOT reopen it or "fix" it by raking tallow.
 
 The EIA feedbiofuel dataset includes **Corn and Grain Sorghum** (ethanol feedstocks); the BBD list
 in the script already excludes them. Publish (`write_fats_supply_flat_files.py`) only after exit 0.

@@ -638,6 +638,20 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['soybeans', 'canola', 'corn', 'cottonseed', 'sunflower', 'peanuts', 'sorghum'],
     ),
 
+    # ── NASS Livestock & Poultry Slaughter (monthly; tallow chain driver, runbook L9) ──
+    'nass_livestock_slaughter': CollectorSchedule(
+        collector_name='nass_livestock_slaughter',
+        collector_class='NASSLivestockSlaughterCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(15, 5),   # NASS releases 3:00 PM ET
+            day_range='20-31',          # Livestock Slaughter ~3rd-4th wk; Poultry ~end of month
+            description="NASS Livestock & Poultry Slaughter monthly (tallow driver; daily Mon-Fri days 20-31, idempotent upsert)"
+        ),
+        priority=2,
+        commodities=['cattle', 'hogs', 'chickens', 'turkeys'],
+    ),
+
     # ── NASS Production (monthly during harvest, annual Jan) ──
     'usda_nass_production': CollectorSchedule(
         collector_name='usda_nass_production',

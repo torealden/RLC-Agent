@@ -96,8 +96,8 @@ def _parse_value(raw):
         return None
 
 
-def collect(years=None, **kwargs) -> int:
-    """Dispatcher-compatible entry point. Returns rows upserted."""
+def collect_slaughter(years=None, **kwargs) -> int:
+    """Fetch + upsert NASS slaughter. Returns rows upserted."""
     api_key = os.environ.get("NASS_API_KEY")
     if not api_key:
         raise RuntimeError("NASS_API_KEY not set (register at quickstats.nass.usda.gov/api)")
@@ -153,9 +153,30 @@ def _current_year() -> int:
     return datetime.date.today().year
 
 
+class _Result:
+    """Minimal CollectorResult shape the dispatcher's runner reads (records_fetched)."""
+    def __init__(self, n: int):
+        self.records_fetched = n
+        self.success = True
+
+
+class NASSLivestockSlaughterCollector:
+    """Dispatcher-registered collector — monthly NASS Livestock & Poultry Slaughter.
+
+    Registered as 'nass_livestock_slaughter' in collector_registry + master_scheduler.
+    Idempotent (upsert on year/month/attribute), so the daily-window retry pattern is safe.
+    """
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def collect(self, **kwargs) -> _Result:
+        years = kwargs.get("years") or self.kwargs.get("years")
+        return _Result(collect_slaughter(years=years))
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--years", type=int, nargs="+", help="years to pull (default: current + prior)")
     args = ap.parse_args()
-    n = collect(years=args.years)
+    n = collect_slaughter(years=args.years)
     print(f"Done: {n} rows upserted to bronze.nass_livestock_slaughter")

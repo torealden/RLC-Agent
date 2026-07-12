@@ -105,6 +105,15 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'class': 'NASSGrainCrushPDFCollector',
     },
 
+    # === Monthly: NASS Livestock & Poultry Slaughter (tallow chain driver, runbook L9) ===
+    # Script-hosted (same file serves the runbook's manual step-0 and this scheduled run).
+    # Feeds bronze.nass_livestock_slaughter -> SLAUGHTER_DERIVED tallow -> allocator tallow
+    # guardrail. Was an orphan one-off frozen at Feb 2026 before this registration.
+    'nass_livestock_slaughter': {
+        'module': 'scripts.collect_nass_livestock_slaughter',
+        'class': 'NASSLivestockSlaughterCollector',
+    },
+
     # === ERS Sugar & Sweeteners (corn sweetener supply/use -> corn_products tab) ===
     'ers_corn_sweetener': {
         'module': 'src.agents.collectors.us.ers_corn_sweetener_collector',

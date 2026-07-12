@@ -84,7 +84,10 @@ def validate(run_day: str, year: int) -> bool:
             ok = ok and passed
             print(f"   {year}-{m:02d}  {'PASS' if passed else 'MISSING: ' + ','.join(sorted(missing))}")
 
-        print("\n3. RLC_CANONICAL vs EIA (informational — divergence is an analyst flag, not a fail):")
+        # Tallow RLC/EIA < 100% is the RULED swap-hypothesis residual, NOT an open question:
+        # EIA over-counts tallow (waste-oil/UCO booked as tallow) — tallow_ruling_doc §2/§6.
+        # RLC tallow below EIA is the intended correction; report the residual, do not fill it.
+        print("\n3. RLC_CANONICAL vs EIA (informational — ruled residual per tallow_ruling §6, not a fail):")
         for m in months:
             for fs in ('Tallow', 'Yellow Grease'):
                 rl = exempt.get((m, fs))
