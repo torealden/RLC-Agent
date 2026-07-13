@@ -343,3 +343,13 @@ with get_connection() as c:
             print(f"  MY{my}/{(my+1)%100:02d}: {pct:.1f}%  expected {lo}-{hi}%  [{ok}]")
         else:
             print(f"  MY{my}/{(my+1)%100:02d}: {pct:.1f}%  (EIA-driven, no fixed expectation)")
+
+# The flat files Desktop links are fully derived from the rake we just wrote. Regenerate them
+# automatically so a rake can never leave stale flat files behind. Non-fatal: the rake has already
+# committed above; if a writer fails, warn and let the operator re-run refresh_feedstock_flat_files.py.
+import subprocess as _sp
+print("\n=== auto-refreshing flat files (refresh_feedstock_flat_files.py) ===")
+_r = _sp.run([sys.executable, str(Path(__file__).with_name('refresh_feedstock_flat_files.py'))])
+if _r.returncode != 0:
+    print("*** WARNING: flat-file refresh reported failures — re-run "
+          "scripts/refresh_feedstock_flat_files.py and check output before handing to Desktop ***")

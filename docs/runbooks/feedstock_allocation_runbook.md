@@ -42,7 +42,9 @@ DERIVED REBUILDS (scripts/, STRICT ORDER)
 ALLOCATE + RAKE + PUBLISH
   6. allocator  --period YYYY-MM             → gold.feedstock_allocation (one month at a time)
   7. rake_feedstock_vintage_aware.py         → gold.bbd_feedstock_raked  (scale to EIA control)
-  8. write_fats_supply_flat_files.py         → flat files (max run_day)
+  8. refresh_feedstock_flat_files.py         → ALL flat files (fats+oils+slaughter, max run_day)
+                                               (the rake auto-invokes this on its tail; step is
+                                                explicit here for manual/standalone reruns)
         │
         ▼
 VALIDATION GATE (MANDATORY)
@@ -135,10 +137,13 @@ done
 
 # 7. Vintage-aware rake to EIA control totals
 #    Set RUN_DAY in the script to today; it selects latest run per period.
+#    On its tail this AUTO-INVOKES refresh_feedstock_flat_files.py (non-fatal), so step 8
+#    usually needs no separate run — but run it standalone if the rake warned of a writer failure.
 python scripts/rake_feedstock_vintage_aware.py
 
-# 8. Flat files (reads max(run_day) automatically)
-python scripts/write_fats_supply_flat_files.py
+# 8. All flat files in one shot (fats+greases, SBO+canola oils, slaughter). Reads max(run_day).
+#    Idempotent; safe to re-run. Exit 1 if any writer fails.
+python scripts/refresh_feedstock_flat_files.py
 ```
 
 ---
@@ -214,10 +219,14 @@ in the script already excludes them. Publish (`write_fats_supply_flat_files.py`)
 ---
 
 ## TODO / not yet automated
-- **Orchestrator** (`refresh_feedstock_chain.py`) implementing steps 1–8 + the EIA gate as a
-  dependency DAG, triggerable manually (`--period`) and from a dispatcher ingest event.
+- **Flat-file regeneration — DONE (2026-07-13).** `refresh_feedstock_flat_files.py` runs all three
+  writers (fats/oils/slaughter) as one step, and `rake_feedstock_vintage_aware.py` auto-invokes it
+  on its tail (non-fatal), so a rake can no longer leave stale flat files. Remaining automation gap
+  is the *upstream* chain (steps 1–7), below.
+- **Full-chain orchestrator** (`refresh_feedstock_chain.py`) implementing steps 1–8 + the EIA gate
+  as a dependency DAG, triggerable manually (`--period`) and from a dispatcher ingest event.
   Trigger scope = feedstock-impacting sources only (NASS F&O, EIA feedbiofuel, EMTS fuel,
-  prices, census 1502) — NOT weather/CFTC/etc.
+  prices, census 1502) — NOT weather/CFTC/etc. (steps 1–7 are still run by hand per §2–3.)
 - **Poultry fat (PF):** EIA withholds it for recent months; supply must come from NASS
   production, not EIA. Currently PF falls back to estimate for withheld months.
 - **Census-trade auto-refresh** as part of the chain so tallow/UCO don't lag (L3).
