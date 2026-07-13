@@ -1,12 +1,15 @@
 """Emit contract-compliant (flat_file_contract.md v1.1 LONG) fats/greases/DCO supply+demand flat files.
 
 Six workbooks, each with a supply tab, a demand tab, and a _meta tab:
-  1. models/Oilseeds/us_tallow_supply_demand.xlsx        -> tallow_supply,       tallow_demand,       _meta
-  2. models/Oilseeds/us_uco_supply_demand.xlsx           -> uco_supply,          uco_demand,          _meta
-  3. models/Oilseeds/us_poultry_fat_supply_demand.xlsx   -> poultry_fat_supply,  poultry_fat_demand,  _meta
-  4. models/Oilseeds/us_white_grease_supply_demand.xlsx  -> white_grease_supply, white_grease_demand, _meta
-  5. models/Oilseeds/us_yellow_grease_supply_demand.xlsx -> yellow_grease_supply,yellow_grease_demand,_meta
-  6. models/Oilseeds/us_dco_supply_demand.xlsx           -> dco_supply,          dco_demand,          _meta
+  1. models/Fats and Greases/us_tallow_supply_demand.xlsx        -> tallow_supply,       tallow_demand,       _meta
+  2. models/Fats and Greases/us_uco_supply_demand.xlsx           -> uco_supply,          uco_demand,          _meta
+  3. models/Fats and Greases/us_poultry_fat_supply_demand.xlsx   -> poultry_fat_supply,  poultry_fat_demand,  _meta
+  4. models/Fats and Greases/us_white_grease_supply_demand.xlsx  -> white_grease_supply, white_grease_demand, _meta
+  5. models/Fats and Greases/us_yellow_grease_supply_demand.xlsx -> yellow_grease_supply,yellow_grease_demand,_meta
+  6. models/Fats and Greases/us_dco_supply_demand.xlsx           -> dco_supply,          dco_demand,          _meta
+
+DCO (distillers corn oil) lives here rather than with the vegetable oils: functionally it is a
+low-CI waste-oil biofuel feedstock grouped with the fats/greases, not a food oil like SBO/canola.
 
 Supply tabs are near-passthroughs / assembly from silver.* / gold.* tables (the vintage ladder is
 preserved so Desktop's MAXIFS picks the top-ranked vintage per key). Demand tabs are the raked
@@ -23,7 +26,7 @@ ROOT = Path(r"C:/dev/RLC-Agent"); sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
 
-OUTDIR = ROOT / "models" / "Oilseeds"
+OUTDIR = ROOT / "models" / "Fats and Greases"
 COLS = ['commodity', 'class', 'series', 'marketing_year', 'period_type', 'period',
         'vintage', 'vintage_rank', 'value', 'unit', 'source', 'release_date', 'revision']
 
