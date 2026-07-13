@@ -37,7 +37,7 @@ ROOT = Path(r"C:/dev/RLC-Agent"); sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
 
-RUN_DAY = '2026-07-11'  # output vintage tag for this rake (fixed; incremental-run friendly)
+RUN_DAY = '2026-07-13'  # output vintage tag for this rake (fixed; incremental-run friendly)
 
 # allocator feedstock_code -> EIA feedstock_name (EIA lumps UCO into Yellow Grease, tallow combined)
 A2E = {'SBO':'Soybean Oil','CO':'Canola Oil','CAN':'Canola Oil','DCO':'Corn Oil',

@@ -61,8 +61,10 @@ DEMAND_CODES = {
 }
 
 STALE_NASS = ('Supply from NASS Fats & Oils via gold.nass_low_ci_matrix; recurring collector live '
-              '(2026-07-08) so it refreshes monthly to the latest NASS release. Demand (raked) '
-              'runs through Dec 2025.')
+              '(2026-07-08) so it refreshes monthly to the latest NASS release. Demand (raked) runs '
+              'through the latest allocator vintage. non_biofuel_use: disappearance-based (NASS '
+              'processing_use - biofuel) for PF/CWG/YG, tallow=modeled; UCO/DCO are biofuel-dominant '
+              'so residual non-bio is ~0 in the current period.')
 
 NOTES = {
     # tallow supply
@@ -97,6 +99,9 @@ NOTES = {
     'biofuel_use_saf': 'raked allocator: SAF feedstock use',
     'biofuel_use_coprocessing': 'raked allocator: co-processing feedstock use',
     'biofuel_use_total': 'raked allocator: sum across all fuel types',
+    'non_biofuel_use': 'aggregate non-biofuel use (closes the balance sheet). Disappearance-based '
+                       '(NASS processing_use - biofuel) for PF/CWG/YG; residual (prod+imp-bio-exp) for '
+                       'DCO/UCO; tallow = its first-class modeled non_bio_use. Ruled 2026-07-13.',
 }
 # non_bio_use override note for the UCO workbook (different meaning than tallow)
 UCO_NONBIO_NOTE = 'YG-grade collection to non-bio, YG biofuel=0'
@@ -304,6 +309,54 @@ with get_connection() as conn:
     white_grease_demand = demand_rows('white_grease', DEMAND_CODES['white_grease'])
     yellow_grease_demand = demand_rows('yellow_grease', DEMAND_CODES['yellow_grease'])
     dco_demand = demand_rows('dco', DEMAND_CODES['dco'])
+
+    # ---- AGGREGATE NON-BIOFUEL USE (closes the balance sheet) ----
+    # Ruled 2026-07-13 (Tore): disappearance-based where it exists, residual only as fallback.
+    # tallow keeps its first-class modeled non_bio_use (already in the supply tab) — not recomputed.
+    def _by_period(rows, series):
+        return {(r['marketing_year'], r['period']): float(r['value'] or 0)
+                for r in rows if r['series'] == series}
+
+    def nonbio_disappearance(commodity, supply_rows, demand_rows_):
+        """non_biofuel_use = NASS processing_use (total inedible consumption incl. biofuel) - biofuel_total.
+        Disappearance-based: NASS 'removal for processing' is the measured consumption; the non-bio leg
+        is what's left after the raked biofuel portion. Clamp >=0."""
+        proc = _by_period(supply_rows, 'processing_use')
+        bio = _by_period(demand_rows_, 'biofuel_use_total')
+        out = []
+        for k, pv in proc.items():
+            nb = max(0.0, pv - bio.get(k, 0.0))
+            out.append({'commodity': commodity, 'class': 'ALL', 'series': 'non_biofuel_use',
+                        'marketing_year': k[0], 'period_type': 'cal_month', 'period': k[1],
+                        'vintage': 'DISAPPEARANCE', 'vintage_rank': 90, 'value': nb, 'unit': 'LB',
+                        'source': 'NASS_processing_use - raked_biofuel', 'release_date': '', 'revision': ''})
+        return out
+
+    def nonbio_residual(commodity, supply_rows, demand_rows_, prod_s, imp_s, exp_s):
+        """non_biofuel_use = production + imports - biofuel_total - exports. Residual fallback
+        for feedstocks with no NASS disappearance series (DCO, UCO). Clamp >=0."""
+        prod = _by_period(supply_rows, prod_s); imp = _by_period(supply_rows, imp_s)
+        exp = _by_period(supply_rows, exp_s); bio = _by_period(demand_rows_, 'biofuel_use_total')
+        out = []
+        # only emit where biofuel data exists — past the biofuel frontier the residual has nothing to
+        # subtract and spikes to full production (a data-frontier artifact, not real non-bio demand).
+        for k in sorted(set(prod) & set(bio)):
+            nb = max(0.0, prod.get(k, 0) + imp.get(k, 0) - bio.get(k, 0) - exp.get(k, 0))
+            out.append({'commodity': commodity, 'class': 'ALL', 'series': 'non_biofuel_use',
+                        'marketing_year': k[0], 'period_type': 'cal_month', 'period': k[1],
+                        'vintage': 'RESIDUAL', 'vintage_rank': 50, 'value': nb, 'unit': 'LB',
+                        'source': 'residual: production+imports-biofuel-exports', 'release_date': '', 'revision': ''})
+        return out
+
+    poultry_fat_demand += nonbio_disappearance('poultry_fat', poultry_fat_supply, poultry_fat_demand)
+    white_grease_demand += nonbio_disappearance('white_grease', white_grease_supply, white_grease_demand)
+    yellow_grease_demand += nonbio_disappearance('yellow_grease', yellow_grease_supply, yellow_grease_demand)
+    dco_demand += nonbio_residual('dco', dco_supply, dco_demand, 'dco_production', 'dco_imports', 'dco_exports')
+    uco_demand += nonbio_residual('uco_yg', uco_supply, uco_demand, 'uco_collection', 'uco_imports', 'uco_exports')
+    # tallow: mirror its modeled non_bio_use into the uniform non_biofuel_use series for a consistent shape
+    for r in tallow_supply:
+        if r['series'] == 'non_bio_use':
+            tallow_demand.append({**r, 'series': 'non_biofuel_use', 'commodity': 'tallow'})
 
 print(f"DCO production source unit read from corn_grind_monthly.K: {dco_prod_unit!r} "
       f"(converted to LB via x 2,000,000)")
