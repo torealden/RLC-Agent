@@ -44,9 +44,9 @@ CARB2MASTER = {
 # TIER 2 default eligible slate by technology (master vocab). FT/pyrolysis/ATJ/fermentation
 # are non-lipid (cellulosic/alcohol/gas) -> no lipid feedstock, excluded from BBD-lipid competition.
 TECH_DEFAULT = {
-    'transesterification': ['SBO', 'DCO', 'CO', 'CAN', 'BFT', 'CWG', 'PLT', 'UCO'],       # veg-oil + fats, SBO primary
-    'hefa':                ['SBO', 'DCO', 'CO', 'CAN', 'BFT', 'CWG', 'PLT', 'UCO', 'YG'],  # all lipids
-    'coprocessing':        ['DCO', 'CO', 'BFT', 'CWG', 'PLT', 'UCO', 'YG'],               # low-CI fats/oils
+    'transesterification': ['SBO', 'DCO', 'CO', 'CAN', 'BFT', 'CWG', 'PF', 'UCO'],       # veg-oil + fats, SBO primary
+    'hefa':                ['SBO', 'DCO', 'CO', 'CAN', 'BFT', 'CWG', 'PF', 'UCO', 'YG'],  # all lipids
+    'coprocessing':        ['DCO', 'CO', 'BFT', 'CWG', 'PF', 'UCO', 'YG'],               # low-CI fats/oils
 }
 NON_LIPID_TECH = {'fischer_tropsch', 'pyrolysis', 'fast_pyrolysis', 'atj', 'fermentation'}
 
@@ -147,6 +147,12 @@ def main():
             tier = 'NON_LIPID'; assigned = []
         else:
             tier = 'UNRESOLVED'; assigned = []; uncal = True            # no fuel/tech signal -> needs you
+        # CARB pathway 002 = "Tallow (animal AND poultry fat)" legally covers poultry fat, but
+        # CARB2MASTER collapses it to BFT (the poultry slice is unrecoverable from CARB granularity).
+        # So any BFT-eligible facility is also PF-eligible. Fixes the PLT/PF namespace gap that
+        # left the allocator placing zero poultry fat.
+        if 'BFT' in assigned and 'PF' not in assigned:
+            assigned = sorted(set(assigned) | {'PF'})
         tier_count[tier] += 1
         rows.append(dict(fid=fid, name=fname, company=comp, state=g(f,'state',3), padd=g(f,'padd',4),
                          tech=tech, fuel=g(f,'fuel_type',6), status=g(f,'status',7),
