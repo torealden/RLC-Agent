@@ -156,367 +156,142 @@ Durable, git-versioned snapshot of the agent memory register (143 files). Secret
 
 # RLC-Agent Project Memory
 
+> **Full detail lives in the durable archive** (this index truncated when it grew too large):
+> `docs/memory_archive/RLC_AGENT_MEMORY_ARCHIVE.md` (git-versioned) + `.docx` (portable), regenerate
+> with `python scripts/consolidate_memory_archive.py`. This file is a one-line-per-topic index;
+> read the linked topic file or the archive for detail. Keep entries to ONE line.
+
 ## ⚠️ READ FIRST — Honest evaluation rule
-Tore requires honest evaluation, never flattery. No "great question!", no reflexive
-agreement, no self-deprecation reassurance. Push back when warranted, with rationale
-and alternatives. RLHF biases LLMs toward agreeable responses; this instruction
-counteracts that. Full directive in `CLAUDE.md` and `feedback_honest_pushback.md`.
-**Honor this rule across every interaction.**
+Tore requires honest evaluation, never flattery. No "great question!", no reflexive agreement, no
+self-deprecation reassurance. Push back when warranted, with rationale and alternatives. RLHF biases
+LLMs toward agreeable responses; this counteracts that. Full directive in `CLAUDE.md` +
+[feedback_honest_pushback.md](feedback_honest_pushback.md). **Honor across every interaction.**
 
-## Dispatcher Operations
-- See [dispatcher.md](dispatcher.md) for dispatcher architecture and debugging notes
-- See [dashboard.md](dashboard.md) for ops dashboard details
-- **Watchdog task** `\RLC\RLC Dispatcher Watchdog` — checks every 15 min, restarts dispatcher if dead (registered 2026-03-11)
-- CLI `cmd_start()` now writes PID file to `scripts/deployment/dispatcher.pid`
-- Watchdog uses PowerShell `Get-CimInstance` (not deprecated `wmic`) for process detection
-
-## Key Patterns
-- All collectors inherit from `src.agents.base.base_collector.BaseCollector`
-- Sub-directories re-export via local `base_collector.py` files (us/, market/, south_america/)
-- `.env` at project root has all API keys — must call `load_dotenv()` in entry points
-- DB connection: `src.services.database.db_config.get_connection()` (psycopg2 context manager)
-- **DB host**: All connections use `RLC_PG_HOST` env var (AWS RDS). Fixed 35+ files on 2026-03-19 that were using `DB_HOST=localhost`.
-- Two master_scheduler files exist: `src/schedulers/` (current) and `src/scheduler/` (legacy) — always use `src.schedulers`
-- See [feedback_gitignore_shared_files.md](feedback_gitignore_shared_files.md) — `data/`, `logs/`, `collectors/epa_echo/output/` are gitignored. Use `output/` or `templates/` for shared files.
-
-## User Preferences
-- User wants German-car-level operational reliability
-- Interested in Six Sigma KPIs for collection operations
-- Prefers Streamlit for dashboards (Python-native, no frontend build)
-
-## Streamlit API Notes
-- `st.dataframe()`: use `width="stretch"` NOT `use_container_width=True` (deprecated, removed after 2025-12-31)
-
-## VBA Spreadsheet Updater Pattern
-- Excel workbooks connect to PostgreSQL via ODBC (psqlODBC x64), sslmode=require for RDS
-- **`.bas` import gotcha**: see [feedback_vba_module_name_attribute.md](feedback_vba_module_name_attribute.md). Every `.bas` meant to be imported into a workbook should start with `Attribute VB_Name = "ExpectedName"` on line 1, or qualified calls like `EnergyTradeUpdater.AssignEnergyShortcuts` will fail with error 424 on re-import collisions. Fixed for EnergyTradeUpdater.bas 2026-05-13; other .bas files in src/tools/ should be audited opportunistically.
-- Keyboard shortcuts via `Application.OnKey` in VBA:
-  - Ctrl+I = Census trade (TradeUpdaterSQL.bas)
-  - Ctrl+B = Biofuel S&D (BiofuelDataUpdater.bas)
-  - Ctrl+D = EIA Feedstock (EIAFeedstockUpdater.bas)
-  - Ctrl+E = EMTS/Feedstock (EMTSDataUpdater.bas / FeedstockUpdaterSQL.bas)
-  - Ctrl+R = RIN data (RINUpdaterSQL.bas)
-  - Ctrl+U = **FatsOilsUpdaterSQL.bas** (universal, replaces CrushUpdaterSQL.bas)
-  - Ctrl+Y = **EnergyTradeUpdater.bas** (`us_fuel_trade.xlsm` — biodiesel/RD/SAF/ethanol/methanol trade)
-  - Ctrl+G = FGIS Inspections (TODO — not yet built)
-- Pattern: WorkbookEvents.bas calls AssignKeyboardShortcuts on open, removes on close
-- Quick update (Ctrl+letter) + Custom update (Ctrl+Shift+letter) pair
-- **Header-matching pattern (new)**: FatsOilsUpdaterSQL reads row 3 headers at runtime,
-  matches to `header_pattern` in crush_attribute_reference. Commodity auto-detected from sheet name.
-  No hardcoded column positions — works across all commodity sheets.
-- Gold view: `gold.fats_oils_crush_matrix` (generic, all commodities)
-- Backward compat: `gold.nass_soy_crush_matrix` still exists for soy-specific queries
-- Commodities configured: soybeans(18+3=21), canola(6+3=9), corn(11 incl. alts), cottonseed(5+3=8), sunflower(5), peanut(10 incl. alts), palm(2)
-- **Corn `_alt` filter fix (mig 030, 2026-04-25)**: 3 corn `_alt` rows pointed to non-existent NASS short_descs (`ONSITE & OFFSITE, CRUDE`, `REFINED` w/o `ONCE`). Fix: re-point alt rows to PRIMARY's filter so both header_patterns return data. Now NASS Other Veg Oils corn block (Crude Stocks, Refined Produced, Refined Stocks) updates correctly. Same pattern likely needed for peanut/refined_oil_stocks_alt — but no NASS data exists for that metric at all.
-- **FatsOilsUpdaterSQL upgrades (2026-04-25)**: Ctrl+Shift+U now offers "cursor-block only" on multi-commodity tabs; result message shows the Excel headers actually read so unmatched failures are diagnosable; column letters (V, AA) shown instead of numeric indices. **Workbook needs re-import** of FatsOilsUpdaterSQL.bas via VBE to pick up changes.
-- **Corn oil units fix (mig 031, 2026-04-25)**: Corn 11 reference rows changed from `mil lbs` (factor 0.000001) to `000 lbs` (factor 0.001). Aligns with global rule: flat files store at 1,000x SMALLER unit than balance sheet displays.
-- **Minor oils unit fix (mig 032, 2026-04-25)**: extended same `mil lbs → 000 lbs` migration to palm, palm_kernel, safflower, coconut, and peanut oil-only rows. After mig: palm refined consumption = 174,905 (000 lbs) ≈ 175 mil lbs — matches expected magnitude.
-- **NASS Fats & Oils backfill (2026-04-25)**: confirmed NASS QuickStats API horizon is **2014/2015+ for fats & oils** (2017 for safflower). Tried 2000-2024 backfill via scripts/backfill_nass_fats_oils.py — 120K upserts but no new historical rows because NASS returns only 2015+ data regardless of year__GE param. **Pre-2014 history requires ERS Oil Crops Annual Summary PDF parsing** (PDFs in data/raw/oilseeds_fats_greases/) — flagged as future work, not yet done.
-- **Bushels for oilseeds & grains rule (2026-04-25)**: established convention — oils/fats in mil lbs, oilseed/grain crush volumes in mil bu. Per-commodity bu/ton conversion factors in `silver.bbd_seed_unit_ref`.
-- RDS sync required: views and reference data must be synced to RDS for VBA updaters to work
-- `ThisWorkbook.Workbook_Open` must call `AssignFatsOilsShortcuts` (not old `AssignCrushShortcuts`)
-- Fats/greases NOT yet in NASS collector — need to add tallow, lard, CWG, yellow grease, poultry fat, etc.
-- Coconut, safflower, palm kernel NOT yet in NASS data — may need separate collector config
-
-## Census Trade Collector
-- **v1** (`census_trade_collector.py`) is what's registered in collector_registry — now has `save_to_bronze` + `collect()` (added 2026-03-11)
-- **v2** (`census_trade_collector_v2.py`) exists with more features but is NOT registered — consolidation needed
-- Export quantity field: `QTY_1_MO` (not `QY1_MO` which returns 400 error)
-- Import quantity field: `GEN_QY1_MO`
-- Census FT-900 release dates added to `CENSUS_RELEASE_DATES` dict in master_scheduler.py
-- 14 HS codes now covered (was 5)
-- See [reference_census_import_export_hs_codes.md](reference_census_import_export_hs_codes.md) — imports=HTSUS, exports=Schedule B; codes diverge below HS6. Registering export codes for IMPORTS yields ~0 import data (corn was 40x low). mig 135 fixed corn; mig 136 = all commodities. Watch multi-group HS6.
-- See [project_corn_grind_pipeline.md](project_corn_grind_pipeline.md) — GCCP co-products are PDF-only (not QuickStats). PDF parser → bronze → gold.corn_grind_monthly (mig 137) → CornGrindUpdater.bas (Ctrl+K). Positional+section-bounded extraction + in-doc narrative QC = the permit-PDF testbed. TODO: dispatcher registration.
-- census_trade_collector now uses chunked range queries (not month-by-month) — ~12x faster backfills (commit 3f733ad5). Import audit mig 136 = wheat/barley; Tier 2/3 (oilseeds/fuels, multi-group, FLAXSEED/230800 mismap) still queued.
-
-## Collector Fix Log (2026-03-11)
-- **Drought monitor**: FIPS codes (not state abbreviations), CSV parsing, schema `bronze.drought_conditions`
-- **Canada CGC**: Rewritten from HTML scraping to CSV downloads, 138K rows, schema `bronze.canada_cgc_weekly` + `bronze.canada_cgc_exports`
-- **Canada StatsCanada**: Rewritten from broken WDS API to CSV bulk download, 57K rows, schema `bronze.canada_statscan`
-- **FAS Export Sales**: SSL `verify=False` workaround for expired USDA cert at apps.fas.usda.gov
-- **EPA RFS**: Disabled (`enabled=False`) — manual download for now
-- **yfinance_futures**: Added daily schedule at 5:15 PM ET (was in registry but not scheduled)
-
-## Historical Data Coverage (as of 2026-03-11)
-- CFTC COT: 55,993 rows, Jan 1986 - Mar 2026 (legacy + disaggregated), 21 commodities
-- FGIS Inspections: 534K rows, 1990 - Mar 2026, all grains
-- FAS Export Sales: 1.19M rows, 1999 - Feb 2026
-- Census Trade: 470K rows, 2013 - Dec 2025
-- FAS PSD: 9.5K rows, MY 2020-2025 — **needs backfill to 2000+**
-- NASS Crop Progress/Condition: ~1 season only — **needs backfill to 2000+**
-- Cash Prices: 50K rows, Feb 2025 - Mar 2026 (limited by AMS API)
-
-## Project Vision
-- See [project_vision_endpoints.md](project_vision_endpoints.md) — two strategic endpoints: (1) spreadsheet S&D forecasting with human-vs-LLM accuracy tracking, (2) LLM-generated content (reports, graphics, webinars) for biomass-based diesel feedstock markets
-
-## Feedback
-- See [feedback_weekly_update_report.md](feedback_weekly_update_report.md) — Friday 5pm weekly update to Notion (RLC OS page), format per Apr 7 update
-- See [feedback_units_source_vs_display.md](feedback_units_source_vs_display.md) — store bronze in source units, convert via conversion_factor for spreadsheet display only. Cottonseed numbers were wrong.
-- See [feedback_census_trade_verification.md](feedback_census_trade_verification.md) — bronze.census_trade conventions (kg, country_code='-'), and the All-Exports vs Domestic-Exports definition gap. DB exports include re-exports; UATO files don't.
-- See [feedback_read_errors_fully.md](feedback_read_errors_fully.md) — read complete error messages before diagnosing, don't jump to conclusions from partial patterns
-- See [feedback_verify_dont_assume.md](feedback_verify_dont_assume.md) — when user questions if something works, verify with evidence before asserting it's fine
-- See [feedback_gitignore_shared_files.md](feedback_gitignore_shared_files.md) — never save shared files to gitignored dirs (data/, logs/, collectors/*/output/)
-- See [feedback_bitdefender_workflow.md](feedback_bitdefender_workflow.md) — don't change tooling to placate Bitdefender. Fix BD via exclusions, not workflow workarounds.
-- See [feedback_commit_push_notion_proactively.md](feedback_commit_push_notion_proactively.md) — commit and tee up GitHub pushes proactively after each logical chunk. Pair with Notion update. Tore is paranoid about losing work.
-- See [feedback_data_reconciliation_hierarchy.md](feedback_data_reconciliation_hierarchy.md) — EIA/Census = canon. Reconcile UP toward them. Where EIA splits (BD vs RD), use it; where it doesn't, split ours, first-cut proportional to fuel production. The supply↔production gap is itself signal once fuel balance sheets are real.
-- See [feedback_client_process_separation.md](feedback_client_process_separation.md) — each client report = its own orchestrator/prose/brand/delivery. Shared = data layers, KG, callables, chart primitives, reference tables. Don't conflate HB report with Feedstock Report or any other client publication.
-- See [feedback_fastmarkets_keep_dont_show.md](feedback_fastmarkets_keep_dont_show.md) — Keep all FM-era data in DB for internal triangulation, NEVER show in client-facing material. Filter source='fastmarkets' out of any client-facing consumer. Facility-agent real-time allocation = eventual bible.
-- See [feedback_honest_pushback.md](feedback_honest_pushback.md) — be direct, not flattering. User works solo and needs honest criticism, not validation.
-- See [feedback_gate_beats_parameter.md](feedback_gate_beats_parameter.md) — when a ruled parameter conflicts with a ruled objective gate (acceptance test/seam check/band), the gate wins: implement-with-flag + escalate. Scope data-quality exclusions to the defect.
-- See [feedback_migrations_kill_builds.md](feedback_migrations_kill_builds.md) — directory relocations silently break scheduled tasks, .bat paths, hardcoded config strings. Always do full migration-completeness pass, check LastTaskResult.
-- See [feedback_orphan_code_hunt.md](feedback_orphan_code_hunt.md) — before building a collector, grep ALL scheduler paths (rlc_scheduler, src/scheduler, src/schedulers) + collector_registry.py. Found ~1700 lines of orphan collectors (GFS, GEFS, NDVI) that just needed registration.
-- See [feedback_llm_extraction_variance.md](feedback_llm_extraction_variance.md) — LLM single-run extraction has 50-70% variance bidirectionally on long structured docs. Best-of-N (N≥3 union by unit_id) required for production. Hybrid regex+LLM is the right architecture. Never `--force` overwrite without versioning. Bronze loader should refuse to load fewer-units run.
-- See [feedback_collect_must_persist.md](feedback_collect_must_persist.md) — BaseCollector.collect() only fetches, doesn't save. Subclasses MUST override collect() or dispatcher silently runs without persisting. AMS broke May 4-18 from this. Audit all collectors via "fetch only with no override" check.
-- See [reference_felipe_weekly_cash_prices.md](reference_felipe_weekly_cash_prices.md) — Weekly cash prices to Felipe: Scheduled Task `\RLC\Weekly Cash Prices to Felipe` Wed 6:30pm ET → generates xlsx → copies to Dropbox HigbyBarrett\weekly_cash_prices → Gmail-API emails Felipe+Tore (NOT SMTP, app-pass broken).
-- See [reference_dual_claude_notion_coordination.md](reference_dual_claude_notion_coordination.md) — Tore runs Claude-UI (this) + Claude-Content (Desktop) in parallel. Notion = shared source of truth. Page-per-project, Decision Log + §N.A Responses pattern. IFVS spec at notion.so/365ead023dee813daee1e31b22219327.
-
-- See [reference_brazil_my_alignment.md](reference_brazil_my_alignment.md) — USDA artificially aligns Brazil MY to US (Sep-Aug); actual Brazil safra leads US (Feb-Jan). Detect via monthly data. Ingest Brazil data by calendar year, let analyst pick MY framing.
-- See [reference_conab_direct_downloads.md](reference_conab_direct_downloads.md) — CONAB exposes 6 public files at portaldeinformacoes.conab.gov.br/downloads/arquivos/: Frete, PrecoMinimo, CustoProducao, OfertaDemanda, Estoques, ArmazensCadastrados (8.2 MB / 18,766 warehouses). Replaces Tore's copy-paste workflow. Task #71.
-
-- See [reference_excel_color_conventions.md](reference_excel_color_conventions.md) — Internal xlsx (Tore's models): header fill `#3C7D22` (green), bold white Calibri. Client-facing artifacts: brand kit INK/GOLD/PAPER. Don't mix.
-- See [reference_xlsx_flat_file_conventions.md](reference_xlsx_flat_file_conventions.md) — Generated flat files: rows SORT ASCENDING (old→new) so latest year is at stable bottom address for VLOOKUP. Always include `_meta` tab. Quarterly interpolation Q1/Q2/Q3/Q4 offsets 0.125/0.375/0.625/0.875.
-- See [reference_oil_crops_yearbook_units.md](reference_oil_crops_yearbook_units.md) — USDA Oil Crops Yearbook: soybeans mil bu, meal thou ST, oil mil lbs. Same workbook, three scales. Report published units, don't silently convert.
-- See [reference_us_oilseed_unit_convention.md](reference_us_oilseed_unit_convention.md) — US oilseed BS display units (oil=mil lbs, meal=000 ST, seed varies) + input-sheet = BS÷1000 rule + DB conversion_factor math. Migration 133 standardized all 5 oilseeds 2026-06-11.
-- See [reference_history_start_dates.md](reference_history_start_dates.md) — Project default history horizon: oilseeds/grains start Oct 1993 (US soy MY 1993/94), energies start Jan 1993. Use as default in every new workbook/backfill unless asked otherwise.
-- See [reference_ams_coverage_gaps.md](reference_ams_coverage_gaps.md) — AMS slugs 2837/2839/3510 (added 2026-05-28) cover tallow, CWG, yellow grease, lard, MBM, blood meal, feathermeal since 2022. UCO, brown grease, poultry fat, all veg oils, and intl prices are NOT in AMS — need broker emails or other sourcing.
-- See [feedback_rehearse_important_meetings.md](feedback_rehearse_important_meetings.md) — Tore's standing practice as of 2026-05-22: live-rehearse every important external meeting beforehand. Q&A script + Claude playing the other party + out-of-character debrief + script update. Offer proactively for client/partner/M&A-adjacent meetings.
-- See [feedback_daily_three_discipline.md](feedback_daily_three_discipline.md) — Tore adopted Musk's "3 most important things per day + 80/20 signal/noise" discipline 2026-06-05. Beginning of session: ask "what are today's 3?". Mid-session: flag once when a request is noise vs signal, don't refuse. End: brief retrospective. Push back on time-% tracking; use outcomes instead.
-- See [project_rlc_2026_mandates.md](project_rlc_2026_mandates.md) — **Mandates locked 2026-06-08.** M1=balance sheets/Excel, M2=Feedstock Facility Agent (FFA) network, M3=Be a better leader (Speaking/Fitness/Writing tracks, active-not-passive bar). Daily logs at `docs/daily_log/YYYY-MM-DD.md`. Fitness routine at `docs/daily_log/fitness_routine.md` + tracking xlsx.
-
-## Industry People Directory
-- Running who's-who at `docs/industry_people_directory.md` — people + titles in the feedstock/biofuel/ag-analytics industry, dated + sourced so role changes are trackable. **Append over time** (facility staff, firm contacts). Seeded 2026-07-01 (Western Dubuque staff + Helios roster).
-
-## Wheat / Country Balance-Sheet Builds
-- See [project_wheat_country_build.md](project_wheat_country_build.md) — wheat pilot for per-country commodity balance sheets. Dual-Claude: Code=plumbing (bronze→silver→writers), Desktop=workbooks/formulas, flat file=seam. Contract `docs/specs/flat_file_contract.md` v1.1 (LONG default, WIDE trade, vintage_rank + MAXIFS/SUMIFS). Supply side DONE (area/production+5 market classes/yield/stocks); TODO milling(M311J)/trade/co-products. Next country: Brazil.
-
-## Abiove / Brazil Soy Complex
-- See [project_abiove_brazil_soy_complex.md](project_abiove_brazil_soy_complex.md) — Brazil soy-complex ingest live 2026-07-10 (crush/meal+oil prod/stocks, thousand MT). Manual Power BI extract (no API). bronze.abiove_soy_complex (mig 142) → silver.monthly_realized BR/ABIOVE → gold (mig 143) → models/Oilseeds/Brazil/brazil_soy_complex_monthly.xlsx. Schema rule: new bronze, reuse silver, new gold. Runbook: docs/runbooks/abiove_update_runbook.md
-
-## Helios / Pepsi
-- See [project_helios_pepsi_pilot.md](project_helios_pepsi_pilot.md) — 2026-06-29 Helios meeting outcome: Pepsi = first pilot (canola/soy/sunflower price+reasons). RLC=demand-side feedstock strength, Helios=climate/weather. Open: João interface, delivery shape/horizon, "Intel Inside" attribution (disintermediation watch). CTO showed unexpectedly.
-
-## Filesystem Boundary
-- **Primary workspace**: `C:\dev\RLC-Agent` (all code, specs, scripts, migrations).
-- **Dropbox**: artifact-delivery surface only. Two valid write paths: `Tore Alden\HigbyBarrett\weekly_cash_prices\` (Felipe doesn't have Tailscale) and `Tore Alden\Misc Personal Stuff\Helios\` (deck + leave-behind for meeting). Everything else goes in dev.
-- Before quoting KG/DB stats in client-facing material, run `scripts/_check_kg_counts.py` — CLAUDE.md drifts.
-
-## Pending Commitments
-- See [project_db_password_rotation.md](project_db_password_rotation.md) — Tore rotating RDS password ([REDACTED-SECRET]). **Remind Friday 2026-07-10 if not done by end Thu 2026-07-09.** Rotation breaks ~45 hardcoded files (env + ~15 py + ~20 VBA .bas + ODBC); do literal→env-var pass at rotation time.
-
-## Priority Queue
-1. ~~**FAS PSD backfill**~~ — **RESOLVED**: 53,847 rows, 22 commodities, 1990-2025, 175+ countries
-2. ~~**NASS crop progress/condition backfill**~~ — **RESOLVED**: 24,446 records, 6 commodities, 2000-2025 national level
-3. **Inspections VBA updater** (Ctrl+G) — waiting on user's spreadsheet template
-4. **Dashboard: commodity coverage by country** matrix
-5. **Project structure cleanup** per rlc-agent_project_structure_proposal_combined.docx
-
-## EMTS Manual Export
-- See [reference_emts_manual_export.md](reference_emts_manual_export.md) — EMTS fuel-volume data (allocator driver) = **manual monthly EPA Qlik export**, NOT automatable (month×category×Domestic cross-tab only in the interactive app). Save to `data/raw/rfs_data/rin_generation_<MM>_<YYYY>.csv` → run `emts_csv_loader.py`. The one human-in-the-loop step in the monthly re-run.
-
-## Feedstock Forecast Method
-- See [project_feedstock_forecast_method.md](project_feedstock_forecast_method.md) — **Ruled 2026-07-09.** Actuals run/rake through latest EIA feedstock month (now Apr 2026 via new v2 API `feedbiofuel` collector); re-run one month at a time. Forecast to 2046 = fuel-production × observed yields × 12-mo trailing avg US feedstock mix (national now, per-facility later). Non-bio split = Census Crush industry shares → applied to USDA removed-for-processing, else portioning survives ∝ supply.
-
-## Quarterly VaR Risk Budget
-- See [project_quarterly_var_risk_budget.md](project_quarterly_var_risk_budget.md) — `risk` schema + VaR engine (started 2026-07-15) that stops the BBD allocator's corner-solution whipsaw (100% best-margin, monthly SBO→DCO switching). Covered/open procurement, VaR budget forces diversification. 3 commits done (foundation/optimizer/generator); TODO: allocator phasing integration + re-rake + demand breakout. Coprocessing SBO regression fixed at source.
-
-## Analytical Frameworks
-- See [project_sbe_analysis.md](project_sbe_analysis.md) — soybean-equivalent export calculation, Brazil-China correlation, domestic consumption share over time
-- See [project_forecast_comparison.md](project_forecast_comparison.md) — LLM vs human vs USDA projection comparison, reconciliation hierarchy, biotracker
-- See [project_symbiotic_forecasting.md](project_symbiotic_forecasting.md) — THE endpoint: LLM forecasts every monthly data series in parallel to spreadsheets, reconciles against realized data, KG + kg_callable supply the analytical structure.
-- See [project_kg_callable_architecture.md](project_kg_callable_architecture.md) — three-layer KG: narrative (kg_context) + executable (kg_callable) + forecast book (core.forecasts). First callable weather_adjusted_yield live. Invoker at src.kg.callable_invoker. Forecast loop at src.kg.forecast_book.
-
-## Collector Build Notes
-- `save_to_bronze`: `get_connection()` is a context manager — use `with get_db_connection() as conn:`, NOT `conn = get_db_connection()` / `conn.close()`
-- IBGE SIDRA: use table 1612 + c81 classification (not 5457/c782)
-- ComexStat Brazil: POST `https://api-comexstat.mdic.gov.br/general`, no API key, 10s rate limit
-- INDEC Argentina: No REST API — monthly ZIP, CSV `;` delimited, Latin-1
-- FAOSTAT: API returning 521 (Cloudflare/server down) — FAO infrastructure issue
-- WASDE/PSD: pivot attribute records by (commodity, country, MY, month) before bronze insert
-- CFTC bulk files: disaggregated 2006+, legacy 1986+. Two date column formats (pre/post 2013). Script: `scripts/backfill_cftc_cot.py`
+## How I work (feedback rules)
+- [feedback_honest_pushback.md](feedback_honest_pushback.md) — direct not flattering; solo user needs criticism not validation.
+- [feedback_commit_push_notion_proactively.md](feedback_commit_push_notion_proactively.md) — commit + tee up pushes after each chunk; Tore is paranoid about losing work. Pair with Notion.
+- [feedback_verify_dont_assume.md](feedback_verify_dont_assume.md) — verify with evidence before asserting something works.
+- [feedback_read_errors_fully.md](feedback_read_errors_fully.md) — read complete errors before diagnosing.
+- [feedback_gate_beats_parameter.md](feedback_gate_beats_parameter.md) — ruled gate beats ruled parameter: implement-with-flag + escalate; scope exclusions to the defect.
+- [feedback_migrations_kill_builds.md](feedback_migrations_kill_builds.md) — dir moves break tasks/.bat/config; full migration-completeness pass + check LastTaskResult.
+- [feedback_orphan_code_hunt.md](feedback_orphan_code_hunt.md) — grep ALL scheduler paths + collector_registry before building a collector.
+- [feedback_collect_must_persist.md](feedback_collect_must_persist.md) — BaseCollector.collect() only fetches; subclasses MUST override or nothing saves.
+- [feedback_llm_extraction_variance.md](feedback_llm_extraction_variance.md) — single-run LLM extraction 50-70% variance; best-of-N (N≥3) + hybrid regex+LLM; never --force overwrite.
+- [feedback_gitignore_shared_files.md](feedback_gitignore_shared_files.md) — never save shared files to gitignored dirs (data/, logs/, collectors/*/output/).
+- [feedback_bitdefender_workflow.md](feedback_bitdefender_workflow.md) — fix BD via exclusions, don't change tooling.
+- [feedback_data_reconciliation_hierarchy.md](feedback_data_reconciliation_hierarchy.md) — EIA/Census = canon; reconcile UP toward them; supply↔production gap is signal.
+- [feedback_client_process_separation.md](feedback_client_process_separation.md) — each client report = own orchestrator/prose/brand; shared = data/KG/callables/charts.
+- [feedback_fastmarkets_keep_dont_show.md](feedback_fastmarkets_keep_dont_show.md) — keep FM data for internal triangulation, NEVER client-facing; filter source='fastmarkets'.
+- [feedback_units_source_vs_display.md](feedback_units_source_vs_display.md) — store bronze in source units; convert via conversion_factor for display only.
+- [feedback_census_trade_verification.md](feedback_census_trade_verification.md) — census_trade conventions (kg, country_code='-'); all-exports vs domestic-exports gap.
+- [feedback_rehearse_important_meetings.md](feedback_rehearse_important_meetings.md) — live-rehearse important external meetings; offer proactively.
+- [feedback_daily_three_discipline.md](feedback_daily_three_discipline.md) — ask "today's 3?" at start; flag noise-vs-signal once; outcomes not time-%.
+- [feedback_weekly_update_report.md](feedback_weekly_update_report.md) — Friday 5pm weekly update to Notion (RLC OS page).
+- [feedback_chart_preferences.md](feedback_chart_preferences.md) / [feedback_marketing_years.md](feedback_marketing_years.md) — annotated charts; MY start months, display "MY 2020/21".
 
 ## User
-- See [user_motivation.md](user_motivation.md) — career-long aspiration, deeply invested in project success
-- See [user_hardware_ollama.md](user_hardware_ollama.md) — 16GB VRAM GPU, Ollama for background tasks, qwen3-coder:30b
-- See [user_career_legal.md](user_career_legal.md) — legal sensitivities re: FM content, "Fats Fuels & Oils" was produced AT FM not current
-- See [user_career_history.md](user_career_history.md) — full career: SmithBarney→IAG→Vreba-Hoff→Vermillion→Binnacle→Five Rings→Informa→Jacobsen→FM→RLC. Informa = analytical foundation. 3-month price forecasting is sweet spot.
+- [user_motivation.md](user_motivation.md) — career-long aspiration, deeply invested. [user_career_history.md](user_career_history.md) — SmithBarney→…→Informa→FM→RLC; Informa foundation; 3-mo forecasting sweet spot.
+- [user_career_legal.md](user_career_legal.md) — FM legal sensitivities. [user_hardware_ollama.md](user_hardware_ollama.md) — 16GB VRAM, qwen3-coder:30b. [user_freddie.md](user_freddie.md) — Freddie the dog.
 
-## Seasonal Monthly Projections
-- See [project_seasonal_monthly_projections.md](project_seasonal_monthly_projections.md) — annual × seasonal share = monthly. 5yr avg gets 80%. Beats USDA's step-change constraint. Build in KG or silver.
+## Mandates, roadmap, vision
+- [project_rlc_2026_mandates.md](project_rlc_2026_mandates.md) — **locked 2026-06-08**: M1 balance sheets/Excel, M2 FFA network, M3 leader (Speaking/Fitness/Writing). Daily logs `docs/daily_log/`.
+- [project_roadmap_master.md](project_roadmap_master.md) — **MASTER roadmap, locked 2026-05-02**; refer when direction in doubt. Also [project_roadmap_oilseeds_grains.md](project_roadmap_oilseeds_grains.md).
+- [project_vision_endpoints.md](project_vision_endpoints.md) — 2 endpoints: (1) S&D forecasting w/ human-vs-LLM tracking, (2) LLM content for BBD feedstock markets.
+- [project_symbiotic_forecasting.md](project_symbiotic_forecasting.md) — THE endpoint: LLM forecasts every monthly series in parallel to spreadsheets, reconciles vs realized.
+- [project_forecast_comparison.md](project_forecast_comparison.md) / [project_forecast_philosophy.md](project_forecast_philosophy.md) — rationality > accuracy; transparent assumptions win.
+- [project_phase_two_vision.md](project_phase_two_vision.md) / [project_phase_two_facility_agents.md](project_phase_two_facility_agents.md) / [project_phase_two_agent_architecture_detail.md](project_phase_two_agent_architecture_detail.md) — agent-per-facility sim.
+- [project_a2a_debate_architecture.md](project_a2a_debate_architecture.md) — debate-driven forecasting, approved phase-2 endpoint. [project_facility_agent_leaderboard.md](project_facility_agent_leaderboard.md).
+- [project_dod_security_posture.md](project_dod_security_posture.md) — long-arc NIST 800-171/CMMC readiness; don't block the path.
 
-## Weather System
-- See [project_facility_weather_summary.md](project_facility_weather_summary.md) — deferred: per-facility daily one-number growing-conditions index for basis layer (Sprint 2+ work)
-- See [project_drew_lerner_archive_backfill.md](project_drew_lerner_archive_backfill.md) — Sprint 4: historical Gmail backfill of Drew Lerner emails + PDF attachments. ~$300-1300 cost depending on scope. Recommended pilot: 2024 only first.
-- See [project_weather_city_foundation.md](project_weather_city_foundation.md) — city-foundation recon (2026-06-18): ~80% built (27 cities + per-city daily weather 2010+ keyed location_id; Drew=region-signal not city-source). Granularity=USDA ASD/CRD. Condition=state-only, yield=sub-state (CRD payoff is weather→yield). ASD build de-risked (county→ASD via NASS county query; centroids via Census Gazetteer). Gaps: per-city forecast, NDVI (empty), correlation.
-- See [reference_crop_condition_methodology.md](reference_crop_condition_methodology.md) — NASS condition ratings = subjective local-observer ("mailman") impressions, not science; good for local relative trend, weak for absolute/cross-region. Reinforces weather→yield as hard target; RLC will build its own condition measure. Check state-office bulletins.
+## Key technical patterns
+- Collectors inherit `src.agents.base.base_collector.BaseCollector`; sub-dirs re-export via local base_collector.py.
+- DB: `src.services.database.db_config.get_connection()` (psycopg2 CONTEXT MANAGER — `with get_connection() as conn:`). All conns use `RLC_PG_HOST` (AWS RDS). `.env` at root; call `load_dotenv()`.
+- Use `src.schedulers` (current), NOT `src.scheduler` (legacy).
+- Streamlit `st.dataframe()`: `width="stretch"` NOT deprecated `use_container_width=True`.
+- Collector build notes (IBGE/ComexStat/INDEC/FAOSTAT/WASDE-pivot/CFTC-bulk) — see archive "Collector Build Notes".
 
-## Local GPU vs Cloud LLM
-- See [reference_local_vs_cloud_llm.md](reference_local_vs_cloud_llm.md) — empirical decision framework. Local for high-volume deterministic work (permits, embeddings, audio); cloud for client-facing / subtle reasoning / vision-with-handwriting. Hybrid triage pattern when volume + stakes both high. Track empirical wins/losses here as we learn. Material to reference in client conversations.
-- See [reference_ollama_gpu_cpu_fallback.md](reference_ollama_gpu_cpu_fallback.md) — RECURRING: desktop ollama runs 100% CPU / "0 GPUs" while nvidia-smi is fine. Root cause 2026-06-19 = missing ggml CUDA backend in `lib\ollama\` (only mlx_cuda_v13) → reinstall ollama. Also: nssm `OllamaLLM` session-0 squatter on :11434; parse_spine 30b@64k-ctx won't fit 16GB (use qwen2.5:7b).
+## Database / stats
+- Live counts drift — run `scripts/_check_kg_counts.py` before quoting KG/DB stats client-facing. KG ~436 nodes/395 edges/336 contexts (2026-04-27).
+- Historical coverage + collector fix log (Drought/Canada CGC/StatsCan/FAS/EPA RFS) — see archive.
 
-## Iowa Multi-Industry Expansion
-- See [project_permit_archive.md](project_permit_archive.md) — IA DNR Title V pipeline fully drained 2026-06-20: 288 facilities / 8,847 units in bronze + published to `permits/<industry>/<state>/<facility>/` (source.pdf gitignored, text artifacts versioned). qwen2.5:7b + chunked extraction for big permits. Deferred: unit over-enumeration, industry-tag cleanup. Spot-check queue at `docs/permit_extraction_spotcheck_queue.md`.
-- See [project_facility_data_strategy.md](project_facility_data_strategy.md) — **The two signals = capacity + operating status.** Both already national (ECHO status 99.8%; curated lists 586 facs capacity+status). Permit grind OFF critical path (universal crosswalk problem across NY/IN/PA; kept surgical 2-3/day for Tore's exam). Geo-matching = the curated↔ECHO crosswalk (geocode lists first). Next: build facility master → crush economic model.
-- See [project_ffa_feedstock_layer.md](project_ffa_feedstock_layer.md) — FFA feedstock architecture (built 2026-06-28): ELIGIBILITY (biofuel_facilities.eligible_feedstocks, 3-tier CARB-wins builder) vs MIX (reference.facility_assumed_mix, consumption % from RD Feedstock Build Up.xlsx). soy-ELIGIBLE != soy-USED. Feedstock code vocab. Open: wire into allocator, --write eligibility after review.
-- See [reference_carb_pathway_selection_bias.md](reference_carb_pathway_selection_bias.md) — CARB LCFS pathways = census of coastal/LCFS-serving RD, biased sample of Midwest soy-BD (RFS-only plants invisible). Never set national feedstock intensity from CARB alone; UNION with EPA RFS pathways. `feedstock_code` already canonical. FFA step-1: scripts/facility_feedstock_slate.py.
-- See [reference_idem_oracle_webcenter_permits.md](reference_idem_oracle_webcenter_permits.md) — IN IDEM permits via anonymous Oracle WebCenter ECM API (`ecm.idem.in.gov/cs/idcplg`): GET_SEARCH_RESULTS → parse SearchResults HDA → GET_FILE by dDocName. Cracked+verified 2026-06-21. Research's predictable-PDF claim was wrong. Reusable for TX/TCEQ. **Lesson: research tiers are optimistic — verify each state before building.**
-- See [reference_echo_canonical_facility_source.md](reference_echo_canonical_facility_source.md) — **Decision 2026-06-21:** EPA ECHO (`bronze.epa_echo_facility`, 2,865 facs/53 states) is the canonical facility source. NO hand-curated lists (deleted IDEM IN dump). Federal ECHO = census; state Title V portals = equipment DEPTH. Inventory: `docs/planning/state_permit_data_source_inventory.md`.
-- See [us_model_completion_plan.md] (`docs/planning/`) — breadth-first data / depth-first modeling; company-network = unit of completeness; BioTrack + VaR off critical path. Plus `state_permit_data_source_inventory.md` (per-state Tier 1 bulk / 2 portal / 3 FOIA access map).
-- See [project_iowa_multi_industry_expansion.md](project_iowa_multi_industry_expansion.md) — Sprint 5+ roadmap. Schema (mig 056) + initial seed of 52 IA facilities (mig 057) shipped 2026-05-06: 24 ethanol, 12 pork packing, 7 egg layers, 6 biodiesel, 3 beef. Combined with 24 oilseed crush = 76 IA facilities. Spec: `docs/specs/iowa_industry_facility_taxonomy.md`. Next: geocode, extend facility-graph builder, run air-permit pipeline per industry.
-- See [project_public_filings_extraction.md](project_public_filings_extraction.md) — Sprint 6/7 work. SEC EDGAR + earnings transcripts for the ~10 publicly-traded operators in our facility list (ADM, Bunge, Tyson, JBS, Hormel, Chevron/REG, Valero, Green Plains, Seaboard, Smithfield). Adds operator-specific context to national-event responses. ~$1,000 backfill + $150/year. Defer until operational substrate (permits, weather, multi-industry seed) is solid — filings are CONTEXT on top of operational data.
+## VBA spreadsheet updaters
+- ODBC (psqlODBC x64, sslmode=require). Every `.bas` starts with `Attribute VB_Name="Name"` — see [feedback_vba_module_name_attribute.md](feedback_vba_module_name_attribute.md).
+- Shortcuts: Ctrl+I census, +B biofuel S&D, +D EIA feedstock, +E EMTS, +R RIN, +U FatsOilsUpdaterSQL (universal), +Y EnergyTradeUpdater, +K CornGrind, +G FGIS(TODO).
+- Header-matching pattern (FatsOilsUpdaterSQL reads row-3 headers → crush_attribute_reference). Gold `gold.fats_oils_crush_matrix`. Full detail + migration log (mig 030-032 unit fixes) in archive.
 
-## Open Investigations
-- See [project_cwg_import_collapse_2025.md](project_cwg_import_collapse_2025.md) — CWG (HS 1501200040) imports went to zero in 4 of 7 months Aug 2025-Feb 2026; not a collection bug. Possible 45Z pause, HS reclassification, or buyer pullback. Surfaced via `gold.us_rendered_pork_fat_trade` (mig 048).
-- See [project_reg_ralston_madison_idle.md](project_reg_ralston_madison_idle.md) — Chevron REG idled Ralston IA (30 mmgy) + Madison WI (20 mmgy) March 2024. 50 mmgy offline, restart optionality preserved (no goodwill impairment). Discovery: 10-K said "two idled" but didn't name; CARB pathway absence + Mar-2024 industry press confirmed. Mig 072. **CARB pathway absence is a reusable closure-detection signal.**
-- See [project_facility_external_xref.md](project_facility_external_xref.md) — generic facility ↔ external-list xref machinery. Mig 073-075 shipped. bronze.carb_lcfs_pathways + silver.facility_norm/external_facility_norm/facility_external_xref + gold.facility_status_anomalies. Token-overlap matching w/ confidence 0.4/0.7/1.0. 79 confirmed_active, 99 closure_suspect facilities found. Headline AtJ insight: ZERO Alcohol-to-Jet CARB pathways certified yet — all current AJF is HEFA. Next: add EPA RFS RIN + EIA + Biodiesel Mag as additional signals.
+## Census trade
+- v1 registered (`census_trade_collector.py`); v2 exists unregistered. Export qty `QTY_1_MO`, import `GEN_QY1_MO`. Chunked range queries.
+- [reference_census_import_export_hs_codes.md](reference_census_import_export_hs_codes.md) — imports=HTSUS, exports=Schedule B; diverge below HS6. [project_corn_grind_pipeline.md](project_corn_grind_pipeline.md) — GCCP PDF-only.
 
-## Market Field (formerly "basis layer", proprietary)
-- See [project_market_field_spec.md](project_market_field_spec.md) — sentiment + network + basis unified layer. Three-legged stool: positioning + fundamentals + SENTIMENT (new leg). Opinion-dynamics-on-network math, phase-transition framing. **Calibration parameters are confidential — central proprietary asset.** Shareable framework doc at `docs/specs/market_field_spec.md`.
+## Units / conventions (references)
+- [reference_us_oilseed_unit_convention.md](reference_us_oilseed_unit_convention.md) / [reference_oil_crops_yearbook_units.md](reference_oil_crops_yearbook_units.md) — oil mil lbs, meal 000 ST, seed varies; report published units.
+- [reference_xlsx_flat_file_conventions.md](reference_xlsx_flat_file_conventions.md) — rows ASCENDING (latest at stable bottom for VLOOKUP); `_meta` tab; quarterly offsets.
+- [reference_excel_color_conventions.md](reference_excel_color_conventions.md) — internal green `#3C7D22`; client-facing brand kit INK/GOLD/PAPER.
+- [reference_history_start_dates.md](reference_history_start_dates.md) — oilseeds/grains Oct 1993, energies Jan 1993. Bushels for seed/grain crush, mil lbs for oils/fats.
+- [project_calendar_year_vs_marketing_year.md](project_calendar_year_vs_marketing_year.md) — energy CY, ag MY.
 
-## Govt Shutdown / Data Handling
-- See [reference_govt_shutdown_data_handling.md](reference_govt_shutdown_data_handling.md) — federal data series react differently to shutdowns (sum-on-reopen / permanent-gap / week-by-week backfill). Track shutdown dates + per-agency behavior. When investigating a gap, check shutdown overlap before assuming pipeline bug.
+## Feedstock / BBD system
+- [project_feedstock_forecast_method.md](project_feedstock_forecast_method.md) — **ruled 2026-07-09**: actuals rake through latest EIA month; forecast = fuel-prod × yields × 12-mo mix.
+- [project_quarterly_var_risk_budget.md](project_quarterly_var_risk_budget.md) — **`risk` schema + VaR engine (2026-07-15)** stops allocator whipsaw; covered/open, VaR forces diversification. Foundation/optimizer/generator done; TODO allocator phasing + re-rake + demand breakout.
+- [project_ffa_feedstock_layer.md](project_ffa_feedstock_layer.md) — FFA eligibility vs mix; soy-ELIGIBLE ≠ soy-USED. [feedstock_allocation_engine.md](feedstock_allocation_engine.md) — bottom-up plant model.
+- [reference_bbd_feedstock_eia_canonical.md](reference_bbd_feedstock_eia_canonical.md) / [reference_high_ffa_feedstock_biofuel_limit.md](reference_high_ffa_feedstock_biofuel_limit.md) — CWG/PLT high-FFA, net down before allocator.
+- [reference_emts_manual_export.md](reference_emts_manual_export.md) — EMTS = manual monthly EPA Qlik export → `data/raw/rfs_data/` → emts_csv_loader.py.
+- [project_feedstock_forward_projections.md](project_feedstock_forward_projections.md) — 20-yr forward by commodity×fuel; scenarios base/high/low.
+- Splits: [project_tallow_split.md](project_tallow_split.md) (EBFT/IBFT), [project_uco_yg_model.md](project_uco_yg_model.md), [project_dco_corn_oil_trade_split.md](project_dco_corn_oil_trade_split.md), [project_dco_estimation_from_ethanol.md](project_dco_estimation_from_ethanol.md) (~0.55 lb/gal), [project_bd_rd_trade_split.md](project_bd_rd_trade_split.md).
+- [project_fats_greases_buildout.md](project_fats_greases_buildout.md) / [project_yield_reconciliation.md](project_yield_reconciliation.md) / [project_usda_feedstock_supply_gaps.md](project_usda_feedstock_supply_gaps.md).
+- [reference_ams_coverage_gaps.md](reference_ams_coverage_gaps.md) — AMS covers tallow/CWG/YG/lard/MBM since 2022; UCO/brown grease/poultry fat/veg oils NOT in AMS.
 
-## Basic Data Setup Sequence
-- See [project_basic_data_setup_sequence.md](project_basic_data_setup_sequence.md) — remaining basic-data areas after feedstock: production, then livestock. Apply the feedstock playbook (audit ingest → fix DB conn → backfill history → verify → commit/push/Notion).
-- See [project_usda_feedstock_supply_gaps.md](project_usda_feedstock_supply_gaps.md) — USDA has known gaps in UCO/YG, tallow, and corn oil/DCO reporting. EIA is canon (USDA defers too). UCO inflator technique: use USDA food-spending at-home vs away-from-home as adjustment. RLC's edge = filling these gaps better, especially once biotracker is online.
+## Balance sheets / flat files / IFV
+- [project_balance_sheet_framework.md](project_balance_sheet_framework.md) (master) / [project_balance_sheet_roadmap.md](project_balance_sheet_roadmap.md) / [balance_sheet_workflow.md](balance_sheet_workflow.md).
+- [project_fuel_flat_files.md](project_fuel_flat_files.md) — fuel prod/stocks/trade flat files; `scripts/build_fuel_flat_files.py`. [project_liquid_fuel_stocks_workflow.md](project_liquid_fuel_stocks_workflow.md).
+- Per-facility profitability template — SECRET SAUCE; `docs/specs/per_facility_profitability_template_v1.md`, 10 tabs, sellable analyst asset (detail in archive).
+- IFV kg_callable — HOBO-anchored (1¢/lb=$0.08/gal); `docs/specs/implied_feedstock_value_kg_callable.md`; crush_economics.py = the math.
+- Minor/other: [project_seasonal_monthly_projections.md](project_seasonal_monthly_projections.md), [project_minor_oils_coverage.md](project_minor_oils_coverage.md), [project_copra_complex_trade.md](project_copra_complex_trade.md), [project_oil_crops_annual_summary.md](project_oil_crops_annual_summary.md), [reference_peanut_conversion_and_modeling.md](reference_peanut_conversion_and_modeling.md), [reference_usda_food_expenditure_reality_check.md](reference_usda_food_expenditure_reality_check.md) (FAH/FAFH).
+- SAF: [project_saf_research_notes.md](project_saf_research_notes.md) / [project_saf_trade_tracking.md](project_saf_trade_tracking.md).
 
-## Peanut Complex
-- See [reference_peanut_conversion_and_modeling.md](reference_peanut_conversion_and_modeling.md) — farmer-stock = shelled × 1.33 (confirmed). ERS Oil Crops Outlook = canonical forecast source (NOT WASDE — peanut absent). 5-stream food sub-flow default; client-specific finer cuts = bolt-on tabs that reconcile to parent. Lauric oils: modeled with assumptions, facilities later. Full spec: `docs/specs/peanut_balance_sheet_model.md`.
-- See [reference_usda_food_expenditure_reality_check.md](reference_usda_food_expenditure_reality_check.md) — USDA ERS Food Expenditure Series (monthly FAH/FAFH spending) is the broad downstream signal for sanity-checking monthly food-use estimates when USDA doesn't publish monthly end-use. Anchor for lauric monthly seasonality + UCO supply inflation. To-do: ingest ERS Food Expenditure Series; currently using even 1/12 placeholder for lauric monthly.
+## KG / forecasting infra
+- [project_kg_callable_architecture.md](project_kg_callable_architecture.md) — 3-layer KG: narrative (kg_context) + executable (kg_callable) + forecast book (core.forecasts). Invoker `src.kg.callable_invoker`.
+- [project_sbe_analysis.md](project_sbe_analysis.md) — soybean-equiv exports, Brazil-China correlation. KG batch/apply history in archive.
 
-## Deferred Cleanup
-- See [project_corn_oil_balance_sheet_followup.md](project_corn_oil_balance_sheet_followup.md) — non-DCO and total corn oil tabs in us_corn_oil_balance_sheets.xlsx are off due to trade-flow setup; revisit after fuel balance sheets are done. DCO sheet itself is good.
-- See [project_dco_estimation_from_ethanol.md](project_dco_estimation_from_ethanol.md) — USDA DCO numbers don't reconcile across agencies. Estimate from ethanol production × yield. Per-facility yield-enhancement detection is the long-term answer; interim use blended ~0.55 lb DCO/gal ethanol.
+## Facilities / permits / expansion
+- [project_facility_data_strategy.md](project_facility_data_strategy.md) — two signals = capacity + operating status; both national. [reference_echo_canonical_facility_source.md](reference_echo_canonical_facility_source.md) — EPA ECHO canonical.
+- [project_permit_archive.md](project_permit_archive.md) / [project_state_air_permits_llm.md](project_state_air_permits_llm.md) / [project_permit_parsing_secret_sauce.md](project_permit_parsing_secret_sauce.md) — PDF→Ollama→bronze; IA drained.
+- [reference_carb_pathway_selection_bias.md](reference_carb_pathway_selection_bias.md) — CARB biased sample; UNION with EPA RFS. [reference_idem_oracle_webcenter_permits.md](reference_idem_oracle_webcenter_permits.md) — IN IDEM API.
+- [project_iowa_multi_industry_expansion.md](project_iowa_multi_industry_expansion.md) / [project_public_filings_extraction.md](project_public_filings_extraction.md) (SEC EDGAR, defer) / [project_facility_external_xref.md](project_facility_external_xref.md).
+- [project_basis_field.md](project_basis_field.md) — basis as unified US field (kriging). [project_market_field_spec.md](project_market_field_spec.md) — sentiment+network+basis; **calibration params confidential**.
+- Iowa crush agent system, Rat Hole project (31.8GB inventory), Eagle Grove showcase — detail in archive; specs in `docs/`.
 
-## Feedstock & Biofuel Projections
-- See [project_feedstock_forward_projections.md](project_feedstock_forward_projections.md) — 20-yr forward feedstock projection by (commodity × fuel category) is the next ask after historical allocator backfill finishes. Due-diligence-grade audience. Structure as scenarios (base/high/low) with decade-1 anchored on capacity-in-flight, decade-2 scenario-driven.
-- See [project_forecast_philosophy.md](project_forecast_philosophy.md) — rationality > accuracy. Long-horizon forecasts win on transparent assumptions + question-friendly format. "Being correct is almost secondary." Apply to all client-facing forecast work.
+## Weather
+- [project_weather_city_foundation.md](project_weather_city_foundation.md) — ~80% built; granularity USDA ASD/CRD; weather→yield is the hard target.
+- [project_facility_weather_summary.md](project_facility_weather_summary.md) / [project_drew_lerner_archive_backfill.md](project_drew_lerner_archive_backfill.md) / [reference_crop_condition_methodology.md](reference_crop_condition_methodology.md) — NASS ratings subjective.
 
-## Phase Two Vision
-- See [project_phase_two_vision.md](project_phase_two_vision.md) — forecasting, rail car tracker, systematic analysis. ~50% foundation done. Stay focused on spreadsheet correctness (phase one) first.
-- See [project_phase_two_facility_agents.md](project_phase_two_facility_agents.md) — agent-based industry simulation: one agent per facility, KG context, financial models, buy/sell decisions → aggregate into industry activity forecasts. Cross-industry linkage (crush → refining → biofuel).
-- See [project_phase_two_agent_architecture_detail.md](project_phase_two_agent_architecture_detail.md) — equations + anomalies model, VaR bounds, rail car flow discovery, country replication, industry params
-- See [project_dual_track_views.md](project_dual_track_views.md) — marketing/client vs internal agent views, merge for multi-source guidance, include USDA as third source
-- See [feedback_spreadsheets_as_trade_matrices.md](feedback_spreadsheets_as_trade_matrices.md) — spreadsheets ARE trade matrices driving the end-to-end system, not just flat files
+## Brazil / international
+- [project_abiove_brazil_soy_complex.md](project_abiove_brazil_soy_complex.md) — live 2026-07-10; bronze.abiove_soy_complex → silver → gold → flat file.
+- [reference_brazil_my_alignment.md](reference_brazil_my_alignment.md) — Brazil safra leads US; ingest by calendar year. [reference_conab_direct_downloads.md](reference_conab_direct_downloads.md) — 6 public CONAB files.
 
-## Project Roadmap
-- **See [project_roadmap_master.md](project_roadmap_master.md) — MASTER roadmap, locked 2026-05-02. North Star + rabbit-hole filter + Sprint 1 (4 weeks) + Sprint 2 (weeks 5-12) + far-term vision. Refer to this every time work direction is in doubt.**
-- See [project_roadmap_oilseeds_grains.md](project_roadmap_oilseeds_grains.md) — oilseeds → fats/greases → biofuels → grains
-- See [balance_sheet_workflow.md](balance_sheet_workflow.md) — flat file → balance sheet → aggregation → PCAU cross-check → feed ration calibration
-- See [project_state_air_permits_llm.md](project_state_air_permits_llm.md) — PDF→Ollama→bronze pipeline for Title V air permits. PoC working on IA. Mig 045 = bronze.state_air_permits + units + silver.facility_air_permit_capacity.
-- See [project_permit_parsing_secret_sauce.md](project_permit_parsing_secret_sauce.md) — strategic vision: permits are THE source of facility-level operational detail. Sequence: crushers → biofuel → slaughter/render → fats → UCO → food mfg. Quality > speed. Build understanding, not just regex patterns.
-- See [project_basis_field.md](project_basis_field.md) — basis as a unified US field (kriging interpolation over AGP/AMS/etc samples). Build once, every facility plugs in. Second-most leverage infrastructure piece after permit extraction. Initial 2-3 days, full version 1-2 weeks.
-- See [project_eagle_grove_deferred_items.md](project_eagle_grove_deferred_items.md) — refinements queued for `dashboards/facility/eagle_grove.py` showcase page (hero map, AGP scraper, AMS regional series, real IA-share, etc.).
-- See [project_facility_agent_leaderboard.md](project_facility_agent_leaderboard.md) — gamification as meta-learning. LLM agents don't have incentives but the leaderboard drives prompt/tool/strategy evolution across the population. Promotion = better data + tools + risk budget + DNA propagation. Sprint 2/3 work; needs facility decision loops running first.
-- See [project_a2a_debate_architecture.md](project_a2a_debate_architecture.md) — A2A-grounded debate-driven forecasting (facility agents + brokers + adjudicator + winner-take-most). APPROVED as phase 2 endpoint, sequence AFTER decision logs / basis field / 3-way comparison. Start declaring Agent Card metadata on new facility agents now so registry populates organically.
-- See [project_dod_security_posture.md](project_dod_security_posture.md) — Long-arc goal: RLC security posture matches DoD-readiness (NIST 800-171 / CMMC L1-2 building blocks). Not today. But every new auth/secret/logging decision should not BLOCK that path. Map of building blocks compounding from today's setup.
-- See [reference_session_handoff_2026-05-25.md](reference_session_handoff_2026-05-25.md) — Active resumption brief: 13 commits 5/24-25, what's in Tore's hands vs mine, hot files I left off in. Refer first when picking up after the Memorial Day reboot.
-- **`domain_knowledge/process_flows/`** — per-industry canonical equipment + diagnostic ratios. `oilseed_crush.md` drafted (19 process steps, capacity ratios for size estimation, 4 facility brackets, 4 process variations). Other industries are stubbed in README. Feeds permit-extraction validation + facility-level capacity inference.
+## Clients / coordination
+- [project_helios_pepsi_pilot.md](project_helios_pepsi_pilot.md) — Pepsi first pilot (canola/soy/sun price+reasons); RLC demand-side, Helios climate. [project_helios_friday_demo.md](project_helios_friday_demo.md).
+- [reference_dual_claude_notion_coordination.md](reference_dual_claude_notion_coordination.md) — Claude-UI (this) + Claude-Content (Desktop); Notion source of truth. IFVS spec notion.so/365ead023dee813daee1e31b22219327.
+- [reference_felipe_weekly_cash_prices.md](reference_felipe_weekly_cash_prices.md) — Task Wed 6:30pm → xlsx → Dropbox → Gmail-API Felipe+Tore.
+- `docs/industry_people_directory.md` — who's-who, append over time.
 
-## Helios Demo Sprint (May 17-22 2026)
-- See [project_helios_friday_demo.md](project_helios_friday_demo.md) — Friday meeting w/ Francisco Martin-Rayo. **NOT a deal meeting** — disambiguation + show depth. IFV kg_callable shipped Sunday (mig 092, 20 unit tests pass, 5 smoke tests pass via production invoker). HOBO-anchored: 1c/lb=$0.08/gal, eff_sell $5.52/gal in HOBO range, iluc_removed lifts soybean_oil +$0.045/lb, 45Z cliff compresses -$0.0715/lb. Next: forecast book + Streamlit demo Wed.
+## Local GPU vs cloud
+- [reference_local_vs_cloud_llm.md](reference_local_vs_cloud_llm.md) — local for high-volume deterministic, cloud for client-facing/subtle. [reference_ollama_gpu_cpu_fallback.md](reference_ollama_gpu_cpu_fallback.md) — recurring GPU fallback (missing ggml CUDA backend).
 
-## BBD Sprint (May 13+)
-- See [project_bd_rd_trade_split.md](project_bd_rd_trade_split.md) — BD vs RD heuristic split for HS 3826 trade. Mig 082-086 live. Country profile + HTSUS blend deflator + regional-aggregate exclusion + Canada recalibration. 2024 BD exports reconcile 91% to EIA, BD imports ~55% (other origin rules still under-weight BD).
-- See [project_liquid_fuel_stocks_workflow.md](project_liquid_fuel_stocks_workflow.md) — `models/Biofuels/us_liquid_fuel_and_biofuel_production.xlsx` now has 4 sheets (Production, Stocks, Domestic Use, Prices). Mig 081/085/087. Python updater handles all four via `--sheet all` (default).
-- See [reference_bronze_fuel_prices_provenance.md](reference_bronze_fuel_prices_provenance.md) — `bronze.fuel_prices` is a static FM snapshot from Tore's prior employment, NOT a collector. Stops 2025-04-18; replacement via DTN is planned.
-- See [project_saf_research_notes.md](project_saf_research_notes.md) — open SAF items: TX facility ("TexChem or something") that converts NL-imported RD to SAF and generates D4 RINs per pathway exception (RFS-listed, not CARB); EIA SAF stocks gap; co-processing facility-level estimation deferred to rail-car tracker era.
-- See [project_saf_trade_tracking.md](project_saf_trade_tracking.md) — gold.saf_trade_candidates (mig 090) identifies SAF cargoes by price-threshold + volume-cap heuristic. 2024 identified imports 290k gal (Belgium/France/Malaysia top origins), exports 80k gal. EMTS domestic SAF production ~38 mil gal/yr and growing fast. us_saf_bal_sheets.xlsx populated. Rail-tracker integration is the endpoint vision.
+## Dispatcher / ops
+- [dispatcher.md](dispatcher.md) / [dashboard.md](dashboard.md). Tasks: `\RLC\RLC Dispatcher` (logon) + `\RLC\RLC Dispatcher Watchdog` (15 min). Heartbeat every 5 min. Restart after schedule changes.
+- [project_ops_audit_plan.md](project_ops_audit_plan.md) / [project_next_phase_ops_audit.md](project_next_phase_ops_audit.md) — 6-phase ops audit.
 
-## BBD Weekly Report (Apr 25-26)
-- Outline reviewed: `clients/weekly_report_outline_v1.docx` — 12 sections + cascade map sidebar. Implied Feedstock Value (s.05) is the signature.
-- **gold.bbd_sd_watch / gold.bbd_sd_pivot** (mig 033) — drives section 06. 18 feedstocks × multiple metrics, 2013-2026 coverage. value_unit: mil lbs for oils/fats, mil bu for crush_seed. Sanity-verified: SBO Feb-26 production 2,478 mil lbs matches crush math (214 mbu × 11.6 lb/bu).
-- **reports.calls_register, reports.release_calendar** (mig 034) — operational tables for sections 11/12. Convenience views: v_calls_open, v_calls_hit_rate, v_release_calendar_this_week.
-- **IFV kg_callable spec v2 (HOBO-anchored)**: `docs/specs/implied_feedstock_value_kg_callable.md`. Adopted exact HOBO Section 8 stack (ULSD + D4 RIN + LCFS + 45Z; net of OPEX + fixed). 45Z is a first-class `policy_scenario` arg with 4 branches (extension_2031 default, expiry_2027, iluc_removed, domestic_restriction). Calibrated to HOBO sensitivity rule: 1¢/lb feedstock = $0.08/gal, ≈ 7.7 lb/gal HEFA yield. Open questions in §8 reduced from 5 to 5 (different ones — policy/CI/region/feedstock-quality).
-- **Friday Notion weekly update SHIPPED** — `scripts/generate_weekly_notion_update.py` (Sat-Fri rolling window, posts to RLC OS via Notion API). Apr 18-24 update posted 2026-04-26: notion.so/Weekly-Update-Apr-18-24-2026-Collectors-Pipeline-34eead023dee81929817ea7ec380a18f. **Windows Scheduled Task registered**: `\RLC\Weekly Notion Update`, weekly Fri 5pm. Next run: 2026-05-01 5pm. README at `scripts/README_weekly_notion_update.md`.
-- **KG PDF folder**: `C:\Users\torem\RLC Dropbox\Tore Alden\pdf files for kg\` — 20 PDFs, ~28 MB. Tier 1 priority: Oilseed Crushing Plant v1.1 (DONE, batch 010), SAF State of Industry 2023, Production of SAF by Hydrocracking, GS Valero earnings, Biomass-to-bioenergy supply chain optimization. Tier 2: IATA Annual Review, Global Outlook for Air Transport, EU Biofuel Regs, BoA EU carbon. Tier 3: GS Miami/EU/RWE/Brazil, RBC Energy Transition (CCS focus), Motiva SOW.
-- **KG batch 020 (2026-04-26)**: Oilseed Crushing Plant Financial Model v1.10 → 7 nodes (oilseed_crushing_plant_model + capacity/yield/capex/opex/funding/returns subcomponents), 9 contexts, 7 edges. File: `database/data/kg_extraction_batch_020_oilseed_crushing_plant.sql`. **Renamed from 010 to 020** to avoid clash with existing batch 010 MPOB.
-- **KG audit & remediation (2026-04-26)**: discovered batches 010-019 had SQL files in `domain_knowledge/knowledge_guides/` but were NEVER applied to RDS. Bulk-applied: batch 010 (MPOB 2016-2024 +58 nodes), 011 (MPOB 2025 +1), 012 (Cresta/Braya Argentine SBO +15), 013 (Suncor +13), 014 (FCL/CPPIB +8), 015 (HB Weekly summaries +2), 016 (Jacobsen clients +16), 017 (FM archive +17), 018 (Q2 2022 outlook +12), 019 (quarterly outlooks +12). All ON CONFLICT idempotent. **KG totals jumped 237 → 391 nodes / 160 → 274 edges / 178 → 268 contexts**. Going forward: any new extraction batch SQL must be applied to RDS via `python scripts/apply_kg_batch.py` (TODO — build helper) or inline; don't leave SQL artifacts in `domain_knowledge/` unapplied.
-- **KG batch 021 — Iowa facilities (2026-04-26)**: 20 IA crushing facility nodes — initially `iowa.*` prefix, then renamed to `ia.*` on 2026-04-27 to match state abbreviation convention used elsewhere (us.ia.{county}). 7 operator company nodes, 16 IA county nodes, NOPA market_participant, solvent_extraction technology. Builder: `scripts/generate_iowa_facilities_kg_batch.py` (idempotent). SQL artifact: `database/data/kg_extraction_batch_021_iowa_facilities.sql`. **Draw area convention**: start uniform 50mi → classes (`rail_truck_only_50mi`, `barge_access_250mi`, `rail_hub_major_500mi`) → bespoke. **kg_edge has no unique constraint** — duplicate-edge cleanup needed after re-runs.
+## Filesystem boundary
+- Primary workspace `C:\dev\RLC-Agent` (all code/specs/scripts/migrations). Dropbox = artifact-delivery only (2 valid paths: HigbyBarrett\weekly_cash_prices, Misc Personal Stuff\Helios).
 
-## Iowa Crush Agent System (per `docs/iowa_crush_agent_spec.md`, 2026-04-27)
-- **Spec reviewed and approved** with reconciliation gaps documented. Strong points: falsifiable success criteria, deterministic-rules-first with LLM escalation, backtest+live share schema.
-- **`reference.oilseed_crush_facilities`** (mig 035, 78 facilities across 21 states). facility_id matches core.kg_node.node_key for IA. Builder: `scripts/build_reference_oilseed_crush_facilities.py` (idempotent). Operator/county KG cross-walks via `operator_kg_key` + `county_kg_key` columns.
-- **4 spec DDL tables** (mig 036): silver.facility_state, silver.strategic_plan (with per-month hedge JSONB targets), bronze.daily_decisions (append-only with backtest_run_id partition), gold.monthly_crush_estimates (with auto-computed error_pct GENERATED column).
-- **State-level NASS soybean crush — DOES NOT EXIST**: discovered 2026-04-27. NASS publishes only NATIONAL monthly soybean crush; NOPA monthly is also national. Iowa-specific monthly is NOT observable. Workaround: `silver.state_monthly_crush` + `silver.ia_implied_monthly_crush` (mig 037) — uses NATIONAL × capacity-weighted state share, marked `is_inferred=TRUE`. Need real validator: ERS Oil Crops Outlook annual state allocation × monthly seasonality OR Iowa Soybean Association industry survey (paid). Spec §11 success criterion ("±5% NASS Iowa monthly") needs revision.
-- **Crush economics module SHIPPED** (`src/agents/facility/crush_economics.py`): pure-function math per spec §7. CrushParams, MarketSnapshot, FixedCostsPerBushel, ImpliedValueBreakdown dataclasses. Functions: implied_feedstock_value_marginal/full_cost (with breakdown return), compute_crush_margin_per_bu, days_of_coverage. SOYBEAN_DEFAULT_PARAMS calibrated to KG (11.6 lb oil/bu validated against NASS Feb 2026). 12 unit tests pass. **Single source of truth** for crush math — both buyer_agent (daily) and IFV kg_callable (forecast/scenario) import from here.
-- **IFV spec v3** (`docs/specs/implied_feedstock_value_kg_callable.md`): updated with the layering — crush_economics.py is the math, IFV kg_callable wraps it for KG/forecast-book invocation. Kg_callable not yet implemented (next session).
-- **KG totals**: 436 nodes / 395 edges / 336 contexts.
-- **NOPA + COPA crush data ingested (2026-04-27, mig 038 + script)**: `bronze.nopa_monthly_crush` (524 monthly rows, Sep 1979 - Apr 2023, ~95% coverage of US soy crush) + `bronze.copa_weekly_crush` (599 weekly rows, Aug 2009 - Jan 2021, Canadian canola + soybean). Source: `data/raw/oilseeds_fats_greases/misc_crush_data.xlsx`. Iowa crush column AA covers Sep 1979 through Nov 2020 — **THIS IS THE GROUND TRUTH** for IA monthly crush validation that NASS doesn't publish. Iowa typical 30-37 mil bu/month. Silver views: nopa_iowa_crush, nopa_yield_history (oil + meal lb/bu monthly), nopa_regional_crush (long format), copa_canola_monthly, copa_soybean_monthly.
-- **silver.state_monthly_crush v2 (mig 040)**: now PREFERS NOPA-observed when available; falls back to capacity-share inference. Iowa: 67 months OBSERVED (2015-05 to 2020-11), 63 months INFERRED (2020-12+). When user updates the workbook with newer NOPA, more months auto-flip to OBSERVED.
-- **Soybean yield projection v1 (mig 039, per Tore design 2026-04-27)**: replaces fixed 11.6 lb oil/bu with trend × seasonal model. silver.soybean_yield_my_annual + silver.soybean_yield_seasonal (5-yr avg monthly index) + gold.soybean_yield_my_trend (linear regression of last 10 MYs, projected 7 MYs forward) + gold.soybean_yield_monthly_projection (observed-where-known + projected-future blend). Hulls fixed at 1.8 lb/bu (~3% of bushel). Current observed yield trend is essentially flat at 11.60 lb oil/bu (R²=0.001) — empirically validates the prior fixed-yield assumption while adding YoY responsiveness for future weather-adjusted enhancement.
-- **`src/agents/facility/yield_resolver.py` (2026-04-27)**: `resolve_crush_params(facility_id, as_of_date, yield_source)` and `resolve_yield(year, month, source)` — the impure companion to crush_economics. Returns ResolvedYield with provenance (NOPA_OBSERVED / TREND_SEASONAL / KG_DEFAULT) + confidence. Used by buyer_agent (daily) and IFV kg_callable to construct date-appropriate CrushParams.
-- **20 IA facilities geocoded (2026-04-27)**: all 20 IA reference rows now have lat/lon + KG node properties updated. Coords range ~41-43°N, -91 to -96°W. Builder: `scripts/geocode_iowa_facilities.py` (Nominatim, 1.1s rate limit, idempotent). Unlocks PostGIS catchment counties via 50-mile buffer.
-
-## Rat Hole Project (2026-04-27)
-- **Inventory + plan**: `docs/reference/rat_hole_inventory.md` (full file walk, 31.8 GB / 36,112 files / 22 directories) and `docs/reference/rat_hole_action_plan.md` (5 goldmine directories + 8 high-value KG sources). Source listing: `docs/reference/rat_hole.docx` (user-curated).
-- **IP / training note**: bank reports in `D:\Investment Research` are **visual style reference only** — DO NOT ingest text content to KG. Same posture for any third-party paid research.
-- **Phase 1 Item 1 — Plant Lists ingested (2026-04-27, mig 041 + script)**: 704 facilities across 7 reference tables + 483 capacity-projection rows.
-  - reference.beef_slaughter_facilities (42), pork_slaughter_facilities (32), ethanol_facilities (191), biodiesel_facilities (192 — state col not populated, needs ingest fix), renewable_diesel_facilities (66), oil_refining_facilities (44), oilseed_crush_facilities (137 — was 78, +59 from incorporate-only add)
-  - bronze.rd_capacity_projection (483 rows, 50 facilities × scenario × year, Bob's 2019-2030 projection)
-  - reference.all_facilities (UNION view across all 7 types) = 704 rows
-  - **Top states by facility count**: IA 97, NE 47, IN 35, MN 35, IL 33
-  - **Per Tore convention**: incoming third-party lists only ADD facilities not already present, never overwrite our enrichments. Imports tagged with data_source + verified_at = NULL. Apparent IA duplicates (e.g., "Ag Processing" vs "AGP") are EXPECTED and will be cleaned up when verification work runs.
-  - Builder: `scripts/ingest_plant_lists.py` (idempotent, runnable any time)
-- **Spreadsheet Kanban**: live at https://www.notion.so/34fead023dee802faaf0c8308fbfa679 (data source `34fead02-3dee-8030-9458-000b57a05ab9`, parent page = RLC OS). 321 rows total. Schema has DUPLICATE properties for both `Spreadsheet/File` + `Spreadsheet / File` and `Sheet/Tab` + `Sheet / Tab` — **always update BOTH** (Board view shows the with-space versions; SQLite schema has the no-space ones). Naming convention per user 2026-04-28: file basename without extension (e.g., `argentina_corn_bal_sheets`), tab name as-is (e.g., `renewable_diesel_monthly`).
-- **Kanban auto-fill — 203/321 populated (2026-04-28)**: walked `C:\dev\RLC-Agent\models` (71 workbooks across Oilseeds/Biofuels/Fats and Greases/Feed Grains/Cotton/Food Grains/Macro/Data folders), built file → Kanban-Name mapping, pushed via Notion API. Workflow: `scripts/build_kanban_file_mapping.py` → `docs/reference/kanban_file_mapping.tsv` → `scripts/update_kanban_from_mapping.py`. Idempotent (notes use `[auto-matched]` tag that won't double on re-run; Notion ON CONFLICT logic). 118 unmatched = files don't exist yet (Sugar 0/6, UCO non-US 0/18, Tallow non-US 15/19, Barley non-US 21/22, Sorghum non-US 19/20, Rice 9/9). These represent the build queue. Match-rate by Model in mapping report.
-- **Final rat hole queued**: report visual styling — make AI-generated weekly look like 2026 future, not 2015 BloombergPDF. Brainstorm seeds saved: Stripe annual letter visual fidelity, Pudding/FT scrollytelling motion, hover-to-verify per-paragraph sourcing, dark-mode native, "Minority Report 3-D style" graphics per user. Comes after plant list + spreadsheets done.
-- **Phase 1 Item 2 — Forecast Measurement DONE (2026-04-28, mig 042)**: `core.forecasts_historical` + 2 convenience views (`v_forecast_accuracy_by_commodity`, `v_forecasts_latest`). 1,273 forecast observations across 7 commodities (BFT/CWG/DCO/PF/PO/SBO/UCO), forecast dates Jan 2019 → Apr 2020, target months Jul 2018 → Mar 2021. SBO has 442 obs (richest series). Source: D:\Forecast Measurement\Biofuels Forecasts - Copy (108 of 196 CSVs parsed; remaining 88 had structural variants). Builder: `scripts/ingest_forecasts_historical.py` — idempotent. **Bootstraps the symbiotic forecasting endpoint** with multi-year baseline. realized_price + error_pct GENERATED column auto-compute when actuals are populated.
-- **Phase 1 Item 3 — BBD Mandate Projections DONE (2026-04-28, mig 043)**: `silver.rfs_volume_projections` + `silver.scenario_balance_sheets`. 270 RFS RIN generation projections (D3/D4/D5/D6, Upper/Lower scenarios, 2018-2030) + 3,386 soybean-oil scenario balance sheet rows (High/Mid/Low, 2019-2029). Source: D:\Biomass-Based Diesel\Mandate Projections.xlsx (snapshot 2020-12-11). Builder: `scripts/ingest_mandate_projections.py`. **Skipped as redundant**: EMTS DATA, Biodiesel EIA Monthly Production Clean (already live in `bronze.epa_emts_monthly` 16yr/3416 rows + `bronze.eia_monthly_biofuels` 5088 rows). **Deferred**: EMTS Forecast.xlsx (24 sheets, complex), RIN Balance Sheet Forecast.xlsx (chartsheets), Biodiesel and RD Forward Curve Forecast.xlsx (broken external link).
-
-## Phase 2 — Per-facility Profitability Template (2026-04-29) — THE SECRET SAUCE
-- **Spec**: `docs/specs/per_facility_profitability_template_v1.md`. Distilled from D:\Switch Over\Biomass-Based Diesel\Plant Model Project (4 workbooks Nov 2022). Source workbooks were REGIONAL profitability models (Gulf/Midwest/etc.) — template generalizes to PER-FACILITY by parameterizing what was hardcoded regional.
-- **Template**: `models/templates/per_facility_profitability_v1.xlsx` — 10 tabs (Identity / Inputs-Static / Inputs-Time Series / Revenue Build / Cost Build / Profit by Feedstock / Operating Model / Returns Summary / Sensitivity / Notes & Provenance). 8 feedstocks (SBO/DCO/UCO/TLW/CWG/PFAT/CANO/YG) × 120 months × full revenue stack (RD + LCFS + D4 RIN + 45Z) − cost stack. Formulas wired throughout; user/data inputs in yellow, calcs in green, provenance in orange. 30+ named ranges (yield_rd_X, ci_X, lcfs_baseline_ci, equiv_rd, opex_var, etc.) so formulas reference inputs by name.
-- **Builder**: `scripts/build_per_facility_template.py` — programmatic template construction; rerun whenever schema changes.
-- **Populator**: `scripts/build_per_facility_workbook.py --facility_id <id> | --all-iowa`. Clones template, populates Identity from `reference.oilseed_crush_facilities`, persists path back to `crush_model_xlsx_path` column. **25 IA workbooks generated** at `models/per_facility/ia.*.xlsx` (note: 5 more than the original 20 because of Soybean Crushing Plants list dupes — the geocoding-based merge will collapse those when verification runs).
-- **Inputs-Time Series tab is currently empty** — feedstock prices need OPIS/Argus subscription or proxy from Census import unit values. ULSD spot price wires from silver.eia_spot_prices_daily when available. v2 priority: cash-feedstock-price source.
-- **Strategic value**: each populated workbook is a sellable analyst-grade asset. Stock analysts covering ADM/BG/REG/HOLLY/PSX would buy these. Per Tore: "Having professional financial models for each facility allows us to sell information to stock analysts covering the industries, or to produce our own analysis in the future".
-
-## Balance Sheet Buildout (Opening Week Apr 7)
-- See [project_balance_sheet_framework.md](project_balance_sheet_framework.md) — **master framework**: workbook inventory, tab rule (one tab per commodity, annual on top / monthly below), complex-workbook pattern, cross-commodity aggregators
-- See [project_balance_sheet_roadmap.md](project_balance_sheet_roadmap.md) — fats/greases → fuels → grains, each with production/trade/price/consumption flat files
-- Livestock flat file DONE: `us_livestock_slaughter.xlsx` (hogs, cattle, calves, chickens, broilers, turkeys)
-- Trade conversion FIXED: KG → 000 Pounds (was KG → 1,000 MT)
-- CWG template: 16 blocks, import/export /1000 done, biofuel blocks link to [4]Allocation
-- Fuel flat files DONE (Apr 2026): `us_fuel_production_stocks.xlsx` + `us_fuel_trade.xlsx` in `Biofuels/new_models/`. Build script: `scripts/build_fuel_flat_files.py`. See [project_fuel_flat_files.md](project_fuel_flat_files.md) for legacy source map, missing EIA series, Census HS codes to add.
-
-## User
-- See [user_freddie.md](user_freddie.md) — Freddie the dog, sunrise walk buddy
-
-## Chart & Presentation Preferences
-- See [feedback_chart_preferences.md](feedback_chart_preferences.md) — annotated narrative charts, area-fill-by-sign pattern
-- See [feedback_marketing_years.md](feedback_marketing_years.md) — use MY start months (Sep corn/soy, Jul wheat, Oct meals/oils), display as "MY 2020/21"
-- See [project_calendar_year_vs_marketing_year.md](project_calendar_year_vs_marketing_year.md) — **energy uses CY, ag uses MY**. Fuel balance sheet templates must be CY not MY. CY↔MY conversion workbook needed after flat files done.
-
-## ERS Oil Crops Annual Summary
-- See [project_oil_crops_annual_summary.md](project_oil_crops_annual_summary.md) — `data/raw/oilseeds_fats_greases/oil_crops_annual_statistical_summary_042026.xlsx`, ingest net-new data to bronze for LLM access
-
-## Copra Complex Trade
-- See [project_copra_complex_trade.md](project_copra_complex_trade.md) — need HS codes + Census data for copra, copra meal, coconut oil
-
-## Minor Oils Coverage
-- See [project_minor_oils_coverage.md](project_minor_oils_coverage.md) — include safflower, flaxseed, olive oil, fish meal over time. Key system differentiator.
-- See [project_safflower_discontinuation.md](project_safflower_discontinuation.md) — CORRECTED: user confused safflower with flaxseed. Safflower IS collected. Flaxseed/linseed has limited USDA data.
-
-## MPOB Data
-- See [mpob_data.md](mpob_data.md) — Malaysia palm oil industry data from MPOB Industry Overview PDFs
-
-## Feedstock Allocation Engine
-- See [feedstock_allocation_engine.md](feedstock_allocation_engine.md) — bottom-up plant-level biofuel feedstock model, schema, ingestion status
-- See [reference_high_ffa_feedstock_biofuel_limit.md](reference_high_ffa_feedstock_biofuel_limit.md) — CWG & PLT are high-FFA; biofuel-available << NASS production. Net down before feeding the allocator; don't RLC-canonical them.
-- See [project_tallow_split.md](project_tallow_split.md) — EBFT/IBFT split design, EIA guardrail, CI calibration arc, price sourcing
-- See [project_fats_greases_buildout.md](project_fats_greases_buildout.md) — balance sheet build order, upcoming UCO/YG and DCO/corn oil splits
-- See [project_uco_yg_model.md](project_uco_yg_model.md) — UCO collection model, NASS YG suppression since Dec 2023, balance sheet structure
-- See [project_dco_corn_oil_trade_split.md](project_dco_corn_oil_trade_split.md) — DCO/corn oil share HS 1515.21, split by country (DCO→biofuel countries, food→Mexico/etc)
-- See [project_yield_reconciliation.md](project_yield_reconciliation.md) — yield check after all balance sheets done, EIA feedstock/fuel mismatch, UCO model needs recalibration
-- See [project_next_phase_ops_audit.md](project_next_phase_ops_audit.md) — after balance sheets: day-by-day ops audit, LLM forecasting layer, month-long monitoring
-- See [project_ops_audit_plan.md](project_ops_audit_plan.md) — 6-phase plan: coverage map, morning briefing email, LLM log review, forecast tracking, verification loop
-
-## Dispatcher
-- Windows Scheduled Tasks: `\RLC\RLC Dispatcher` (at logon) + `\RLC\RLC Dispatcher Watchdog` (every 15 min)
-- 37 schedule entries with APScheduler cron triggers (as of 2026-03-19, includes 4 EPA ECHO profiles)
-- **Heartbeat**: dispatcher writes `scripts/deployment/dispatcher_heartbeat.json` every 5 min; watchdog kills zombie if stale >10 min
-- Use `powershell Stop-ScheduledTask` then `Start-ScheduledTask` to restart
-- Must restart dispatcher after changing schedules in master_scheduler.py
+## Open investigations / deferred
+- [project_cwg_import_collapse_2025.md](project_cwg_import_collapse_2025.md) — CWG imports→0 in 4/7 months; not a bug. [project_reg_ralston_madison_idle.md](project_reg_ralston_madison_idle.md) — CARB absence = closure signal.
+- [reference_govt_shutdown_data_handling.md](reference_govt_shutdown_data_handling.md) — check shutdown overlap before assuming pipeline bug.
+- [project_db_password_rotation.md](project_db_password_rotation.md) — **PENDING**: RDS password rotation breaks ~45 hardcoded files; literal→env-var pass at rotation.
+- [reference_bronze_fuel_prices_provenance.md](reference_bronze_fuel_prices_provenance.md) — bronze.fuel_prices static FM snapshot, stops 2025-04-18; DTN replacement planned.
+- [project_basic_data_setup_sequence.md](project_basic_data_setup_sequence.md) — production then livestock next. [project_safflower_discontinuation.md](project_safflower_discontinuation.md) — safflower IS collected (was flaxseed confusion).
+- Priority queue: Inspections VBA (Ctrl+G, awaiting template); commodity-coverage-by-country dashboard; project structure cleanup.
 
 ---
 
@@ -6049,11 +5824,13 @@ metadata:
 
 **Why this thread started:** non-biofuel allocation → SBO/tallow flat files missing coprocessing+SAF → allocator whipsaw. Coprocessing regression now fixed AT SOURCE: SBO appears via VaR, not a hardcode. See [feedback_gate_beats_parameter] (chose the mechanism over the per-fuel patch).
 
+**Allocator integration — DONE 2026-07-15 (full historical).** Chose a post-allocation OVERRIDE layer (`scripts/risk/apply_risk_budget_to_allocation.py`) over rearchitecting the 1060-line allocate_month: keeps each facility's greedy TOTAL + fuel_type, rewrites its MIX to the quarterly budget, writes a fresh per-period run (scenario='risk_budget') the rake picks up. RLC-canonical feedstocks (tallow/UCO/YG, rake-exempt) renormalized to greedy per-period totals to hold the supply guardrail. Budgets backfilled all 68 quarters (2010Q1..2026Q4, ~9.5k) with per-quarter as-of prices. Re-raked + flat files regenerated. RESULT: SBO coprocessing 0→1,134M lb, SBO SAF 0→106M; SAF now across every feedstock; biodiesel/RD undisturbed; SBO band checks OK.
+
 **Still TODO (next session):**
-1. Allocator integration — phase the committed quarterly book across months (edit `src/engines/feedstock_allocation/allocator.py` allocate_month; the risky central change, do carefully). Config already has unused `max_monthly_switch_pct=0.20`, `contract_share=0.60` — the designed seam.
-2. Coverage accounting — populate `facility_coverage_actual`, add `gold.coverage_vs_budget` view.
-3. Re-run allocator + re-rake (`rake_feedstock_vintage_aware.py`) + regenerate flat files → SBO coprocessing + cross-feedstock SAF flow to balance sheets.
-4. THEN the demand-breakout category spec (SAF/coprocessing as 2 separate lines; non-bio components — see below).
+1. Coverage accounting — populate `facility_coverage_actual`, add `gold.coverage_vs_budget` view ("how we're doing vs budget").
+2. THEN the demand-breakout category spec (SAF/coprocessing as 2 separate lines — done in flat files; non-bio components: SBO Census M311K 9-category, tallow CIR, MODELED_SHARE forward).
+3. v1 refinements: per-facility budgets don't globally coordinate scarce RLC-canonical supply (BP's 50/50 tallow dilutes under renorm); coprocessing facility production-sizing small (pre-existing allocator); replace V1 margin proxy (`CI_BONUS`) with the IFV credit engine; native allocate_month integration (override is re-run as a post-step for now).
+4. `contract_share`/`max_monthly_switch_pct` config knobs still unused (the override supersedes them for now).
 
 **Facility-data bugs surfaced (route to FFA calibration queue, NOT engine bugs):** BP Stage 1 nameplate=2018.0 MMgy (year miskeyed → 3.3B lb). BP Stage 2 eligible has 'CAN'/'CAR' typos (should be CO).
 
