@@ -162,3 +162,4 @@ data/permits/
 # copies of the gitignored data/permits/ originals; publish script recreates them.
 permits/**/source.pdf
 permits/**/equipment_list_auto.csv
+docs/memory_archive/*.docx

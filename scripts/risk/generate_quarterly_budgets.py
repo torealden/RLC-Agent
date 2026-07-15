@@ -55,7 +55,10 @@ def parse_mix(text, eligible):
             code = NAME2CODE.get(name.upper())
             if code and (not eligible or code in eligible):
                 found[code] = found.get(code, 0) + float(pct) / 100.0
-        if found and abs(sum(found.values()) - 1.0) < 0.5:
+        # honor a PARTIAL anchor: renormalize whatever matched eligibility (e.g. a
+        # "50% SBO - 50% Tallow" mix at a facility that can only run tallow -> 100% tallow),
+        # rather than discarding the anchor and falling back to uniform.
+        if found:
             tot = sum(found.values())
             return {k: v / tot for k, v in found.items()}
     if eligible:
