@@ -351,6 +351,33 @@ with get_connection() as conn:
                         'source': 'residual: production+imports-biofuel-exports', 'release_date': '', 'revision': ''})
         return out
 
+    def nonbio_components(commodity, demand_rows_):
+        """Split each non_biofuel_use TOTAL into end-use component lines via
+        reference.nonbio_enduse_shares (shared with the oils writer / Desktop). Components sum
+        to the total by construction, so the sheet still closes. Emits nonbiofuel_use_<end_use>
+        rows; vintage flags a measured Census share vs a modeled/analog assumption."""
+        cur.execute("""SELECT end_use, share_pct, measured FROM reference.nonbio_enduse_shares
+                       WHERE commodity=%s ORDER BY share_pct DESC""", (commodity,))
+        shares = cur.fetchall()
+        out = []
+        for r in demand_rows_:
+            if r['series'] != 'non_biofuel_use':
+                continue
+            tot = float(r['value'] or 0)
+            for s in shares:
+                measured = s['measured']
+                out.append({'commodity': commodity, 'class': 'ALL',
+                            'series': 'nonbiofuel_use_' + s['end_use'],
+                            'marketing_year': r['marketing_year'], 'period_type': 'cal_month',
+                            'period': r['period'],
+                            'vintage': 'NONBIO_MEASURED' if measured else 'NONBIO_MODELED',
+                            'vintage_rank': r['vintage_rank'],
+                            'value': tot * float(s['share_pct']), 'unit': 'LB',
+                            'source': ('Census 2006-2011 end-use share x non_biofuel_use' if measured
+                                       else 'analog end-use share (assumption) x non_biofuel_use'),
+                            'release_date': '', 'revision': ''})
+        return out
+
     poultry_fat_demand += nonbio_disappearance('poultry_fat', poultry_fat_supply, poultry_fat_demand)
     white_grease_demand += nonbio_disappearance('white_grease', white_grease_supply, white_grease_demand)
     yellow_grease_demand += nonbio_disappearance('yellow_grease', yellow_grease_supply, yellow_grease_demand)
@@ -360,6 +387,14 @@ with get_connection() as conn:
     for r in tallow_supply:
         if r['series'] == 'non_bio_use':
             tallow_demand.append({**r, 'series': 'non_biofuel_use', 'commodity': 'tallow'})
+
+    # split each commodity's non_biofuel_use total into end-use component lines (shared shares)
+    tallow_demand += nonbio_components('tallow', tallow_demand)
+    uco_demand += nonbio_components('uco_yg', uco_demand)
+    poultry_fat_demand += nonbio_components('poultry_fat', poultry_fat_demand)
+    white_grease_demand += nonbio_components('white_grease', white_grease_demand)
+    yellow_grease_demand += nonbio_components('yellow_grease', yellow_grease_demand)
+    dco_demand += nonbio_components('dco', dco_demand)
 
 print(f"DCO production source unit read from corn_grind_monthly.K: {dco_prod_unit!r} "
       f"(converted to LB via x 2,000,000)")

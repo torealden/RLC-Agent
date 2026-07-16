@@ -10,8 +10,10 @@ writer, same 13-col LONG contract and same non-bio ruling (disappearance-based, 
 
 Supply: production (NASS crude oil), imports/exports (Census HS 1507=soy oil / 1514=canola oil, all
 subcodes summed per flow -> kg x 2.20462 -> LB), ending stocks (NASS). Demand: biofuel (raked
-allocator SBO / CO), food_use + industrial_use (SBO NASS refined edible/inedible use), and aggregate
-non_biofuel_use. Value = RAW pounds. Idempotent full rewrite.
+allocator SBO / CO, one line per fuel type incl. coprocessing + SAF), food_use (SBO NASS refined
+edible), aggregate non_biofuel_use, and its nonbiofuel_use_<end_use> component split via
+reference.nonbio_enduse_shares (components sum to the total). Value = RAW pounds. Idempotent full
+rewrite. See docs/specs/nonbio_demand_breakout_categories.md.
 """
 import sys
 from pathlib import Path
@@ -133,6 +135,29 @@ def by_period(rows, series):
     return {(r['marketing_year'], r['period']): r['value'] for r in rows if r['series'] == series}
 
 
+def nonbio_components(cur, commodity, demand_rows):
+    """Split each non_biofuel_use TOTAL into end-use component lines via
+    reference.nonbio_enduse_shares. Components sum to the total by construction, so the sheet
+    still closes. Emits nonbiofuel_use_<end_use> rows; vintage flags a measured Census share
+    vs a modeled/analog assumption. Held-forward 2006-2011 shares (survey discontinued 2011)."""
+    cur.execute("""SELECT end_use, share_pct, measured FROM reference.nonbio_enduse_shares
+                   WHERE commodity=%s ORDER BY share_pct DESC""", (commodity,))
+    shares = cur.fetchall()
+    out = []
+    for r in demand_rows:
+        if r['series'] != 'non_biofuel_use':
+            continue
+        tot = float(r['value'] or 0)
+        for s in shares:
+            vint = 'NONBIO_MEASURED' if s['measured'] else 'NONBIO_MODELED'
+            src = ('Census 2006-2011 end-use share x non_biofuel_use' if s['measured']
+                   else 'analog end-use share (assumption) x non_biofuel_use')
+            out.append(row(commodity, 'nonbiofuel_use_' + s['end_use'], r['marketing_year'],
+                           int(r['period'][1:]), tot * float(s['share_pct']), vint,
+                           r['vintage_rank'], src))
+    return out
+
+
 with get_connection() as conn:
     cur = conn.cursor()
 
@@ -167,6 +192,10 @@ with get_connection() as conn:
         nb = max(0.0, can_prod.get(k, 0) + can_imp.get(k, 0) - bio_by_key[k] - can_exp.get(k, 0))
         can_demand.append(row('canola_oil', 'non_biofuel_use', k[0], int(k[1][1:]), nb,
                               'RESIDUAL', 50, 'residual: production+imports-biofuel-exports'))
+
+    # split each commodity's non_biofuel_use total into end-use component lines (shared shares)
+    sbo_demand += nonbio_components(cur, 'soybean_oil', sbo_demand)
+    can_demand += nonbio_components(cur, 'canola_oil', can_demand)
 
 OUTDIR.mkdir(parents=True, exist_ok=True)
 for fname, stab, dtab, supply, demand in [
