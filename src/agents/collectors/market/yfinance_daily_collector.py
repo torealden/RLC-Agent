@@ -9,7 +9,7 @@ Front month (=F): continuous contract with full history.
 Deferred months: next 6 delivery months per commodity (~2 years of
 history available for active listings; expired contracts return 404).
 
-Symbols: 10 ag/energy futures (no palm oil — Bursa Malaysia only).
+Symbols: 12 ag/energy/dairy futures (no palm oil — Bursa Malaysia only).
 Tables:  bronze.futures_daily_settlement → silver.futures_price
 
 Usage:
@@ -57,6 +57,11 @@ YF_FUTURES: Dict[str, Dict[str, Any]] = {
            "months": "FHKNQUVZ", "yf_suffix": ".CBT"},
     "ZL": {"yf": "ZL=F", "exchange": "CBOT", "name": "Soybean Oil",
            "months": "FHKNQUVZ", "yf_suffix": ".CBT"},
+    "ZR": {"yf": "ZR=F", "exchange": "CBOT", "name": "Rough Rice",
+           "months": "FHKNUX", "yf_suffix": ".CBT"},
+    # Dairy — CME
+    "DC": {"yf": "DC=F", "exchange": "CME", "name": "Class III Milk",
+           "months": "FGHJKMNQUVXZ", "yf_suffix": ".CME"},
     # Energy — NYMEX
     "CL": {"yf": "CL=F", "exchange": "NYMEX", "name": "Crude Oil WTI",
            "months": "FGHJKMNQUVXZ", "yf_suffix": ".NYM"},

@@ -225,20 +225,24 @@ def _find_futures_price(
         return None
 
     try:
+        # Match the continuous front-month row (contract_month='FRONT'), most recent trade_date
+        # at/just before the target. NOTE: contract_date is NULL for every yfinance row, so the
+        # old `contract_date > target` filter matched nothing — this uses the collector's FRONT
+        # marker instead. Small extra lookback (10d) rides over holidays/long weekends.
         cur.execute("""
             SELECT settlement
             FROM silver.futures_price
             WHERE symbol = %(symbol)s
               AND trade_date <= %(target_date)s
               AND trade_date >= %(lookback)s
-              AND contract_date > %(target_date)s
+              AND contract_month = 'FRONT'
               AND settlement IS NOT NULL
-            ORDER BY contract_date ASC, trade_date DESC
+            ORDER BY trade_date DESC
             LIMIT 1
         """, {
             'symbol': symbol,
             'target_date': target_date,
-            'lookback': target_date - timedelta(days=7),
+            'lookback': target_date - timedelta(days=10),
         })
         row = cur.fetchone()
         if row and row[0] is not None:
