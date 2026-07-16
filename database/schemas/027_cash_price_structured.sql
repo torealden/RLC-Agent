@@ -183,9 +183,12 @@ VALUES
     ('Farm Diesel: Midwest, $/gal.', 48, 'ams_structured', '3195', 'Fuels', NULL, 'No. 2 Diesel', 'Fuel', 'price_avg', '$/gal', 2, NULL, TRUE, 'No. 2 Diesel Farm, IL (Midwest proxy)'),
 
     -- Fertilizer (from 3195, bi-weekly — carry forward 3 weeks)
-    ('Fertilizer: DAP Tampa, $/tonne', 50, 'ams_structured', '3195', 'DAP', NULL, NULL, 'Fertilizer', 'price_avg', '$/ton', 3, NULL, TRUE, 'Diammonium Phosphate 18-46-0'),
-    ('Fertilizer: Urea New Orleans, $/tonne', 51, 'ams_structured', '3195', 'Urea', NULL, NULL, 'Fertilizer', 'price_avg', '$/ton', 3, NULL, TRUE, 'Urea 46-0-0'),
-    ('Fertilizer: UAN New Orleans, $/tonne', 52, 'ams_structured', '3195', 'Liquid Nitrogen', NULL, NULL, 'Fertilizer', 'price_avg', '$/ton', 3, NULL, TRUE, 'Liquid Nitrogen 28-0-0')
+    -- Relabeled to IL retail (AMS slug 3195, IL Production Cost Report); the report's original
+    -- Gulf-wholesale benchmarks (Tampa DAP / NOLA urea+UAN) are not in AMS. commodity='Fertilizer',
+    -- type carried in grade.
+    ('Fertilizer: DAP IL retail, $/ton', 50, 'ams_structured', '3195', 'Fertilizer', NULL, 'DAP', NULL, 'price_avg', '$/ton', 3, NULL, TRUE, 'DAP (Diammonium Phosphate 18-46-0), IL retail'),
+    ('Fertilizer: Urea IL retail, $/ton', 51, 'ams_structured', '3195', 'Fertilizer', NULL, 'Urea', NULL, 'price_avg', '$/ton', 3, NULL, TRUE, 'Urea (46-0-0), IL retail'),
+    ('Fertilizer: UAN (28%) IL retail, $/ton', 52, 'ams_structured', '3195', 'Fertilizer', NULL, 'Liquid Nitrogen (28-0-0)', NULL, 'price_avg', '$/ton', 3, NULL, TRUE, 'UAN Liquid Nitrogen (28-0-0), IL retail')
 
 ON CONFLICT DO NOTHING;
 
