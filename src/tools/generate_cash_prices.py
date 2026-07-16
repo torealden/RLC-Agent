@@ -98,13 +98,16 @@ def generate_cash_prices(report_date: date = None, output_path: Path = None) -> 
         if row < PRICE_ROW_MIN or row > PRICE_ROW_MAX:
             continue
 
+        # Fill each cell; where the DB has no value, write the literal "#N/A" so the
+        # report never ships silent blanks (per Tore: #N/A is fine when a source is genuinely
+        # unavailable). A row fills automatically once its source resumes (e.g. seasonal AMS).
         if p['this_week'] is not None:
             ws.cell(row=row, column=4, value=p['this_week'])
             filled += 1
-        if p['last_week'] is not None:
-            ws.cell(row=row, column=5, value=p['last_week'])
-        if p['year_ago'] is not None:
-            ws.cell(row=row, column=6, value=p['year_ago'])
+        else:
+            ws.cell(row=row, column=4, value="#N/A")
+        ws.cell(row=row, column=5, value=p['last_week'] if p['last_week'] is not None else "#N/A")
+        ws.cell(row=row, column=6, value=p['year_ago'] if p['year_ago'] is not None else "#N/A")
 
     # Save
     wb.save(str(output_path))

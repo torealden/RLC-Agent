@@ -24,7 +24,9 @@ import openpyxl
 from openpyxl.styles import Font
 from src.services.database.db_config import get_connection
 
-OUTDIR = ROOT / "models" / "Oilseeds"
+# Convention (Tore, 2026-07-16): flat files live in commodity\country folders. The United States
+# oils file is the ACTIVE one Desktop links; the bare models/Oilseeds/*.xlsx copies are stale.
+OUTDIR = ROOT / "models" / "Oilseeds" / "United States"
 KG_TO_LB = 2.20462
 COLS = ['commodity', 'class', 'series', 'marketing_year', 'period_type', 'period',
         'vintage', 'vintage_rank', 'value', 'unit', 'source', 'release_date', 'revision']

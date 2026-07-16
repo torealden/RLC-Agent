@@ -131,8 +131,8 @@ VALUES
     ('Soybeans: Processor Central, IL $/bu.', 11, 'ams_structured', '3192', 'Soybean', 'Central', NULL, 'Mills and Processors', 'price_avg', '$/bu', 1, NULL, TRUE, 'Conventional soybeans'),
     ('Soybeans: St. Louis, MO, $/bu.', 12, 'ams_structured', '2932', 'Soybean', 'St. Louis', NULL, NULL, 'price_avg', '$/bu', 1, NULL, TRUE, 'MS River terminals'),
 
-    -- Soybean Meal (from 3511; location is 'Minneapolis' in MARS)
-    ('Soybean Meal: Decatur, IL, 48 pct, ton', 14, 'ams_structured', '3511', 'Soybean Meal', 'Minneapolis', NULL, NULL, 'price_avg', '$/ton', 2, NULL, TRUE, '46.5-48%'),
+    -- Soybean Meal (from 3511; MARS location is 'Illinois' = Decatur region)
+    ('Soybean Meal: Decatur, IL, 48 pct, ton', 14, 'ams_structured', '3511', 'Soybean Meal', 'Illinois', NULL, NULL, 'price_avg', '$/ton', 2, NULL, TRUE, '46.5-48%'),
 
     -- Wheat (MARS uses class field: Hard Red Winter, Soft Red Winter, etc.)
     ('Wheat: Kansas City, MO, HRW, $/bu.', 16, 'ams_structured', '2932', 'Wheat', 'Kansas City', 'Hard Red Winter', NULL, 'price_avg', '$/bu', 1, NULL, TRUE, 'US #1 HRW'),
@@ -151,7 +151,7 @@ VALUES
     ('Rice: AR, Long Grain, $/cwt.', 26, 'futures', NULL, NULL, NULL, NULL, NULL, 'settlement', '$/cwt', 1, 'ZR', TRUE, 'First non-spot month'),
 
     -- Barley
-    ('Barley: MT, feed, $/cwt.', 28, 'ams_structured', '2771', 'Barley', 'Golden Triangle', 'Feed', NULL, 'price_avg', '$/cwt', 1, NULL, TRUE, 'US #2 Feed, may show N/A'),
+    ('Barley: MT, feed, $/cwt.', 28, 'ams_structured', '2771', 'Barley', 'North Central', 'Feed', NULL, 'price_avg', '$/cwt', 1, NULL, TRUE, 'US #2 Feed; seasonal - blanks to #N/A in summer'),
 
     -- Oats (MARS uses 'White Oats' as commodity)
     ('Oats: Minneapolis, MN, No.2, heavy, $/bu.', 30, 'ams_structured', '3046', 'White Oats', NULL, NULL, NULL, 'price_avg', '$/bu', 1, NULL, TRUE, 'US #1/2 White Oats'),
@@ -180,7 +180,7 @@ VALUES
     ('Ethanol: IA, $/gal.', 46, 'ams_structured', '3616', 'Ethanol', NULL, NULL, NULL, 'price_avg', '$/gal', 2, NULL, TRUE, NULL),
 
     -- Farm Diesel (from 3195, bi-weekly)
-    ('Farm Diesel: Midwest, $/gal.', 48, 'ams_structured', '3195', 'Diesel', NULL, NULL, 'Fuel', 'price_avg', '$/gal', 2, NULL, TRUE, 'No. 2 Diesel Farm'),
+    ('Farm Diesel: Midwest, $/gal.', 48, 'ams_structured', '3195', 'Fuels', NULL, 'No. 2 Diesel', 'Fuel', 'price_avg', '$/gal', 2, NULL, TRUE, 'No. 2 Diesel Farm, IL (Midwest proxy)'),
 
     -- Fertilizer (from 3195, bi-weekly — carry forward 3 weeks)
     ('Fertilizer: DAP Tampa, $/tonne', 50, 'ams_structured', '3195', 'DAP', NULL, NULL, 'Fertilizer', 'price_avg', '$/ton', 3, NULL, TRUE, 'Diammonium Phosphate 18-46-0'),
