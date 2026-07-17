@@ -16,6 +16,7 @@ reference.nonbio_enduse_shares (components sum to the total). Value = RAW pounds
 rewrite. See docs/specs/nonbio_demand_breakout_categories.md.
 """
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(r"C:/dev/RLC-Agent"); sys.path.insert(0, str(ROOT))
@@ -138,25 +139,36 @@ def by_period(rows, series):
 
 
 def nonbio_components(cur, commodity, demand_rows):
-    """Split each non_biofuel_use TOTAL into end-use component lines via
-    reference.nonbio_enduse_shares. Components sum to the total by construction, so the sheet
-    still closes. Emits nonbiofuel_use_<end_use> rows; vintage flags a measured Census share
-    vs a modeled/analog assumption. Held-forward 2006-2011 shares (survey discontinued 2011)."""
-    cur.execute("""SELECT end_use, share_pct, measured FROM reference.nonbio_enduse_shares
-                   WHERE commodity=%s ORDER BY share_pct DESC""", (commodity,))
-    shares = cur.fetchall()
+    """Split each non_biofuel_use TOTAL into end-use component lines via the SEASONAL
+    (calendar-month) shares in reference.nonbio_enduse_shares_monthly — each month uses its own
+    share so the components breathe seasonally instead of sitting at a flat percentage. Falls back
+    to the flat annual reference.nonbio_enduse_shares if a commodity has no monthly rows.
+    Components sum to the total within each month (shares sum to 1.0), so the sheet still closes.
+    Vintage flags a measured Census share vs a modeled/analog assumption."""
+    cur.execute("""SELECT month, end_use, share_pct, measured
+                   FROM reference.nonbio_enduse_shares_monthly WHERE commodity=%s""", (commodity,))
+    monthly = defaultdict(list)
+    for s in cur.fetchall():
+        monthly[s['month']].append(s)
+    if not monthly:  # fallback: flat annual shares across every month
+        cur.execute("""SELECT end_use, share_pct, measured FROM reference.nonbio_enduse_shares
+                       WHERE commodity=%s""", (commodity,))
+        flat = cur.fetchall()
+        monthly = {m: flat for m in range(1, 13)}
     out = []
     for r in demand_rows:
         if r['series'] != 'non_biofuel_use':
             continue
         tot = float(r['value'] or 0)
-        for s in shares:
+        mo = int(r['period'][1:])
+        ms = monthly.get(mo, [])
+        ssum = sum(float(s['share_pct']) for s in ms) or 1.0  # normalize -> exact closure
+        for s in ms:
             vint = 'NONBIO_MEASURED' if s['measured'] else 'NONBIO_MODELED'
-            src = ('Census 2006-2011 end-use share x non_biofuel_use' if s['measured']
-                   else 'analog end-use share (assumption) x non_biofuel_use')
+            src = ('Census 2006-2011 seasonal end-use share x non_biofuel_use' if s['measured']
+                   else 'analog/modeled seasonal end-use share x non_biofuel_use')
             out.append(row(commodity, 'nonbiofuel_use_' + s['end_use'], r['marketing_year'],
-                           int(r['period'][1:]), tot * float(s['share_pct']), vint,
-                           r['vintage_rank'], src))
+                           mo, tot * float(s['share_pct']) / ssum, vint, r['vintage_rank'], src))
     return out
 
 

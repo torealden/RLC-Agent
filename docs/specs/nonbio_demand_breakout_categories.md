@@ -4,8 +4,18 @@
 feedstock supply/demand flat files, so the balance sheets can link to them.
 **Status:** live in the flat files as of 2026-07-16 (`write_oils_supply_flat_files.py`,
 `write_fats_supply_flat_files.py`).
-**Shares source of truth:** `reference.nonbio_enduse_shares` (migration 144), seeded from
-`docs/reference/non_biofuel_disposition_shares.md`. Query it directly for the weights.
+**Shares source of truth:** `reference.nonbio_enduse_shares_monthly` (migration 145) — SEASONAL
+calendar-month shares; the flat annual `reference.nonbio_enduse_shares` (migration 144) is the
+fallback/level reference. Query either for the weights.
+
+**Seasonal shape (2026-07-17):** components are no longer a flat percentage every month. The
+month-of-year pattern is derived from the 2006-2011 Census monthlies (SBO from
+`us_oilseed_crush.xlsm`, tallow from `bronze.census_cir_fats`) and applied as a seasonal index
+**around the ruled annual level** — so the annual level is unchanged (e.g. SBO salad/cooking still
+averages 64.2%) but it now breathes by month (salad/cooking ranges ~60.7% Aug to ~67.5% May;
+baking/frying inversely, peaking summer). Each (commodity, month) still sums to 1.0, so the sheet
+closes every month. Rebuild with `python scripts/build_nonbio_seasonal_shares.py`. Single-bucket
+feedstocks (DCO, UCO/YG) and cottonseed have no seasonal source → flat across months.
 
 ---
 
