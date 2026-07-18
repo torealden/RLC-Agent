@@ -3,9 +3,13 @@
 **Handoff note:** the *content model is locked*. A working sample (v5) demonstrates the exact
 structure — **attach a screenshot of it** alongside this brief. Your job is the **look**, not the
 content: make it beautiful and, above all, **consistent — every weekly edition must look identical**,
-because the editions are mass-produced by code from this one template. Also **attach the icon SVGs**
-from `design_system/icons/svg/` (soybean, canola, oil-droplet, steak, drumstick, refinery, barrel,
-renewable, tanker-*, rail-tanker). Single-color line icons on `currentColor`.
+because the editions are mass-produced by code from this one template.
+
+**This project has the "Lake, Field & Grain" design system synced** — the brand tokens and the
+24-icon library. **Use the project's canonical icons** — single-bean `soybean`, the Erlenmeyer-flask
+vegetable oils (`soybean-oil`, `canola-oil`, `sunflower-oil`, `corn-oil`, `cottonseed-oil`), the
+meat-cut livestock (`steak`, `bacon`, `drumstick`), and the `uco` / `crude` droplet pair — **do not
+redraw them.** The palette/type/horizon below match the synced tokens.
 
 ---
 
