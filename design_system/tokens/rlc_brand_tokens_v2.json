@@ -32,8 +32,10 @@
   },
   "horizon_band": {
     "description": "Signature motif — replaces all plain gold rules. Lake asserts, Field signals, Wheat lights.",
-    "print": { "field_pt": 4, "gap_pt": 3, "wheat_pt": 1.2 },
-    "web":   { "field_px": 4, "gap_px": 3, "wheat_px": 1 }
+    "orientation": "grounded — Wheat light hairline on TOP, Paper gap, Field band on BOTTOM. Reads as a true horizon (land grounded, light above). Ruled by Tore 2026-07-18; supersedes the v2.0 field-on-top order in the source PDF's PptxGenJS/matplotlib snippets.",
+    "order_top_to_bottom": ["wheat_hairline", "paper_gap", "field_band"],
+    "print": { "wheat_pt": 1.2, "gap_pt": 2, "field_pt": 4 },
+    "web":   { "wheat_px": 1, "gap_px": 2, "field_px": 4 }
   },
   "typography": {
     "display": { "family": "Georgia, 'Times New Roman', serif", "usage": "headings, display" },
