@@ -1,0 +1,37 @@
+/* Lake, Field & Grain — RLC design tokens (CSS custom properties).
+   Design System source of truth for Claude Design; mirrors tokens/rlc_brand_tokens_v2.json. */
+:root {
+  /* palette */
+  --rlc-lake:  #1B2A4A;  /* anchor — body, headers, chart base */
+  --rlc-field: #3C7D22;  /* accent — rules, positives, the horizon */
+  --rlc-wheat: #C8A951;  /* light — highlights, hairlines */
+  --rlc-paper: #F7F3EB;  /* ground — page / fills */
+  --rlc-sage:  #B7CCA4;  /* tint — confidence bands, chart fills */
+  --rlc-clay:  #96492A;  /* counter — negatives / bearish (replaces red) */
+  --rlc-slate: #8A8F98;  /* neutral — captions, axes */
+  --rlc-grid:  #E8E4D8;
+
+  /* data ramp (sequential, low -> high) */
+  --rlc-ramp-1: #C3DCA9;
+  --rlc-ramp-2: #8FBF6B;
+  --rlc-ramp-3: #5F9E3B;
+  --rlc-ramp-4: #3C7D22;
+  --rlc-ramp-5: #24500F;
+
+  /* semantic */
+  --rlc-positive: var(--rlc-field);
+  --rlc-negative: var(--rlc-clay);
+  --rlc-emphasis: var(--rlc-wheat);
+  --rlc-band:     var(--rlc-sage);
+
+  /* typography */
+  --rlc-font-display: Georgia, "Times New Roman", serif;
+  --rlc-font-text:    Calibri, "Segoe UI", system-ui, sans-serif;
+  --rlc-font-mono:    "Cascadia Mono", Consolas, ui-monospace, monospace;
+  --rlc-h1: 22pt; --rlc-h2: 16pt; --rlc-h3: 12pt; --rlc-body: 10pt; --rlc-caption: 8pt;
+}
+
+/* The signature horizon band — grounded: Wheat light hairline over a Field band. */
+.rlc-horizon { border: 0; margin: 0; display: block; }
+.rlc-horizon::before { content: ""; display: block; height: 1px; background: var(--rlc-wheat); }
+.rlc-horizon::after  { content: ""; display: block; height: 4px; margin-top: 2px; background: var(--rlc-field); }
