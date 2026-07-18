@@ -1,0 +1,62 @@
+{
+  "$schema": "https://rlc.internal/brand-tokens.schema.json",
+  "name": "Lake, Field & Grain",
+  "owner": "Round Lakes Commodities",
+  "version": "2.0",
+  "status": "canonical",
+  "source": "rlc_reports/RLC_Brand_Tokens_v2.pdf",
+  "note": "Single source of truth for the RLC design system. Materialized 2026-07-17 from the v2.0 tokens spec; all derived artifacts (CSS, matplotlib, PptxGenJS, Excel, PowerBI) should generate from this file. Semantic rule: 'Lake asserts, Field signals, Wheat lights.'",
+  "palette": {
+    "lake":  { "hex": "#1B2A4A", "rgb": [27, 42, 74],   "role": "Anchor — body text, mastheads, dark surfaces, table headers, chart base paths" },
+    "field": { "hex": "#3C7D22", "rgb": [60, 125, 34],  "role": "Accent — section rules, signal chips, positive values, chart accents, the horizon" },
+    "wheat": { "hex": "#C8A951", "rgb": [200, 169, 81], "role": "Light — highlights on dark, horizon hairline, callout borders; never meaning alone" },
+    "paper": { "hex": "#F7F3EB", "rgb": [247, 243, 235],"role": "Ground — page and callout fills" },
+    "sage":  { "hex": "#B7CCA4", "rgb": [183, 204, 164],"role": "Tint — confidence bands, chart fills" },
+    "clay":  { "hex": "#96492A", "rgb": [150, 73, 42],  "role": "Counter — negatives, bearish, risk (replaces red)" },
+    "slate": { "hex": "#8A8F98", "rgb": [138, 143, 152],"role": "Neutral — captions, axes, secondary text" }
+  },
+  "supporting": {
+    "grid": "#E8E4D8"
+  },
+  "data_ramp": {
+    "description": "Sequential, dark to light",
+    "stops": ["#24500F", "#3C7D22", "#5F9E3B", "#8FBF6B", "#C3DCA9"]
+  },
+  "chart_prop_cycle": ["#1B2A4A", "#3C7D22", "#96492A", "#8A8F98", "#C8A951"],
+  "semantic": {
+    "positive": "field",
+    "negative": "clay",
+    "neutral": "slate",
+    "emphasis": "wheat",
+    "band_fill": "sage"
+  },
+  "horizon_band": {
+    "description": "Signature motif — replaces all plain gold rules. Lake asserts, Field signals, Wheat lights.",
+    "print": { "field_pt": 4, "gap_pt": 3, "wheat_pt": 1.2 },
+    "web":   { "field_px": 4, "gap_px": 3, "wheat_px": 1 }
+  },
+  "typography": {
+    "display": { "family": "Georgia, 'Times New Roman', serif", "usage": "headings, display" },
+    "text":    { "family": "Calibri, 'Segoe UI', system-ui, sans-serif", "usage": "body" },
+    "web_fallback_note": "Georgia and Calibri are system-safe on Windows/Office; on web where unavailable, fall back to a serif (display) / humanist sans (text) pairing.",
+    "scale_pt": { "h1": 22, "h2": 16, "h3": 12, "body": 10, "caption": 8 }
+  },
+  "contrast": {
+    "body_lake_on_paper": "12.6:1 (AAA)",
+    "field_heading_min_12pt": "4.6:1",
+    "white_on_field_chip": "5.1:1 (AA)",
+    "wheat_on_lake": "6.4:1 (AA)",
+    "clay_on_paper": "6.5:1 (AA)"
+  },
+  "platforms": {
+    "css_vars": {
+      "--rlc-lake": "#1B2A4A", "--rlc-field": "#3C7D22", "--rlc-wheat": "#C8A951",
+      "--rlc-paper": "#F7F3EB", "--rlc-sage": "#B7CCA4", "--rlc-clay": "#96492A", "--rlc-slate": "#8A8F98"
+    },
+    "excel": {
+      "header_fill": "1B2A4A", "header_font": "FFFFFF bold",
+      "highlight_fill": "C8A951", "negative_font": "96492A", "positive_font": "3C7D22",
+      "model_conventions": "blue inputs, black formulas, green cross-sheet links (unchanged)"
+    }
+  }
+}
