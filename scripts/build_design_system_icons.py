@@ -75,6 +75,50 @@ ICONS = [
      '<path stroke-width="2.6" d="M8.7 15.3 6.2 17.8"/><circle stroke-width="2.6" cx="5.1" cy="18.9" r="1.5"/>'),
 ]
 
+# ── Vegetable oils = the analytical Erlenmeyer flask + a mini of the seed inside; plus two new
+#    standalones (sunflower with a seedy dot-center + pointed petals; cotton as a boll). Locked
+#    with Tore 2026-07-18. ──
+def _petal(cx, cy, R, L, W):
+    t, b, m = round(cy - R - L, 2), round(cy - R, 2), round(cy - R - L * 0.55, 2)
+    return (f"M{cx} {t}C{round(cx-W,2)} {m} {round(cx-W,2)} {b} {cx} {b}"
+            f"C{round(cx+W,2)} {b} {round(cx+W,2)} {m} {cx} {t}Z")
+
+
+def _flower(cx, cy, R, L, W, n, rc, dots):
+    petals = "".join(f'<path d="{_petal(cx,cy,R,L,W)}" transform="rotate({round(360/n*i,1)} {cx} {cy})"/>'
+                     for i in range(n))
+    d = "".join(f'<path d="M{x} {y}h.01"/>' for x, y in dots)
+    return petals + f'<circle cx="{cx}" cy="{cy}" r="{rc}"/>' + d
+
+
+_SUN_SEED = _flower(12, 10, 3.4, 2.4, 1.05, 14, 3.4,
+                    [(12, 10), (10.5, 9.1), (13.5, 9.1), (10.5, 10.9), (13.5, 10.9),
+                     (12, 8.3), (12, 11.7), (11, 10), (13, 10)])
+_SUN_MINI = _flower(12, 16, 2.4, 1.6, 0.75, 12, 2.4,
+                    [(12, 16), (11, 15.2), (13, 15.2), (11, 16.8), (13, 16.8), (12, 15)])
+_COTTON = ('<path d="M7.6 12.9a2.2 2.2 0 0 1 .2-3.9 2.5 2.5 0 0 1 4-1.8 2.5 2.5 0 0 1 4 1.8 2.2 2.2 0 0 1 .2 3.9 '
+           '2.3 2.3 0 0 1-2.9 1.3 2.3 2.3 0 0 1-2.6 0 2.3 2.3 0 0 1-2.9-1.3Z"/>'
+           '<path d="M12 6.9v6.4M9.6 9.6l1.6 1.8M14.4 9.6l-1.6 1.8"/>'
+           '<path d="M9.7 13.4 8.3 16.8M12 13.8v3.6M14.3 13.4 15.7 16.8"/>')
+_BEAKER = ('<path d="M10 3V8.6L5.1 19.3c-.5 1.1.5 2.4 1.7 2.4H17.2c1.2 0 2.2-1.3 1.7-2.4L14 8.6V3"/>'
+           '<path d="M9.2 3h5.6"/><path d="M14.8 3 15.9 2.3"/><path d="M10.1 6.9c1.3-.7 2.6-.7 3.9 0"/>')
+_MINI = {
+    "soybean": '<path d="M12 12.3c2.3 0 4.1 2.1 4.1 4.6S14.3 21.5 12 21.5 7.9 19.4 7.9 16.9 9.7 12.3 12 12.3Z"/><path d="M9.9 15.4c-.6.6-.6 1.6 0 2.2"/>',
+    "canola": '<ellipse cx="12" cy="13.4" rx="1.5" ry="2.1"/><ellipse cx="15" cy="16.2" rx="2.1" ry="1.5"/><ellipse cx="12" cy="19" rx="1.5" ry="2.1"/><ellipse cx="9" cy="16.2" rx="2.1" ry="1.5"/><circle cx="12" cy="16.2" r=".95"/>',
+    "sunflower": _SUN_MINI,
+    "corn": '<ellipse cx="12" cy="16" rx="2.2" ry="3.3"/><path d="M12 13.2v5.6"/><path d="M10.9 14.8h.01M13.1 14.8h.01M10.9 16.6h.01M13.1 16.6h.01M12 15.7h.01M12 17.6h.01"/>',
+    "cottonseed": '<path d="M9.6 16.6a1.5 1.5 0 0 1 .1-2.7 1.7 1.7 0 0 1 2.8-1.2 1.7 1.7 0 0 1 2.8 1.2 1.5 1.5 0 0 1 .1 2.7 1.6 1.6 0 0 1-2 .8 1.6 1.6 0 0 1-1.8 0 1.6 1.6 0 0 1-2-.8Z"/><path d="M12 13.4v3.6"/><path d="M10.5 17.2 9.7 19.4M12 17.4v2.1M13.5 17.2 14.3 19.4"/>',
+}
+ICONS += [
+    ("sunflower", "Commodities", "Sunflower", _SUN_SEED),
+    ("cotton", "Commodities", "Cotton", _COTTON),
+    ("soybean-oil", "Oils & Fats", "Soybean oil", _BEAKER + _MINI["soybean"]),
+    ("canola-oil", "Oils & Fats", "Canola oil", _BEAKER + _MINI["canola"]),
+    ("sunflower-oil", "Oils & Fats", "Sunflower oil", _BEAKER + _MINI["sunflower"]),
+    ("corn-oil", "Oils & Fats", "Corn oil", _BEAKER + _MINI["corn"]),
+    ("cottonseed-oil", "Oils & Fats", "Cottonseed oil", _BEAKER + _MINI["cottonseed"]),
+]
+
 WRAP = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" '
         'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" '
         'stroke-linejoin="round">{inner}</svg>\n')

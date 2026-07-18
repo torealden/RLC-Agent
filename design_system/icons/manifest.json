@@ -82,6 +82,41 @@
       "name": "drumstick",
       "group": "Livestock",
       "label": "Drumstick (poultry)"
+    },
+    {
+      "name": "sunflower",
+      "group": "Commodities",
+      "label": "Sunflower"
+    },
+    {
+      "name": "cotton",
+      "group": "Commodities",
+      "label": "Cotton"
+    },
+    {
+      "name": "soybean-oil",
+      "group": "Oils & Fats",
+      "label": "Soybean oil"
+    },
+    {
+      "name": "canola-oil",
+      "group": "Oils & Fats",
+      "label": "Canola oil"
+    },
+    {
+      "name": "sunflower-oil",
+      "group": "Oils & Fats",
+      "label": "Sunflower oil"
+    },
+    {
+      "name": "corn-oil",
+      "group": "Oils & Fats",
+      "label": "Corn oil"
+    },
+    {
+      "name": "cottonseed-oil",
+      "group": "Oils & Fats",
+      "label": "Cottonseed oil"
     }
   ],
   "alternates_on_shelf": [
