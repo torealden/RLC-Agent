@@ -117,6 +117,16 @@
       "name": "cottonseed-oil",
       "group": "Oils & Fats",
       "label": "Cottonseed oil"
+    },
+    {
+      "name": "uco",
+      "group": "Oils & Fats",
+      "label": "Used cooking oil"
+    },
+    {
+      "name": "crude",
+      "group": "Oils & Fats",
+      "label": "Crude oil"
     }
   ],
   "alternates_on_shelf": [

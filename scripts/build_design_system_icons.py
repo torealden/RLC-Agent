@@ -117,6 +117,15 @@ ICONS += [
     ("sunflower-oil", "Oils & Fats", "Sunflower oil", _BEAKER + _MINI["sunflower"]),
     ("corn-oil", "Oils & Fats", "Corn oil", _BEAKER + _MINI["corn"]),
     ("cottonseed-oil", "Oils & Fats", "Cottonseed oil", _BEAKER + _MINI["cottonseed"]),
+    # UCO & crude — same droplet, inverse fill. UCO = outline (used/recycled); crude = solid with
+    # the flair knocked out (raw/whole). crude is the one filled mark in the set, by design.
+    ("uco", "Oils & Fats", "Used cooking oil",
+     '<path d="M12 3.2c0 0-6.3 6.7-6.3 11.3a6.3 6.3 0 0 0 12.6 0C18.3 9.9 12 3.2 12 3.2Z"/>'
+     '<path d="M9.2 15.2a3 3 0 0 0 2.1 2.9"/>'),
+    ("crude", "Oils & Fats", "Crude oil",
+     '<path fill="currentColor" fill-rule="evenodd" stroke="none" '
+     'd="M12 3.2c0 0-6.3 6.7-6.3 11.3a6.3 6.3 0 0 0 12.6 0C18.3 9.9 12 3.2 12 3.2Z'
+     ' M8.9 14.8a3.4 3.4 0 0 0 2.4 3.3 .55 .55 0 0 0 .5-.6 2.5 2.5 0 0 1-1.75-2.4 .55 .55 0 0 0-1.15-.3Z"/>'),
 ]
 
 WRAP = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" '
