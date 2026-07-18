@@ -1,0 +1,96 @@
+{
+  "set": "RLC iconography v1",
+  "locked": "2026-07-18",
+  "style": {
+    "grid": 24,
+    "stroke": 1.75,
+    "joins": "round",
+    "color": "currentColor"
+  },
+  "icons": [
+    {
+      "name": "soybean",
+      "group": "Commodities",
+      "label": "Soybean"
+    },
+    {
+      "name": "corn",
+      "group": "Commodities",
+      "label": "Corn"
+    },
+    {
+      "name": "wheat",
+      "group": "Commodities",
+      "label": "Wheat"
+    },
+    {
+      "name": "canola",
+      "group": "Commodities",
+      "label": "Canola"
+    },
+    {
+      "name": "oil-droplet",
+      "group": "Oils & Fats",
+      "label": "Oil droplet"
+    },
+    {
+      "name": "renewable",
+      "group": "Energy & Biofuel",
+      "label": "Renewable"
+    },
+    {
+      "name": "barrel",
+      "group": "Energy & Biofuel",
+      "label": "Barrel"
+    },
+    {
+      "name": "refinery",
+      "group": "Facilities",
+      "label": "Refinery (flare)"
+    },
+    {
+      "name": "grain-silo",
+      "group": "Facilities",
+      "label": "Grain silo"
+    },
+    {
+      "name": "tanker-vessel",
+      "group": "Logistics",
+      "label": "Tanker vessel"
+    },
+    {
+      "name": "tanker-truck",
+      "group": "Logistics",
+      "label": "Tanker truck"
+    },
+    {
+      "name": "rail-tanker",
+      "group": "Logistics",
+      "label": "Rail tanker car"
+    },
+    {
+      "name": "steak",
+      "group": "Livestock",
+      "label": "Steak (beef)"
+    },
+    {
+      "name": "bacon",
+      "group": "Livestock",
+      "label": "Bacon (pork)"
+    },
+    {
+      "name": "drumstick",
+      "group": "Livestock",
+      "label": "Drumstick (poultry)"
+    }
+  ],
+  "alternates_on_shelf": [
+    "canola-gold",
+    "cattle-face",
+    "pig-head",
+    "chicken-head",
+    "steak-tomahawk",
+    "steak-tbone",
+    "bacon-3strip"
+  ]
+}
