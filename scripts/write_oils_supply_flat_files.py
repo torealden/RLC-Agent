@@ -18,6 +18,7 @@ rewrite. See docs/specs/nonbio_demand_breakout_categories.md.
 import sys
 from collections import defaultdict
 from pathlib import Path
+from statistics import mean
 
 ROOT = Path(r"C:/dev/RLC-Agent"); sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
@@ -172,6 +173,78 @@ def nonbio_components(cur, commodity, demand_rows):
     return out
 
 
+_MO = {'january': 1, 'february': 2, 'march': 3, 'april': 4, 'may': 5, 'june': 6, 'july': 7,
+       'august': 8, 'september': 9, 'october': 10, 'november': 11, 'december': 12}
+
+
+def _my_start(y, m):
+    return y if m >= 10 else y - 1   # US oil marketing year starts October
+
+
+def sbo_nonbio_series(cur, supply_rows, bio_totals):
+    """SBO non-biofuel use = the balance RESIDUAL after biofuel (ruled 2026-07-20;
+    project_nonbio_residual_after_biofuel). Full history + independent 2-MY forecast, replacing the
+    old 17-month NASS-edible series:
+      2007/08-2024/09  ERS Oil Crops Yearbook monthly 'Total domestic use' - 'Domestic use, Biofuel'.
+      2024/10-latest   our balance residual = production + imports - exports - dStocks - raked biofuel.
+      forecast         rest of current MY + 2 full MYs: trailing-3-MY-avg annual x 5-yr monthly
+                       seasonal share -- a mechanical, INDEPENDENT baseline (no analyst projections
+                       seeded), so the gap vs Tore's judged view is the reconciliation signal.
+    Returns non_biofuel_use rows (LB)."""
+    cur.execute("""SELECT marketing_year, lower(timeperiod_desc) tp,
+        max(CASE WHEN attribute_desc='Total domestic use' THEN amount END) tot,
+        max(CASE WHEN attribute_desc='Domestic use, Biofuel' THEN amount END) biof
+      FROM bronze.ers_oil_crops_yearbook WHERE commodity ILIKE '%soybean oil%'
+      AND lower(timeperiod_desc) IN ('january','february','march','april','may','june','july',
+                                     'august','september','october','november','december')
+      GROUP BY 1,2""")
+    nb = {}
+    for r in cur.fetchall():
+        if r['tot'] is None:
+            continue
+        m = _MO[r['tp']]; y0 = int(str(r['marketing_year'])[:4])
+        nb[(y0 if m >= 10 else y0 + 1, m)] = (float(r['tot']) - float(r['biof'] or 0)) * 1000.0
+    last_ers = max(nb) if nb else (2007, 10)
+
+    def _bp(series):
+        return {(r['marketing_year'], int(r['period'][1:])): float(r['value'] or 0)
+                for r in supply_rows if r['series'] == series}
+    prod, stk, imp, exp = _bp('production'), _bp('stocks'), _bp('imports'), _bp('exports')
+    for k in sorted(set(prod) & set(bio_totals)):
+        if k <= last_ers:
+            continue
+        y, m = k; pk = (y, m - 1) if m > 1 else (y - 1, 12)
+        ds = stk.get(k, 0) - stk.get(pk, stk.get(k, 0))
+        nb[k] = prod.get(k, 0) + imp.get(k, 0) - exp.get(k, 0) - ds - bio_totals.get(k, 0)
+    last_act = max(nb)
+
+    myt, n_mo = defaultdict(float), defaultdict(int)
+    for (y, m), v in nb.items():
+        myt[_my_start(y, m)] += v; n_mo[_my_start(y, m)] += 1
+    complete = [my for my in sorted(myt) if n_mo[my] == 12]
+    seas_src = defaultdict(list)
+    for (y, m), v in nb.items():
+        my = _my_start(y, m)
+        if my in complete[-5:] and myt[my] > 0:
+            seas_src[m].append(v / myt[my])
+    seas = {m: (mean(seas_src[m]) if seas_src[m] else 1 / 12) for m in range(1, 13)}
+    ssum = sum(seas.values()) or 1.0
+    seas = {m: seas[m] / ssum for m in seas}
+    ann = mean(myt[my] for my in complete[-3:]) if complete else 12 * sum(nb.values()) / max(1, len(nb))
+
+    out = [row('soybean_oil', 'non_biofuel_use', y, m, v, 'RESIDUAL_ACTUAL', 90,
+               'ERS total dom - biofuel (07/08-09/24); balance residual thereafter')
+           for (y, m), v in nb.items()]
+    cur_my = _my_start(*last_act)
+    for my in (cur_my, cur_my + 1, cur_my + 2):
+        for m in list(range(10, 13)) + list(range(1, 10)):
+            y = my if m >= 10 else my + 1
+            if (y, m) not in nb:
+                out.append(row('soybean_oil', 'non_biofuel_use', y, m, ann * seas[m],
+                               'FORECAST_SEASONAL', 40, 'independent: trailing-3MY avg x 5yr seasonal'))
+    return out
+
+
 with get_connection() as conn:
     cur = conn.cursor()
 
@@ -179,15 +252,13 @@ with get_connection() as conn:
     sbo_supply = (nass_series(cur, 'soybeans', 'oil_production_crude', 'production', 'soybean_oil')
                   + nass_series(cur, 'soybeans', 'oil_stocks', 'stocks', 'soybean_oil')
                   + census_trade(cur, '1507', 'soybean_oil'))
-    sbo_demand, _ = raked_demand(cur, 'SBO', 'soybean_oil')
+    sbo_demand, sbo_bio_tot = raked_demand(cur, 'SBO', 'soybean_oil')
     sbo_food = nass_series(cur, 'soybeans', 'oil_refined_edible_use', 'food_use', 'soybean_oil')
-    sbo_demand += sbo_food
-    # non-bio = food (edible) use only. Refined INEDIBLE use is predominantly the biofuel feedstock
-    # stream (already in raked biofuel); adding it double-counts and blows the balance open. With
-    # food-only, production+imports ~= biofuel+food+exports +/- stocks (closes to ~2%).
-    for k, fv in by_period(sbo_food, 'food_use').items():
-        sbo_demand.append(row('soybean_oil', 'non_biofuel_use', k[0], int(k[1][1:]), fv,
-                              'DISAPPEARANCE', 90, 'NASS refined edible (food) use'))
+    sbo_demand += sbo_food  # informational NASS refined-edible line (a subset of non-bio use)
+    # non_biofuel_use = the balance RESIDUAL after biofuel is allocated by fuel, full history +
+    # independent 2-MY forecast (ruled 2026-07-20; project_nonbio_residual_after_biofuel). Replaces
+    # the old 17-month food-only proxy.
+    sbo_demand += sbo_nonbio_series(cur, sbo_supply, sbo_bio_tot)
 
     # ---------------- CANOLA OIL ----------------
     can_supply = (nass_series(cur, 'canola', 'oil_production_crude', 'production', 'canola_oil')
