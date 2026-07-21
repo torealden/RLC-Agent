@@ -188,12 +188,10 @@ def write_meta(wb, rows, notes):
 NOTES = {
     'production': 'NASS crude oil production (oil_production_crude), raw lb; pre-2015 from ERS OCY '
                   '(identical series -- verified 1.000 on the 2015-18 overlap)',
-    'stocks_total': 'TOTAL US soybean oil stocks (ERS Oil Crops Yearbook) -- processors + refiners '
-                    '+ other. This is the BALANCE-SHEET stocks concept. NOT the same as "stocks": '
-                    'NASS oil_stocks is processor-held crude only and runs 4.7-6.5x SMALLER. '
-                    'MY2011/12-2014/15 modeled from ERS annual ending stocks (no monthly source '
-                    'exists for those years).',
-    'stocks': 'NASS ending stocks (oil_stocks), raw lb',
+    'stocks': 'TOTAL US stocks = NASS crude + once-refined (onsite & offsite). Crude+refined is '
+              'the total for every vegetable oil; the crusher/refiner/offsite cuts are '
+              'subcategories of crude, not extra pools. Pre-2015 from ERS OCY (ties exactly). '
+              'MY2011/12-2014/15 modeled from ERS annual ending stocks -- no monthly source exists.',
     'imports': 'Census HS 1507 (soy) / 1514 (canola) imports, all subcodes summed, kg -> lb',
     'exports': 'Census HS 1507 (soy) / 1514 (canola) exports, all subcodes summed, kg -> lb',
     'biofuel_use_biodiesel': 'raked allocator: biodiesel feedstock use',
@@ -215,6 +213,46 @@ def nass_series(cur, commodity, attribute, out_series, out_commodity):
                    ORDER BY 1,2""", (commodity, attribute))
     return [row(out_commodity, out_series, r['yr'], r['month'], r['v'], 'NASS_FATS_OILS', 90, 'NASS')
             for r in cur.fetchall()]
+
+
+def nass_total_stocks(cur, oil_name, out_commodity):
+    """TOTAL US vegetable-oil stocks = CRUDE + ONCE REFINED (both onsite & offsite).
+
+    Ruled by Tore 2026-07-21: "crude plus refined always equals total across all countries for
+    vegetable oils." The crusher / refiner / offsite cuts NASS also publishes are SUBCATEGORIES of
+    crude, not additional stock pools -- adding them would double-count.
+
+    This bypasses silver.monthly_realized deliberately. Its 'oil_stocks' attribute is mapped to the
+    ONCE REFINED series ALONE, which is roughly a sixth of the total (Oct 2015: refined 370.5 vs
+    total 1,940.4 mil lb). That mis-mapping is why our stocks looked like a different concept from
+    ERS's. Summing the two components here reproduces ERS EXACTLY -- 108 overlapping months, worst
+    difference 0.01 mil lb -- confirming one concept, not two.
+
+    ** silver.monthly_realized attribute 'oil_stocks' is still wrong at source. Anything else
+       reading it is understating stocks by ~6x. Needs a collector/mapping fix separately. **
+
+    Emits only months where BOTH components are present; a month with one side missing would
+    silently understate the level (canola crude starts 2016-08 while refined starts 2015-05)."""
+    cur.execute("""SELECT year yr, month mo,
+             max(CASE WHEN short_desc ILIKE %s THEN value END) crude,
+             max(CASE WHEN short_desc ILIKE %s THEN value END) refined
+           FROM bronze.nass_processing
+           WHERE short_desc ILIKE %s AND statisticcat_desc='STOCKS' AND month IS NOT NULL
+           GROUP BY 1,2 ORDER BY 1,2""",
+                (f'OIL, {oil_name}, ONSITE & OFFSITE, CRUDE - STOCKS%',
+                 f'OIL, {oil_name}, ONSITE & OFFSITE, ONCE REFINED - STOCKS%',
+                 f'OIL, {oil_name}, ONSITE & OFFSITE, %- STOCKS%'))
+    out, skipped = [], 0
+    for r in cur.fetchall():
+        if r['crude'] is None or r['refined'] is None:
+            skipped += 1
+            continue
+        out.append(row(out_commodity, 'stocks', r['yr'], r['mo'],
+                       float(r['crude']) + float(r['refined']), 'NASS_FATS_OILS', 90,
+                       'NASS crude + once-refined (onsite & offsite) = total US stocks'))
+    if skipped:
+        print(f"  {out_commodity} stocks: {skipped} months skipped (only one of crude/refined present)")
+    return out
 
 
 def ers_monthly(cur, commodity, attribute, out_series, out_commodity):
@@ -346,7 +384,7 @@ def sbo_supply_gapfill(cur, supply_rows):
                 best[k] = (r['vintage_rank'], float(r['value'] or 0))
         return {k: v for k, (_, v) in best.items()}
 
-    prod_m, stk_m = monthly('production'), monthly('stocks_total')
+    prod_m, stk_m = monthly('production'), monthly('stocks')
     DONOR = set(range(2007, 2011)) | set(range(2015, 2019))   # complete MYs either side of the hole
 
     def donor_my(d):
@@ -374,7 +412,7 @@ def sbo_supply_gapfill(cur, supply_rows):
                                'MODELED_GAPFILL', 60,
                                'ERS annual production x donor-MY seasonal share (no monthly source exists)'))
             if endstk is not None:
-                out.append(row('soybean_oil', 'stocks_total', y, m, float(endstk) * 1e6 * sidx[m],
+                out.append(row('soybean_oil', 'stocks', y, m, float(endstk) * 1e6 * sidx[m],
                                'MODELED_GAPFILL', 60,
                                'ERS annual ending stocks x donor-MY seasonal level index'))
     print(f"  supply gap-fill: {len(out)} rows for MY{min(annual)}-MY{max(annual)} "
@@ -507,16 +545,13 @@ with get_connection() as conn:
 
     # ---------------- SOYBEAN OIL ----------------
     sbo_supply = (nass_series(cur, 'soybeans', 'oil_production_crude', 'production', 'soybean_oil')
-                  + nass_series(cur, 'soybeans', 'oil_stocks', 'stocks', 'soybean_oil')
+                  + nass_total_stocks(cur, 'SOYBEAN', 'soybean_oil')
                   # pre-2015 history: NASS's monthly report starts May 2015, ERS reaches to Oct 2007
                   + ers_monthly(cur, 'soybeans', 'oil_production_crude', 'production', 'soybean_oil')
-                  # NOT merged into 'stocks': ERS is 5-6x NASS because they are DIFFERENT CONCEPTS.
-                  # NASS oil_stocks = crude oil held AT PROCESSORS. ERS = TOTAL US soybean oil
-                  # stocks (processors + refiners + other), which is the balance-sheet concept and
-                  # what ERS's own annual 'Ending stocks' reconciles to. Verified on the 2015-2018
-                  # overlap: production ties 1.000 exactly, stocks runs 4.7-6.5x. Carried as its
-                  # own series so the choice is explicit rather than a silent 6x seam at May 2015.
-                  + ers_monthly(cur, 'soybeans', 'oil_stocks_sd', 'stocks_total', 'soybean_oil')
+                  # ERS IS the same concept once NASS crude+refined are summed (verified:
+                  # 108 overlapping months, worst diff 0.01 mil lb), so it merges into 'stocks'
+                  # as straight pre-2015 history at rank 85.
+                  + ers_monthly(cur, 'soybeans', 'oil_stocks_sd', 'stocks', 'soybean_oil')
                   + census_trade(cur, '1507', 'soybean_oil'))
     # MY2011/12-2014/15: no monthly source exists anywhere (Census CIR died Jul 2011, NASS started
     # May 2015). Fill production/stocks from the ERS annual, clearly flagged as modeled.
@@ -531,7 +566,7 @@ with get_connection() as conn:
 
     # ---------------- CANOLA OIL ----------------
     can_supply = (nass_series(cur, 'canola', 'oil_production_crude', 'production', 'canola_oil')
-                  + nass_series(cur, 'canola', 'oil_stocks', 'stocks', 'canola_oil')
+                  + nass_total_stocks(cur, 'CANOLA', 'canola_oil')
                   + census_trade(cur, '1514', 'canola_oil'))
     can_demand, can_bio_tot = raked_demand(cur, 'CO', 'canola_oil')
     # non-bio = residual (production + imports - biofuel - exports). Canola is IMPORT-dominant
