@@ -50,6 +50,65 @@ for additional context and the full backstory of this directive.
 
 ---
 
+## ⚠️ VERIFY BEFORE ASSERTING
+
+**Before stating a number, a data range, or a structural fact — run the query
+that would prove you wrong.** This is a hard rule, not a preference.
+
+### The failure mode
+You see a signal, form a plausible conclusion, and report it. The conclusion
+is wrong, but it *sounds* right, so it survives. In a single day (2026-07-21)
+this produced four corrections:
+
+| Claimed | Actual |
+|---|---|
+| "175 actual months, no gap" | The 175 *contained* a 48-month hole — the number itself was the evidence, unexamined |
+| "Palm has no seed, crush or meal" | Palm is a full crush complex with two oils. Inferred from "tree crop", never checked |
+| "NASS and ERS stocks are different concepts, 4.7–6.5× apart" | Same concept. The crude component was simply missing from the sum |
+| "6 feedstock-years fail the tie-out" | The *check* was wrong, not the data |
+
+None of these were context-length problems. Several happened early in a
+session with plenty of context. They were verification failures.
+
+### The rule
+- **Counts, ranges, coverage**: query it. Do not infer a span from a row count
+  or a row count from a span.
+- **"X equals Y" / "X and Y are different"**: compute the overlap and show it.
+  A ratio is not a diagnosis — decompose before concluding.
+- **Structure of a domain object** (what sheets a complex has, what a series
+  contains): read the source artifact. Do not reason from category.
+- **When a total ties, the components may still be wrong.** A correct grand
+  total hid a 1,789 million-pound error for months. Check the sub-buckets.
+- **If a check passes suspiciously or fails surprisingly, suspect the check.**
+
+### Put checks in the code, not in your head
+The durable fix is an assertion that runs every time — a tie-out, a contiguity
+check, a range guard — not a fact you remembered once. See the binding
+per-month tie-out in `scripts/rake_feedstock_vintage_aware.py`; copy that
+pattern. A check written today catches the error in a year when nobody
+remembers the context.
+
+### Say what you did not verify
+When something is inferred, modeled, or assumed, label it in the same breath
+as the claim. "I have not run this" and "this is my read, not sourced" are
+required, not optional.
+
+---
+
+## Session handoffs
+
+Long sessions get compacted, and compaction keeps conclusions while dropping
+the evidence behind them — backwards for this work. **End substantive sessions
+by writing a handoff note to `docs/handoffs/YYYY-MM-DD_*.md`** covering: what
+shipped, state by workstream, open decisions needing Tore, and an explicit
+**known-broken / unverified** list. Start the next session by reading it — then
+verify what it claims before acting on it.
+
+Prefer one coherent task per session; use `/clear` between tasks rather than
+closing the window.
+
+---
+
 ## Overview
 RLC-Agent is an agricultural commodity data collection, analysis, and reporting system focused on US and global grain/oilseed markets, biofuels, and energy markets relevant to agriculture. The system uses a **medallion data architecture** (Bronze/Silver/Gold) with PostgreSQL as the primary database.
 
