@@ -37,7 +37,32 @@ ROOT = Path(r"C:/dev/RLC-Agent"); sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
 
-RUN_DAY = '2026-07-13'  # output vintage tag for this rake (fixed; incremental-run friendly)
+RUN_DAY = '2026-07-21'  # output vintage tag for this rake (fixed; incremental-run friendly)
+
+# ---------------------------------------------------------------------------------------------
+# TWO-SIDED RAKE (ruled by Tore 2026-07-21).
+#
+# The rake used to apply ONE factor per (period, feedstock) across every fuel_type, so the grand
+# total tied to EIA while the biodiesel / renewable-diesel SPLIT was left to the facility mix. For
+# CY2024 soybean oil that put biodiesel 1,788.7 mil lb ABOVE EIA's published 7,399 and the RD family
+# the same amount below, with the total dead on 13,320 -- an error invisible to any total check.
+#
+# The rule: allocate all EIA-reported feedstock use AS EIA REPORTS IT. Where EIA publishes a
+# biodiesel/renewable-diesel breakout (Soybean Oil, Canola Oil, Corn Oil -- and only those), rake
+# each side to its own control. Our three-way split of the RD family (renewable diesel /
+# co-processing / SAF) is RLC's own analytical breakout and must SUM to EIA's renewable-diesel line.
+# Where EIA publishes only a total, one-sided as before. Tallow and UCO stay RLC-canonical/exempt.
+FUEL_BD = {'biodiesel'}
+FUEL_RD = {'renewable_diesel', 'coprocessing', 'saf'}   # must sum to EIA 'renewable_diesel'
+
+
+def fuel_bucket(ft):
+    ft = (ft or '').strip().lower()
+    if ft in FUEL_BD:
+        return 'BD'
+    if ft in FUEL_RD:
+        return 'RD'
+    return None
 
 # allocator feedstock_code -> EIA feedstock_name (EIA lumps UCO into Yellow Grease, tallow combined)
 A2E = {'SBO':'Soybean Oil','CO':'Canola Oil','CAN':'Canola Oil','DCO':'Corn Oil',
@@ -83,11 +108,16 @@ with get_connection() as c:
 
     # 2. allocator totals per (period, eia_name)
     alloc_tot = {}
+    alloc_bucket = {}          # (period, eia_name, 'BD'|'RD') -> allocator mil lbs
     for r in rows:
         eia = A2E.get(r['feedstock_code'])
         if not eia:
             continue
-        alloc_tot[(r['period'], eia)] = alloc_tot.get((r['period'], eia), 0) + float(r['allocated_mil_lbs'] or 0)
+        v = float(r['allocated_mil_lbs'] or 0)
+        alloc_tot[(r['period'], eia)] = alloc_tot.get((r['period'], eia), 0) + v
+        b = fuel_bucket(r['fuel_type'])
+        if b:
+            alloc_bucket[(r['period'], eia, b)] = alloc_bucket.get((r['period'], eia, b), 0) + v
 
     # 3. EIA control totals per (period, eia_name) from two rollups, captured monthly:
     #      - plant_type='total'           (redaction-proof; exists 2021+)
@@ -95,11 +125,14 @@ with get_connection() as c:
     #    Month counts per (eia_name, MY) drive the coverage ladder below.
     cur.execute("""SELECT make_date(year, month, 1) period, feedstock_name,
                      sum(quantity_mil_lbs) FILTER (WHERE plant_type='total') tot,
-                     sum(quantity_mil_lbs) FILTER (WHERE plant_type IN ('biodiesel','renewable_diesel')) bdrd
+                     sum(quantity_mil_lbs) FILTER (WHERE plant_type IN ('biodiesel','renewable_diesel')) bdrd,
+                     sum(quantity_mil_lbs) FILTER (WHERE plant_type='biodiesel') bd,
+                     sum(quantity_mil_lbs) FILTER (WHERE plant_type='renewable_diesel') rd
                    FROM bronze.eia_feedstock_monthly
                    WHERE NOT is_withheld AND quantity_mil_lbs IS NOT NULL
                    GROUP BY 1,2""")
     total_month, bdrd_month = {}, {}   # (period, eia_name) -> mil lbs
+    bd_month, rd_month = {}, {}         # (period, eia_name) -> mil lbs, the two published sides
     total_mo, bdrd_mo = {}, {}          # (eia_name, my) -> count of months present
     for r in cur.fetchall():
         key = (r['period'], r['feedstock_name']); my = my_of(r['period'])
@@ -109,6 +142,40 @@ with get_connection() as c:
         if r['bdrd'] is not None:
             bdrd_month[key] = float(r['bdrd'])
             bdrd_mo[(r['feedstock_name'], my)] = bdrd_mo.get((r['feedstock_name'], my), 0) + 1
+        if r['bd'] is not None:
+            bd_month[key] = float(r['bd'])
+        if r['rd'] is not None:
+            rd_month[key] = float(r['rd'])
+
+    # 3b. WITHHELD-COMPONENT SPLIT. EIA sometimes redacts BOTH plant_type components for a month
+    #     while publishing the combined 'total' (Corn Oil April 2024: total 339, bd='W', rd='W' --
+    #     which is the whole 340 mil lb gap between EIA's CY2024 bd+rd and its own total). Ruled
+    #     2026-07-21: split that total PRO-RATA on the bd:rd ratio of the same marketing year's
+    #     non-withheld months, so the month still lands on its published control and the split is
+    #     inferred from EIA's own behaviour rather than from our facility mix.
+    my_bd, my_rd = {}, {}
+    for (p, nm), v in bd_month.items():
+        if (p, nm) in rd_month:
+            k = (nm, my_of(p))
+            my_bd[k] = my_bd.get(k, 0.0) + v
+            my_rd[k] = my_rd.get(k, 0.0) + rd_month[(p, nm)]
+    bd_share_my = {k: my_bd[k] / (my_bd[k] + my_rd[k]) for k in my_bd if (my_bd[k] + my_rd[k]) > 0}
+    split_months = []
+    for (p, nm), tot in total_month.items():
+        if (p, nm) in bd_month or (p, nm) in rd_month:
+            continue                      # at least one side published -> no inference needed
+        share = bd_share_my.get((nm, my_of(p)))
+        if share is None:
+            continue                      # no ratio to lean on -> leave to the one-sided total rake
+        bd_month[(p, nm)] = tot * share
+        rd_month[(p, nm)] = tot * (1.0 - share)
+        split_months.append((p, nm, tot, share))
+    if split_months:
+        print("\nEIA_TOTAL_SPLIT — months where EIA withheld BOTH components; total split pro-rata "
+              "on the same MY's published bd:rd ratio:")
+        for p, nm, tot, share in sorted(split_months):
+            print(f"  {p} {nm:14s} total={tot:8.1f}  -> bd={tot*share:7.1f} ({share*100:4.1f}%) "
+                  f"rd={tot*(1-share):7.1f}")
 
     # --- SANITY: bd+rd vs plant_type='total' rollup, 2023-2024 ---
     cur.execute("""SELECT feedstock_name,
@@ -198,6 +265,7 @@ with get_connection() as c:
     # 8/9. rake each per-facility row, recording control_basis (batched insert)
     from psycopg2.extras import execute_values
     batch = []
+    unsplittable = set()   # EIA gave both sides but the allocator left a fuel bucket empty
     for r in rows:
         code = r['feedstock_code']
         eia = A2E.get(code)
@@ -217,14 +285,31 @@ with get_connection() as c:
             else:
                 rf, basis = 1.0, 'UNRAKED'
         else:
-            tot = total_month.get((p, eia))   # redaction-proof rollup, preferred
-            bd = bdrd_month.get((p, eia))      # bd+rd, extends coverage but collapses under redaction
-            if tot is not None and a > 0:
-                rf, basis = tot / a, 'EIA_TOTAL'
-            elif bd is not None and a > 0:
-                rf, basis = bd / a, 'EIA_BDRD'
+            # --- TWO-SIDED first: where EIA publishes BOTH sides, each side gets its own control.
+            #     Our RD/co-processing/SAF three-way must sum to EIA's single renewable-diesel line.
+            bucket = fuel_bucket(r['fuel_type'])
+            ctrl_bd, ctrl_rd = bd_month.get((p, eia)), rd_month.get((p, eia))
+            pre_bd = alloc_bucket.get((p, eia, 'BD'), 0.0)
+            pre_rd = alloc_bucket.get((p, eia, 'RD'), 0.0)
+            two_sided_ok = (ctrl_bd is not None and ctrl_rd is not None and bucket is not None
+                            and pre_bd > 0 and pre_rd > 0)
+            if two_sided_ok:
+                rf = (ctrl_bd / pre_bd) if bucket == 'BD' else (ctrl_rd / pre_rd)
+                basis = 'EIA_BD_RD_2SIDED'
             else:
-                rf, basis = 1.0, 'UNRAKED'
+                # one-sided fallbacks, unchanged. Reasons two-sided can't apply: EIA publishes no
+                # breakout for this feedstock (all the fats), or the allocator put nothing in one of
+                # the two buckets that month so there is no base to scale.
+                tot = total_month.get((p, eia))   # redaction-proof rollup, preferred
+                bd = bdrd_month.get((p, eia))      # bd+rd, extends coverage but collapses under redaction
+                if tot is not None and a > 0:
+                    rf, basis = tot / a, 'EIA_TOTAL'
+                elif bd is not None and a > 0:
+                    rf, basis = bd / a, 'EIA_BDRD'
+                else:
+                    rf, basis = 1.0, 'UNRAKED'
+                if ctrl_bd is not None and ctrl_rd is not None and bucket is not None:
+                    unsplittable.add((p, eia, round(pre_bd, 1), round(pre_rd, 1)))
 
         batch.append((r['facility_id'], p, code, r['fuel_type'], pre*rf, pre, rf, eia, RUN_DAY, basis))
     execute_values(cur, """INSERT INTO gold.bbd_feedstock_raked
@@ -233,6 +318,77 @@ with get_connection() as c:
     n = len(batch)
     c.commit()
     print(f"\nraked {n} rows -> gold.bbd_feedstock_raked (run_day {RUN_DAY})")
+    if unsplittable:
+        print(f"\nWARNING: {len(unsplittable)} (period, feedstock) months had an EIA bd/rd breakout "
+              f"but the allocator left one fuel bucket EMPTY, so they fell back to a one-sided rake "
+              f"and their SPLIT still will not tie to EIA:")
+        for p_, eia_, pb, pr in sorted(unsplittable)[:15]:
+            print(f"  {p_} {eia_:14s} pre-rake BD={pb:9.1f}  RD-family={pr:9.1f}")
+        if len(unsplittable) > 15:
+            print(f"  ... and {len(unsplittable)-15} more")
+
+    # TIE-OUT: for every feedstock EIA breaks out, raked BD and raked RD-family must equal EIA's
+    # published sides. The absence of exactly this check is what let a 1,789 mil lb error hide
+    # behind a correct grand total.
+    print("\n=== TIE-OUT vs EIA published sides (calendar year, mil lbs) ===")
+    cur.execute("""
+      WITH ours AS (
+        SELECT eia_feedstock, extract(year from period)::int yr,
+               sum(raked_mil_lbs) FILTER (WHERE fuel_type='biodiesel') bd,
+               sum(raked_mil_lbs) FILTER (WHERE fuel_type<>'biodiesel') rd
+        FROM gold.bbd_feedstock_raked WHERE run_day=%s GROUP BY 1,2),
+      eia AS (
+        SELECT feedstock_name, year yr,
+               sum(quantity_mil_lbs) FILTER (WHERE plant_type='biodiesel') bd,
+               sum(quantity_mil_lbs) FILTER (WHERE plant_type='renewable_diesel') rd
+        FROM bronze.eia_feedstock_monthly WHERE NOT is_withheld GROUP BY 1,2)
+      SELECT o.eia_feedstock, o.yr, e.bd ebd, o.bd obd, e.rd erd, o.rd ord_
+      FROM ours o JOIN eia e ON e.feedstock_name=o.eia_feedstock AND e.yr=o.yr
+      WHERE e.bd IS NOT NULL AND e.rd IS NOT NULL AND o.yr BETWEEN 2022 AND 2025
+      ORDER BY 1,2""", (RUN_DAY,))
+    # NOTE: this annual view is INDICATIVE ONLY and will legitimately differ wherever a month was
+    # imputed (EIA_TOTAL_SPLIT) or anchored to USDA (USDA_SEASONAL) -- EIA's published annual sides
+    # exclude the withheld months that we filled. The binding test is the per-month one below,
+    # restricted to months actually raked on the two-sided basis.
+    print(f"{'feedstock':14} {'yr':5} {'EIA bd':>9} {'our bd':>9} {'d':>8} | "
+          f"{'EIA rd':>9} {'our rd':>9} {'d':>8}")
+    off = 0
+    for r in cur.fetchall():
+        ebd, obd = float(r['ebd'] or 0), float(r['obd'] or 0)
+        erd, ord_ = float(r['erd'] or 0), float(r['ord_'] or 0)
+        bad = not (abs(obd - ebd) < 1 and abs(ord_ - erd) < 1)
+        off += bad
+        print(f"{r['eia_feedstock']:14} {r['yr']:5} {ebd:9.1f} {obd:9.1f} {obd-ebd:8.1f} | "
+              f"{erd:9.1f} {ord_:9.1f} {ord_-erd:8.1f}{'   <-- OFF' if bad else ''}")
+    print(f"  -> {off} feedstock-years differ (expected where months were imputed/USDA-anchored)")
+
+    # BINDING TEST: every month actually raked two-sided must land on EIA's own two sides.
+    print("\n=== BINDING per-month tie-out (control_basis='EIA_BD_RD_2SIDED') ===")
+    cur.execute("""
+      WITH ours AS (
+        SELECT period, eia_feedstock,
+               sum(raked_mil_lbs) FILTER (WHERE fuel_type='biodiesel') bd,
+               sum(raked_mil_lbs) FILTER (WHERE fuel_type<>'biodiesel') rd
+        FROM gold.bbd_feedstock_raked
+        WHERE run_day=%s AND control_basis='EIA_BD_RD_2SIDED' GROUP BY 1,2),
+      eia AS (
+        SELECT make_date(year,month,1) period, feedstock_name,
+               sum(quantity_mil_lbs) FILTER (WHERE plant_type='biodiesel') bd,
+               sum(quantity_mil_lbs) FILTER (WHERE plant_type='renewable_diesel') rd
+        FROM bronze.eia_feedstock_monthly WHERE NOT is_withheld GROUP BY 1,2)
+      SELECT o.eia_feedstock, count(*) n,
+             max(abs(o.bd-e.bd)) mbd, max(abs(o.rd-e.rd)) mrd
+      FROM ours o JOIN eia e ON e.feedstock_name=o.eia_feedstock AND e.period=o.period
+      WHERE e.bd IS NOT NULL AND e.rd IS NOT NULL
+      GROUP BY 1 ORDER BY 1""", (RUN_DAY,))
+    allok = True
+    for r in cur.fetchall():
+        mbd, mrd = float(r['mbd'] or 0), float(r['mrd'] or 0)
+        ok = mbd < 0.01 and mrd < 0.01
+        allok &= ok
+        print(f"  {r['eia_feedstock']:14} {r['n']:4d} months | worst |d| bd={mbd:.4f} rd={mrd:.4f}"
+              f"  {'OK' if ok else '<-- FAIL'}")
+    print("  -> two-sided rake ties to EIA exactly" if allok else "  -> TWO-SIDED RAKE DOES NOT TIE")
 
     # basis distribution
     cur.execute("""SELECT control_basis, count(*) n FROM gold.bbd_feedstock_raked
