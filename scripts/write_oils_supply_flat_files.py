@@ -65,6 +65,114 @@ def write_tab(wb, title, rows):
         ws.append([r[c] for c in COLS])
 
 
+# ---------------------------------------------------------------------------------------------
+# WIDE RENDER (ruled 2026-07-21). The LONG tab is the contract; Excel cannot read it across a
+# closed-workbook boundary, because SUMIFS/COUNTIFS/MAXIFS return #VALUE! against a closed source
+# and only PLAIN CELL REFS read the link cache. That constraint is the only reason the balance-sheet
+# workbook carried mirror tabs. So we render the balance-sheet shape HERE instead: months down,
+# marketing years across, one block per series. The balance sheet then uses plain refs, works with
+# this file closed, drops its mirror tabs, and stops paying for 6,720 SUMIFS over 8,000 rows.
+#
+# The grid is deliberately anchored to the EXISTING balance-sheet layout so refs map 1:1:
+#   column B = MY 1990/91 (so col AI = 2023/24, exactly as the soyoil sheet already has it)
+#   16 rows per block: title / units+MY header / Oct..Sep (12) / Marketing-year Total / blank
+# Values are MILLION POUNDS to match the balance sheet's "(million pounds)" convention; the LONG
+# tab stays raw LB. Row anchors are published in the _wide_index tab -- read that, don't count rows.
+MY_ANCHOR = 1990          # marketing year sitting in column B
+MY_COL0 = 2               # column B
+BLOCK_ROWS = 16
+MY_MONTHS = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+MONTH_LABEL = {10: 'Oct', 11: 'Nov', 12: 'Dec', 1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr',
+               5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug', 9: 'Sep'}
+LB_PER_MIL = 1e6
+
+# Explicit, stable block order. New series append at the end so existing anchors never move.
+WIDE_ORDER = [
+    'production', 'imports', 'exports', 'stocks',
+    'biofuel_use_biodiesel', 'biofuel_use_renewable_diesel', 'biofuel_use_coprocessing',
+    'biofuel_use_saf', 'biofuel_use_total',
+    'non_biofuel_use',
+    'nonbiofuel_use_salad_cooking_oil', 'nonbiofuel_use_baking_frying_fats',
+    'nonbiofuel_use_margarine', 'nonbiofuel_use_other_edible',
+    'nonbiofuel_use_paint_varnish', 'nonbiofuel_use_resins_plastics',
+    'nonbiofuel_use_other_inedible',
+    'food_use', 'industrial_use',
+]
+
+
+def my_of(year, month):
+    """US oil marketing year: Oct-Sep, labelled by its start year."""
+    return year if month >= 10 else year - 1
+
+
+def best_by_period(rows):
+    """One value per (series, MY, month): highest vintage_rank wins (actuals 90-95 beat forecast 40).
+    dedupe() keeps rank as part of its key, so the same period CAN carry several vintages."""
+    best = {}
+    for r in rows:
+        mo = int(r['period'][1:])
+        k = (r['series'], my_of(r['marketing_year'], mo), mo)
+        if k not in best or r['vintage_rank'] > best[k][0]:
+            best[k] = (r['vintage_rank'], r['value'])
+    return {k: v for k, (_, v) in best.items()}
+
+
+def write_wide(wb, title, rows, commodity_label):
+    data = best_by_period(rows)
+    present = {s for s, _, _ in data}
+    order = [s for s in WIDE_ORDER if s in present] + sorted(present - set(WIDE_ORDER))
+    mys = sorted({my for _, my, _ in data})
+    if not mys:
+        return []
+    lo, hi = min(mys), max(mys)
+    if lo < MY_ANCHOR:
+        print(f"  WARNING [{title}] MY {lo} precedes the {MY_ANCHOR} grid anchor -- "
+              f"those years are NOT rendered wide. Re-anchor before backfilling that far.")
+    ws = wb.create_sheet(title)
+    ncol = MY_COL0 + (hi - MY_ANCHOR)
+    index = []
+    r = 1
+    for series in order:
+        ws.cell(r, 1, f"{commodity_label} {series.upper().replace('_', ' ')}").font = Font(bold=True)
+        ws.cell(r + 1, 1, "(million pounds)").font = Font(italic=True)
+        for my in range(MY_ANCHOR, hi + 1):
+            ws.cell(r + 1, MY_COL0 + (my - MY_ANCHOR), f"{my}/{str(my + 1)[-2:]}").font = Font(bold=True)
+        for i, mo in enumerate(MY_MONTHS):
+            ws.cell(r + 2 + i, 1, MONTH_LABEL[mo])
+            for my in range(MY_ANCHOR, hi + 1):
+                v = data.get((series, my, mo))
+                if v is not None:
+                    ws.cell(r + 2 + i, MY_COL0 + (my - MY_ANCHOR), round(v / LB_PER_MIL, 4))
+        ws.cell(r + 14, 1, "  Marketing-year Total").font = Font(bold=True)
+        for my in range(MY_ANCHOR, hi + 1):
+            c = ws.cell(r + 14, MY_COL0 + (my - MY_ANCHOR))
+            col = c.column_letter
+            c.value = f"=IF(COUNT({col}{r + 2}:{col}{r + 13})=0,\"\",SUM({col}{r + 2}:{col}{r + 13}))"
+            c.font = Font(bold=True)
+        index.append({'series': series, 'title_row': r, 'header_row': r + 1,
+                      'first_month_row': r + 2, 'last_month_row': r + 13, 'total_row': r + 14})
+        r += BLOCK_ROWS
+    ws.freeze_panes = ws.cell(3, MY_COL0)
+    ws.column_dimensions['A'].width = 26
+    return [dict(i, tab=title, first_my_col='B', first_my=MY_ANCHOR, last_my=hi, ncol=ncol) for i in index]
+
+
+def write_wide_index(wb, blocks):
+    wi = wb.create_sheet("_wide_index")
+    cols = ['tab', 'series', 'title_row', 'header_row', 'first_month_row', 'last_month_row',
+            'total_row', 'first_my_col', 'first_my', 'last_my']
+    wi.append(cols)
+    for cell in wi[1]:
+        cell.font = Font(bold=True)
+    for b in blocks:
+        wi.append([b.get(c, '') for c in cols])
+    wi.append([])
+    wi.append(['NOTE', 'Month rows run Oct->Sep. Column B = MY 1990/91, so col AI = MY 2023/24 '
+                       '(matches the existing balance-sheet grid). Values are MILLION POUNDS; the '
+                       'LONG tabs are raw LB. Point balance-sheet cells at the wide tabs with PLAIN '
+                       'refs -- SUMIFS/COUNTIFS/MAXIFS cannot read a closed workbook.'])
+
+
 def write_meta(wb, rows, notes):
     wm = wb.create_sheet("_meta")
     wm.append(['series', 'source', 'unit', 'last_updated', 'notes'])
@@ -287,12 +395,19 @@ for fname, stab, dtab, supply, demand in [
     ('us_soybean_oil_supply_demand.xlsx', 'soybean_oil_supply', 'soybean_oil_demand', sbo_supply, sbo_demand),
     ('us_canola_oil_supply_demand.xlsx', 'canola_oil_supply', 'canola_oil_demand', can_supply, can_demand),
 ]:
+    label = stab.replace('_supply', '').replace('_', ' ').upper()
     wb = openpyxl.Workbook(); wb.remove(wb.active)
     write_tab(wb, stab, supply)
     write_tab(wb, dtab, demand)
+    # wide render: what the balance sheet actually links to (plain refs, closed-workbook safe)
+    blocks = (write_wide(wb, stab + '_wide', dedupe(supply), label)
+              + write_wide(wb, dtab + '_wide', dedupe(demand), label))
+    write_wide_index(wb, blocks)
     write_meta(wb, supply + demand, NOTES)
     wb.save(OUTDIR / fname)
     print(f"wrote {OUTDIR / fname}")
     for tab, rows in [(stab, supply), (dtab, demand)]:
         ser = sorted(set(r['series'] for r in rows))
         print(f"  [{tab}] {len(dedupe(rows))} rows | series: {ser}")
+    print(f"  [wide] {len(blocks)} blocks across {stab}_wide + {dtab}_wide "
+          f"(16 rows each, col B = MY{MY_ANCHOR}/{str(MY_ANCHOR + 1)[-2:]}); anchors in _wide_index")
