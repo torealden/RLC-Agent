@@ -5,9 +5,14 @@ importers for each complex, wire them through a trade matrix (imports<->exports)
 answers the first-order price question — is there enough to meet world demand?
 
 Scope is SOW No. 1: FIVE complexes (palm, rapeseed/canola, sunflower, soybean oil, corn oil), not
-three. Each complex carries its OWN sheet set — palm is a plantation crop with no seed, crush, or
-meal; corn oil is a derived co-product series, not a crush complex. Forcing the oilseed 5-sheet set
-onto them produces columns nobody can fill.
+three. Each complex carries its OWN sheet set; forcing the oilseed 5-sheet grid on everything
+produces columns nobody can fill.
+
+PALM IS A FULL CRUSH COMPLEX WITH TWO OILS — corrected 2026-07-21 against the World Lauric Oils
+template (docs/specs/palm_lauric_balance_sheet_template.md). FFB -> mesocarp gives PALM OIL; the
+KERNEL is the "seed", crushed into PALM KERNEL OIL + PALM KERNEL CAKE (the meal). So palm carries
+FOUR balance sheets plus an area/yield block and is the LARGEST per-country build of the five, not
+the smallest. Corn oil is the genuinely small one — a derived co-product, no crush complex.
 
 Tiering (see docs/specs/helios_pepsi_spreadsheet_gameplan_internal.md):
   A  price-setting exporter — sets the reference series we quote. Full sheet set, no shortcuts.
@@ -35,11 +40,28 @@ TRACKER = OILSEEDS / "_Pepsi_Coverage_Tracker.xlsx"
 
 # Union of every sheet type across complexes; each complex declares the subset it actually uses and
 # the rest are pre-marked N/A so the unfillable cells are visible rather than silently blank.
-SHEET_TYPES = ["Plantation", "Seed S&D", "Crush", "Oil S&D", "Meal S&D", "Trade", "Stocks"]
+SHEET_TYPES = ["Plantation", "Seed S&D", "Crush", "Oil S&D", "Kernel Oil S&D",
+               "Meal S&D", "Trade", "Stocks"]
 
 OILSEED_SET = {"Seed S&D", "Crush", "Oil S&D", "Meal S&D", "Trade"}
-PALM_SET = {"Plantation", "Oil S&D", "Trade", "Stocks"}
+# Palm: Plantation (immature/mature area, oil yield) + CPO + palm kernel (seed) + PKO (second oil)
+# + PKC (meal) + trade + monthly stocks. "Kernel Oil S&D" exists ONLY for palm — no other complex
+# has a second oil, so PKO cannot be folded into Oil S&D without losing it.
+PALM_SET = {"Plantation", "Seed S&D", "Crush", "Oil S&D", "Kernel Oil S&D",
+            "Meal S&D", "Trade", "Stocks"}
 CORNOIL_SET = {"Oil S&D", "Trade"}          # derived co-product: DCO / wet-mill oil, no crush complex
+
+# What a country needs when it does NOT grow the crop. For the oilseed complexes this is still the
+# full set — China, the EU, and Turkey genuinely crush imported seed, so seed/crush/meal all apply.
+# For PALM it is not: nobody outside the tropics grows oil palm or crushes kernels, so importers
+# need the two oil balance sheets and trade, and nothing else.
+IMPORTER_SHEETS = {
+    "Palm": {"Oil S&D", "Kernel Oil S&D", "Trade"},
+    "Corn Oil": {"Oil S&D", "Trade"},
+}
+# Tier-D scenario origins that actually GROW the crop (so they keep the production-side sheets);
+# everything else in tier D is a demand-side stub.
+TIER_D_PRODUCERS = {"Palm": {"Colombia", "Guatemala"}}
 
 # Per complex: the sheet set that applies, then countries by tier.
 # Origins named in SOW s2 are marked (SOW) in the notes column.
@@ -115,6 +137,17 @@ NA_FILL = PatternFill("solid", fgColor="F2F2F0")
 DONE_FILL = PatternFill("solid", fgColor="E2EFD9")
 
 
+def sheets_for(cx, country, tier):
+    """Sheet set actually applicable to this cell. Producers get the full complex set; countries
+    that don't grow the crop get the demand-side subset (matters for palm, not for the oilseeds)."""
+    full = COMPLEXES[cx]["sheets"]
+    if tier == "A" or (tier == "D" and country in TIER_D_PRODUCERS.get(cx, set())):
+        return full
+    if tier in ("B", "D"):
+        return IMPORTER_SHEETS.get(cx, full) & full
+    return full
+
+
 def tiered_rows():
     """Yield (complex, country, tier) in build order: A, B, C(World), D, E."""
     for cx, cfg in COMPLEXES.items():
@@ -166,7 +199,7 @@ def build_tracker():
         if last_cx is not None and cx != last_cx:
             r += 1
         last_cx = cx
-        applicable = COMPLEXES[cx]["sheets"]
+        applicable = sheets_for(cx, country, tier)
         done = DONE.get((cx, country), set())
 
         ws.cell(row=r, column=1, value=cx).font = Font(name="Calibri")
@@ -248,16 +281,16 @@ def main():
     rows = list(tiered_rows())
     print(f"Tracker: {TRACKER}")
     print(f"  {len(rows)} country x complex rows across {len(COMPLEXES)} complexes")
+    bare = full = 0
     for cx, cfg in COMPLEXES.items():
         n = {t: len(cfg.get(t, [])) for t in ("A", "B", "D", "E")}
-        cells = sum(len(cfg["sheets"]) for c, t in
-                    [(c, t) for t in ("A", "B", "D") for c in cfg.get(t, [])])
+        cells = sum(len(sheets_for(cx, c, t))
+                    for t in ("A", "B", "D") for c in cfg.get(t, []))
+        allc = cells + sum(len(sheets_for(cx, c, "E")) for c in cfg.get("E", []))
+        bare += cells
+        full += allc
         print(f"  {cx:20s} A={n['A']} B={n['B']} C=1 D={n['D']} E={n['E']}  "
               f"| sheets: {len(cfg['sheets'])} | bare-bones cells: {cells}")
-    bare = sum(len(cfg["sheets"]) * sum(len(cfg.get(t, [])) for t in ("A", "B", "D"))
-               for cfg in COMPLEXES.values())
-    full = sum(len(cfg["sheets"]) * sum(len(cfg.get(t, [])) for t in ("A", "B", "D", "E"))
-               for cfg in COMPLEXES.values())
     print(f"  BARE BONES (A+B+D): {bare} sheets   |   with tier E loop fill: {full}")
     print(f"  Folders created: {created or 'none (all existed)'}")
 

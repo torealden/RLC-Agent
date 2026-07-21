@@ -39,7 +39,7 @@ degrading them.
 | # | Gap | Fix |
 |---|---|---|
 | G1 | Tracker covers **3** complexes (soy, canola, sunflower). SOW covers **5** — **palm and corn oil are missing entirely** | Add both to `MATRIX`/`P1` in `build_pepsi_coverage_tracker.py` |
-| G2 | Palm is not an oilseed crush complex — it has no seed, no crush, no meal. The 5-sheet set (`Seed S&D · Oil S&D · Meal S&D · Crush · Trade`) does not apply | Give palm its own sheet set: **Plantation (area/yield/FFB→CPO) · Oil S&D (food vs biodiesel split) · Trade · Stocks**. PKO/PKM as a secondary tab, not a parallel complex |
+| G2 | ~~Palm is not a crush complex~~ — **wrong, corrected 2026-07-21.** Palm *is* a full crush complex with **two oils**: FFB→mesocarp gives CPO, and the **kernel is the seed**, crushed into **PKO + palm kernel cake**. The oilseed 5-sheet set is too *small*, not too big | Palm sheet set = **Plantation (immature/mature area, oil yield) · Seed S&D (palm kernel) · Crush · Oil S&D (CPO, industrial vs food/feed/waste split) · Kernel Oil S&D (PKO) · Meal S&D (PKC) · Trade · Stocks** — 8 sheets. Importers get only CPO/PKO/Trade. See `palm_lauric_balance_sheet_template.md` |
 | G3 | Corn oil has no reference series and no complex structure | Treat as **derived**: US DCO (already built under the feedstock layer) + BR corn-ethanol DCO + MX wet-mill. 3 light workbooks, not a complex |
 | G4 | `build_pepsi_coverage_tracker.py` has **55 uncommitted insertions** from the Jul 20 morning session | Review, finish, commit before touching it again |
 
@@ -92,8 +92,14 @@ what-if without carrying a balance sheet.
 | Tier B importer workbooks | **4 distinct countries** — China, India, Europe, Turkey (≈22 tabs after consolidation, vs 62 cells built complex-major) |
 | Tier C world rollups | **5**, automated from `bronze.fas_psd` |
 | Tier D scenario stubs | **9** country×complex |
-| **Bare-bones sheet count** | **≈123** (163 grid cells less the ~40 saved by consolidating Tier B country-major) |
-| Tier E loop fill (deferred) | +96 → 259 if built |
+| **Bare-bones sheet count** | **175 grid cells**, ≈**140** after consolidating Tier B country-major |
+| Tier E loop fill (deferred) | +112 → 287 if built |
+
+**Palm is the biggest build of the five, not the smallest** — corrected 2026-07-21 against the
+World Lauric Oils template. Palm is a full crush complex with *two* oils (CPO from the mesocarp;
+PKO + palm kernel cake from crushing the kernel), so producers carry 8 sheets against the oilseed
+complexes' 5. Importers still carry only 3 (CPO, PKO, trade) — nobody outside the tropics grows oil
+palm. See `palm_lauric_balance_sheet_template.md`.
 
 **Be honest about what this cut is and isn't.** The old tracker was 200 sheets for **three**
 complexes. This is ≈123 for **five** — per complex a real reduction (≈67 → ≈25), but the absolute
