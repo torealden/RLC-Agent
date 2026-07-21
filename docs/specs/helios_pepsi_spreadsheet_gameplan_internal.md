@@ -84,8 +84,22 @@ Colombia, Guatemala, Mexico (palm); Colombia (sunflower); Mexico (all five); Rus
 (rapeseed). Single-page: production, trade, and a shock-sensitivity coefficient. Enough to answer a
 what-if without carrying a balance sheet.
 
-**Bare-bones total: 10 Tier-A builds + 4 Tier-B workbooks + 5 automated rollups + ~8 stubs**
-— against 200 sheets in the full tracker. That is the cut.
+### The actual counts (from the 2026-07-21 `build_pepsi_coverage_tracker.py` run)
+
+| | Count |
+|---|---|
+| Tier A country×complex builds | 14, of which **2 already done** (US soy, US corn oil) → **12 to build** |
+| Tier B importer workbooks | **4 distinct countries** — China, India, Europe, Turkey (≈22 tabs after consolidation, vs 62 cells built complex-major) |
+| Tier C world rollups | **5**, automated from `bronze.fas_psd` |
+| Tier D scenario stubs | **9** country×complex |
+| **Bare-bones sheet count** | **≈123** (163 grid cells less the ~40 saved by consolidating Tier B country-major) |
+| Tier E loop fill (deferred) | +96 → 259 if built |
+
+**Be honest about what this cut is and isn't.** The old tracker was 200 sheets for **three**
+complexes. This is ≈123 for **five** — per complex a real reduction (≈67 → ≈25), but the absolute
+number does not collapse, because two contracted complexes were missing entirely before. Reading
+"200 → 123" as pure savings is reading it wrong: it is *more scope, less work*, which is the only
+honest framing.
 
 ---
 
