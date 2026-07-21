@@ -213,6 +213,19 @@ Every node and edge carries:
 dropped — 649 unresolved refs are themselves a finding (drift, renames, dead code). They surface in a
 report, not in an answer.
 
+**Exclusion applies to `resolution_status`, never to `lifecycle`.** These are different claims and
+must not share a code path:
+
+- `unresolved` means *this edge may not be real* — a reference that points at nothing. Excluding it
+  from answers is correct; including it would fabricate lineage.
+- `superseded` / `archive` means *this artifact is real and may still be wired in.* Excluding it from
+  a blast-radius answer produces a **silently incomplete** result — exactly the `oil_stocks` failure
+  this graph exists to prevent.
+
+So `trace_series` returns superseded hops **and labels them**. It never hides them. A downstream
+consumer that turns out to be stale is a finding worth surfacing, not noise worth filtering — the
+live `eia_data.xlsm` chain in §2/Q2 is precisely such a hop, and a filter would have buried it.
+
 ### D5 — File-level Python granularity in v1, not function-level
 
 Q1–Q3 are all answered at file granularity. Function-level symbol extraction across 636 files roughly
@@ -375,6 +388,9 @@ extractor fails, not warns, on the first three.
 6. **Q1 regression test.** `trace_series('silver.monthly_realized[attribute=oil_stocks]', 'down')`
    must return a non-empty, human-checked-once downstream set. If a refactor empties it, the graph
    broke — and the test says so.
+7. **Never-hide.** `trace_series` results must be identical with and without lifecycle filtering
+   applied; only the labels may differ. Mechanically enforces §D4 — a lifecycle flag can never
+   shrink a blast-radius answer.
 
 ---
 
@@ -394,6 +410,7 @@ Each step is independently useful; stop anywhere and keep the value.
 | 8 | `sys.declaration` + the ~81 `SERVES` rulings | seam closed |
 | 9 | `trace_series` MCP tool + `sys.v_graph` | it becomes usable |
 | 10 | Checks §8 wired into the scan | it stays true |
+| 11 | Archive-candidate report + workbook hash gate (R1, R3) | the cleanup deliverable |
 
 Steps 2, 3 and 6 are mechanical and should land in one sitting. Step 7 is the one with real
 uncertainty — budget for the column-letter mapping to differ per workbook.
@@ -421,21 +438,69 @@ corrections.
 
 ---
 
-## 11. Open questions — need Tore
+## 11. Rulings — Tore, 2026-07-21
 
-1. **`scripts/` liveness (248 files).** The registry covers collectors. It says nothing about
-   `scripts/`. Options: (a) git-recency heuristic, (b) declare a live set once and treat the
-   remainder as archive candidates, (c) leave `unknown` and let the graph's inbound-edge count
-   speak. **Recommend (c) then (b)** — let the graph propose the archive list, then rule on it.
-2. **Delete or keep `audit.*`?** `lineage_edge` has 29 rows, `output_artifact` 0. Leaving both a dead
-   and a live lineage model invites the wrong one being read. **Recommend:** keep the tables, add a
-   comment pointing at `sys`, revisit after v1 proves out.
-3. **Scan cadence.** On demand? Pre-commit? Nightly via dispatcher? Nightly makes drift a report
-   rather than a discovery, but a nightly openpyxl pass over 467 workbooks is not cheap.
-   **Recommend:** on-demand for v1, split cheap-nightly (catalog + repo) from expensive-on-demand
-   (workbooks) once cost is measured.
-4. **Does the graph get a lifecycle opinion on the 96 archival workbooks** — propose deletion, or
-   only ever mark and report? Bears on whether this becomes a cleanup tool or stays an atlas.
+All four settled. Recorded here so Session 2 builds against them and nobody re-litigates.
+
+### R1 — Codebase cleanup is an explicit goal, and the graph generates the list
+
+The graph does not guess at liveness. It reports **inbound edge count = 0** for the 248 `scripts/`
+files and the 96 archival-named workbooks, producing a *candidate* list. Tore rules; the ruling lands
+in `sys.declaration` so the next scan does not re-propose it.
+
+Cleanup is a **stated deliverable of v1**, not a side effect. Add to §9 build order as step 11:
+*emit the archive-candidate report.*
+
+### R2 — `audit.*` stays for now, and becomes an item on the R1 cleanup list
+
+Keep `audit.lineage_edge` (29 rows) and siblings in place; add a table comment pointing at `sys` so
+nobody reads the dead model by accident. Its retirement is decided **as part of the R1 cleanup pass**,
+not in isolation — same list, same ruling moment.
+
+### R3 — No calendar. Split by cost, gate the expensive half on file hash
+
+Tore's options were weekly-then-biweekly or daily-then-weekly. Both reasonable, both solving the wrong
+shape. **Ruled: drop the schedule question.**
+
+| Half | Contents | Trigger | Cost |
+|---|---|---|---|
+| Cheap | catalog + `pg_depend` + repo inventory + registry/schedule join | **nightly**, via dispatcher | seconds |
+| Expensive | 467-workbook openpyxl pass | **hash-gated**, rides the nightly | ~0 in a normal week |
+| Full | forced complete rescan | **on demand** | measure it, then decide |
+
+Store each workbook's content hash. Rescan only workbooks whose hash moved — typically 2–3 per week
+out of 467, so "nightly" and "weekly" cost nearly the same and the cadence stops mattering. Cheap-scan
+output is a **diff**, silent when nothing changed; a nightly report that always says "no change" is a
+report nobody reads.
+
+This also removes the dependency in §14 on an unmeasured full-scan cost: the full pass only ever runs
+when explicitly asked for.
+
+### R4 — Atlas for workbooks, opinionated for code, actuator never
+
+Three possible levels, and they are **not** equally safe:
+
+| Level | Behaviour | Verdict |
+|---|---|---|
+| **Atlas** | reports "nothing links to this"; human decides | **workbooks: always this** |
+| **Opinionated** | marks lifecycle; queries label but never hide (§D4) | **code nodes: allowed** |
+| **Actuator** | proposes or performs deletion / moves | **never automatic** |
+
+The asymmetry is the whole point:
+
+> For code, *"nothing references it"* is strong evidence it is dead.
+> For spreadsheets it is **nearly no evidence at all** — a human opens the file by double-clicking it.
+> The graph cannot see that. Zero inbound edges on an `.xlsm` means "no *code* uses it," which is a
+> different claim entirely.
+
+So a workbook never gets marked dead on graph evidence alone. It gets marked *no-code-references*,
+which is a fact, and a human supplies the rest. R1's candidate list is exactly this: candidates, never
+conclusions.
+
+**This ruling forced a correction to §D4.** The original text said anything not resolving is
+"excluded from every default query," which — applied to a lifecycle flag — would silently shrink a
+blast-radius answer. `resolution_status` may exclude; `lifecycle` may only label. Check §8.7 now
+enforces it mechanically.
 
 ---
 
@@ -474,4 +539,5 @@ database and read-only scans of repo files only. Session 2 owns all construction
   some with recovered links (`RecoveredExternalLink1` appeared in one backup) — expect failures and
   budget for them.
 - **Extraction cost at full scale.** I scanned a handful of workbooks, not 467. One held 698k formula
-  cells. §11.3 depends on a number I have not measured.
+  cells. **R3 defuses this** — the hash gate means the full pass only runs on demand — but the
+  first full pass is still an unmeasured cost. Measure it on the first run and record it here.
