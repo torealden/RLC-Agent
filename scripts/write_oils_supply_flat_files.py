@@ -186,7 +186,13 @@ def write_meta(wb, rows, notes):
 
 
 NOTES = {
-    'production': 'NASS crude oil production (oil_production_crude), raw lb',
+    'production': 'NASS crude oil production (oil_production_crude), raw lb; pre-2015 from ERS OCY '
+                  '(identical series -- verified 1.000 on the 2015-18 overlap)',
+    'stocks_total': 'TOTAL US soybean oil stocks (ERS Oil Crops Yearbook) -- processors + refiners '
+                    '+ other. This is the BALANCE-SHEET stocks concept. NOT the same as "stocks": '
+                    'NASS oil_stocks is processor-held crude only and runs 4.7-6.5x SMALLER. '
+                    'MY2011/12-2014/15 modeled from ERS annual ending stocks (no monthly source '
+                    'exists for those years).',
     'stocks': 'NASS ending stocks (oil_stocks), raw lb',
     'imports': 'Census HS 1507 (soy) / 1514 (canola) imports, all subcodes summed, kg -> lb',
     'exports': 'Census HS 1507 (soy) / 1514 (canola) exports, all subcodes summed, kg -> lb',
@@ -209,6 +215,22 @@ def nass_series(cur, commodity, attribute, out_series, out_commodity):
                    ORDER BY 1,2""", (commodity, attribute))
     return [row(out_commodity, out_series, r['yr'], r['month'], r['v'], 'NASS_FATS_OILS', 90, 'NASS')
             for r in cur.fetchall()]
+
+
+def ers_monthly(cur, commodity, attribute, out_series, out_commodity):
+    """ERS Oil Crops Yearbook monthly, used to extend production/stocks BACK before NASS.
+
+    NASS's monthly soybean crush report only starts May 2015 -- Census discontinued the CIR
+    'Fats and Oils' program in July 2011 and nothing published the monthly crush series until NASS
+    picked it up in 2015. ERS republishes the same numbers and reaches back to Oct 2007, so it is
+    the only route to pre-2015 monthly history. Rank 85 (< NASS 90): where both exist NASS wins,
+    and the wide render takes the highest rank per period."""
+    cur.execute("""SELECT calendar_year yr, month, realized_value v FROM silver.monthly_realized
+                   WHERE commodity=%s AND attribute=%s AND realized_value IS NOT NULL
+                     AND source='ERS_OCY'
+                   ORDER BY 1,2""", (commodity, attribute))
+    return [row(out_commodity, out_series, r['yr'], r['month'], r['v'], 'ERS_OCY', 85,
+                'ERS Oil Crops Yearbook monthly (pre-NASS history)') for r in cur.fetchall()]
 
 
 def census_trade(cur, hs_prefix, out_commodity):
@@ -289,6 +311,77 @@ def _my_start(y, m):
     return y if m >= 10 else y - 1   # US oil marketing year starts October
 
 
+def sbo_supply_gapfill(cur, supply_rows):
+    """Fill the MY2011/12-2014/15 monthly hole in soybean-oil PRODUCTION and STOCKS.
+
+    Tore's method (2026-07-21): USDA gives the annual, we spread it seasonally for production,
+    and we set stocks off the seasonal LEVEL pattern anchored to USDA's published annual ending
+    stocks. The two need different treatment because production is a FLOW and stocks is a LEVEL:
+
+      production  annual x mean(month share of MY total)      -- shares sum to 1
+      stocks      published MY-end stocks x mean(month / Sep)  -- an index anchored so Sep lands
+                                                                  exactly on the published number
+
+    Donors are the complete marketing years either side of the hole (2007/08-2010/11 from ERS,
+    2015/16-2018/19 from NASS). Flagged MODELED_GAPFILL, rank 60: the annual level is published,
+    the monthly shape is inferred. It must never be mistaken for an actual."""
+    cur.execute("""SELECT my_start_year,
+             max(CASE WHEN attribute_desc='Production' THEN amount END) prod,
+             max(CASE WHEN attribute_desc='Ending stocks' THEN amount END) endstk
+           FROM bronze.ers_oil_crops_yearbook
+           WHERE commodity ILIKE '%soybean oil%' AND table_number=5
+             AND timeperiod_desc='MY Total' AND my_start_year BETWEEN 2011 AND 2014
+           GROUP BY 1 ORDER BY 1""")
+    annual = {r['my_start_year']: (r['prod'], r['endstk']) for r in cur.fetchall()}
+    if not annual:
+        return []
+
+    def monthly(series):
+        best = {}
+        for r in supply_rows:
+            if r['series'] != series:
+                continue
+            k = (r['marketing_year'], int(r['period'][1:]))
+            if k not in best or r['vintage_rank'] > best[k][0]:
+                best[k] = (r['vintage_rank'], float(r['value'] or 0))
+        return {k: v for k, (_, v) in best.items()}
+
+    prod_m, stk_m = monthly('production'), monthly('stocks_total')
+    DONOR = set(range(2007, 2011)) | set(range(2015, 2019))   # complete MYs either side of the hole
+
+    def donor_my(d):
+        by = defaultdict(dict)
+        for (y, m), v in d.items():
+            by[_my_start(y, m)][m] = v
+        return {my: mm for my, mm in by.items() if my in DONOR and len(mm) == 12}
+
+    pd_, sd_ = donor_my(prod_m), donor_my(stk_m)
+    if not pd_ or not sd_:
+        print("  WARNING: no complete donor marketing years -- supply gap NOT filled")
+        return []
+    pshare = {m: mean([mm[m] / sum(mm.values()) for mm in pd_.values() if sum(mm.values()) > 0])
+              for m in range(1, 13)}
+    ptot = sum(pshare.values())
+    pshare = {m: pshare[m] / ptot for m in pshare}
+    sidx = {m: mean([mm[m] / mm[9] for mm in sd_.values() if mm.get(9)]) for m in range(1, 13)}
+
+    out = []
+    for my, (prod, endstk) in sorted(annual.items()):
+        for m in range(1, 13):
+            y = my if m >= 10 else my + 1
+            if prod is not None:
+                out.append(row('soybean_oil', 'production', y, m, float(prod) * 1e6 * pshare[m],
+                               'MODELED_GAPFILL', 60,
+                               'ERS annual production x donor-MY seasonal share (no monthly source exists)'))
+            if endstk is not None:
+                out.append(row('soybean_oil', 'stocks_total', y, m, float(endstk) * 1e6 * sidx[m],
+                               'MODELED_GAPFILL', 60,
+                               'ERS annual ending stocks x donor-MY seasonal level index'))
+    print(f"  supply gap-fill: {len(out)} rows for MY{min(annual)}-MY{max(annual)} "
+          f"(donors prod={sorted(pd_)}, stocks={sorted(sd_)})")
+    return out
+
+
 def sbo_nonbio_series(cur, supply_rows, bio_totals):
     """SBO non-biofuel use = the balance RESIDUAL after biofuel (ruled 2026-07-20;
     project_nonbio_residual_after_biofuel). Full history + independent 2-MY forecast, replacing the
@@ -315,8 +408,17 @@ def sbo_nonbio_series(cur, supply_rows, bio_totals):
     last_ers = max(nb) if nb else (2007, 10)
 
     def _bp(series):
-        return {(r['marketing_year'], int(r['period'][1:])): float(r['value'] or 0)
-                for r in supply_rows if r['series'] == series}
+        # highest vintage_rank wins -- supply_rows now carries BOTH NASS (90) and the ERS
+        # pre-2015 backfill (85) for the same periods, and a plain dict comprehension would
+        # silently let whichever was appended last overwrite the other.
+        best = {}
+        for r in supply_rows:
+            if r['series'] != series:
+                continue
+            k = (r['marketing_year'], int(r['period'][1:]))
+            if k not in best or r['vintage_rank'] > best[k][0]:
+                best[k] = (r['vintage_rank'], float(r['value'] or 0))
+        return {k: v for k, (_, v) in best.items()}
     prod, stk, imp, exp = _bp('production'), _bp('stocks'), _bp('imports'), _bp('exports')
     for k in sorted(set(prod) & set(bio_totals)):
         if k <= last_ers:
@@ -324,6 +426,53 @@ def sbo_nonbio_series(cur, supply_rows, bio_totals):
         y, m = k; pk = (y, m - 1) if m > 1 else (y - 1, 12)
         ds = stk.get(k, 0) - stk.get(pk, stk.get(k, 0))
         nb[k] = prod.get(k, 0) + imp.get(k, 0) - exp.get(k, 0) - ds - bio_totals.get(k, 0)
+    # ---- THE 2011/12-2014/15 HOLE -------------------------------------------------------------
+    # ERS Table 8 (monthly) simply has no rows for MY2011/12-2014/15, and that is NOT an ingest
+    # failure: the US had no publisher for the monthly series. Census killed the CIR 'Fats and
+    # Oils' program in Jul 2011 (bronze.census_cir_fats ends 2011-07) and NASS did not start the
+    # monthly soybean crush report until May 2015. Four marketing years of monthly data do not
+    # exist anywhere.
+    #
+    # ERS Table 5 (ANNUAL) is continuous across them, so we distribute the annual non-bio figure
+    # (Total domestic use - Domestic use, Biofuel) across the 12 months on the average monthly
+    # share of the complete MYs either side of the hole. Flagged MODELED_GAPFILL at rank 60 --
+    # above the forecast (40) because the annual level is a real published number, below every
+    # actual (85-95) because the monthly SHAPE is inferred. Never let this read as an actual.
+    cur.execute("""SELECT my_start_year,
+             max(CASE WHEN attribute_desc='Total domestic use' THEN amount END) tot,
+             max(CASE WHEN attribute_desc='Domestic use, Biofuel' THEN amount END) biof
+           FROM bronze.ers_oil_crops_yearbook
+           WHERE commodity ILIKE '%soybean oil%' AND table_number=5
+             AND timeperiod_desc='MY Total' AND my_start_year BETWEEN 2011 AND 2014
+           GROUP BY 1 ORDER BY 1""")
+    gap_annual = {r['my_start_year']: (float(r['tot']) - float(r['biof'] or 0)) * 1e6
+                  for r in cur.fetchall() if r['tot'] is not None}
+    if gap_annual:
+        # seasonal shape from the complete MYs bracketing the hole
+        gmy_tot, gmy_n = defaultdict(float), defaultdict(int)
+        for (y, m), v in nb.items():
+            gmy_tot[_my_start(y, m)] += v; gmy_n[_my_start(y, m)] += 1
+        donors = [my for my in sorted(gmy_tot)
+                  if gmy_n[my] == 12 and (2007 <= my <= 2010 or 2015 <= my <= 2018)]
+        shape = defaultdict(list)
+        for (y, m), v in nb.items():
+            my = _my_start(y, m)
+            if my in donors and gmy_tot[my] > 0:
+                shape[m].append(v / gmy_tot[my])
+        gs = {m: mean(shape[m]) for m in range(1, 13) if shape[m]}
+        gtot = sum(gs.values())
+        if gs and gtot > 0:
+            gs = {m: gs[m] / gtot for m in gs}
+            for my, annual in gap_annual.items():
+                for m in range(1, 13):
+                    y = my if m >= 10 else my + 1
+                    nb.setdefault((y, m), annual * gs[m])
+            print(f"  gap-filled MY{min(gap_annual)}/{str(min(gap_annual)+1)[-2:]}"
+                  f"-MY{max(gap_annual)}/{str(max(gap_annual)+1)[-2:]} from ERS ANNUAL "
+                  f"({len(gap_annual)*12} months) on the seasonal shape of {donors}")
+    gapfill_keys = {(y, m) for my in gap_annual for m in range(1, 13)
+                    for y in [my if m >= 10 else my + 1]}
+
     last_act = max(nb)
 
     myt, n_mo = defaultdict(float), defaultdict(int)
@@ -359,7 +508,19 @@ with get_connection() as conn:
     # ---------------- SOYBEAN OIL ----------------
     sbo_supply = (nass_series(cur, 'soybeans', 'oil_production_crude', 'production', 'soybean_oil')
                   + nass_series(cur, 'soybeans', 'oil_stocks', 'stocks', 'soybean_oil')
+                  # pre-2015 history: NASS's monthly report starts May 2015, ERS reaches to Oct 2007
+                  + ers_monthly(cur, 'soybeans', 'oil_production_crude', 'production', 'soybean_oil')
+                  # NOT merged into 'stocks': ERS is 5-6x NASS because they are DIFFERENT CONCEPTS.
+                  # NASS oil_stocks = crude oil held AT PROCESSORS. ERS = TOTAL US soybean oil
+                  # stocks (processors + refiners + other), which is the balance-sheet concept and
+                  # what ERS's own annual 'Ending stocks' reconciles to. Verified on the 2015-2018
+                  # overlap: production ties 1.000 exactly, stocks runs 4.7-6.5x. Carried as its
+                  # own series so the choice is explicit rather than a silent 6x seam at May 2015.
+                  + ers_monthly(cur, 'soybeans', 'oil_stocks_sd', 'stocks_total', 'soybean_oil')
                   + census_trade(cur, '1507', 'soybean_oil'))
+    # MY2011/12-2014/15: no monthly source exists anywhere (Census CIR died Jul 2011, NASS started
+    # May 2015). Fill production/stocks from the ERS annual, clearly flagged as modeled.
+    sbo_supply += sbo_supply_gapfill(cur, sbo_supply)
     sbo_demand, sbo_bio_tot = raked_demand(cur, 'SBO', 'soybean_oil')
     sbo_food = nass_series(cur, 'soybeans', 'oil_refined_edible_use', 'food_use', 'soybean_oil')
     sbo_demand += sbo_food  # informational NASS refined-edible line (a subset of non-bio use)
