@@ -30,6 +30,26 @@ ROOT = Path(__file__).resolve().parents[2]
 
 WB_EXT = {".xlsx", ".xlsm", ".xlsb", ".xlam"}
 MACRO_EXT = {".xlsm", ".xlsb", ".xlam"}
+
+# A workbook extension with something appended -- `us_used_cooking_oil_balance.xlsx.bak_20260526_141050`.
+# These are byte-identical xlsx zips with a renamed extension, so a suffix test misses them
+# entirely: the first scan saw 627 workbooks and silently skipped 25 of these under models/
+# alone. They are exactly the files the cleanup pass is looking for, so they must be in the
+# inventory -- flagged as backups, not omitted.
+SUFFIXED_WB = re.compile(r"\.(xlsx|xlsm|xlsb|xlam)\.", re.I)
+
+
+def _is_workbook(p: Path) -> bool:
+    return p.suffix.lower() in WB_EXT or bool(SUFFIXED_WB.search(p.name))
+
+
+def _effective_ext(p: Path) -> str:
+    if p.suffix.lower() in WB_EXT:
+        return p.suffix.lower()
+    m = SUFFIXED_WB.search(p.name)
+    return f".{m.group(1).lower()}" if m else ""
+
+
 SKIP_PARTS = {".git", "__pycache__", "node_modules", ".venv", "venv", ".pytest_cache"}
 
 NS_MAIN = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
@@ -37,7 +57,9 @@ NS_R = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
 NS_PKG = "{http://schemas.openxmlformats.org/package/2006/relationships}"
 
 ARCHIVE_PAT = re.compile(r"(?:^|[/\\])archive(?:[/\\]|$)|_old\b|\bold\b|conflicted copy", re.I)
-BACKUP_PAT = re.compile(r"backup[_.]?\d{6,}|[_.]backup\b|\bcopy \(\d\)|\(\d\)\.xls", re.I)
+BACKUP_PAT = re.compile(
+    r"backup[_.]?\d{6,}|[_.]backup\b|\.bak[_.]|\bcopy \(\d\)|\(\d\)\.xls", re.I
+)
 
 PROC_RE = re.compile(
     r"^\s*(?:(Public|Private|Friend)\s+)?(?:Static\s+)?(Sub|Function)\s+([A-Za-z_]\w*)",
@@ -141,9 +163,9 @@ def extract(conn, store, live_relations: set[str]) -> dict:
 
     workbooks = []
     for p in ROOT.rglob("*"):
-        if p.suffix.lower() not in WB_EXT or p.name.startswith("~$"):
+        if p.name.startswith("~$") or not p.is_file():
             continue
-        if SKIP_PARTS & set(p.parts):
+        if SKIP_PARTS & set(p.parts) or not _is_workbook(p):
             continue
         workbooks.append(p)
 
@@ -165,10 +187,11 @@ def extract(conn, store, live_relations: set[str]) -> dict:
         store.add_node(
             "workbook", key, label=path.name,
             properties={
-                "path": rel, "ext": path.suffix.lower(), "size_bytes": size,
+                "path": rel, "ext": _effective_ext(path), "size_bytes": size,
+                "renamed_ext": path.suffix.lower() if path.suffix.lower() not in WB_EXT else None,
                 "sha256": digest, "sheet_count": len(sheets),
                 "external_link_count": len(ext_targets),
-                "macro_enabled": path.suffix.lower() in MACRO_EXT,
+                "macro_enabled": _effective_ext(path) in MACRO_EXT,
                 "zip_error": err,
             },
             lifecycle=_lifecycle(rel),
@@ -265,7 +288,7 @@ def _vba(store, workbooks: list[Path], live_relations: set[str]) -> dict:
     matched_git: set[str] = set()
 
     for path in workbooks:
-        if path.suffix.lower() not in MACRO_EXT:
+        if _effective_ext(path) not in MACRO_EXT:
             continue
         wb_key = f"wb:{path.relative_to(ROOT).as_posix()}"
         try:

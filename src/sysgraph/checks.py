@@ -158,15 +158,28 @@ def check_resolution_rate(conn, scan_id):
 
 def check_declaration_survival(conn, scan_id):
     """Every live declaration re-attaches after the rebuild, or is reported orphaned. A
-    declaration that silently stops applying is worse than no declaration."""
+    declaration that silently stops applying is worse than no declaration.
+
+    A `subject_key` ending in `/` is a SCOPE declaration -- a ruling over a directory rather
+    than a single artifact, e.g. `wb:models/` is canonical. It re-attaches if it still matches
+    at least one node by prefix. Everything else must match a node key exactly.
+
+    This distinction exists because the check caught the very first real declaration as
+    orphaned, which was correct: `wb:models/` is not a node. Widening the check to "matches
+    something" would have made it stop catching anything.
+    """
     cur = conn.cursor()
     cur.execute(
         """
         SELECT d.subject_key, d.predicate, d.object_key
           FROM sys.declaration d
          WHERE d.retired_at IS NULL
-           AND NOT EXISTS (SELECT 1 FROM sys.node n
-                            WHERE n.node_key = d.subject_key AND n.last_seen_scan = %(scan)s)
+           AND NOT EXISTS (
+                SELECT 1 FROM sys.node n
+                 WHERE n.last_seen_scan = %(scan)s
+                   AND CASE WHEN right(d.subject_key, 1) = '/'
+                            THEN n.node_key LIKE d.subject_key || '%%'
+                            ELSE n.node_key = d.subject_key END)
          LIMIT 50
         """,
         {"scan": scan_id},
