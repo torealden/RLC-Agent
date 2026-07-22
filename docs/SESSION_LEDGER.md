@@ -22,8 +22,8 @@ Spec: `docs/specs/system_knowledge_graph_design_v1.md` — design D1–D6 and ru
 |---|---|---|---|
 | 1 | Design the node/edge model | `system_knowledge_graph_design_v1.md` (`e3126a03`, rulings `03b55156`) | `[x]` 2026-07-21 |
 | 2 | Extractors + validate pass — spec §9 steps 1–7 | `system_graph_build_v1.md`; migrations 146–148; `src/sysgraph/`; 7/7 checks green | `[x]` 2026-07-22 |
-| 3 | Seam + tooling — §9 steps 8–9 | `sys.declaration` rows, ~81 `SERVES` rulings, `trace_series` MCP tool, `flat_file_series`→`data_series` join | `[ ]` **next** |
-| 4 | Cleanup deliverable — §9 step 11 (R1) | archive-candidate report; Tore rules; rulings persisted | `[ ]` |
+| 3 | Seam + tooling — §9 steps 8–9 | ~81 `SERVES` rulings, `trace_series` MCP tool, `flat_file_series`→`data_series` join | `[ ]` |
+| 4 | Cleanup deliverable — §9 step 11 (R1) | `models/` triage: 237 workbooks ruled, 249 declarations persisted | `[x]` 2026-07-22 |
 
 Session 2 also landed §9 step 10 (checks wired into the scan). Q1, Q2 and Q3 are answered —
 the `oil_stocks` blast radius is 61 nodes in under a second, and the `eia_data.xlsm` chain
@@ -42,7 +42,8 @@ criteria from three other oils/fats workbooks and see which it is. Ten minutes.
 | # | Session | Artifact | Status |
 |---|---|---|---|
 | 5 | Cleanup: run the repoint macro, fix `silver.oil_stocks`, blank the biofuel forecast hole | working macro run + collector fix + visible hole | `[ ]` |
-| 6 | Forecast layer — **after 5**. Tiered by series type; vintages frozen in `core.forecasts`; 50%/90% bands from the start | forecast writer + bands | `[ ]` |
+| 6a | **Forecast layer — DESIGN.** Can run now; it is a doc and it unblocks the Rodney Ndum model work in parallel | design spec, numbered decisions, not-verified list | `[ ]` **next** |
+| 6b | Forecast layer — BUILD. **After 5** — it writes into the flat files, and that write path is still unproven | `forecast.run`, low-rank vintages, bands | `[ ]` |
 | 7 | Helios validation — index vs the 2012 drought / 2019 wet commentary archive | validation note with numbers | `[ ]` |
 | 8 | Non-bio everywhere — needs the system graph **and** the PSD 140/149 ingest first | collector change + coverage report | `[ ]` |
 
@@ -50,13 +51,27 @@ criteria from three other oils/fats workbooks and see which it is. Ten minutes.
 
 ## Blocked on Tore — not sessions, decisions
 
-From handoff §3. These gate the sessions above; none are resolved.
+Resolved 2026-07-22 unless marked open.
 
-- [ ] **Wheat scope** — live workstream, absent from SOW No. 1. Amend, change-order, or stop building.
-- [ ] **Reference-series citation conflict** — 3 of 5 contracted series are private assessments,
-      unpublishable under SOW §9. Settle during build-out, not after.
-- [ ] **Helios v1 vs v3** — docs reference `/v3/daily-risk`; it 404s. We built on v1.
-- [ ] **Dual non-bio** — carry the derived residual *and* the independent mechanical forecast?
+- [x] **Wheat scope** — *not* a SOW No. 1 amendment. The requirement is real and documented:
+      `Helios POC Requirments Gathering.pdf` lists Corn (US, **High**) and Wheat (US/CAN,
+      **Medium**) for forecasting and what-if, plus a GRAIN LATAM section. It never made it into
+      SOW No. 1, which is veg-oils only. → **draft SOW No. 2 (Grains) for Dominic.**
+- [~] **Reference-series conflict** — the issue is redistribution rights, not citation. SOW §3.2
+      obligates delivering *reference-series values* weekly; Agreement §10.2 puts the licence
+      obligation on RLC and SOW §9 names no third-party restrictions. Ruled: pursue (1) amend
+      §3.2 to deliver guidance not benchmark values, and (4) move to public benchmarks where
+      arbitrage of the logistical spread allows. Transformation (daily → monthly average) is
+      usually acceptable. Likely supplier ProphetX/DTN; **prices are attacked last.**
+- [x] **Helios v1 vs v3** — **proceed on v1.** Asked 2026-07-21; Eden and Dominic did not know.
+      Called by Tore, explicitly on him if it changes.
+- [x] **Dual non-bio** — yes, but a special case. Build it up from the end-use categories already
+      broken out (annual volume each, combine, check against the data), not as a second
+      mechanical model. The agentic facility model is what ultimately estimates this.
+- [ ] **Rank-ladder reconciliation** *(new, for session 6a)* — `silver.tallow_balance` has
+      `MODEL` at rank 30, above `PROSPECTIVE`(20). Also rank 90 shared by CENSUS and
+      NASS_FATS_OILS, 95 by CIR and EIA, and `CIR` at both 85 and 95. Not currently
+      double-counting (verified), but §7's guarantee holds by luck rather than construction.
 
 ---
 
