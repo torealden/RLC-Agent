@@ -324,15 +324,24 @@ Private Function LoadVintages(conn As Object, commodityKey As String) As Object
     Dim dict As Object
     Set dict = CreateObject("Scripting.Dictionary")
 
+    ' marketing_year -> how many vintages of it we have seen so far
+    Dim seenPerMY As Object
+    Set seenPerMY = CreateObject("Scripting.Dictionary")
+
     ' Restrict to the 2 most recent marketing years -- gold.fas_us_wasde_comp
     ' carries full history back to 1990, and we only ever want the current
     ' and next MY (the two the latest WASDE actually publishes).
+    '
+    ' vintage_rank is HIGHER = MORE RECENT (migration 149). It used to be 1 = newest,
+    ' which ran backwards against every other vintage_rank in the database. Do NOT
+    ' hardcode ladder values here -- order by rank DESC and take the top two per
+    ' marketing year, so this keeps working whatever the numbers become.
     Dim sql As String
-    sql = "SELECT marketing_year, report_date, vintage_rank, area_harvested, yield, beginning_stocks, " & _
+    sql = "SELECT marketing_year, report_date, vintage, vintage_rank, area_harvested, yield, beginning_stocks, " & _
           "production, imports, fsi_consumption, feed_dom_consumption, crush, exports, ending_stocks " & _
           "FROM gold.fas_us_wasde_comp WHERE commodity = '" & commodityKey & "' " & _
           "AND marketing_year >= (SELECT MAX(marketing_year) - 1 FROM gold.fas_us_wasde_comp WHERE commodity = '" & commodityKey & "') " & _
-          "ORDER BY marketing_year, vintage_rank"
+          "ORDER BY marketing_year, vintage_rank DESC"
 
     Dim rs As Object
     Set rs = CreateObject("ADODB.Recordset")
@@ -352,9 +361,27 @@ Private Function LoadVintages(conn As Object, commodityKey As String) As Object
         Next fn
         rowDict.Add "report_date", rs.Fields("report_date").Value
 
+        rowDict.Add "vintage", rs.Fields("vintage").Value
+
+        ' Convert ladder rank -> recency ordinal (1 = newest, 2 = prior) client-side.
+        ' The recordset arrives rank-DESC within each marketing year, so the first row
+        ' seen for a MY is its newest vintage. Callers ask for ordinals, never ranks.
+        Dim myVal As Long
+        myVal = CLng(rs.Fields("marketing_year").Value)
+        Dim ordinal As Long
+        If seenPerMY.Exists(myVal) Then
+            ordinal = CLng(seenPerMY(myVal)) + 1
+            seenPerMY(myVal) = ordinal
+        Else
+            ordinal = 1
+            seenPerMY.Add myVal, ordinal
+        End If
+
         Dim key As String
-        key = CStr(rs.Fields("marketing_year").Value) & "|" & CStr(rs.Fields("vintage_rank").Value)
-        If Not dict.Exists(key) Then dict.Add key, rowDict
+        key = CStr(myVal) & "|" & CStr(ordinal)
+        If ordinal <= 2 Then
+            If Not dict.Exists(key) Then dict.Add key, rowDict
+        End If
 
         rs.MoveNext
     Loop
