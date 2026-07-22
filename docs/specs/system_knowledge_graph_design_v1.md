@@ -520,11 +520,22 @@ database and read-only scans of repo files only. Session 2 owns all construction
 
 ---
 
+> **Session 2 built this.** See `docs/specs/system_graph_build_v1.md` for what was measured,
+> what the design got wrong, and the current not-verified list. Seven corrections landed —
+> notably the `vba_module` natural key in §5.1 (a `.bas` name collides six ways;
+> `TradeUpdaterSQL` has six distinct forks), two new edge types in §5.2 (`DEPLOYED_AS`,
+> `DEFINES`), and the scope of check §8.2. The §14 list below is the *design's* list; the build
+> doc supersedes it item by item.
+
 ## 14. What I did **not** verify
 
-- **Whether the 26 `.bas` files in git match the VBA actually embedded in the `.xlsm` workbooks.**
-  They could have diverged. If they have, the VBA extractor is reading fiction. **Check this first
-  in Session 2** — it is the cheapest way for this design to be wrong.
+- ~~**Whether the 26 `.bas` files in git match the VBA actually embedded in the `.xlsm`
+  workbooks.**~~ **Checked, Session 2: they do not.** 8 modules exist in both places, 1 is
+  identical, 7 have drifted; 18 tracked `.bas` files are embedded in no workbook here, and 3
+  embedded modules are untracked. The drift is comments and formatting — the extracted facts
+  (relation refs, procedure names) survive in all but three archived copies — so the extractor
+  is not reading fiction. But git source and running module are now separate nodes joined by
+  `DEPLOYED_AS`. Full result in the build doc §1.
 - **Whether the bare `models/Oilseeds/*.xlsm` external-link targets are genuinely stale.** Observed:
   live workbooks link to `models/Oilseeds/us_oilseed_crush.xlsm` while active flat files sit in
   `models/Oilseeds/United States/`. Memory says the bare copies are stale. I did not open both and

@@ -21,13 +21,19 @@ Spec: `docs/specs/system_knowledge_graph_design_v1.md` — design D1–D6 and ru
 | # | Session | Artifact | Status |
 |---|---|---|---|
 | 1 | Design the node/edge model | `system_knowledge_graph_design_v1.md` (`e3126a03`, rulings `03b55156`) | `[x]` 2026-07-21 |
-| 2 | Extractors + validate pass — spec §9 steps 1–7 | `sys` migration + extractors + green checks §8 | `[ ]` **next** |
-| 3 | Seam + tooling — §9 steps 8–10 | `sys.declaration`, ~81 `SERVES` rulings, `trace_series` MCP tool | `[ ]` |
+| 2 | Extractors + validate pass — spec §9 steps 1–7 | `system_graph_build_v1.md`; migrations 146–148; `src/sysgraph/`; 7/7 checks green | `[x]` 2026-07-22 |
+| 3 | Seam + tooling — §9 steps 8–9 | `sys.declaration` rows, ~81 `SERVES` rulings, `trace_series` MCP tool, `flat_file_series`→`data_series` join | `[ ]` **next** |
 | 4 | Cleanup deliverable — §9 step 11 (R1) | archive-candidate report; Tore rules; rulings persisted | `[ ]` |
 
-**Open the next session with this** (spec §14, cheapest way the design is wrong): do the 26 `.bas`
-files in git match the VBA actually embedded in the `.xlsm` workbooks? If they've diverged, the VBA
-extractor parses fiction and build steps 3/5 need rethinking. Two minutes to test.
+Session 2 also landed §9 step 10 (checks wired into the scan). Q1, Q2 and Q3 are answered —
+the `oil_stocks` blast radius is 61 nodes in under a second, and the `eia_data.xlsm` chain
+reproduces the design's hand count of 2,292 cells exactly.
+
+**Open the next session with this** (build doc §7, cheapest way the build is wrong): only 19
+`flat_file_series` came out of 125,610 mined SUMIFS criteria, from just two workbooks. Either
+only those two use the flat-file pattern — or the pattern is present elsewhere and being
+missed, in which case Q1 is silently under-answered downstream of the flat files. Sample the
+criteria from three other oils/fats workbooks and see which it is. Ten minutes.
 
 ---
 
