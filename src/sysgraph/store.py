@@ -164,7 +164,12 @@ class GraphStore:
                 ON CONFLICT (node_key) DO UPDATE SET
                     node_type         = EXCLUDED.node_type,
                     label             = EXCLUDED.label,
-                    properties        = EXCLUDED.properties,
+                    -- MERGE, do not replace. Steps run with separate GraphStore instances
+                    -- (step 7 gets its own), so has_node() is false there and the extractor
+                    -- re-adds a thin workbook node. A replacing UPDATE silently wiped
+                    -- sha256 / sheet_count / size_bytes off every oils-and-fats workbook --
+                    -- exactly the ones step 7 covers.
+                    properties        = sys.node.properties || EXCLUDED.properties,
                     lifecycle         = CASE WHEN EXCLUDED.lifecycle = 'unknown'
                                              THEN sys.node.lifecycle ELSE EXCLUDED.lifecycle END,
                     extraction_method = EXCLUDED.extraction_method,
