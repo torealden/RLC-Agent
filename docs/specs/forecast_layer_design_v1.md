@@ -188,30 +188,40 @@ one-line check into 6b's build (assert no `source='LLM'` row ever appears in any
 
 ---
 
-## 7. Rank-ladder reconciliation (D7 — the open-for-Tore item, resolved here)
+## 7. Rank-ladder reconciliation (D7 — no decision needed; verified clean)
 
 The handoff flagged: `MODEL`=30 above `PROSPECTIVE`=20; rank 90 shared by CENSUS+NASS_FATS_OILS;
-95 by CIR+EIA; `CIR` at both 85 and 95. "Not double-counting, but by luck."
+95 by CIR+EIA; `CIR` at both 85 and 95 — "not double-counting, but by luck." **Verified
+2026-07-23: it holds by construction, not luck. There is nothing for Tore to decide.**
 
 **D7. The ladder is a namespaced vocabulary (rank = order, `vintage` = identity) with one hard
-invariant: within a single key, rank is unique.** Resolution, by band:
+invariant: within a single key `(class, series, period)`, rank is unique.** The invariant is
+**currently satisfied everywhere** — a MAXIFS collision check across all of `silver.tallow_balance`
+returns **0** keys with more than one vintage at the winning rank. The flagged "shared ranks" are all
+**cross-series**, which is exactly what a namespaced ladder permits:
 
-1. **`MODEL`=30 in `tallow_balance` / `build_tallow_biofuel_use.py` is mis-banded.** It is a
-   mechanical model output sitting where `ACREAGE` sits in the grain ladder. It doesn't
-   double-count today only because tallow has no rank-10/20 vintages to be wrongly overridden — luck.
-   **Relocate it to the forecast band (`MODEL`=3) in 6b.** Low urgency, but it is the same word
-   meaning the same thing, so it should carry the same rank across the estate.
-2. **Duplicate ranks among actuals (90/90, 95/95, 85-vs-95 `CIR`)** violate the uniqueness
-   invariant *if and only if* the two vintages ever land on the same `(series, period)`. Verified
-   they currently don't collide, but that is not guaranteed by construction. **6b/session-3 fix:**
-   give co-occurring actuals distinct ranks with a deterministic tie-order (e.g. CENSUS above NASS,
-   or vice-versa — Tore's call on which source wins), and never reuse a rank for two identities
-   (`CIR` picks one number). This is a data-cleanup, not a schema change.
-3. **The forecast band never has this problem** because D3 assigns every stage its own number and
-   D2 forbids sharing.
+| flagged pair | reality (verified) |
+|---|---|
+| CENSUS(90) vs NASS_FATS_OILS(90) | CENSUS is on **trade** (`tallow_imports`/`exports`, 2013→); NASS is on **production** (2015→). Different series, never the same key. |
+| CIR(95) vs EIA(95) | CIR on `cir_ibft_biodiesel_comparison`; EIA on `eia_tallow_comparison`. Different series. |
+| CIR at 85 **and** 95 | 85 on the `feed_ibft`/`nonbio_*_ibft` series; 95 on `cir_ibft_biodiesel_comparison`. No single series carries CIR at two ranks. |
 
-**Decision for Tore (one, small):** in item 2, when CENSUS and NASS both report the same series/period,
-which vintage should win the higher rank? Everything else in D7 is mechanical.
+**On production specifically (the question that settled it):** CENSUS_CIR production ends **2011-07**;
+NASS_FATS_OILS production starts **2015-05**; direct intersection = **0 months**. They never overlap,
+and they sit at different ranks (80 vs 90) regardless. There is **no** post-2011 Census fat-*production*
+report — the only Census production is CENSUS_CIR, which genuinely stopped in 2011; the 2013→ CENSUS
+data is trade, not production. So Tore's rule ("keep Census where NASS overlapped it pre-2011; keep
+NASS where Census published post-2015") fires on **neither** branch — there is no overlap in either
+direction.
+
+**Two things remain, neither a decision:**
+1. **`MODEL`=30 → `MODEL`=3** (`build_tallow_biofuel_use.py`): a vocabulary fix so the model word
+   carries the model rank estate-wide. Behavior-neutral (D8). 6b.
+2. **Keep the invariant a guard, not a hope.** Add the 0-collision MAXIFS check (distinct vintages at
+   winning rank per key) as a standing assertion in the flat-file build, so the day a future data add
+   *does* put two vintages at one rank on one key, it fails loud instead of silently dropping one via
+   `DISTINCT ON (…vintage_rank)`. Only *then* would a tie-order be needed — and it would be scoped to
+   whatever actually collided, not pre-decided now.
 
 ---
 
@@ -300,8 +310,10 @@ Label-in-the-same-breath, per the project rule. None of these block the *design*
 - **D5** — pure `(data, assumptions)` callables; `core.forecast_run` carries `assumptions jsonb` +
   `retain` publish gate; forecast row → `run_id` → assumptions.
 - **D6** — book (a) unchanged; hard rule: no LLM row ever enters a `*_series`/flat file.
-- **D7** — namespaced ladder, unique-rank-within-key invariant; relocate tallow `MODEL`→3;
-  de-collide actuals in 6b (one small Tore decision: CENSUS vs NASS tie-order).
+- **D7** — namespaced ladder, unique-rank-within-key invariant **verified clean (0 collisions)**;
+  the flagged shared ranks are all cross-series; CENSUS(trade) vs NASS(production) never overlap
+  (Census production ended 2011-07, NASS started 2015-05). No Tore decision. Only relocate tallow
+  `MODEL`→3 and add the collision check as a standing guard.
 - **D8** — the three above-10 vintages split three ways: roll tallow `MODEL`→3 and soy
   `FORECAST_SEASONAL`→band (both behavior-neutral); **split** canola `RESIDUAL`(50) like soy rather
   than roll it (it's a balance identity, not a forecast). Canola-like-soy confirmed by Tore 2026-07-23.

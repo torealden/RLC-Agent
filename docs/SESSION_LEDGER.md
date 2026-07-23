@@ -82,11 +82,12 @@ Resolved 2026-07-22 unless marked open.
 - [x] **Dual non-bio** — yes, but a special case. Build it up from the end-use categories already
       broken out (annual volume each, combine, check against the data), not as a second
       mechanical model. The agentic facility model is what ultimately estimates this.
-- [~] **Rank-ladder reconciliation** — resolved in forecast design §7 (D7): ladder is a namespaced
-      vocabulary (rank=order, `vintage`=identity) with a unique-rank-within-key invariant. Tallow
-      `MODEL`(30)→forecast band `MODEL`(3) in 6b; co-occurring actuals get distinct ranks in 6b.
-      **One small decision left for Tore:** when CENSUS and NASS both report the same series/period,
-      which vintage wins the higher rank? Everything else is mechanical.
+- [x] **Rank-ladder reconciliation** — resolved 2026-07-23, **no decision needed.** Verified 0 MAXIFS
+      collisions across `silver.tallow_balance`; the flagged shared ranks (90 CENSUS/NASS, 95 CIR/EIA,
+      CIR at 85+95) are all cross-series, fine by construction. CENSUS(trade) and NASS(production)
+      never overlap — Census fat production ended 2011-07, NASS started 2015-05, 0 shared months, and
+      no post-2011 Census production report exists. 6b: relocate tallow `MODEL`(30)→`MODEL`(3) and add
+      the collision check as a standing guard. See `forecast_layer_design_v1.md` §7.
 
 ---
 
