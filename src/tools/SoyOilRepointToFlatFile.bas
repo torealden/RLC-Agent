@@ -40,6 +40,14 @@ Option Explicit
 Public gSilent As Boolean
 Public gResult As String
 
+Private Const BAL_SHEET As String = "soyoil_balance_sheet"
+Private Const FF_NAME As String = "us_soybean_oil_supply_demand.xlsx"
+Private Const N_MONTHS As Long = 12
+Private Const MY_ANCHOR As Long = 1990   ' marketing year in column B, BOTH grids
+Private Const MY_COL0 As Long = 2        ' column B
+
+' All module-level Const/Dim MUST stay above the first procedure (the declarations
+' section); a Const placed after a Sub compiles as "Variable not defined".
 Private Sub Say(ByVal msg As String, ByVal style As VbMsgBoxStyle)
     If gSilent Then
         gResult = gResult & msg & vbLf & "----" & vbLf
@@ -47,12 +55,6 @@ Private Sub Say(ByVal msg As String, ByVal style As VbMsgBoxStyle)
         MsgBox msg, style, "Repoint soyoil balance sheet"
     End If
 End Sub
-
-Private Const BAL_SHEET As String = "soyoil_balance_sheet"
-Private Const FF_NAME As String = "us_soybean_oil_supply_demand.xlsx"
-Private Const N_MONTHS As Long = 12
-Private Const MY_ANCHOR As Long = 1990   ' marketing year in column B, BOTH grids
-Private Const MY_COL0 As Long = 2        ' column B
 
 ' block title prefix | wide tab | series key in _wide_index
 Private Function BlockMap() As Variant
