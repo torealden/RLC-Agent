@@ -1213,6 +1213,20 @@ class NASSProcessingCollector:
                 errors.append((rt_name, msg))
                 results[rt_name] = {'bronze': 0, 'silver': 0, 'error': msg}
 
+        # Recompose oil_stocks from bronze after all reports land. classify() skips oil
+        # STOCKS rows (they collide on the silver key); this owns oil_stocks + its
+        # crude/once_refined components. Idempotent; never fatal to the collection.
+        try:
+            from src.agents.collectors.us.oil_stocks_composition import recompute_oil_stocks
+            stats = recompute_oil_stocks(conn, apply=True)
+            self.logger.info(f"oil_stocks recomposed: {stats}")
+        except Exception as e:
+            self.logger.warning(f"oil_stocks recompose skipped: {e}")
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+
         # Audit session: complete or fail based on whether anything succeeded
         try:
             if session_id is not None:
@@ -1414,7 +1428,13 @@ class NASSProcessingCollector:
             return 'oil_production'
 
         if 'STOCKS' in stat_cat and ('oil' in comm or commodity_desc == 'OIL'):
-            return 'oil_stocks'
+            # Skip at row level. NASS splits oil stocks by refinement stage (crude /
+            # once-refined) across several short_descs; collapsing them all to one
+            # 'oil_stocks' key here made them collide on the silver upsert key so only the
+            # last writer (once-refined, ~5-6x low) survived. oil_stocks_composition.py
+            # owns oil_stocks + its crude/once_refined components, recomputed from bronze
+            # after ingest (see save_to_monthly_realized). Do NOT re-add a row-level map.
+            return None
 
         # Oil removal for processing (with edible/inedible subcategories)
         if stat_cat == 'REMOVAL FOR PROCESSING, INEDIBLE USE':
