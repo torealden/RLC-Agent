@@ -128,6 +128,15 @@ see D8.
    AND value_low <= value <= value_high`.
   A forecast-band row **cannot be inserted** without a band that brackets the point. Actuals
   (rank ≥ 10) leave the band columns null. The DB, not a convention, is the gate.
+- **Ruled by Tore 2026-07-23: hard gate, fail loud, never silent.** He'd rather a legitimate
+  band-less forecast throw a loud insert error we handle at build time than let any point estimate
+  slip through unbanded. Equality (`value_low = value = value_high`) is permitted so a deliberately
+  tight or degenerate band is *expressible* — but a NULL never is. This makes the near-certain cases
+  (e.g. crop-progress week 1, where the interval is trivially small) cost one explicit tight band
+  rather than an exemption, while the cases that matter most (price forecasts) are forced to carry a
+  real interval. No `is_forecast`-style boolean escape hatch, and no nullable-band shortcut — the
+  whole point of `silver.fuel_production_forecast`'s failure is that a boolean can't refuse a
+  band-less publish.
 - **Why columns, not sibling `_lo`/`_hi` series:** sibling series (three rows per forecast) let the
   band go silently missing — exactly what D4 forbids — and can't be CHECK-constrained as a unit.
   Columns keep the forecast atomic (one row = point + band) and mirror `core.forecasts`
@@ -242,11 +251,21 @@ Going-forward rule unchanged: **1–9 is the canonical forecast home for all new
 Label-in-the-same-breath, per the project rule. None of these block the *design*; each is a thing
 6b must check before it writes code.
 
-- **[ ] Flat-file schema append is truly non-breaking.** D4 adds `value_low`/`value_high` as
-  trailing columns. I asserted Desktop's `MAXIFS/SUMIFS` bind only to keys 1–8 + `value` and won't
-  break on two new columns — **not tested against an actual balance-sheet workbook.** Cheapest 6b
-  opener: add the two columns to the wheat flat file, open `us_wheat_production.xlsx`'s consumer,
-  confirm nothing shifts.
+- **[ ] Flat-file schema append is truly non-breaking — and test it on the RIGHT workbook.** D4 adds
+  `value_low`/`value_high` as trailing columns; I asserted Desktop's `MAXIFS/SUMIFS` bind only to
+  keys 1–8 + `value`. **Do not test this on soy.** Verified this session (sys graph): the soy oil
+  flat file `us_soybean_oil_supply_demand.xlsx` is consumed by `us_soybean_complex_bal_sheets.xlsm`
+  via **positional external cell links** (`xlsx_extlink`, 0 `flat_file_series` edges) — the *old*
+  direct-link path, not the `vintage_rank`/`MAXIFS` contract. An append test there would exercise the
+  wrong mechanism and give false confidence. **Run the append test on a genuine SUMIFS-contract
+  consumer — the wheat pilot** (`us_wheat_production.xlsx` per `flat_file_contract.md`): add the two
+  columns, open the consumer, confirm nothing shifts. Corollary: the spec's "no formula change ever"
+  promise holds *only* for workbooks already on the contract; soy's balance sheet (positional links)
+  must be migrated to the contract before it benefits — consistent with "only 2 of 71 oils workbooks
+  use it."
+- **[ ] Soy is a live forecast→flat-file→balance-sheet example, but not of this contract.** It proves
+  the plumbing runs (a `FORECAST_SEASONAL` vintage reaches a linked balance sheet); it proves nothing
+  about `MAXIFS` auto-upgrade or band columns (its link is positional and its forecast is band-less).
 - **[ ] CHECK-constraint enforceability of bands.** The `rank 1–9 ⇒ band present` constraint assumes
   every current and future forecast writer can supply a band. If any mechanical model genuinely
   produces a point with no defensible interval, the constraint blocks it. Not surveyed across the

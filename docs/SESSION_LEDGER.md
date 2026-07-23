@@ -50,11 +50,13 @@ criteria from three other oils/fats workbooks and see which it is. Ten minutes.
 ---
 
 **Open 6b with this** (forecast design §9, cheapest way the design is wrong): **is the flat-file
-schema append actually non-breaking?** D4 adds `value_low`/`value_high` as trailing columns and
-asserts Desktop's `MAXIFS`/`SUMIFS` bind only to keys 1–8 + `value` — never tested against a real
-workbook. Add the two columns to the wheat flat file, open `us_wheat_production.xlsx`'s consumer,
-confirm nothing shifts. If it shifts, the band mechanism (the whole of D4) needs rethinking before
-any migration. Ten minutes, and it gates the rest of 6b.
+schema append actually non-breaking — tested on the RIGHT workbook?** D4 adds `value_low`/`value_high`
+as trailing columns and asserts Desktop's `MAXIFS`/`SUMIFS` bind only to keys 1–8 + `value`. Verified
+this session that soy is the WRONG test target — `us_soybean_complex_bal_sheets.xlsm` reads its flat
+file via positional external links (`xlsx_extlink`), not the `vintage_rank`/`MAXIFS` contract. Run
+the append test on the wheat pilot (`us_wheat_production.xlsx`, a genuine SUMIFS consumer): add the
+two columns, open the consumer, confirm nothing shifts. If it shifts, the band mechanism (all of D4)
+needs rethinking before any migration. Gate decision is settled: **hard CHECK gate, fail loud.**
 
 Note for 6b: verified this session that "1–9 confirmed free" was true only at the floor — `MODEL`=30,
 `FORECAST_SEASONAL`=40, `RESIDUAL`=50 already exist as forecast/model vintages above 10 (D3/D7/D8).
