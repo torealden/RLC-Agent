@@ -602,6 +602,20 @@ for fname, stab, dtab, supply, demand in [
     write_meta(wb, supply + demand, NOTES)
     wb.save(OUTDIR / fname)
     print(f"wrote {OUTDIR / fname}")
+    # LOUD: biofuel_use is raked ACTUALS only -- it stops at the last EIA month while the
+    # rest of the sheet forecasts forward. Forward biofuel cells are intentionally BLANK
+    # (never 0). Announce the gap every run so no consumer silently reads the hole as zero.
+    def _key(r):
+        mo = int(str(r['period'])[1:])
+        return my_of(r['marketing_year'], mo) * 100 + mo
+    bio = [r for r in demand if str(r['series']).startswith('biofuel_use')]
+    if bio:
+        bl, dl = max(_key(r) for r in bio), max(_key(r) for r in demand)
+        if bl < dl:
+            print(f"  [BIOFUEL HOLE] {label}: biofuel_use ends MY{bl//100}/{str(bl//100+1)[-2:]} "
+                  f"m{bl % 100:02d}; demand forecast runs to MY{dl//100}/{str(dl//100+1)[-2:]} "
+                  f"m{dl % 100:02d}. Forward biofuel cells are BLANK, not 0 -- BBD/non-bio "
+                  f"consumers must treat blank as MISSING FORECAST, never zero.")
     for tab, rows in [(stab, supply), (dtab, demand)]:
         ser = sorted(set(r['series'] for r in rows))
         print(f"  [{tab}] {len(dedupe(rows))} rows | series: {ser}")

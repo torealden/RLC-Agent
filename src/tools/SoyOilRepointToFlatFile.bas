@@ -34,6 +34,20 @@ Attribute VB_Name = "SoyOilRepointToFlatFile"
 ' =====================================================================================
 Option Explicit
 
+' Unattended mode: when gSilent is True, dialogs are captured into gResult instead of
+' shown, so the macro can be driven headless (COM/Application.Run) for verification and
+' automated apply. The interactive wrappers below leave gSilent False and behave as before.
+Public gSilent As Boolean
+Public gResult As String
+
+Private Sub Say(ByVal msg As String, ByVal style As VbMsgBoxStyle)
+    If gSilent Then
+        gResult = gResult & msg & vbLf & "----" & vbLf
+    Else
+        MsgBox msg, style, "Repoint soyoil balance sheet"
+    End If
+End Sub
+
 Private Const BAL_SHEET As String = "soyoil_balance_sheet"
 Private Const FF_NAME As String = "us_soybean_oil_supply_demand.xlsx"
 Private Const N_MONTHS As Long = 12
@@ -121,7 +135,7 @@ Private Sub RunRepoint(ByVal applyIt As Boolean)
 
     ffPath = FlatFilePath()
     If Len(Dir$(ffPath)) = 0 Then
-        MsgBox "Flat file not found:" & vbLf & ffPath & vbLf & vbLf & _
+        Say "Flat file not found:" & vbLf & ffPath & vbLf & vbLf & _
                "Run scripts/write_oils_supply_flat_files.py first.", vbCritical
         Exit Sub
     End If
@@ -137,7 +151,7 @@ Private Sub RunRepoint(ByVal applyIt As Boolean)
     Set anchors = LoadWideAnchors(ffWb)
     If anchors Is Nothing Then
         If Not wasOpen Then ffWb.Close SaveChanges:=False
-        MsgBox "_wide_index tab not found in " & FF_NAME & ". Re-run the flat-file writer.", vbCritical
+        Say "_wide_index tab not found in " & FF_NAME & ". Re-run the flat-file writer.", vbCritical
         Exit Sub
     End If
 
@@ -202,12 +216,28 @@ Private Sub RunRepoint(ByVal applyIt As Boolean)
               "CHECK THE NUMBERS, then run RepointSoyOilCleanup to delete the ff_ mirror" & vbLf & _
               "tabs and break the eia_data.xlsm link."
     End If
-    MsgBox msg, vbInformation, "Repoint soyoil balance sheet"
+    Say msg, vbInformation
 End Sub
 
 Public Sub RepointSoyOilPreview()
     RunRepoint False
 End Sub
+
+' Headless entry points. Return the captured dialog text so a COM driver can read the
+' preview/apply report via Application.Run. gSilent suppresses the confirm prompt too.
+Public Function RepointSoyOilPreviewSilent() As String
+    gSilent = True: gResult = ""
+    RunRepoint False
+    gSilent = False
+    RepointSoyOilPreviewSilent = gResult
+End Function
+
+Public Function RepointSoyOilApplySilent() As String
+    gSilent = True: gResult = ""
+    RunRepoint True
+    gSilent = False
+    RepointSoyOilApplySilent = gResult
+End Function
 
 Public Sub RepointSoyOilApply()
     If MsgBox("Repoint the soyoil balance sheet at " & FF_NAME & " _wide tabs?" & vbLf & vbLf & _
@@ -244,4 +274,43 @@ Public Sub RepointSoyOilCleanup()
     End If
     MsgBox "Cleanup done." & vbLf & vbLf & s & vbLf & _
            "Chain is now: DB -> flat file -> balance sheet.", vbInformation
+End Sub
+
+' =====================================================================================
+' BlankBBDForecastHole -- deliverable 3 (session 5). Run AFTER RepointSoyOilApply.
+' The 4 fuel-use blocks are blank for months past the last raked EIA month (biofuel has no
+' forecast). The monthly BBD line (=fuel1+fuel2+fuel3+fuel4) turned those blanks into 0.0
+' (silently, when fed from eia_data) or #VALUE! (once repointed to "" cells) -- both HIDE
+' the missing forecast. This rewrites the BBD line to blank LOUDLY when no fuel block has a
+' value, and SUM (blank-safe) when any does. Idempotent; also repairs the AL133/AM133
+' copy-paste error in the old MY2027 formula. Behavior-neutral for history.
+Public Sub BlankBBDForecastHole()
+    Dim ws As Worksheet, bbdRow As Long, lastCol As Long, col As Long, k As Long
+    Dim rBio As Long, rRd As Long, rSaf As Long, rCo As Long, n As Long, c1 As String
+    Set ws = ThisWorkbook.Worksheets(BAL_SHEET)
+    bbdRow = FindBlockRow(ws, "US SOYBEAN OIL BIOMASS-BASED DIESEL USE")
+    rBio = FindBlockRow(ws, "US SOYBEAN OIL BIODIESEL USE")
+    rRd = FindBlockRow(ws, "US SOYBEAN OIL RENEWABLE DIESEL USE")
+    rSaf = FindBlockRow(ws, "US SOYBEAN OIL SUSTAINABLE AVIATION FUEL USE")
+    rCo = FindBlockRow(ws, "US SOYBEAN OIL CO-PROCESSING USE")
+    If bbdRow = 0 Or rBio = 0 Or rRd = 0 Or rSaf = 0 Or rCo = 0 Then
+        MsgBox "Could not locate the BBD line or one of the four fuel blocks -- nothing changed.", vbCritical
+        Exit Sub
+    End If
+    lastCol = LastMYCol(ws, bbdRow + 1)
+    Application.ScreenUpdating = False
+    For col = 2 To lastCol
+        For k = 0 To N_MONTHS - 1
+            c1 = ws.Cells(rBio + 2 + k, col).Address(True, True) & "," & _
+                 ws.Cells(rRd + 2 + k, col).Address(True, True) & "," & _
+                 ws.Cells(rSaf + 2 + k, col).Address(True, True) & "," & _
+                 ws.Cells(rCo + 2 + k, col).Address(True, True)
+            ws.Cells(bbdRow + 2 + k, col).Formula = _
+                "=IF(COUNT(" & c1 & ")=0,""""," & "SUM(" & c1 & "))"
+            n = n + 1
+        Next k
+    Next col
+    Application.ScreenUpdating = True
+    MsgBox "BBD line reblanked: " & n & " cells now show blank when all four fuel blocks are" & vbLf & _
+           "blank (missing biofuel forecast), SUM otherwise. Row " & bbdRow & ".", vbInformation
 End Sub
