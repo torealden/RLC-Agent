@@ -639,6 +639,20 @@ End Function
 
 Public Sub AssignWASDEShortcut()
     Application.OnKey "^+w", "UpdateWASDEComp_Dispatch"
+
+    ' Announce the shortcut on open so the user is not left guessing which key runs
+    ' the comp. These balance-sheet workbooks have NO other updater -- every other
+    ' series is linked in by SUMIFS from the flat files -- so Ctrl+Shift+W is the only
+    ' shortcut they carry, and this banner is how the user is reminded of it.
+    '
+    ' Guarded: if ShortcutsHelper has not been imported into this workbook yet, the
+    ' OnKey binding above still succeeds and the file still opens -- you just don't
+    ' get the banner until the helper is imported.
+    On Error Resume Next
+    ShortcutsHelper.ShowShortcutBanner _
+        "WASDE Comp Updater", _
+        "Ctrl+Shift+W", "Update current vs prior WASDE (both marketing years)"
+    On Error GoTo 0
 End Sub
 
 Public Sub RemoveWASDEShortcut()
