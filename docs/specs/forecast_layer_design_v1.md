@@ -239,8 +239,11 @@ residual identity against the same actuals it was computed from. That is worse t
    in 6b. Both verified behavior-neutral above, so this is pure consistency cleanup, cheap and safe.
 2. **Fix canola to match soy's split** — historical residual → `RESIDUAL_ACTUAL`=90, forward residual
    → forecast band — rather than roll it. This is a small modeling fix (`sbo_nonbio_series` already
-   has the pattern to copy), not a rank move. **Left for Tore's review before touching code**, per his
-   ask; the one call for him is confirming the split direction (treat canola exactly like soy).
+   has the pattern to copy), not a rank move. **Confirmed by Tore 2026-07-23: model canola exactly
+   like soy.** The canola branch in `write_oils_supply_flat_files.py` (the single `RESIDUAL`=50 line)
+   is refactored in 6b to emit the same two-vintage split `sbo_nonbio_series` already produces —
+   `RESIDUAL_ACTUAL`=90 for actual-input history, forward-projection vintage in the 1–9 band. Verify
+   the canola forward horizon and seasonal source match soy's before shipping.
 
 Going-forward rule unchanged: **1–9 is the canonical forecast home for all new forecast series.**
 
@@ -301,4 +304,4 @@ Label-in-the-same-breath, per the project rule. None of these block the *design*
   de-collide actuals in 6b (one small Tore decision: CENSUS vs NASS tie-order).
 - **D8** — the three above-10 vintages split three ways: roll tallow `MODEL`→3 and soy
   `FORECAST_SEASONAL`→band (both behavior-neutral); **split** canola `RESIDUAL`(50) like soy rather
-  than roll it (it's a balance identity, not a forecast). Canola split direction awaits Tore's review.
+  than roll it (it's a balance identity, not a forecast). Canola-like-soy confirmed by Tore 2026-07-23.
