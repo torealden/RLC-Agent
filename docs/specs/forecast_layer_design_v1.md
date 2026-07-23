@@ -208,14 +208,32 @@ which vintage should win the higher rank? Everything else in D7 is mechanical.
 
 ## 8. What stays put, on purpose (D8)
 
-**D8. Existing model-derived gap-fillers in survey-less commodities are not migrated now.**
-`FORECAST_SEASONAL`=40 and `RESIDUAL`=50 in the oils writer fill months that have no actual yet, in
-a commodity with no `PROSPECTIVE`/`ACREAGE` ladder. At 40–50 they are only ever overridden by
-actuals (60–95), which is correct. Moving them to 1–9 would be churn with no behavioral change and
-risks the oils flat file mid-migration. **Document that 1–9 is the canonical forecast home for all
-*new* forecast series; reconcile these two legacy vintages only when the oils flat file is itself
-migrated to the `*_series` pattern.** This is the honest state: one clean rule going forward, two
-grandfathered exceptions named explicitly rather than pretended away.
+**D8. The three above-10 forecast-ish vintages are not one class — reading the code, they split
+three ways. (Revised 2026-07-23 after Tore asked whether we can just roll them down; the honest
+answer is "two of the three, and the third is a different bug.")**
+
+| current | what it actually is (from the writer) | correct home | roll-down safe? |
+|---|---|---|---|
+| `MODEL`=30 (`tallow_balance`, `build_tallow_biofuel_use.py`) | genuine mechanical model output | **`MODEL`=3** (D3 band) | **Yes — behavior-neutral.** It is already the floor in tallow (nothing at 4–29); `MAXIFS` picks it for gap periods and actuals(60–95) override it, identically at 30 or 3. |
+| `FORECAST_SEASONAL`=40 (`write_oils_supply_flat_files.py`, soybean oil) | genuine 2-MY forward forecast (`trailing-3MY avg × 5yr seasonal`) | **forecast band 1–9** | **Yes — behavior-neutral.** Only on `non_biofuel_use[*]`, whose only other vintage is `RESIDUAL_ACTUAL`=90. Forward periods have only the forecast; history has only the actual. 40→low is invisible to `MAXIFS`. |
+| `RESIDUAL`=50 (same writer, **canola** oil) | **not a forecast** — a balance identity `production+imports−biofuel−exports` | **split, not rolled** | **No.** |
+
+**The real finding is an inconsistency, not a mis-rank.** Soybean oil does non-bio use correctly:
+`RESIDUAL_ACTUAL`=90 for historical months (a *derived actual*) **plus** `FORECAST_SEASONAL`=40 for
+the forward months. **Canola collapses both into one `RESIDUAL`=50** and never separates the
+actual-derived history from the forward projection. Rolling canola `RESIDUAL` to 1–9 would relabel
+historical, actual-input balance residuals as "forecasts" — and then book (a)/scoring would grade a
+residual identity against the same actuals it was computed from. That is worse than leaving it at 50.
+
+**Decisions:**
+1. **Roll down the two genuine forecasts** (tallow `MODEL`→3; soy `FORECAST_SEASONAL`→forecast band)
+   in 6b. Both verified behavior-neutral above, so this is pure consistency cleanup, cheap and safe.
+2. **Fix canola to match soy's split** — historical residual → `RESIDUAL_ACTUAL`=90, forward residual
+   → forecast band — rather than roll it. This is a small modeling fix (`sbo_nonbio_series` already
+   has the pattern to copy), not a rank move. **Left for Tore's review before touching code**, per his
+   ask; the one call for him is confirming the split direction (treat canola exactly like soy).
+
+Going-forward rule unchanged: **1–9 is the canonical forecast home for all new forecast series.**
 
 ---
 
@@ -262,4 +280,6 @@ Label-in-the-same-breath, per the project rule. None of these block the *design*
 - **D6** — book (a) unchanged; hard rule: no LLM row ever enters a `*_series`/flat file.
 - **D7** — namespaced ladder, unique-rank-within-key invariant; relocate tallow `MODEL`→3;
   de-collide actuals in 6b (one small Tore decision: CENSUS vs NASS tie-order).
-- **D8** — grandfather oils `FORECAST_SEASONAL`(40)/`RESIDUAL`(50) until the oils flat-file migration.
+- **D8** — the three above-10 vintages split three ways: roll tallow `MODEL`→3 and soy
+  `FORECAST_SEASONAL`→band (both behavior-neutral); **split** canola `RESIDUAL`(50) like soy rather
+  than roll it (it's a balance identity, not a forecast). Canola split direction awaits Tore's review.
