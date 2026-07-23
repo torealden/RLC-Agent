@@ -42,10 +42,22 @@ criteria from three other oils/fats workbooks and see which it is. Ten minutes.
 | # | Session | Artifact | Status |
 |---|---|---|---|
 | 5 | Cleanup: run the repoint macro, fix `silver.oil_stocks`, blank the biofuel forecast hole | working macro run + collector fix + visible hole | `[ ]` |
-| 6a | **Forecast layer — DESIGN.** Can run now; it is a doc and it unblocks the Rodney Ndum model work in parallel | design spec, numbered decisions, not-verified list | `[ ]` **next** |
+| 6a | **Forecast layer — DESIGN.** Can run now; it is a doc and it unblocks the Rodney Ndum model work in parallel | `docs/specs/forecast_layer_design_v1.md` — D1–D8 + not-verified list | `[x]` 2026-07-23 |
 | 6b | Forecast layer — BUILD. **After 5** — it writes into the flat files, and that write path is still unproven | `forecast.run`, low-rank vintages, bands | `[ ]` |
 | 7 | Helios validation — index vs the 2012 drought / 2019 wet commentary archive | validation note with numbers | `[ ]` |
 | 8 | Non-bio everywhere — needs the system graph **and** the PSD 140/149 ingest first | collector change + coverage report | `[ ]` |
+
+---
+
+**Open 6b with this** (forecast design §9, cheapest way the design is wrong): **is the flat-file
+schema append actually non-breaking?** D4 adds `value_low`/`value_high` as trailing columns and
+asserts Desktop's `MAXIFS`/`SUMIFS` bind only to keys 1–8 + `value` — never tested against a real
+workbook. Add the two columns to the wheat flat file, open `us_wheat_production.xlsx`'s consumer,
+confirm nothing shifts. If it shifts, the band mechanism (the whole of D4) needs rethinking before
+any migration. Ten minutes, and it gates the rest of 6b.
+
+Note for 6b: verified this session that "1–9 confirmed free" was true only at the floor — `MODEL`=30,
+`FORECAST_SEASONAL`=40, `RESIDUAL`=50 already exist as forecast/model vintages above 10 (D3/D7/D8).
 
 ---
 
@@ -68,10 +80,11 @@ Resolved 2026-07-22 unless marked open.
 - [x] **Dual non-bio** — yes, but a special case. Build it up from the end-use categories already
       broken out (annual volume each, combine, check against the data), not as a second
       mechanical model. The agentic facility model is what ultimately estimates this.
-- [ ] **Rank-ladder reconciliation** *(new, for session 6a)* — `silver.tallow_balance` has
-      `MODEL` at rank 30, above `PROSPECTIVE`(20). Also rank 90 shared by CENSUS and
-      NASS_FATS_OILS, 95 by CIR and EIA, and `CIR` at both 85 and 95. Not currently
-      double-counting (verified), but §7's guarantee holds by luck rather than construction.
+- [~] **Rank-ladder reconciliation** — resolved in forecast design §7 (D7): ladder is a namespaced
+      vocabulary (rank=order, `vintage`=identity) with a unique-rank-within-key invariant. Tallow
+      `MODEL`(30)→forecast band `MODEL`(3) in 6b; co-occurring actuals get distinct ranks in 6b.
+      **One small decision left for Tore:** when CENSUS and NASS both report the same series/period,
+      which vintage wins the higher rank? Everything else is mechanical.
 
 ---
 
