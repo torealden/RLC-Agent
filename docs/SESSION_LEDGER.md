@@ -54,30 +54,35 @@ criteria from three other oils/fats workbooks and see which it is. Ten minutes.
 |---|---|---|---|
 | 5 | Cleanup: run the repoint macro, fix `silver.oil_stocks`, blank the biofuel forecast hole | working macro run + collector fix + visible hole | `[x]` 2026-07-24 |
 | 6a | **Forecast layer — DESIGN.** Can run now; it is a doc and it unblocks the Rodney Ndum model work in parallel | `docs/specs/forecast_layer_design_v1.md` — D1–D8 + not-verified list | `[x]` 2026-07-23 |
-| 6b | Forecast layer — BUILD. **Unblocked** — write path proven: soyoil balance sheet now reads the flat file (6,312 cells), history clean | `forecast.run`, low-rank vintages, bands | `[ ]` |
+| 6b | Forecast layer — BUILD | `forecast_layer_build_v1.md`; migrations 150–152; `src/forecast/guards.py`; D4 gate PASS | `[x]` 2026-07-24 |
 | 7 | Helios validation — index vs the 2012 drought / 2019 wet commentary archive | validation note with numbers | `[ ]` |
 | 8 | Non-bio everywhere — needs the system graph **and** the PSD 140/149 ingest first | collector change + coverage report | `[ ]` |
 
 ---
 
-**Open 6b with this** (forecast design §9, cheapest way the design is wrong): **is the flat-file
-schema append actually non-breaking — tested on the RIGHT workbook?** D4 adds `value_low`/`value_high`
-as trailing columns and asserts Desktop's `MAXIFS`/`SUMIFS` bind only to keys 1–8 + `value`. Verified
-this session that soy is the WRONG test target — `us_soybean_complex_bal_sheets.xlsm` reads its flat
-file via positional external links (`xlsx_extlink`), not the `vintage_rank`/`MAXIFS` contract. Run
-the append test on the wheat pilot (`us_wheat_production.xlsx`, a genuine SUMIFS consumer): add the
-two columns, open the consumer, confirm nothing shifts. If it shifts, the band mechanism (all of D4)
-needs rethinking before any migration. Gate decision is settled: **hard CHECK gate, fail loud.**
+**Session 6b done (2026-07-24)** — forecast storage + vocabulary layer. D4 gate PASSED (13→15 col append
+to the real wheat flat file shifted zero values in the §4 SUMIFS/MAXIFS contract; no tables/defined-names,
+binding by explicit column letter). Shipped: migrations 150 (`core.forecast_run` + retain gate), 151
+(`wheat_series` bands + `run_id` + hard band CHECK), 152 (tallow `MODEL` 30→3); `src/forecast/guards.py`
+standing MAXIFS-collision guard (0 clean on both live tables, raises on injected collision); canola non-bio
+two-vintage split (`RESIDUAL_ACTUAL`90 + `FORECAST_SEASONAL`40, like soy); wheat flat file → contract v1.1.
+All verified live (CHECK gate rejects band-less/inverted/null-point forecasts, accepts valid+actuals).
+Full detail + not-verified list: `docs/specs/forecast_layer_build_v1.md`.
 
-Note for 6b: verified this session that "1–9 confirmed free" was true only at the floor — `MODEL`=30,
-`FORECAST_SEASONAL`=40, `RESIDUAL`=50 already exist as forecast/model vintages above 10 (D3/D7/D8).
+**Decisions (2026-07-24):** (1) **Biofuel gap DEFERRED** — the 495 forward `#VALUE!` stay loud; closing
+the gap = the first real D5 forecast callable, its own session. (2) **D8-decision-1 roll DEFERRED** — soy/
+canola `FORECAST_SEASONAL` stays at 40 (not rolled to 1–9) because oils have no `*_series` table/band CHECK
+yet and D4 forbids unbanded 1–9 rows; the roll is cosmetic (MAXIFS-identical) and waits for the oils
+`*_series` migration. Gate beats parameter.
 
-**Sharpened by session 5 (cheapest 6b opener):** even *after* the repoint, `soyoil_balance_sheet` reads
-the flat file via **plain positional cell refs** (`=IF([5]soybean_oil_demand_wide!$AM$3="","",…)`), NOT
-SUMIFS/MAXIFS — so appending `value_low`/`value_high` trailing columns is invisible to soy *and* soy gets
-no MAXIFS auto-upgrade. So the D4 append test **must** run on the wheat pilot (`us_wheat_production.xlsx`,
-a genuine SUMIFS consumer). That is the ten-minute first check of 6b. Second-cheapest: the biofuel gap
-(May 2026–Sep 2027) is the concrete thing 6b's forecast must fill to clear the 495 forward `#VALUE!`.
+**Open the next session with this** (build doc §3, cheapest gap): **the forecast band is empty — storage
+exists, no forecast has been produced.** 0 rows in `core.forecast_run`, 0 rows at rank 1–9 anywhere. The
+real gap is **callables, not storage** (2 callables today, 0 forecast callables). Next session builds the
+**first D5 forecast callable**: the biofuel-feedstock-use forecast over the ~17-month gap (May 2026–Sep
+2027), produced by a pure `(data, assumptions)` callable, logged via `core.forecast_run` (retain), banded
+per D4 — the concrete thing that clears the 495 forward `#VALUE!` and proves the retain→series→run_id path
+end-to-end. Second-cheapest: convert `silver.fuel_production_forecast` (902 `is_forecast`-boolean rows) to
+rank-banded rows.
 
 ---
 
