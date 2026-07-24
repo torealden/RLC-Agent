@@ -194,9 +194,15 @@ NOTES = {
               'MY2011/12-2014/15 modeled from ERS annual ending stocks -- no monthly source exists.',
     'imports': 'Census HS 1507 (soy) / 1514 (canola) imports, all subcodes summed, kg -> lb',
     'exports': 'Census HS 1507 (soy) / 1514 (canola) exports, all subcodes summed, kg -> lb',
-    'biofuel_use_biodiesel': 'raked allocator: biodiesel feedstock use',
-    'biofuel_use_renewable_diesel': 'raked allocator: renewable diesel feedstock use',
-    'biofuel_use_total': 'raked allocator: sum across fuel types',
+    'biofuel_use_biodiesel': 'raked allocator ACTUALS (rank 95) through the last EIA month; forward = '
+                             'MODEL_BASE forecast (rank 1) from biofuel_feedstock_use_forecast callable '
+                             '(fuel-prod x trailing-12mo intensity), published via silver.soybean_oil_series.',
+    'biofuel_use_renewable_diesel': 'raked allocator ACTUALS (rank 95) + forward MODEL_BASE forecast '
+                                    '(rank 1), same callable. See biofuel_use_biodiesel.',
+    'biofuel_use_total': 'raked allocator ACTUALS (rank 95) + forward MODEL_BASE forecast (rank 1) = '
+                         'sum across fuel types. Band (value_low/value_high, in silver.soybean_oil_series) '
+                         'is a SCENARIO interval from trailing intensity dispersion, NOT a confidence '
+                         'level; the total band is the comonotone sum of the per-fuel bands.',
     'food_use': 'NASS refined edible use (oil_refined_edible_use)',
     'industrial_use': 'NASS refined inedible use (oil_refined_inedible_use)',
     'non_biofuel_use': 'aggregate non-biofuel use (closes the sheet). SBO = food+industrial '
@@ -607,6 +613,42 @@ def canola_nonbio_series(cur, supply_rows, bio_totals):
     return out
 
 
+def retained_forecast_series(cur, commodity):
+    """Merge PUBLISHED book-(b) forecast rows for `commodity` from silver.<commodity>_series into the
+    flat file (design forecast_layer_design_v1.md D1/D5). This is the seam that lets a D5 forecast
+    callable's output reach the balance sheet: the callable writes rank 1-9 banded rows into the series
+    table with a run_id, and the writer picks them up here so write_wide renders them into the forward
+    columns of the demand_wide blocks -- closing the biofuel gap the raked ACTUALS leave open.
+
+    Only rows whose run_id is retain=true in core.forecast_run are eligible (belt-and-suspenders: a
+    retain=false scenario run never writes series rows, but the join guarantees no what-if leaks into a
+    sheet -- and, per design D6, guarantees no book-(a) LLM row could either). Only rank 1-9 (the
+    forecast band). The band (value_low/value_high) is NOT rendered wide -- the balance sheet reads the
+    positional point value -- but the point flows through best_by_period exactly like any vintage: since
+    the forecast (rank 1) sits BELOW the raked actuals (rank 95) and their periods are disjoint (forecast
+    starts the month after the last actual), MAXIFS/best_by_period keeps the actual where it exists and
+    the forecast forward, with an automatic handoff and no collision.
+
+    Returns writer-row dicts (raw LB), or [] if the commodity has no *_series table yet (e.g. canola).
+    """
+    table = f"silver.{commodity}_series"
+    cur.execute("SELECT to_regclass(%s) AS t", (table,))
+    if cur.fetchone()['t'] is None:
+        return []
+    cur.execute(f"""
+        SELECT s.series, s.marketing_year, s.period, s.vintage, s.vintage_rank, s.value, s.source
+        FROM {table} s
+        JOIN core.forecast_run fr ON fr.run_id = s.run_id
+        WHERE fr.retain AND s.vintage_rank BETWEEN 1 AND 9 AND s.value IS NOT NULL
+    """)
+    out = []
+    for r in cur.fetchall():
+        m = int(str(r['period'])[1:])
+        out.append(row(commodity, r['series'], r['marketing_year'], m, float(r['value']),
+                       r['vintage'], r['vintage_rank'], r['source']))
+    return out
+
+
 with get_connection() as conn:
     cur = conn.cursor()
 
@@ -630,6 +672,11 @@ with get_connection() as conn:
     # independent 2-MY forecast (ruled 2026-07-20; project_nonbio_residual_after_biofuel). Replaces
     # the old 17-month food-only proxy.
     sbo_demand += sbo_nonbio_series(cur, sbo_supply, sbo_bio_tot)
+    # PUBLISHED forecast band (book b): biofuel_use_* forward, from silver.soybean_oil_series (rank 1-9,
+    # retain=true). Closes the ~29-month biofuel gap the raked ACTUALS leave (May-2026..Sep-2028),
+    # co-terminal with the non-bio forecast. See biofuel_feedstock_use_forecast callable + design D5.
+    sbo_fc = retained_forecast_series(cur, 'soybean_oil')
+    sbo_demand += sbo_fc
 
     # ---------------- CANOLA OIL ----------------
     can_supply = (nass_series(cur, 'canola', 'oil_production_crude', 'production', 'canola_oil')

@@ -55,6 +55,8 @@ criteria from three other oils/fats workbooks and see which it is. Ten minutes.
 | 5 | Cleanup: run the repoint macro, fix `silver.oil_stocks`, blank the biofuel forecast hole | working macro run + collector fix + visible hole | `[x]` 2026-07-24 |
 | 6a | **Forecast layer — DESIGN.** Can run now; it is a doc and it unblocks the Rodney Ndum model work in parallel | `docs/specs/forecast_layer_design_v1.md` — D1–D8 + not-verified list | `[x]` 2026-07-23 |
 | 6b | Forecast layer — BUILD | `forecast_layer_build_v1.md`; migrations 150–152; `src/forecast/guards.py`; D4 gate PASS | `[x]` 2026-07-24 |
+| 6c | **First D5 forecast callable** — biofuel-feedstock-use forecast | `forecast_layer_build_v2_biofuel_callable.md`; mig 153 `soybean_oil_series`; callable + runner; writer wired; 116 rows published; Excel recalc PASS on biofuel blocks | `[x]` 2026-07-24 |
+| 6d | **Soybean-oil SUPPLY forecast** (production via crush×oil-yield + stocks) — the *actual* forward `#VALUE!` source | closes the soyoil sheet forward | `[ ]` |
 | 7 | Helios validation — index vs the 2012 drought / 2019 wet commentary archive | validation note with numbers | `[ ]` |
 | 8 | Non-bio everywhere — needs the system graph **and** the PSD 140/149 ingest first | collector change + coverage report | `[ ]` |
 
@@ -75,14 +77,26 @@ canola `FORECAST_SEASONAL` stays at 40 (not rolled to 1–9) because oils have n
 yet and D4 forbids unbanded 1–9 rows; the roll is cosmetic (MAXIFS-identical) and waits for the oils
 `*_series` migration. Gate beats parameter.
 
-**Open the next session with this** (build doc §3, cheapest gap): **the forecast band is empty — storage
-exists, no forecast has been produced.** 0 rows in `core.forecast_run`, 0 rows at rank 1–9 anywhere. The
-real gap is **callables, not storage** (2 callables today, 0 forecast callables). Next session builds the
-**first D5 forecast callable**: the biofuel-feedstock-use forecast over the ~17-month gap (May 2026–Sep
-2027), produced by a pure `(data, assumptions)` callable, logged via `core.forecast_run` (retain), banded
-per D4 — the concrete thing that clears the 495 forward `#VALUE!` and proves the retain→series→run_id path
-end-to-end. Second-cheapest: convert `silver.fuel_production_forecast` (902 `is_forecast`-boolean rows) to
-rank-banded rows.
+**Session 6c done (2026-07-24)** — first D5 forecast callable shipped. `biofuel_feedstock_use_forecast`
+(pure `(data, assumptions)`; fuel-prod × trailing-12mo intensity → banded `MODEL_BASE`(1) rows for
+biofuel_use biodiesel/RD/SAF/total, May-2026..Sep-2028 co-terminal with non-bio). Migration 153
+`silver.soybean_oil_series` (2nd book-(b) home, mirrors wheat_series + D4 band CHECK). Runner logs
+`core.forecast_run` (retain gate + assumptions jsonb) and writes 116 banded rows carrying `run_id`;
+collision guard clean; retain→series→run_id proved end-to-end. Writer merges retained rows into the
+demand flat file. **Excel recalc (win32com):** biofuel monthly blocks (r99–177) and non-bio (r179–305)
+now **0 errors**; Total BBD Use annual = 14,004 / 13,099 (2026/27, 2027/28) vs 0 before. Full detail:
+`docs/specs/forecast_layer_build_v2_biofuel_callable.md`.
+
+**⚠️ Premise correction (verified by recalc, not assumed):** the "495 forward `#VALUE!` = the biofuel gap"
+framing was WRONG. The biofuel forward cells are `IF(…="",0,…)`-guarded → they read **0** (silently
+wrong), never `#VALUE!`. The `#VALUE!` come entirely from the **un-forecast SUPPLY side** (production
+`AL11=AL49→#DIV/0!`, beginning stocks `AL10=AK29→#VALUE!`) cascading into Total Supply/Demand/Ending
+Stocks. 624 supply-side errors remain after the biofuel fix.
+
+**Open the next session with this (6d):** **soybean-oil SUPPLY forecast** — production (crush × oil yield)
++ beginning/ending stocks roll-forward, as `MODEL_BASE`(1) banded rows into `silver.soybean_oil_series`,
+same publish path. That is what actually closes the soyoil balance sheet forward (the 624 remaining
+`#VALUE!`). Copy the 6c callable/runner/writer-merge pattern exactly; the plumbing is proven.
 
 ---
 
@@ -121,8 +135,13 @@ these are fixed because a later session touched nearby code.
 
 - [x] `silver.monthly_realized.oil_stocks` once-refined collision — **FIXED session 5** (crude + once-refined;
       shared recompute in `oil_stocks_composition.py`, collector patched, 265 totals backfilled).
-- [~] Biofuel forecast hole — **made visible session 5** (blank not 0.0). The ~17-month gap itself
-      (May 2026–Sep 2027) is un-forecast; closing it is **6b** work. Currently shows as 495 forward `#VALUE!`.
+- [x] Biofuel forecast hole — **CLOSED session 6c.** `biofuel_feedstock_use_forecast` callable now fills
+      biofuel_use forward May-2026..Sep-2028 (banded MODEL_BASE rows via `silver.soybean_oil_series`).
+      **Correction:** the "495 forward `#VALUE!`" were NOT this gap — biofuel forward was IF-guarded to 0
+      (silently wrong), not `#VALUE!`. The forward `#VALUE!` are the un-forecast **supply side** (see 6d).
+- [ ] **Soyoil balance sheet still #VALUE! forward (624 cells)** — supply side (production/stocks) is
+      un-forecast; `AL11 Production=AL49→#DIV/0!`, `AL10 Beginning Stocks=AK29→#VALUE!` cascade. Needs the
+      6d soybean-oil supply forecast to close. *(new, session 6c — verified by Excel recalc)*
 - [x] `bronze.historical_feedstock_allocation` → `eia_data.xlsm` → `soyoil_balance_sheet` — **RESOLVED session 5**
       for the historical/near range: 6,312 cells repointed to the flat file, zero eia_data refs in that range.
       (Forward MY2028–2045 still read eia_data by design — Tore's extensions past the flat-file horizon.)
