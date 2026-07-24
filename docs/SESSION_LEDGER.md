@@ -25,6 +25,17 @@ Spec: `docs/specs/system_knowledge_graph_design_v1.md` — design D1–D6 and ru
 | 3 | Seam + tooling — §9 steps 8–9 | ~81 `SERVES` rulings, `trace_series` MCP tool, `flat_file_series`→`data_series` join | `[ ]` |
 | 4 | Cleanup deliverable — §9 step 11 (R1) | `models/` triage: 237 workbooks ruled, 249 declarations persisted | `[x]` 2026-07-22 |
 
+**Session 5 done (2026-07-24)** — 3 artifacts, all verified: (1) `oil_stocks` once-refined collision
+fixed (soybean 2026-03 476M→2,603M, +265 totals backfilled, collector patched, tie-out green);
+(2) soyoil balance sheet repointed off stale `eia_data.xlsm`/`bronze.historical_feedstock_allocation`
+onto the flat file — **period-aware** so history 0-fills and only the forward hole blanks (6,312 cells,
+`#VALUE!` history now clean, `#DIV/0!` 612→256); (3) biofuel forecast hole visible (blank, not 0.0).
+The macro (`SoyOilRepointToFlatFile.bas`) is embedded + run + committed. **`RepointSoyOilCleanup` must
+NOT run** — 3,107 forward cells still depend on the ff_ mirrors + `eia_data.xlsm` (Tore's MY2028–2045
+extensions + biofuel-yield line). Residual 495 `#VALUE!` are all forward (MY2025–2045), the honest
+signature of the ~17-month biofuel gap (May 2026–Sep 2027) between allocator-end and Tore's extensions;
+the correct fix is 6b (forecast biofuel forward), NOT a cosmetic 0-fill (would silently mis-state stocks).
+
 Session 2 also landed §9 step 10 (checks wired into the scan). Q1, Q2 and Q3 are answered —
 the `oil_stocks` blast radius is 61 nodes in under a second, and the `eia_data.xlsm` chain
 reproduces the design's hand count of 2,292 cells exactly.
@@ -41,9 +52,9 @@ criteria from three other oils/fats workbooks and see which it is. Ten minutes.
 
 | # | Session | Artifact | Status |
 |---|---|---|---|
-| 5 | Cleanup: run the repoint macro, fix `silver.oil_stocks`, blank the biofuel forecast hole | working macro run + collector fix + visible hole | `[ ]` |
+| 5 | Cleanup: run the repoint macro, fix `silver.oil_stocks`, blank the biofuel forecast hole | working macro run + collector fix + visible hole | `[x]` 2026-07-24 |
 | 6a | **Forecast layer — DESIGN.** Can run now; it is a doc and it unblocks the Rodney Ndum model work in parallel | `docs/specs/forecast_layer_design_v1.md` — D1–D8 + not-verified list | `[x]` 2026-07-23 |
-| 6b | Forecast layer — BUILD. **After 5** — it writes into the flat files, and that write path is still unproven | `forecast.run`, low-rank vintages, bands | `[ ]` |
+| 6b | Forecast layer — BUILD. **Unblocked** — write path proven: soyoil balance sheet now reads the flat file (6,312 cells), history clean | `forecast.run`, low-rank vintages, bands | `[ ]` |
 | 7 | Helios validation — index vs the 2012 drought / 2019 wet commentary archive | validation note with numbers | `[ ]` |
 | 8 | Non-bio everywhere — needs the system graph **and** the PSD 140/149 ingest first | collector change + coverage report | `[ ]` |
 
@@ -60,6 +71,13 @@ needs rethinking before any migration. Gate decision is settled: **hard CHECK ga
 
 Note for 6b: verified this session that "1–9 confirmed free" was true only at the floor — `MODEL`=30,
 `FORECAST_SEASONAL`=40, `RESIDUAL`=50 already exist as forecast/model vintages above 10 (D3/D7/D8).
+
+**Sharpened by session 5 (cheapest 6b opener):** even *after* the repoint, `soyoil_balance_sheet` reads
+the flat file via **plain positional cell refs** (`=IF([5]soybean_oil_demand_wide!$AM$3="","",…)`), NOT
+SUMIFS/MAXIFS — so appending `value_low`/`value_high` trailing columns is invisible to soy *and* soy gets
+no MAXIFS auto-upgrade. So the D4 append test **must** run on the wheat pilot (`us_wheat_production.xlsx`,
+a genuine SUMIFS consumer). That is the ten-minute first check of 6b. Second-cheapest: the biofuel gap
+(May 2026–Sep 2027) is the concrete thing 6b's forecast must fill to clear the 495 forward `#VALUE!`.
 
 ---
 
@@ -96,10 +114,15 @@ Resolved 2026-07-22 unless marked open.
 Full list with evidence in `docs/handoffs/2026-07-21_session_handoff.md` §4. Do not assume any of
 these are fixed because a later session touched nearby code.
 
-- [ ] `silver.monthly_realized.oil_stocks` is once-refined alone — consumers understate ~6× *(session 5)*
-- [ ] Biofuel has no forecast — MY2026/27 reads 0.0 *(session 5)*
-- [ ] `bronze.historical_feedstock_allocation` still feeds `eia_data.xlsm`; +647 mil lb vs the rake
-      — confirmed live in `soyoil_balance_sheet`, 2,292 cells *(session 5)*
+- [x] `silver.monthly_realized.oil_stocks` once-refined collision — **FIXED session 5** (crude + once-refined;
+      shared recompute in `oil_stocks_composition.py`, collector patched, 265 totals backfilled).
+- [~] Biofuel forecast hole — **made visible session 5** (blank not 0.0). The ~17-month gap itself
+      (May 2026–Sep 2027) is un-forecast; closing it is **6b** work. Currently shows as 495 forward `#VALUE!`.
+- [x] `bronze.historical_feedstock_allocation` → `eia_data.xlsm` → `soyoil_balance_sheet` — **RESOLVED session 5**
+      for the historical/near range: 6,312 cells repointed to the flat file, zero eia_data refs in that range.
+      (Forward MY2028–2045 still read eia_data by design — Tore's extensions past the flat-file horizon.)
 - [ ] Tallow gap of 3,133 mil lb vs EIA is larger than the RLC-canonical exemption explains — uninvestigated
-- [ ] `SoyOilRepointToFlatFile.bas` has never been executed *(session 5)*
+- [x] `SoyOilRepointToFlatFile.bas` — **executed session 5** (embedded, Preview→Apply→BlankBBDForecastHole).
+- [ ] **`RepointSoyOilCleanup` must NOT run** — 3,107 forward cells (ff_ mirrors + `eia_data.xlsm`) still
+      depend on it; breaking the links `#REF!`s Tore's MY2028–2045 extensions + the biofuel-yield line *(new, session 5)*.
 - [ ] PSD attributes 140 / 149 not ingested — no biofuel/non-biofuel split outside the US *(session 8)*
