@@ -14,8 +14,14 @@ from src.services.database.db_config import get_connection
 from src.forecast.guards import assert_no_maxrank_collision  # standing flat-file guard (design D7)
 
 OUT = ROOT / "models" / "Food Grains" / "us_wheat_production.xlsx"  # canonical target (Desktop's balance sheet links here)
+# flat_file_contract v1.1: value_low/value_high are appended as the last two (trailing) columns.
+# Keys 1-8 and value..revision keep their positions — verified 2026-07-24 that appending these is a
+# non-breaking seam change (13->15 col append shifted zero values in the §4 SUMIFS/MAXIFS contract).
+# NULL for actuals (rank>=10); populated only for forecast-band rows (rank 1-9), which the DB CHECK
+# (migration 151) forces to carry a bracketing band.
 COLS = ['commodity','class','series','marketing_year','period_type','period',
-        'vintage','vintage_rank','value','unit','source','release_date','revision']
+        'vintage','vintage_rank','value','unit','source','release_date','revision',
+        'value_low','value_high']
 
 with get_connection() as c:
     cur = c.cursor()
