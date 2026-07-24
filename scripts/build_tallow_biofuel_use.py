@@ -24,6 +24,7 @@ ROOT = Path(r"C:/dev/RLC-Agent"); sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv; load_dotenv(ROOT/".env")
 from psycopg2.extras import execute_values
 from src.services.database.db_config import get_connection
+from src.forecast.guards import assert_no_maxrank_collision  # standing flat-file guard (design D7)
 
 FEED_FLOOR_ANN = 200e6     # R2: IBFT feed floor, lb/yr
 FEED_PLATEAU   = 332e6     # R2: post-BSE plateau 2011-2020
@@ -114,14 +115,22 @@ def main():
             ni = net.get(p,0.0)
             non_bio_use = oleo_other + feed
             biofuel = ibft_prod + ni - oleo_other - feed   # R3/R4: EBFT excluded
-            rows.append(('IBFT','non_bio_trend',p,y,m,oleo_other,'MODEL',30,METHOD_FLAG))
-            rows.append(('IBFT','feed_use',p,y,m,feed,'MODEL',30,METHOD_FLAG))
-            rows.append(('IBFT','non_bio_use',p,y,m,non_bio_use,'MODEL',30,METHOD_FLAG))
-            rows.append(('ALL','tallow_biofuel_use',p,y,m,biofuel,'MODEL',30,METHOD_FLAG))
+            # MODEL sits at rank 3 (the forecast-band MODEL rank, D3) — relocated from 30 by
+            # migration 152. It is the floor in tallow (nothing at 4..29); actuals (60..95) override.
+            rows.append(('IBFT','non_bio_trend',p,y,m,oleo_other,'MODEL',3,METHOD_FLAG))
+            rows.append(('IBFT','feed_use',p,y,m,feed,'MODEL',3,METHOD_FLAG))
+            rows.append(('IBFT','non_bio_use',p,y,m,non_bio_use,'MODEL',3,METHOD_FLAG))
+            rows.append(('ALL','tallow_biofuel_use',p,y,m,biofuel,'MODEL',3,METHOD_FLAG))
+        # vintage_rank IS in DO UPDATE SET so a re-run stays consistent with the code's rank (3),
+        # never silently leaving pre-migration rows at 30.
         execute_values(cur,"""INSERT INTO silver.tallow_balance
             (class,series,period,year,month,value_lbs,vintage,vintage_rank,meta_flag) VALUES %s
-            ON CONFLICT (class,series,period,vintage) DO UPDATE SET value_lbs=EXCLUDED.value_lbs, meta_flag=EXCLUDED.meta_flag""",rows)
+            ON CONFLICT (class,series,period,vintage) DO UPDATE SET value_lbs=EXCLUDED.value_lbs,
+                vintage_rank=EXCLUDED.vintage_rank, meta_flag=EXCLUDED.meta_flag""",rows)
         c.commit()
+        # Standing guard (design D7 item 2): MODEL now sits at rank 3; assert no (class,series,period)
+        # key carries >1 vintage at its max rank, or the flat file's MAXIFS would double-count.
+        assert_no_maxrank_collision(cur, "silver.tallow_balance", ["class", "series", "period"])
         print(f"  inserted {len(rows)} {METHOD_FLAG} rows, {START_YEAR}+")
         # B.1 R1.5: acceptance check #2 re-armed — ANY firing halts
         if cap_hits:

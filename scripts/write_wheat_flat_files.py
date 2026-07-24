@@ -11,6 +11,7 @@ from openpyxl.styles import Font
 ROOT = Path(r"C:/dev/RLC-Agent"); sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv; load_dotenv(ROOT / ".env")
 from src.services.database.db_config import get_connection
+from src.forecast.guards import assert_no_maxrank_collision  # standing flat-file guard (design D7)
 
 OUT = ROOT / "models" / "Food Grains" / "us_wheat_production.xlsx"  # canonical target (Desktop's balance sheet links here)
 COLS = ['commodity','class','series','marketing_year','period_type','period',
@@ -18,6 +19,11 @@ COLS = ['commodity','class','series','marketing_year','period_type','period',
 
 with get_connection() as c:
     cur = c.cursor()
+    # Standing guard (design D7 item 2): fail loud if any (commodity,class,series,MY,period) key
+    # carries >1 vintage at its max rank — otherwise the DISTINCT ON below silently drops one and the
+    # balance sheet's SUMIFS-on-max-rank double-counts. Must pass before we serialize.
+    assert_no_maxrank_collision(cur, "silver.wheat_series",
+                                ["commodity", "class", "series", "marketing_year", "period"])
     # Uniqueness guarantee (flat_file_contract §7): exactly ONE row per
     # (commodity, class, series, marketing_year, period, vintage_rank), keeping the latest
     # release_date (then revision, then load). Without this, SUMIFS-on-max-rank double-counts a
