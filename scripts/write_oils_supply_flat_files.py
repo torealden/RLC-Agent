@@ -540,6 +540,73 @@ def sbo_nonbio_series(cur, supply_rows, bio_totals):
     return out
 
 
+def canola_nonbio_series(cur, supply_rows, bio_totals):
+    """Canola non-biofuel use, modeled to MATCH soybean oil's TWO-VINTAGE split (design D8 decision 2;
+    Tore 2026-07-23: 'model canola exactly like soy'). Replaces the old single RESIDUAL(50) that
+    collapsed actual-derived history and the forward projection into one vintage — the D8 finding was
+    that soy separates them and canola did not.
+
+      RESIDUAL_ACTUAL (90)  actual-input history: the supply residual over the biofuel frontier.
+      FORECAST_SEASONAL(40)  forward projection: current-MY remainder + 2 full MYs, trailing-3-MY-avg
+                             annual x 5-yr monthly seasonal share (soy's method, independent baseline).
+
+    Canola non-bio is the supply RESIDUAL (production + imports - biofuel - exports, clamped >=0):
+    NASS removal_for_processing misses the food disappearance of IMPORTED canola oil and canola is
+    import-dominant, so residual is the honest measure (Tore's ruling). Unlike soy there is no ERS
+    monthly total-domestic series and no 2011/12-2014/15 monthly hole, so the history is purely the
+    supply residual — simpler than soy, same STRUCTURE.
+
+    NOTE (design D8 decision 1 deferred): the forward vintage stays FORECAST_SEASONAL at rank 40 here,
+    matching soy as it currently stands, rather than rolling into the 1-9 forecast band now. The D4
+    hard gate (Tore 2026-07-23) requires every 1-9 forecast row to carry a value_low/value_high band,
+    and soybean_oil/canola_oil have no silver.*_series table or band CHECK yet — so moving these into
+    1-9 today would create UNBANDED band-rank rows, violating D4's invariant. At rank 40 vs a 1-9 rank
+    the MAXIFS behavior is identical (forward periods carry only the forecast), so the roll is purely
+    cosmetic and waits for the oils *_series migration. Gate beats parameter; deferral documented.
+
+    bio_totals: {(year, month): biofuel_total_lb} (the raked biofuel actuals; caller's can_bio_tot).
+    Returns non_biofuel_use rows (LB).
+    """
+    prod = by_period(supply_rows, 'production')
+    imp  = by_period(supply_rows, 'imports')
+    exp  = by_period(supply_rows, 'exports')
+    bio_by_key = {(yr, pm(mo)): t for (yr, mo), t in bio_totals.items()}
+    # ---- actual-input history: residual over the biofuel frontier (calendar (y, m) keys) ----
+    nb = {}
+    for (yr, per) in sorted(set(prod) & set(bio_by_key)):
+        m = int(per[1:])
+        nb[(yr, m)] = max(0.0, prod.get((yr, per), 0) + imp.get((yr, per), 0)
+                               - bio_by_key[(yr, per)] - exp.get((yr, per), 0))
+    out = [row('canola_oil', 'non_biofuel_use', y, m, v, 'RESIDUAL_ACTUAL', 90,
+               'residual: production+imports-biofuel-exports')
+           for (y, m), v in nb.items()]
+    if not nb:
+        return out
+    # ---- forward seasonal projection (mirror of sbo_nonbio_series) ----
+    last_act = max(nb)
+    myt, n_mo = defaultdict(float), defaultdict(int)
+    for (y, m), v in nb.items():
+        myt[_my_start(y, m)] += v; n_mo[_my_start(y, m)] += 1
+    complete = [my for my in sorted(myt) if n_mo[my] == 12]
+    seas_src = defaultdict(list)
+    for (y, m), v in nb.items():
+        my = _my_start(y, m)
+        if my in complete[-5:] and myt[my] > 0:
+            seas_src[m].append(v / myt[my])
+    seas = {m: (mean(seas_src[m]) if seas_src[m] else 1 / 12) for m in range(1, 13)}
+    ssum = sum(seas.values()) or 1.0
+    seas = {m: seas[m] / ssum for m in seas}
+    ann = mean(myt[my] for my in complete[-3:]) if complete else 12 * sum(nb.values()) / max(1, len(nb))
+    cur_my = _my_start(*last_act)
+    for my in (cur_my, cur_my + 1, cur_my + 2):
+        for m in list(range(10, 13)) + list(range(1, 10)):
+            y = my if m >= 10 else my + 1
+            if (y, m) not in nb:
+                out.append(row('canola_oil', 'non_biofuel_use', y, m, ann * seas[m],
+                               'FORECAST_SEASONAL', 40, 'independent: trailing-3MY avg x 5yr seasonal'))
+    return out
+
+
 with get_connection() as conn:
     cur = conn.cursor()
 
@@ -569,18 +636,9 @@ with get_connection() as conn:
                   + nass_total_stocks(cur, 'CANOLA', 'canola_oil')
                   + census_trade(cur, '1514', 'canola_oil'))
     can_demand, can_bio_tot = raked_demand(cur, 'CO', 'canola_oil')
-    # non-bio = residual (production + imports - biofuel - exports). Canola is IMPORT-dominant
-    # (imports ~3x US crush production), and NASS removal_for_processing only covers US-crushed oil
-    # refining -> it misses the food disappearance of imported canola oil. So the disappearance
-    # measure is incomplete here and residual is the honest fallback (Tore's ruling: residual where
-    # disappearance doesn't exist / is incomplete). Clamp >=0, only within the biofuel frontier.
-    can_prod = by_period(can_supply, 'production'); can_imp = by_period(can_supply, 'imports')
-    can_exp = by_period(can_supply, 'exports')
-    bio_by_key = {(yr, pm(mo)): t for (yr, mo), t in can_bio_tot.items()}
-    for k in sorted(set(can_prod) & set(bio_by_key)):
-        nb = max(0.0, can_prod.get(k, 0) + can_imp.get(k, 0) - bio_by_key[k] - can_exp.get(k, 0))
-        can_demand.append(row('canola_oil', 'non_biofuel_use', k[0], int(k[1][1:]), nb,
-                              'RESIDUAL', 50, 'residual: production+imports-biofuel-exports'))
+    # non_biofuel_use = the supply RESIDUAL, split into RESIDUAL_ACTUAL(90) history + FORECAST_SEASONAL(40)
+    # forward — modeled exactly like soybean oil (D8 decision 2; was a single collapsed RESIDUAL=50).
+    can_demand += canola_nonbio_series(cur, can_supply, can_bio_tot)
 
     # split each commodity's non_biofuel_use total into end-use component lines (shared shares)
     sbo_demand += nonbio_components(cur, 'soybean_oil', sbo_demand)
