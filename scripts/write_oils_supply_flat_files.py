@@ -33,6 +33,10 @@ KG_TO_LB = 2.20462
 COLS = ['commodity', 'class', 'series', 'marketing_year', 'period_type', 'period',
         'vintage', 'vintage_rank', 'value', 'unit', 'source', 'release_date', 'revision']
 
+# Which published-forecast series belong to the SUPPLY tab vs the DEMAND tab. Used to route
+# retained_forecast_series() rows to the correct flat-file tab (6d). Everything not here is demand.
+SUPPLY_SERIES = {'production', 'imports', 'exports', 'stocks'}
+
 
 def pm(month):
     return f"M{int(month):02d}"
@@ -613,6 +617,53 @@ def canola_nonbio_series(cur, supply_rows, bio_totals):
     return out
 
 
+def trade_forward_gap(supply_rows, commodity):
+    """Fill imports/exports forward over the CURRENT partial marketing year only (last census actual
+    -> Sep of that oil-MY), so the balance sheet's month-ending-stocks ROLL-FORWARD can compute.
+
+    Why this is needed (6d, verified by recalc): the sheet's stocks block rolls
+    `stock[m] = stock[m-1] + production + imports - exports - domestic_use`. For the current-MY tail
+    (e.g. Jun-Sep 2026) the trade cells use `IF(wide="","",value)` -- an empty forward trade cell
+    returns "" (empty STRING), and `... + "" - "" - ...` = #VALUE!, poisoning the whole forward chain.
+    Production alone was not enough; trade must be non-blank too.
+
+    Scope is deliberately just the current partial MY: future full MYs (AL/AM) fall back to the sheet's
+    own ruled trade constants (imports 350 / exports 1250), so this does NOT override Tore's forward
+    export assumption -- it only bridges the census reporting lag. PLACEHOLDER pending the trade matrix
+    (Tore 2026-07-24: "our trade matrix will drive the export numbers"). Rank 40 (< census actual 90),
+    seasonal = mean of the last 3 years' actuals for each calendar month.
+    """
+    out = []
+    for series in ('imports', 'exports'):
+        act = {(r['marketing_year'], int(r['period'][1:])): float(r['value'] or 0)
+               for r in supply_rows if r['series'] == series and r['value'] is not None}
+        if not act:
+            continue
+        last = max(act)
+        cur_my = _my_start(*last)                 # oil MY (Oct-Sep) of the last actual
+        my_end = (cur_my + 1, 9)                  # Sep of that MY = last forecast month
+        # seasonal level = mean of the last 3 years' actual value for each calendar month
+        by_month = defaultdict(list)
+        for (y, m), v in sorted(act.items()):
+            by_month[m].append((y, v))
+        seas = {m: mean([v for _, v in vs[-3:]]) for m, vs in by_month.items()}
+        # walk the gap months last+1 .. my_end
+        y, m = last
+        while True:
+            m += 1
+            if m == 13:
+                y, m = y + 1, 1
+            if (y, m) > my_end:
+                break
+            if (y, m) not in act and m in seas:
+                out.append(row(commodity, series, y, m, seas[m], 'FORECAST_TRADE_PLACEHOLDER', 40,
+                               'placeholder: 3yr seasonal mean, bridges census lag (pending trade matrix)'))
+    if out:
+        print(f"  {commodity} trade gap-fill: {len(out)} rows "
+              f"({sorted(set(r['series'] for r in out))}) through current MY Sep")
+    return out
+
+
 def retained_forecast_series(cur, commodity):
     """Merge PUBLISHED book-(b) forecast rows for `commodity` from silver.<commodity>_series into the
     flat file (design forecast_layer_design_v1.md D1/D5). This is the seam that lets a D5 forecast
@@ -665,6 +716,8 @@ with get_connection() as conn:
     # MY2011/12-2014/15: no monthly source exists anywhere (Census CIR died Jul 2011, NASS started
     # May 2015). Fill production/stocks from the ERS annual, clearly flagged as modeled.
     sbo_supply += sbo_supply_gapfill(cur, sbo_supply)
+    # bridge the census reporting lag on trade so the sheet's stocks roll-forward can compute (6d)
+    sbo_supply += trade_forward_gap(sbo_supply, 'soybean_oil')
     sbo_demand, sbo_bio_tot = raked_demand(cur, 'SBO', 'soybean_oil')
     sbo_food = nass_series(cur, 'soybeans', 'oil_refined_edible_use', 'food_use', 'soybean_oil')
     sbo_demand += sbo_food  # informational NASS refined-edible line (a subset of non-bio use)
@@ -672,16 +725,20 @@ with get_connection() as conn:
     # independent 2-MY forecast (ruled 2026-07-20; project_nonbio_residual_after_biofuel). Replaces
     # the old 17-month food-only proxy.
     sbo_demand += sbo_nonbio_series(cur, sbo_supply, sbo_bio_tot)
-    # PUBLISHED forecast band (book b): biofuel_use_* forward, from silver.soybean_oil_series (rank 1-9,
-    # retain=true). Closes the ~29-month biofuel gap the raked ACTUALS leave (May-2026..Sep-2028),
-    # co-terminal with the non-bio forecast. See biofuel_feedstock_use_forecast callable + design D5.
+    # PUBLISHED forecast rows (book b) from silver.soybean_oil_series (rank 1-9, retain=true). Two
+    # callables now write here: biofuel_feedstock_use_forecast (6c, DEMAND: biofuel_use_*) and
+    # soybean_oil_production_forecast (6d, SUPPLY: production). Route each row to the tab whose SUMIFS
+    # blocks read it -- a supply series merged into the demand tab (or vice-versa) would never be found
+    # by the balance sheet. See design D5 + docs/specs/soyoil_supply_forecast_6d_findings.md.
     sbo_fc = retained_forecast_series(cur, 'soybean_oil')
-    sbo_demand += sbo_fc
+    sbo_supply += [r for r in sbo_fc if r['series'] in SUPPLY_SERIES]
+    sbo_demand += [r for r in sbo_fc if r['series'] not in SUPPLY_SERIES]
 
     # ---------------- CANOLA OIL ----------------
     can_supply = (nass_series(cur, 'canola', 'oil_production_crude', 'production', 'canola_oil')
                   + nass_total_stocks(cur, 'CANOLA', 'canola_oil')
                   + census_trade(cur, '1514', 'canola_oil'))
+    can_supply += trade_forward_gap(can_supply, 'canola_oil')
     can_demand, can_bio_tot = raked_demand(cur, 'CO', 'canola_oil')
     # non_biofuel_use = the supply RESIDUAL, split into RESIDUAL_ACTUAL(90) history + FORECAST_SEASONAL(40)
     # forward — modeled exactly like soybean oil (D8 decision 2; was a single collapsed RESIDUAL=50).
