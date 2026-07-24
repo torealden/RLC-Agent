@@ -40,11 +40,22 @@ Production 30,546 / 31,927 / 33,700; Ending Stocks 359 / 2,381 / 7,082 mil lb (A
   built later WITH AEGUS.** **Exports → the trade matrix** (placeholder 350/1250 until then). Crush
   will also be tied to **facility-agent capacity** later. Hard-codes are "a good start."
 
+## 3b. Crush link repointed to the DB (decision D — DONE, verified)
+
+`scripts/refresh_soy_crush_workbook.py` repoints `us_soy_crush.xlsm` 'NASS Crush' col C to the DB
+(NASS_SOY_CRUSH, 000 ST; existing months tie to 3 decimals). Filled Jan–May 2026 (the stale gap).
+win32com so the .xlsm macros/formatting survive; idempotent + extends on future runs. Back-up saved
+alongside (`us_soy_crush_backup_20260724_6d.xlsm`). **Recalc after: 562 → 11 errors, and AK/AL/AM are
+0.** Fixing the crush cascade cleared the yield `#DIV/0!` AND the entire far-future column cascade
+(production fallback now computes everywhere). Meal sheet (`crush × meal_yield`, same shared crush) is
+now unblocked too. Re-run this whenever new NASS crush lands (or wire into the NASS collector).
+
 ## 4. Known broken / unverified — do NOT assume fixed
 
-- [ ] **5 cosmetic `#DIV/0!` per column (yield rows 56–60)** persist from the stale `[3]` soy-crush
-      link. They feed nothing now, but the proper fix is repointing the **soybean-seed sheet** crush to
-      our DB (NASS through May 2026), not a dead workbook. Separate rot; also breaks the meal sheet.
+- [ ] **11 residual `#DIV/0!` — SEPARATE, pre-existing, out of scope.** All are row 9 "US Average
+      Biofuel Yield" in historical columns (2014/15–2024/25), from a *different* external link
+      (`models/Biofuels/eia_data.xlsx`), a display row that does NOT feed the balance. Predates 6d.
+      Fix that link separately if the cosmetic errors matter.
 - [ ] **Stock build is the reconciliation signal, not a bug:** 7,082 mil lb (~90 days) by 2027/28 —
       Tore's crush anchor outruns placeholder demand+exports. Demand/export side must rise (Aegus + trade
       matrix). Also eyeball **AK draws to 359 (~4 days)**: the sheet's monthly non-bio (hardcoded 15,000)
