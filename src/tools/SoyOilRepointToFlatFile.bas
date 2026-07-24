@@ -99,9 +99,18 @@ Private Function FindBlockRow(ws As Worksheet, titlePrefix As String) As Long
     FindBlockRow = 0
 End Function
 
-' Read series -> first_month_row from the flat file's _wide_index tab.
+' Read series anchors from the flat file's _wide_index tab, and compute each series'
+' LASTACTUAL rank by scanning its wide block. Keys per "tab|series":
+'   (bare)       -> first_month_row
+'   |LASTMY      -> last marketing year the DB renders (the write cap)
+'   |LASTACTUAL  -> chronological rank (col-MY_COL0)*12 + month-offset of the last non-blank
+'                   cell. Blanks at/before it are historical GAPS (write 0 so downstream
+'                   arithmetic works); blanks after it are the forward FORECAST HOLE (write
+'                   "" so the missing forecast stays visibly blank). -1 if the series is empty.
 Private Function LoadWideAnchors(ffWb As Workbook) As Object
     Dim d As Object, ws As Worksheet, r As Long, lastRow As Long
+    Dim tabName As String, seriesName As String, firstRow As Long, lastMy As Long
+    Dim dataWs As Worksheet, col As Long, k As Long, endCol As Long, rnk As Long, maxRnk As Long
     Set d = CreateObject("Scripting.Dictionary")
     On Error Resume Next
     Set ws = ffWb.Worksheets("_wide_index")
@@ -109,10 +118,31 @@ Private Function LoadWideAnchors(ffWb As Workbook) As Object
     If ws Is Nothing Then Exit Function
     lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
     For r = 2 To lastRow
-        If Len(Trim$(CStr(ws.Cells(r, 1).Value))) > 0 And Len(Trim$(CStr(ws.Cells(r, 2).Value))) > 0 Then
+        tabName = Trim$(CStr(ws.Cells(r, 1).Value))
+        seriesName = Trim$(CStr(ws.Cells(r, 2).Value))
+        If Len(tabName) > 0 And Len(seriesName) > 0 Then
             ' col 5 = first_month_row, col 10 = last_my (the last MY the DB actually renders)
-            d(CStr(ws.Cells(r, 1).Value) & "|" & CStr(ws.Cells(r, 2).Value)) = CLng(ws.Cells(r, 5).Value)
-            d(CStr(ws.Cells(r, 1).Value) & "|" & CStr(ws.Cells(r, 2).Value) & "|LASTMY") = CLng(ws.Cells(r, 10).Value)
+            firstRow = CLng(ws.Cells(r, 5).Value)
+            lastMy = CLng(ws.Cells(r, 10).Value)
+            d(tabName & "|" & seriesName) = firstRow
+            d(tabName & "|" & seriesName & "|LASTMY") = lastMy
+            maxRnk = -1
+            endCol = MY_COL0 + (lastMy - MY_ANCHOR)
+            On Error Resume Next
+            Set dataWs = ffWb.Worksheets(tabName)
+            On Error GoTo 0
+            If Not dataWs Is Nothing Then
+                For col = MY_COL0 To endCol
+                    For k = 0 To N_MONTHS - 1
+                        If Len(Trim$(CStr(dataWs.Cells(firstRow + k, col).Value))) > 0 Then
+                            rnk = (col - MY_COL0) * N_MONTHS + k
+                            If rnk > maxRnk Then maxRnk = rnk
+                        End If
+                    Next k
+                Next col
+            End If
+            d(tabName & "|" & seriesName & "|LASTACTUAL") = maxRnk
+            Set dataWs = Nothing
         End If
     Next r
     Set LoadWideAnchors = d
@@ -134,6 +164,7 @@ Private Sub RunRepoint(ByVal applyIt As Boolean)
     Dim nCells As Long, nBlocks As Long, missing As String, skipped As String
     Dim capCol As Long
     Dim wasOpen As Boolean, bak As String
+    Dim laRank As Long, rnk As Long, refCell As String, emptyVal As String
 
     ffPath = FlatFilePath()
     If Len(Dir$(ffPath)) = 0 Then
@@ -188,16 +219,26 @@ Private Sub RunRepoint(ByVal applyIt As Boolean)
                 lastCol = capCol
             End If
             nBlocks = nBlocks + 1
+            laRank = anchors(CStr(m(i)(1)) & "|" & CStr(m(i)(2)) & "|LASTACTUAL")
             For col = 2 To lastCol
                 For k = 0 To N_MONTHS - 1
                     If applyIt Then
-                        ' columns align 1:1 (both grids anchored at col B = MY 1990/91),
-                        ' so only the row differs. Blank-safe: "" instead of 0.
+                        ' Columns align 1:1 (both grids anchored at col B = MY 1990/91), so only
+                        ' the row differs. PERIOD-AWARE empty handling: a blank flat-file cell
+                        ' AT/BEFORE the series' last actual month is a historical gap -> 0 (so
+                        ' downstream +/- arithmetic works, e.g. pre-2006 biofuel, pre-1993 supply);
+                        ' a blank AFTER it is the forward forecast hole -> "" (stays visibly blank).
+                        refCell = refBase & CStr(m(i)(1)) & "'!" & _
+                                  ws.Cells(wideRow + k, col).Address(True, True)
+                        rnk = (col - MY_COL0) * N_MONTHS + k
+                        If rnk <= laRank Then
+                            emptyVal = "0"
+                        Else
+                            emptyVal = Chr(34) & Chr(34)
+                        End If
                         ws.Cells(blockRow + 2 + k, col).Formula = _
-                            "=IF(" & refBase & CStr(m(i)(1)) & "'!" & _
-                            ws.Cells(wideRow + k, col).Address(True, True) & "=""""," & """""," & _
-                            refBase & CStr(m(i)(1)) & "'!" & _
-                            ws.Cells(wideRow + k, col).Address(True, True) & ")"
+                            "=IF(" & refCell & "=" & Chr(34) & Chr(34) & "," & _
+                            emptyVal & "," & refCell & ")"
                     End If
                     nCells = nCells + 1
                 Next k
