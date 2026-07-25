@@ -284,6 +284,30 @@ class NASSProcessingCollector:
 
     BASE_URL = "https://quickstats.nass.usda.gov/api/api_GET/"
 
+    # USDA NASS suppression / non-numeric codes. When QuickStats reports any of
+    # these, the value is withheld -- store it as blank (NULL), never as the
+    # literal code. Tore hand-builds estimates for suppressed months later; the
+    # DB job is only to leave a clean blank so those gaps are eyeball-able.
+    #   (D) = withheld to avoid disclosing individual operations
+    #   (W) = withheld            (X)/(Z)/(S)/(NA)/(NR) = not published / not applicable
+    _NASS_SUPPRESSED = {
+        '(D)', '(W)', '(X)', '(Z)', '(S)', '(NA)', '(NR)', '(L)', '(H)',
+        'D', 'W', 'X', 'Z', 'S', 'NA', 'NR',
+    }
+
+    @classmethod
+    def _clean_nass_value(cls, raw) -> Optional[float]:
+        """Return the numeric value, or None for a suppressed/withheld/non-numeric
+        NASS cell. Centralizes D/W handling so a suppressed month becomes a blank
+        rather than a stored code or a spurious parse-error warning."""
+        s = str(raw).replace(',', '').strip()
+        if not s or s.upper() in cls._NASS_SUPPRESSED:
+            return None
+        try:
+            return float(s)
+        except (ValueError, TypeError):
+            return None
+
     def __init__(self, api_key: str = None):
         self.api_key = api_key or os.environ.get('NASS_API_KEY')
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -450,11 +474,9 @@ class NASSProcessingCollector:
     def _parse_fats_oils_record(self, item: Dict, commodity_key: str) -> Optional[Dict]:
         """Parse a Fats & Oils record."""
         try:
-            value_str = str(item.get('Value', '')).replace(',', '')
-            if not value_str or value_str == '(D)' or value_str == '(NA)':
+            value = self._clean_nass_value(item.get('Value', ''))
+            if value is None:
                 return None
-
-            value = float(value_str)
 
             # Parse reference period (e.g., "JAN", "FEB", etc.)
             ref_period = item.get('reference_period_desc', '')
@@ -625,11 +647,9 @@ class NASSProcessingCollector:
     ) -> Optional[Dict]:
         """Parse any NASS record into a standard format for bronze storage."""
         try:
-            value_str = str(item.get('Value', '')).replace(',', '')
-            if not value_str or value_str == '(D)' or value_str == '(NA)':
+            value = self._clean_nass_value(item.get('Value', ''))
+            if value is None:
                 return None
-
-            value = float(value_str)
 
             ref_period = item.get('reference_period_desc', '')
             month = self._month_from_period(ref_period)
@@ -736,11 +756,9 @@ class NASSProcessingCollector:
     def _parse_grain_crushing_record(self, item: Dict, commodity_key: str) -> Optional[Dict]:
         """Parse a Grain Crushings record."""
         try:
-            value_str = str(item.get('Value', '')).replace(',', '')
-            if not value_str or value_str == '(D)' or value_str == '(NA)':
+            value = self._clean_nass_value(item.get('Value', ''))
+            if value is None:
                 return None
-
-            value = float(value_str)
 
             ref_period = item.get('reference_period_desc', '')
             month = self._month_from_period(ref_period)
@@ -851,11 +869,9 @@ class NASSProcessingCollector:
     def _parse_flour_milling_record(self, item: Dict, class_key: str) -> Optional[Dict]:
         """Parse a Flour Milling record."""
         try:
-            value_str = str(item.get('Value', '')).replace(',', '')
-            if not value_str or value_str == '(D)' or value_str == '(NA)':
+            value = self._clean_nass_value(item.get('Value', ''))
+            if value is None:
                 return None
-
-            value = float(value_str)
 
             ref_period = item.get('reference_period_desc', '')
             month = self._month_from_period(ref_period)
@@ -948,11 +964,9 @@ class NASSProcessingCollector:
     def _parse_peanut_record(self, item: Dict, stat_cat: str) -> Optional[Dict]:
         """Parse a Peanut Stocks and Processing record."""
         try:
-            value_str = str(item.get('Value', '')).replace(',', '').strip()
-            if not value_str or value_str == '(D)' or value_str == '(NA)':
+            value = self._clean_nass_value(item.get('Value', ''))
+            if value is None:
                 return None
-
-            value = float(value_str)
 
             ref_period = item.get('reference_period_desc', '')
             month = self._month_from_period(ref_period)

@@ -124,6 +124,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     Dim sql As String
     Dim cellsUpdated As Long
     Dim rowsNotFound As Long
+    Dim suppressedSkipped As Long
 
     ' Show status
     Application.StatusBar = "Connecting to database..."
@@ -184,6 +185,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     ' Update cells
     cellsUpdated = 0
     rowsNotFound = 0
+    suppressedSkipped = 0
 
     Do While Not rs.EOF
         Dim yr As Integer, mo As Integer
@@ -202,14 +204,21 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
         targetRow = FindRowForDate(ws, yr, mo)
 
         If targetRow > 0 Then
-            ' Write value or "D" for NASS-suppressed data
             If Not IsNull(displayValue) Then
+                ' NASS reported a value -- write it.
                 ws.Cells(targetRow, spCol).Value = CDbl(displayValue)
                 cellsUpdated = cellsUpdated + 1
             Else
-                ' NASS suppresses this value — mark with "D" like USDA reports
-                ws.Cells(targetRow, spCol).Value = "D"
-                cellsUpdated = cellsUpdated + 1
+                ' NASS suppressed/withheld this month (DB value is NULL). Leave the
+                ' cell BLANK, never a "D" -- Tore hand-fills estimates into these gaps.
+                ' Clear a stale marker (blank or any text like "D"/"W") but PRESERVE a
+                ' hand-entered numeric estimate so a rerun does not clobber it.
+                Dim curVal As Variant
+                curVal = ws.Cells(targetRow, spCol).Value
+                If IsEmpty(curVal) Or IsNull(curVal) Or VarType(curVal) = vbString Then
+                    ws.Cells(targetRow, spCol).ClearContents
+                End If
+                suppressedSkipped = suppressedSkipped + 1
             End If
         Else
             rowsNotFound = rowsNotFound + 1
@@ -228,6 +237,7 @@ Private Sub UpdateFromDatabase(monthCount As Integer)
     ' Report results
     MsgBox "Update complete!" & vbCrLf & vbCrLf & _
            "Cells updated: " & cellsUpdated & vbCrLf & _
+           "Suppressed (left blank): " & suppressedSkipped & vbCrLf & _
            "Months not found in sheet: " & rowsNotFound, vbInformation, "Crush Updater"
 
     Exit Sub
