@@ -47,6 +47,18 @@ SERIES_MAP = {
 SUPPLY_SERIES = {"beginning_stocks", "production", "imports", "ending_stocks"}
 SERIES_ORDER = ["beginning_stocks", "production", "imports", "crush",
                 "feed_use", "fsi_use", "domestic_use", "exports", "ending_stocks"]
+
+# The balance identity is the SAME for every commodity: domestic_use + exports = distribution, so it
+# always ties. crush/feed/fsi are SEED-ONLY memo sub-lines (they drive the crush linkage; on an oil or
+# meal, PSD's "crush" is the parent seed's crush — a different commodity's flow — so it is excluded).
+IDENTITY_COLS = ["beginning_stocks", "production", "imports",
+                 "domestic_consumption", "exports", "ending_stocks"]
+SEED_MEMO_COLS = ["crush", "feed_dom_consumption", "fsi_consumption"]
+
+
+def cols_for(commodity):
+    is_seed = not (commodity.endswith("_oil") or commodity.endswith("_meal"))
+    return IDENTITY_COLS + (SEED_MEMO_COLS if is_seed else [])
 LONG_COLS = ["commodity", "class", "series", "marketing_year", "period_type", "period",
              "vintage", "vintage_rank", "value", "unit", "source"]
 
@@ -75,10 +87,12 @@ def fetch(commodity, code):
 def to_long(commodity, rows):
     """Emit contract long rows. One row per (series, marketing_year), annual grain."""
     out = []
+    cols = cols_for(commodity)
     for r in rows:
         my = r["marketing_year"]
         unit = r["unit"] or "1000 MT"
-        for col, series in SERIES_MAP.items():
+        for col in cols:
+            series = SERIES_MAP[col]
             v = r.get(col)
             if v is None:
                 continue
@@ -170,7 +184,10 @@ def build(commodity, code):
         ws_m.cell(i, 5, f"PSD latest vintage (rank {PSD_RANK}); annual grain — monthly national "
                         "sources upgrade via the ladder")
 
-    out = OILSEEDS / folder / f"{folder.lower().replace(' ','_')}_{commodity}_supply_demand.xlsx"
+    # Generated PSD-annual files use the *_flat.xlsx suffix. This RESERVES *_supply_demand.xlsx for
+    # curated multi-source flat files (e.g. the US soy oil reference) and *_balance_sheet.xlsx for
+    # models, so a generator run can never overwrite a hand-built reference. (Desktop bounce, 2026-07-26)
+    out = OILSEEDS / folder / f"{folder.lower().replace(' ','_')}_{commodity}_flat.xlsx"
     out.parent.mkdir(parents=True, exist_ok=True)
     wb.save(out)
     return out, len(longrows), sorted({r["marketing_year"] for r in rows})

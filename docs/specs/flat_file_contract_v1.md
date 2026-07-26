@@ -5,16 +5,24 @@
 > sheet. Freeze first, wire second. Grounded in the working US pair
 > `models/Oilseeds/United States/us_soybean_oil_supply_demand.xlsx` (the "new SUMIFS" pattern).
 
-**Status:** v1 · 2026-07-26 · authority for the 36-hour parallel build.
+**Status:** v1.1 · 2026-07-26 · authority for the parallel build. v1.1 adds the VERIFIED wiring
+(§6, read from the US reference — mirror tabs, exact formula, annual variant, non-triviality cell) and
+the `_flat.xlsx` naming fix, both from the Desktop bounce.
 
 ---
 
 ## 1. Physical location (SHARED LOCAL FILESYSTEM is the sync — NOT git)
 
 ```
-models/<Complex>/<Country>/<country>_<commodity>_supply_demand.xlsx   ← flat file (Claude-Code writes)
-models/<Complex>/<Country>/<country>_<complex>_balance_sheet.xlsx     ← workbook  (Desktop writes)
+models/<Complex>/<Country>/<country>_<commodity>_flat.xlsx           ← GENERATED PSD-annual flat file
+models/<Complex>/<Country>/<country>_<commodity>_supply_demand.xlsx  ← CURATED multi-source flat file (e.g. US)
+models/<Complex>/<Country>/<country>_<complex>_balance_sheet.xlsx    ← MODEL workbook (Desktop/Code writes)
 ```
+**Three reserved suffixes — never overload them** (fix, Desktop bounce 2026-07-26): `_flat.xlsx` =
+machine-generated PSD annual, safe to overwrite on every run; `_supply_demand.xlsx` = hand-curated,
+multi-source, monthly (the US soy oil reference is one of these — a *flat file*, not a model);
+`_balance_sheet.xlsx` = a model. The generator writes only `_flat.xlsx`, so it can never clobber a
+curated reference.
 - **`models/` is gitignored** (large binaries). The two Claudes share these files through the **local
   filesystem** on Tore's machine (`C:\dev\RLC-Agent\models\`), and/or Dropbox — **not** git. Git syncs
   only the CODE (scripts, specs). Do not expect a workbook to travel via a commit.
@@ -117,18 +125,49 @@ change.** That is the entire reason to build annual-first now.
 
 ---
 
-## 6. The formula idiom Desktop uses (copy this, don't reinvent)
+## 6. The VERIFIED wiring (extracted from the US reference 2026-07-26 — not a sketch)
 
-For a cell resolving `series=production`, `marketing_year=<MY>`, `period=ANNUAL` from the long tab
-`brazil_soybean_oil_supply` (columns per §2):
+Confirmed by reading `us_soybean_complex_bal_sheets.xlsm` cell `soyoil_balance_sheet!AL37`.
 
+### 6a. Mirror-tab pattern (this is how #VALUE! is avoided)
+The balance-sheet workbook does **not** reference the flat file externally (MAXIFS/SUMIFS return
+`#VALUE!` against a *closed* external workbook). Instead it carries **in-workbook mirror tabs**
+`ff_<tag>_supply` / `ff_<tag>_demand` (e.g. `ff_sbo_supply`), which hold a **copy of the flat file's
+long-tab rows** (same 11 columns A–K). All SUMIFS/MAXIFS/COUNTIFS run against those mirror tabs with
+**bounded ranges `$2:$8001`** (not whole-column). Populating/refreshing the mirror from the flat file
+is Claude-Code's job (generator or macro), not a hand-paste.
+
+### 6b. The exact per-cell formula (the "new SUMIFS connection")
+The reference is `IF(COUNTIFS(...)=0, <fallback>, SUMIFS(value, ..., H, MAXIFS(H, ...)) / <unit>)`:
 ```
-best rank :  =MAXIFS(tab!$H:$H, tab!$C:$C,"production", tab!$D:$D,<MY>, tab!$F:$F,"ANNUAL")
-value     :  =SUMIFS(tab!$I:$I, tab!$C:$C,"production", tab!$D:$D,<MY>, tab!$F:$F,"ANNUAL", tab!$H:$H,<bestrank cell>)
+=IF(COUNTIFS(ff!$A$2:$A$8001,"soybean_oil", ff!$B$2:$B$8001,"ALL", ff!$C$2:$C$8001,"production",
+             ff!$D$2:$D$8001,LEFT(HDR$3,4)*1, ff!$E$2:$E$8001,<period_type>, ff!$F$2:$F$8001,<period>)=0,
+    "",                                                       ← blank when no data (see 6d on fallbacks)
+    SUMIFS(ff!$I$2:$I$8001, ff!$A..,"soybean_oil", ff!$B..,"ALL", ff!$C..,"production",
+           ff!$D..,LEFT(HDR$3,4)*1, ff!$E..,<period_type>, ff!$F..,<period>,
+           ff!$H..,MAXIFS(ff!$H.., <same 6 criteria>)) / <unit_divisor>)
 ```
-Bind by **column letter** (whole-column ranges), never by Excel Table name or defined name — appends
-must shift nothing. Identity checks live in the workbook as visible tie-out cells (should read 0):
-`Total Supply − (Beg + Prod + Imp) = 0`, `Ending − (Supply − Use) = 0`.
+- Columns are fixed: A commodity · B class · C series · D marketing_year · E period_type · F period ·
+  H vintage_rank · I value.
+- **MY match:** the sheet's MY header (row 3) is text like `2025/26`; `LEFT(HDR$3,4)*1` coerces it to
+  the integer `2025` to match column D (integer). This is why D is stored as an int, not `"2025/26"`.
+- **MAXIFS-inside-SUMIFS** picks the value at the best vintage_rank — the vintage ladder, in one cell.
+
+### 6c. ANNUAL variant for the sprint (US reference is MONTHLY — do NOT clone it verbatim)
+The US sheet filters `period_type="cal_month", period="M10"…"M09"` (12 month rows/series) and divides
+`/1000000` (LB→mil lb). **The PSD flat files are `period_type="annual", period="ANNUAL", unit="1000 MT"`.**
+So the sprint template is an *annual variant*: **one row per series**, filter `E="annual", F="ANNUAL"`,
+and **no unit divisor** (display in 1000 MT; use `/1000` only if you want MMT). Same mirror tabs, same
+MAXIFS/SUMIFS idiom, simpler layout. When monthly national data lands later, add the 12 month rows —
+the wiring is identical, only the `E`/`F` filters and the divisor change.
+
+### 6d. Guards
+- Bind by explicit column letter, bounded `$2:$8001`. No Excel Tables, no defined names.
+- Two tie-out cells per tab, visible, read 0: `TotalSupply−(Beg+Prod+Imp)` and `Ending−(Supply−Distribution)`.
+- **Non-triviality cell (required — an all-zero tab passes both tie-outs):** a third visible cell =
+  `SUM(production across all MYs)`. **Coverage does not go green until this is > 0.** This is what stops
+  an empty wired tab from reading as "done." (Desktop bounce, 2026-07-26.)
+- Missing series resolve to blank/0, never `#REF!`; never invent a `series` name.
 
 ---
 

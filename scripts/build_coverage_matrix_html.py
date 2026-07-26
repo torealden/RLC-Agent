@@ -88,10 +88,12 @@ def cell_status(cx, country):
         low = f.name.lower()
         if not any(p in low for p in pats):
             continue
-        if low.endswith("_supply_demand.xlsx"):
-            flat = True
+        if low.endswith("_flat.xlsx"):
+            flat = True                        # generated PSD-annual flat file (data staged)
+        elif low.endswith("_supply_demand.xlsx"):
+            flat = True                        # curated multi-source flat file (e.g. US reference)
         else:
-            bal = True
+            bal = True                         # balance-sheet model workbook
     if bal:
         return "partial"
     if flat:
