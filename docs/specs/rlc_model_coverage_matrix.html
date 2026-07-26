@@ -1,0 +1,373 @@
+<title>RLC Model Coverage Matrix — Helios / Pepsi</title>
+<style>
+  :root {
+    --paper:#F7F3EB; --paper-2:#EFE9DA; --card:#FFFFFF; --ink:#1B2A4A; --ink-soft:#3B486180;
+    --lake:#1B2A4A; --field:#3C7D22; --wheat:#C8A951; --sage:#B7CCA4; --clay:#96492A; --slate:#8A8F98;
+    --line:#DED6C4; --line-strong:#C9BEA6;
+    --done:#3C7D22; --done-fill:#E8F0DE; --partial:#B98F1F; --partial-fill:#F7EFD4;
+    --empty:#9AA0A8; --empty-fill:#EFECE3; --auto:#28406B; --auto-fill:#E4E9F2;
+    --text:#26314A; --muted:#6C7385; --heading:#152139;
+    --shadow:0 1px 2px rgba(20,31,51,.06),0 8px 24px rgba(20,31,51,.05);
+    --fs-serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --fs-sans:Calibri,"Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#141F33; --paper-2:#101A2B; --card:#1B2942; --ink:#EAF0F8; --ink-soft:#c7d2e480;
+      --line:#2C3B57; --line-strong:#3A4A68; --text:#D4DEEE; --muted:#94A2BC; --heading:#EAF0F8;
+      --done:#8FD16A; --done-fill:#20361A; --partial:#E6C25E; --partial-fill:#3A3115;
+      --empty:#7C879C; --empty-fill:#222E45; --auto:#9DB6E6; --auto-fill:#1C2C48;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="light"]{
+      --paper:#F7F3EB; --paper-2:#EFE9DA; --card:#FFFFFF; --ink:#1B2A4A;
+      --line:#DED6C4; --line-strong:#C9BEA6; --text:#26314A; --muted:#6C7385; --heading:#152139;
+      --done:#3C7D22; --done-fill:#E8F0DE; --partial:#B98F1F; --partial-fill:#F7EFD4;
+      --empty:#9AA0A8; --empty-fill:#EFECE3; --auto:#28406B; --auto-fill:#E4E9F2;
+      --shadow:0 1px 2px rgba(20,31,51,.06),0 8px 24px rgba(20,31,51,.05);
+  }
+  :root[data-theme="dark"]{
+      --paper:#141F33; --paper-2:#101A2B; --card:#1B2942; --ink:#EAF0F8;
+      --line:#2C3B57; --line-strong:#3A4A68; --text:#D4DEEE; --muted:#94A2BC; --heading:#EAF0F8;
+      --done:#8FD16A; --done-fill:#20361A; --partial:#E6C25E; --partial-fill:#3A3115;
+      --empty:#7C879C; --empty-fill:#222E45; --auto:#9DB6E6; --auto-fill:#1C2C48;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.28);
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    font-family:var(--fs-sans); color:var(--text); background:var(--paper);
+    background-image:radial-gradient(120% 80% at 50% -10%, color-mix(in srgb,var(--sage) 14%, transparent), transparent 60%);
+    min-height:100vh; padding:clamp(20px,4vw,56px) clamp(16px,4vw,48px) 72px;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .page{max-width:1120px; margin:0 auto}
+
+  /* ---- Masthead ---- */
+  .mast{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:18px}
+  .brand{display:flex; align-items:center; gap:14px}
+  .seal{width:44px;height:44px;border-radius:50%;flex:none;
+    background:radial-gradient(circle at 50% 34%,var(--wheat) 0 22%,transparent 23%),
+               conic-gradient(from 0deg,var(--field),#2f6a1b,var(--field));
+    box-shadow:inset 0 0 0 2px var(--paper),0 0 0 2px var(--lake); position:relative}
+  .brand-txt small{display:block;font-family:var(--fs-sans);letter-spacing:.22em;text-transform:uppercase;
+    font-size:11px;color:var(--muted);font-weight:600}
+  .brand-txt b{font-family:var(--fs-serif);font-size:20px;color:var(--heading);font-weight:700;letter-spacing:.01em}
+  h1{font-family:var(--fs-serif); font-weight:700; color:var(--heading);
+    font-size:clamp(26px,4.4vw,42px); line-height:1.06; margin:22px 0 8px; text-wrap:balance; letter-spacing:-.01em}
+  .dek{font-size:clamp(15px,1.6vw,17px); color:var(--muted); max-width:60ch; line-height:1.5; margin:0}
+  .asof{font-size:12px;color:var(--muted);letter-spacing:.04em;text-align:right}
+  .asof b{color:var(--text);font-variant-numeric:tabular-nums}
+
+  /* ---- Horizon band (the signature divider) ---- */
+  .horizon{height:10px;margin:26px 0 30px;border-radius:2px;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,var(--field) 0 62%, #2c5c18 100%)}
+  .horizon::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--wheat) 22%,#f0dd9b 50%,var(--wheat) 78%,transparent);
+    box-shadow:0 0 10px 1px color-mix(in srgb,var(--wheat) 70%,transparent)}
+
+  /* ---- Summary tiles ---- */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:12px}
+  @media(max-width:720px){.tiles{grid-template-columns:repeat(2,1fr)}}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 16px 14px;
+    box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .tile .cap{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .tile .num{font-family:var(--fs-serif);font-size:34px;line-height:1;margin:8px 0 3px;color:var(--heading);
+    font-variant-numeric:tabular-nums}
+  .tile .num small{font-size:16px;color:var(--muted)}
+  .tile .sub{font-size:12.5px;color:var(--muted)}
+  .tile::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .tile.t-done::after{background:var(--done)} .tile.t-part::after{background:var(--partial)}
+  .tile.t-empty::after{background:var(--empty)} .tile.t-price::after{background:var(--clay)}
+  .tile.t-price .num{color:var(--clay)}
+
+  /* ---- Section headers ---- */
+  .sec{margin-top:38px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+  .sec-head h2{font-family:var(--fs-serif);font-size:21px;color:var(--heading);margin:0;font-weight:700}
+  .sec-head .tier-tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--lake);background:color-mix(in srgb,var(--sage) 40%,var(--paper));border:1px solid var(--line-strong);
+    padding:3px 9px;border-radius:20px}
+  :root[data-theme="dark"] .sec-head .tier-tag{color:var(--ink)}
+  @media(prefers-color-scheme:dark){.sec-head .tier-tag{color:var(--ink)}}
+  .sec-head p{margin:0;font-size:13.5px;color:var(--muted)}
+
+  /* ---- Exporter matrix ---- */
+  .matrix{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+  .mrow{display:grid;grid-template-columns:minmax(190px,240px) 1fr;gap:0;border-top:1px solid var(--line)}
+  .mrow:first-child{border-top:0}
+  .mrow .lab{padding:16px 18px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:6px;
+    background:color-mix(in srgb,var(--paper-2) 55%,var(--card))}
+  .mrow .lab .cx{font-family:var(--fs-serif);font-size:17px;color:var(--heading);font-weight:700;line-height:1.1}
+  .mrow .lab .meta{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .sheetpill{font-size:10.5px;font-weight:700;letter-spacing:.03em;color:var(--lake);
+    background:var(--auto-fill);border:1px solid color-mix(in srgb,var(--auto) 25%,transparent);border-radius:4px;padding:1px 6px}
+  :root[data-theme="dark"] .sheetpill{color:var(--auto)}
+  .cells{padding:14px 16px;display:flex;flex-wrap:wrap;gap:9px;align-content:center}
+
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 12px 7px 10px;border-radius:7px;
+    font-size:13.5px;font-weight:600;border:1px solid var(--line-strong);background:var(--empty-fill);color:var(--text);
+    transition:transform .12s ease,box-shadow .12s ease;cursor:default}
+  .chip:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(20,31,51,.1)}
+  .chip .dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--empty);box-shadow:0 0 0 3px color-mix(in srgb,var(--empty) 22%,transparent)}
+  .chip small{font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.02em}
+  .chip.done{background:var(--done-fill);border-color:color-mix(in srgb,var(--done) 45%,transparent);color:color-mix(in srgb,var(--done) 55%,var(--text))}
+  .chip.done .dot{background:var(--done);box-shadow:0 0 0 3px color-mix(in srgb,var(--done) 25%,transparent)}
+  .chip.part{background:var(--partial-fill);border-color:color-mix(in srgb,var(--partial) 45%,transparent);color:color-mix(in srgb,var(--partial) 62%,var(--text))}
+  .chip.part .dot{background:var(--partial);box-shadow:0 0 0 3px color-mix(in srgb,var(--partial) 25%,transparent)}
+  .chip.auto{background:var(--auto-fill);border-color:color-mix(in srgb,var(--auto) 38%,transparent);color:var(--auto)}
+  .chip.auto .dot{background:var(--auto);box-shadow:0 0 0 3px color-mix(in srgb,var(--auto) 22%,transparent)}
+
+  /* ---- Importer / rollup / stub cards ---- */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:860px){.cards{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:460px){.cards{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:15px 16px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;gap:9px}
+  .card .ct{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .card .ct b{font-family:var(--fs-serif);font-size:16px;color:var(--heading)}
+  .card .role{font-size:11px;color:var(--muted);letter-spacing:.02em;line-height:1.35}
+  .serves{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+  .tag{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+    padding:2px 7px;border-radius:20px;background:var(--paper-2);color:var(--muted);border:1px solid var(--line)}
+  .tag.on{background:color-mix(in srgb,var(--sage) 42%,var(--paper));color:var(--lake);border-color:var(--line-strong)}
+  :root[data-theme="dark"] .tag.on{color:var(--ink);background:color-mix(in srgb,var(--field) 26%,transparent)}
+
+  .mini{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+  .mini .dot{width:8px;height:8px;border-radius:50%}
+  .dot-auto{background:var(--auto)} .dot-empty{background:var(--empty)}
+
+  .rollups,.stubs{display:flex;flex-wrap:wrap;gap:9px}
+
+  /* ---- Phase track ---- */
+  .track{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-top:6px}
+  @media(max-width:900px){.track{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:520px){.track{grid-template-columns:repeat(2,1fr)}}
+  .ph{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:11px 12px 12px;position:relative;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;gap:5px;min-height:104px}
+  .ph .pk{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--lake);font-variant-numeric:tabular-nums}
+  :root[data-theme="dark"] .ph .pk{color:var(--auto)}
+  .ph .pt{font-size:12.5px;color:var(--text);line-height:1.28;font-weight:600}
+  .ph .pn{font-size:11px;color:var(--muted);margin-top:auto}
+  .ph.now{border-color:var(--field);box-shadow:0 0 0 1px var(--field),var(--shadow)}
+  .ph.now::before{content:"NEXT";position:absolute;top:-9px;left:11px;font-size:9px;font-weight:800;letter-spacing:.1em;
+    background:var(--field);color:#fff;padding:2px 6px;border-radius:4px}
+  .ph.price{border-color:var(--clay)}
+  .ph.price .pk{color:var(--clay)}
+  .ph.price::before{content:"LAST";position:absolute;top:-9px;left:11px;font-size:9px;font-weight:800;letter-spacing:.1em;
+    background:var(--clay);color:#fff;padding:2px 6px;border-radius:4px}
+
+  /* ---- Legend + note ---- */
+  .foot{display:flex;flex-wrap:wrap;gap:26px;justify-content:space-between;align-items:flex-start;margin-top:34px;
+    padding-top:20px;border-top:1px solid var(--line)}
+  .legend{display:flex;flex-wrap:wrap;gap:16px}
+  .lg{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+  .lg .dot{width:10px;height:10px;border-radius:50%}
+  .note{max-width:44ch;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .note b{color:var(--clay)}
+  .src{margin-top:22px;font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<div class="page">
+
+  <header class="mast">
+    <div class="brand">
+      <div class="seal" aria-hidden="true"></div>
+      <div class="brand-txt"><small>Round Lakes Commodities</small><b>Lake, Field &amp; Grain</b></div>
+    </div>
+    <div class="asof">Coverage as of <b>26 Jul 2026</b><br>Fundamentals build · prices deferred</div>
+  </header>
+
+  <h1>Model Coverage Matrix</h1>
+  <p class="dek">The balance-sheet build behind the Helios&nbsp;/&nbsp;Pepsi vegetable-oils report. Fundamentals for
+  every country&times;complex are built first; the guidance-price layer runs <em>last</em>, as a single pass across
+  everything closed here.</p>
+
+  <div class="horizon" role="presentation"></div>
+
+  <div class="tiles">
+    <div class="tile t-done">
+      <div class="cap">Built &amp; closed</div>
+      <div class="num">2<small> / 13</small></div>
+      <div class="sub">price-setting builds · US&nbsp;soy&nbsp;oil, US&nbsp;corn&nbsp;oil (DCO)</div>
+    </div>
+    <div class="tile t-part">
+      <div class="cap">Partial</div>
+      <div class="num">1</div>
+      <div class="sub">Brazil soybean complex — soy only</div>
+    </div>
+    <div class="tile t-empty">
+      <div class="cap">Scaffolded, empty</div>
+      <div class="num">10<small> +13</small></div>
+      <div class="sub">exporter builds + importers / stubs to fill</div>
+    </div>
+    <div class="tile t-price">
+      <div class="cap">Price pass</div>
+      <div class="num">0<small> / 5</small></div>
+      <div class="sub">reference series — deferred to the final phase</div>
+    </div>
+  </div>
+
+  <!-- EXPORTER MATRIX -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>Price-setting exporters</h2>
+      <span class="tier-tag">Tier A · full sheet set</span>
+      <p>These origins set the quoted series. No shortcuts — the complete crush-complex build each.</p>
+    </div>
+    <div class="matrix">
+
+      <div class="mrow">
+        <div class="lab"><span class="cx">Soybean oil</span>
+          <span class="meta"><span class="sheetpill">6 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
+        <div class="cells">
+          <span class="chip done"><span class="dot"></span>United States <small>closed</small></span>
+          <span class="chip part"><span class="dot"></span>Brazil <small>soy-only</small></span>
+          <span class="chip"><span class="dot"></span>Argentina</span>
+        </div>
+      </div>
+
+      <div class="mrow">
+        <div class="lab"><span class="cx">Rapeseed / Canola</span>
+          <span class="meta"><span class="sheetpill">6 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
+        <div class="cells">
+          <span class="chip"><span class="dot"></span>European Union</span>
+          <span class="chip"><span class="dot"></span>Canada</span>
+          <span class="chip"><span class="dot"></span>Australia</span>
+        </div>
+      </div>
+
+      <div class="mrow">
+        <div class="lab"><span class="cx">Sunflower oil</span>
+          <span class="meta"><span class="sheetpill">6 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
+        <div class="cells">
+          <span class="chip"><span class="dot"></span>Ukraine</span>
+          <span class="chip"><span class="dot"></span>Russia</span>
+          <span class="chip"><span class="dot"></span>Argentina</span>
+        </div>
+      </div>
+
+      <div class="mrow">
+        <div class="lab"><span class="cx">Palm</span>
+          <span class="meta"><span class="sheetpill">8 sheets</span> largest build · CPO + PKO, two oils</span></div>
+        <div class="cells">
+          <span class="chip"><span class="dot"></span>Malaysia</span>
+          <span class="chip"><span class="dot"></span>Indonesia <small>+ B50 draw</small></span>
+        </div>
+      </div>
+
+      <div class="mrow">
+        <div class="lab"><span class="cx">Corn oil</span>
+          <span class="meta"><span class="sheetpill">2 sheets</span> derived · DCO / wet-mill</span></div>
+        <div class="cells">
+          <span class="chip done"><span class="dot"></span>United States <small>DCO closed</small></span>
+          <span class="chip"><span class="dot"></span>Brazil</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- IMPORTERS -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>Swing importers</h2>
+      <span class="tier-tag">Tier B · shared workbook</span>
+      <p>One workbook per country, a tab per oil, plus a shared allocation tab — this is where cross-oil substitution lives.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="ct"><b>China</b><span class="mini"><span class="dot dot-empty"></span></span></div>
+        <div class="role">Largest veg-oil buyer; crush-driven SBO</div>
+        <div class="serves"><span class="tag on">Palm</span><span class="tag on">Sun</span><span class="tag on">Rape</span><span class="tag on">Soy</span></div>
+      </div>
+      <div class="card">
+        <div class="ct"><b>India</b><span class="mini"><span class="dot dot-empty"></span></span></div>
+        <div class="role">The marginal buyer — sets palm/sun substitution</div>
+        <div class="serves"><span class="tag on">Palm</span><span class="tag on">Sun</span><span class="tag on">Soy</span><span class="tag">Rape</span></div>
+      </div>
+      <div class="card">
+        <div class="ct"><b>European Union</b><span class="mini"><span class="dot dot-empty"></span></span></div>
+        <div class="role">Importer <em>and</em> Tier-A rapeseed exporter; biodiesel draw</div>
+        <div class="serves"><span class="tag on">Palm</span><span class="tag on">Sun</span><span class="tag on">Rape</span><span class="tag on">Soy</span></div>
+      </div>
+      <div class="card">
+        <div class="ct"><b>Turkey</b><span class="mini"><span class="dot dot-empty"></span></span></div>
+        <div class="role">Sunseed crusher / re-exporter</div>
+        <div class="serves"><span class="tag on">Sun</span><span class="tag on">Rape</span><span class="tag">Palm</span><span class="tag">Soy</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLLUPS + STUBS -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>World rollups &amp; scenario stubs</h2>
+      <span class="tier-tag">Tier C · automated &nbsp;/&nbsp; Tier D · stub</span>
+      <p>Rollups refresh straight from <code>bronze.fas_psd</code> — no manual build. Stubs carry only a shock coefficient.</p>
+    </div>
+    <div class="cards" style="grid-template-columns:1.4fr 1fr">
+      <div class="card">
+        <div class="ct"><b>World rollups</b><span class="mini"><span class="dot dot-auto"></span>auto-from-DB</span></div>
+        <div class="role">Production · trade · ending stocks · stocks-to-use — the first-order price answer, refreshed automatically.</div>
+        <div class="rollups">
+          <span class="chip auto"><span class="dot"></span>Palm</span>
+          <span class="chip auto"><span class="dot"></span>Rape</span>
+          <span class="chip auto"><span class="dot"></span>Sun</span>
+          <span class="chip auto"><span class="dot"></span>Soy oil</span>
+          <span class="chip auto"><span class="dot"></span>Corn oil</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct"><b>Scenario stubs</b><span class="mini"><span class="dot dot-empty"></span>9 origins</span></div>
+        <div class="role">Colombia · Guatemala · Mexico · Russia · Turkey · Brazil — single-page, what-if only.</div>
+        <div class="stubs">
+          <span class="chip"><span class="dot"></span>Palm ×3</span>
+          <span class="chip"><span class="dot"></span>Sun ×1</span>
+          <span class="chip"><span class="dot"></span>Rape ×3</span>
+          <span class="chip"><span class="dot"></span>Soy/Corn ×2</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHASE TRACK -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>Build sequence</h2>
+      <p>Each phase runs the country-build SOP once per cell. Prices are the final phase, across everything closed.</p>
+    </div>
+    <div class="track">
+      <div class="ph"><span class="pk">P0</span><span class="pt">Finish US</span><span class="pn">template country</span></div>
+      <div class="ph now"><span class="pk">P0.5</span><span class="pt">World rollups</span><span class="pn">5 · automated</span></div>
+      <div class="ph"><span class="pk">P1</span><span class="pt">Helios oils</span><span class="pn">sun → palm → rape → soy</span></div>
+      <div class="ph"><span class="pk">P2</span><span class="pt">Oil franchise</span><span class="pn">minor oils</span></div>
+      <div class="ph"><span class="pk">P3</span><span class="pt">Grains</span><span class="pn">SOW No.2</span></div>
+      <div class="ph"><span class="pk">P4</span><span class="pt">Fats &amp; biofuels</span><span class="pn">BBD moat</span></div>
+      <div class="ph"><span class="pk">P5</span><span class="pt">Fuels</span><span class="pn">energy / macro</span></div>
+      <div class="ph"><span class="pk">P6</span><span class="pt">Other majors</span><span class="pn">client-pulled</span></div>
+      <div class="ph price"><span class="pk">P·FIN</span><span class="pt">Price pass</span><span class="pn">all combos</span></div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <div class="legend">
+      <span class="lg"><span class="dot" style="background:var(--done)"></span>Built &amp; closed</span>
+      <span class="lg"><span class="dot" style="background:var(--partial)"></span>Partial</span>
+      <span class="lg"><span class="dot" style="background:var(--empty)"></span>Scaffolded, empty</span>
+      <span class="lg"><span class="dot" style="background:var(--auto)"></span>Automated from DB</span>
+    </div>
+    <p class="note"><b>Prices last.</b> Everything here is fundamental supply &amp; demand. The guidance-price
+    layer — S/U&nbsp;→&nbsp;price, basis to the quoted series, forward-window shift — is one shared engine,
+    designed and back-tested once against the full set of closed sheets.</p>
+  </div>
+
+  <p class="src">Source: <code>docs/specs/rlc_model_completion_masterplan_v1.md</code> ·
+  counts from <code>build_pepsi_coverage_tracker.py</code> (2026-07-21) and the live <code>models/</code> tree.
+  Regular Helios report scope — bespoke Pepsi levers tracked separately.</p>
+
+</div>
+</div>
