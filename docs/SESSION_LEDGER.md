@@ -149,6 +149,19 @@ empty of 14**, 4 importers, 5 rollups, 9 stubs. Fixed hand-count errors (14 Tier
 oilseed sets not 6). Re-run to refresh; open the HTML locally (self-contained). Commits `94047019`,
 `67e48534`, `5e1ce985`.
 
+**Country balance-sheet PIPELINE built + proven (2026-07-26, same arc)** — see handoff
+`docs/handoffs/2026-07-26_country_sheet_pipeline.md` (⭐ next instance starts here). Three working
+scripts: `write_psd_flat_file.py` (annual PSD control → `_flat.xlsx`, 31 Tier-A cells written),
+`write_brazil_soy_monthly.py` (monthly national-source block merged — ABIOVE + comexstat + derived),
+`write_balance_sheet.py` (closed sheet via hidden `ff_` mirror tabs + verified
+`IF(COUNTIFS=0,"",SUMIFS(.,_xlfn.MAXIFS(.)))` wiring + tie-out + non-triviality guard). **Brazil soy
+complex CLOSED, Excel-recalc verified** (ending computed = reported, TIE=0, nontriv>0, 0 errors) — the
+first non-US closed cell. Contract → v1.1 (mirror-tab wiring, `_flat` naming, non-triviality; from a
+Desktop bounce that was right on all 6 points). **Decision: Claude-Code builds the sheet templates in
+code, not Desktop** (mechanical + Desktop has no filesystem). **Next:** annual-close the other 9 staged
+cells (`write_balance_sheet.py <key>` + recalc), then monthly enrichment per country (MPOB = a rebuild:
+JS-rendered site, stale collector). `_xlfn.MAXIFS` trap documented.
+
 ## Blocked on Tore — not sessions, decisions
 
 Resolved 2026-07-22 unless marked open.
