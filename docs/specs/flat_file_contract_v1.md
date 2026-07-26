@@ -9,16 +9,24 @@
 
 ---
 
-## 1. Physical location (both Claudes write here; git is the sync)
+## 1. Physical location (SHARED LOCAL FILESYSTEM is the sync — NOT git)
 
 ```
-models/<Complex>/<Country>/<country>_<complex>_supply_demand.xlsx     ← the flat file (Claude-Code writes)
-models/<Complex>/<Country>/<country>_<complex>_balance_sheet.xlsx     ← the workbook  (Desktop writes)
+models/<Complex>/<Country>/<country>_<commodity>_supply_demand.xlsx   ← flat file (Claude-Code writes)
+models/<Complex>/<Country>/<country>_<complex>_balance_sheet.xlsx     ← workbook  (Desktop writes)
 ```
+- **`models/` is gitignored** (large binaries). The two Claudes share these files through the **local
+  filesystem** on Tore's machine (`C:\dev\RLC-Agent\models\`), and/or Dropbox — **not** git. Git syncs
+  only the CODE (scripts, specs). Do not expect a workbook to travel via a commit.
 - `<Complex>` ∈ {Oilseeds, …}; `<Country>` = the folder name already scaffolded under `models/Oilseeds/`
-  (e.g. `Brazil`, `Europe`, `Canada`, `Ukraine`, `Malaysia`).
+  (e.g. `Brazil`, `Europe`, `Canada`, `Ukraine`, `Malaysia`). One flat file **per commodity** (the
+  US pattern: `us_soybean_oil_supply_demand.xlsx` is oil-only), so a crush complex produces separate
+  seed / meal / oil flat files.
 - **Country folders are canonical.** Never write a bare copy at the complex root.
 - **Never write to an open workbook** (`~$` lock = stop). This corrupted the crush workbook at ledger 6e.
+- **Reference file (built + verified 2026-07-26):** `models/Oilseeds/Brazil/brazil_soybean_oil_supply_demand.xlsx`
+  — the annual-grain analogue of the US oil file; identity ties out to PSD ending stocks exactly.
+  Produced by `python scripts/write_psd_flat_file.py soybean_oil BR`.
 
 ---
 
@@ -68,8 +76,11 @@ Annual/PSD grain fills all of these for every Tier-A country from `bronze.fas_ps
 crush · feed_use · fsi_use · exports · ending_stocks`. (Supply = beg+prod+imp; Use = crush+feed+fsi+exp.)
 
 **Oilseed OIL tab** (`<oil>_supply` / `_demand`): `beginning_stocks · production · imports ·
-domestic_use_food · domestic_use_biofuel · domestic_use_industrial · exports · ending_stocks`.
-(Biofuel split may be `0` where PSD attr 140/149 not ingested — leave the series, value 0, don't drop it.)
+domestic_use · exports · ending_stocks`. PSD gives **total** `domestic_use` only (no food/biofuel/
+industrial split — attr 140/149 not ingested). The splits `domestic_use_food · domestic_use_biofuel ·
+domestic_use_industrial` are OPTIONAL later-enrichment series that must **sum to `domestic_use`**;
+wire the sheet to `domestic_use` now, add splits when a source lands. (US soy oil already carries the
+biofuel split from the allocator; that is the monthly-enrichment target for every country.)
 
 **Oilseed MEAL tab** (`<meal>_supply` / `_demand`): `beginning_stocks · production · imports ·
 domestic_use · exports · ending_stocks`.
