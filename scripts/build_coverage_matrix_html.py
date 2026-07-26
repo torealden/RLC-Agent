@@ -72,24 +72,36 @@ def disp(country):
 
 
 def cell_status(cx, country):
-    """empty | partial | done — derived from the live models/Oilseeds/<country>/ folder."""
+    """empty | staged | partial | done — derived from the live models/Oilseeds/<country>/ folder.
+    staged = flat file (*_supply_demand) present, no balance sheet yet (data ready for Desktop);
+    partial = a balance-sheet workbook exists; done = ledger-verified closed."""
     if (cx, country) in VERIFIED_CLOSED:
         return "done"
     folder = OILSEEDS / country
     if not folder.exists():
         return "empty"
     pats = COMPLEX_FILE_PATTERNS.get(cx, [])
+    bal = flat = False
     for f in folder.glob("*.xls*"):
         if f.name.startswith("~$"):
             continue
         low = f.name.lower()
-        if any(p in low for p in pats):
-            return "partial"
+        if not any(p in low for p in pats):
+            continue
+        if low.endswith("_supply_demand.xlsx"):
+            flat = True
+        else:
+            bal = True
+    if bal:
+        return "partial"
+    if flat:
+        return "staged"
     return "empty"
 
 
-CHIP_CLS = {"done": "chip done", "partial": "chip part", "empty": "chip", "auto": "chip auto"}
-CHIP_SMALL = {"done": "closed", "partial": "started"}
+CHIP_CLS = {"done": "chip done", "partial": "chip part", "staged": "chip staged",
+            "empty": "chip", "auto": "chip auto"}
+CHIP_SMALL = {"done": "closed", "partial": "started", "staged": "data ready"}
 
 
 def chip(name, status, small=None):
@@ -100,7 +112,7 @@ def chip(name, status, small=None):
 
 def build_sections():
     # ---- exporter matrix (Tier A) + counts ----
-    a_done = a_part = a_empty = 0
+    a_done = a_part = a_staged = a_empty = 0
     rows = []
     for cx in CX_ORDER:
         cfg = T.COMPLEXES[cx]
@@ -109,7 +121,8 @@ def build_sections():
         cells = []
         for country in cfg.get("A", []):
             st = cell_status(cx, country)
-            a_done += st == "done"; a_part += st == "partial"; a_empty += st == "empty"
+            a_done += st == "done"; a_part += st == "partial"
+            a_staged += st == "staged"; a_empty += st == "empty"
             small = A_SMALL.get((cx, country))
             if st == "done":
                 small = "DCO closed" if cx == "Corn Oil" else "closed"
@@ -166,7 +179,8 @@ def build_sections():
     n_rollups = len(CX_ORDER)
     n_importers = len(importers)
 
-    counts = dict(a_total=a_done + a_part + a_empty, a_done=a_done, a_part=a_part, a_empty=a_empty,
+    counts = dict(a_total=a_done + a_part + a_staged + a_empty, a_done=a_done, a_part=a_part,
+                  a_staged=a_staged, a_empty=a_empty,
                   n_importers=n_importers, n_rollups=n_rollups, n_stubs=n_stubs,
                   roll_built=world_built)
     return matrix, importer_cards, rollups, stubs, counts
@@ -259,6 +273,7 @@ CSS = r"""
   .tile::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
   .tile.t-done::after{background:var(--done)} .tile.t-part::after{background:var(--partial)}
   .tile.t-empty::after{background:var(--empty)} .tile.t-price::after{background:var(--clay)}
+  .tile.t-staged::after{background:var(--auto)} .tile.t-staged .num{color:var(--auto)}
   .tile.t-price .num{color:var(--clay)}
   .sec{margin-top:38px}
   .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
@@ -292,6 +307,8 @@ CSS = r"""
   .chip.part .dot{background:var(--partial);box-shadow:0 0 0 3px color-mix(in srgb,var(--partial) 25%,transparent)}
   .chip.auto{background:var(--auto-fill);border-color:color-mix(in srgb,var(--auto) 38%,transparent);color:var(--auto)}
   .chip.auto .dot{background:var(--auto);box-shadow:0 0 0 3px color-mix(in srgb,var(--auto) 22%,transparent)}
+  .chip.staged{background:color-mix(in srgb,var(--sage) 20%,var(--card));border:1px dashed color-mix(in srgb,var(--auto) 55%,transparent);color:var(--auto)}
+  .chip.staged .dot{background:transparent;border:2px solid var(--auto);box-shadow:none}
   .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
   @media(max-width:860px){.cards{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:460px){.cards{grid-template-columns:1fr}}
@@ -369,15 +386,15 @@ def render():
       <div class="num">{c['a_done']}<small> / {c['a_total']}</small></div>
       <div class="sub">price-setting exporter builds (Tier&nbsp;A)</div>
     </div>
-    <div class="tile t-part">
-      <div class="cap">In progress</div>
-      <div class="num">{c['a_part']}</div>
-      <div class="sub">workbooks present, not yet verified closed</div>
+    <div class="tile t-staged">
+      <div class="cap">Data staged</div>
+      <div class="num">{c['a_staged']}</div>
+      <div class="sub">PSD flat files ready &mdash; awaiting Desktop wiring</div>
     </div>
-    <div class="tile t-empty">
-      <div class="cap">Scaffolded, empty</div>
+    <div class="tile t-part">
+      <div class="cap">Not started</div>
       <div class="num">{c['a_empty']}<small> +{pending}</small></div>
-      <div class="sub">exporter builds + {c['n_importers']} importers / {c['n_stubs']} stubs to fill</div>
+      <div class="sub">{c['a_part']} building · +{c['n_importers']} importers / {c['n_stubs']} stubs</div>
     </div>
     <div class="tile t-price">
       <div class="cap">Price pass</div>
@@ -449,8 +466,9 @@ def render():
   <div class="foot">
     <div class="legend">
       <span class="lg"><span class="dot" style="background:var(--done)"></span>Built &amp; closed</span>
-      <span class="lg"><span class="dot" style="background:var(--partial)"></span>In progress</span>
-      <span class="lg"><span class="dot" style="background:var(--empty)"></span>Scaffolded, empty</span>
+      <span class="lg"><span class="dot" style="border:2px solid var(--auto);background:transparent"></span>Data staged</span>
+      <span class="lg"><span class="dot" style="background:var(--partial)"></span>Building</span>
+      <span class="lg"><span class="dot" style="background:var(--empty)"></span>Not started</span>
       <span class="lg"><span class="dot" style="background:var(--auto)"></span>Automated from DB</span>
     </div>
     <p class="note"><b>Prices last.</b> Everything here is fundamental supply &amp; demand. The guidance-price
@@ -472,8 +490,8 @@ def main():
     OUT.write_text(html, encoding="utf-8")
     _, _, _, _, c = build_sections()
     print(f"Wrote {OUT}")
-    print(f"  Tier A: {c['a_done']} done / {c['a_part']} partial / {c['a_empty']} empty "
-          f"(of {c['a_total']})")
+    print(f"  Tier A: {c['a_done']} done / {c['a_staged']} staged / {c['a_part']} building / "
+          f"{c['a_empty']} empty (of {c['a_total']})")
     print(f"  importers={c['n_importers']}  rollups={c['n_rollups']}  stubs={c['n_stubs']}  "
           f"world_rollups_built={c['roll_built']}")
 

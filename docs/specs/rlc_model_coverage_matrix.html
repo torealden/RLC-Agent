@@ -74,6 +74,7 @@
   .tile::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
   .tile.t-done::after{background:var(--done)} .tile.t-part::after{background:var(--partial)}
   .tile.t-empty::after{background:var(--empty)} .tile.t-price::after{background:var(--clay)}
+  .tile.t-staged::after{background:var(--auto)} .tile.t-staged .num{color:var(--auto)}
   .tile.t-price .num{color:var(--clay)}
   .sec{margin-top:38px}
   .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
@@ -107,6 +108,8 @@
   .chip.part .dot{background:var(--partial);box-shadow:0 0 0 3px color-mix(in srgb,var(--partial) 25%,transparent)}
   .chip.auto{background:var(--auto-fill);border-color:color-mix(in srgb,var(--auto) 38%,transparent);color:var(--auto)}
   .chip.auto .dot{background:var(--auto);box-shadow:0 0 0 3px color-mix(in srgb,var(--auto) 22%,transparent)}
+  .chip.staged{background:color-mix(in srgb,var(--sage) 20%,var(--card));border:1px dashed color-mix(in srgb,var(--auto) 55%,transparent);color:var(--auto)}
+  .chip.staged .dot{background:transparent;border:2px solid var(--auto);box-shadow:none}
   .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
   @media(max-width:860px){.cards{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:460px){.cards{grid-template-columns:1fr}}
@@ -175,15 +178,15 @@
       <div class="num">2<small> / 14</small></div>
       <div class="sub">price-setting exporter builds (Tier&nbsp;A)</div>
     </div>
-    <div class="tile t-part">
-      <div class="cap">In progress</div>
-      <div class="num">1</div>
-      <div class="sub">workbooks present, not yet verified closed</div>
+    <div class="tile t-staged">
+      <div class="cap">Data staged</div>
+      <div class="num">10</div>
+      <div class="sub">PSD flat files ready &mdash; awaiting Desktop wiring</div>
     </div>
-    <div class="tile t-empty">
-      <div class="cap">Scaffolded, empty</div>
-      <div class="num">11<small> +13</small></div>
-      <div class="sub">exporter builds + 4 importers / 9 stubs to fill</div>
+    <div class="tile t-part">
+      <div class="cap">Not started</div>
+      <div class="num">1<small> +13</small></div>
+      <div class="sub">1 building · +4 importers / 9 stubs</div>
     </div>
     <div class="tile t-price">
       <div class="cap">Price pass</div>
@@ -204,7 +207,7 @@
         <div class="lab"><span class="cx">Soybean oil</span>
           <span class="meta"><span class="sheetpill">5 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
         <div class="cells">
-          <span class="chip done"><span class="dot"></span>United States <small>closed</small></span><span class="chip part"><span class="dot"></span>Brazil <small>started</small></span><span class="chip"><span class="dot"></span>Argentina</span>
+          <span class="chip done"><span class="dot"></span>United States <small>closed</small></span><span class="chip part"><span class="dot"></span>Brazil <small>started</small></span><span class="chip staged"><span class="dot"></span>Argentina <small>data ready</small></span>
         </div>
       </div>
 
@@ -212,7 +215,7 @@
         <div class="lab"><span class="cx">Rapeseed / Canola</span>
           <span class="meta"><span class="sheetpill">5 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
         <div class="cells">
-          <span class="chip"><span class="dot"></span>European Union</span><span class="chip"><span class="dot"></span>Canada</span><span class="chip"><span class="dot"></span>Australia</span><span class="chip"><span class="dot"></span>Russia</span>
+          <span class="chip staged"><span class="dot"></span>European Union <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Canada <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Australia <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Russia <small>data ready</small></span>
         </div>
       </div>
 
@@ -220,7 +223,7 @@
         <div class="lab"><span class="cx">Sunflower oil</span>
           <span class="meta"><span class="sheetpill">5 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
         <div class="cells">
-          <span class="chip"><span class="dot"></span>Ukraine</span><span class="chip"><span class="dot"></span>Russia</span><span class="chip"><span class="dot"></span>Argentina</span>
+          <span class="chip staged"><span class="dot"></span>Ukraine <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Russia <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Argentina <small>data ready</small></span>
         </div>
       </div>
 
@@ -228,7 +231,7 @@
         <div class="lab"><span class="cx">Palm</span>
           <span class="meta"><span class="sheetpill">8 sheets</span> largest build · CPO + PKO, two oils</span></div>
         <div class="cells">
-          <span class="chip"><span class="dot"></span>Malaysia</span><span class="chip"><span class="dot"></span>Indonesia <small>+ B50 draw</small></span>
+          <span class="chip staged"><span class="dot"></span>Malaysia <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Indonesia <small>+ B50 draw</small></span>
         </div>
       </div>
 
@@ -263,7 +266,7 @@
       </div>
 
       <div class="card">
-        <div class="ct"><b>European Union</b><span class="mini"><span class="dot dot-empty"></span></span></div>
+        <div class="ct"><b>European Union</b><span class="mini"><span class="dot dot-auto"></span></span></div>
         <div class="role">Importer <em>and</em> Tier-A rapeseed exporter; biodiesel draw</div>
         <div class="serves"><span class="tag on">Palm</span><span class="tag on">Sun</span><span class="tag ">Rape</span><span class="tag on">Soy</span></div>
       </div>
@@ -317,8 +320,9 @@
   <div class="foot">
     <div class="legend">
       <span class="lg"><span class="dot" style="background:var(--done)"></span>Built &amp; closed</span>
-      <span class="lg"><span class="dot" style="background:var(--partial)"></span>In progress</span>
-      <span class="lg"><span class="dot" style="background:var(--empty)"></span>Scaffolded, empty</span>
+      <span class="lg"><span class="dot" style="border:2px solid var(--auto);background:transparent"></span>Data staged</span>
+      <span class="lg"><span class="dot" style="background:var(--partial)"></span>Building</span>
+      <span class="lg"><span class="dot" style="background:var(--empty)"></span>Not started</span>
       <span class="lg"><span class="dot" style="background:var(--auto)"></span>Automated from DB</span>
     </div>
     <p class="note"><b>Prices last.</b> Everything here is fundamental supply &amp; demand. The guidance-price
