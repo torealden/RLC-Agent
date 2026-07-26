@@ -56,7 +56,12 @@ criteria from three other oils/fats workbooks and see which it is. Ten minutes.
 | 6a | **Forecast layer — DESIGN.** Can run now; it is a doc and it unblocks the Rodney Ndum model work in parallel | `docs/specs/forecast_layer_design_v1.md` — D1–D8 + not-verified list | `[x]` 2026-07-23 |
 | 6b | Forecast layer — BUILD | `forecast_layer_build_v1.md`; migrations 150–152; `src/forecast/guards.py`; D4 gate PASS | `[x]` 2026-07-24 |
 | 6c | **First D5 forecast callable** — biofuel-feedstock-use forecast | `forecast_layer_build_v2_biofuel_callable.md`; mig 153 `soybean_oil_series`; callable + runner; writer wired; 116 rows published; Excel recalc PASS on biofuel blocks | `[x]` 2026-07-24 |
-| 6d | **Soybean-oil SUPPLY forecast** (production via crush×oil-yield + stocks) — the *actual* forward `#VALUE!` source | closes the soyoil sheet forward | `[ ]` |
+| 6d | **Soybean-oil SUPPLY forecast** (production via crush×oil-yield + stocks) — the *actual* forward `#VALUE!` source | `soyoil_supply_forecast_6d_findings.md`; `soybean_oil_production_forecast` callable + runner; soyoil sheet closes MY2027/28; crush link repointed to DB | `[x]` 2026-07-24 |
+| 6e | **NASS soy crush matrix fix** (meal/oil never machine-filled) | mig 154 (dedup + units); `fill_soy_crush_safe.py`; `us_soy_crush.xlsm` filled thru May-2026; Dec-25 ties out | `[x]` 2026-07-25 |
+| 6f | **Meal grounding** — weekend calendar dimension + meal stocks/use characterization (before the meal supply/balance callable) | mig 155 `reference.month_calendar`; `meal_stocks_weekend_and_calendar_dimension.md`; weekend artifact is meal-specific (Sunday +15%), oil null | `[x]` 2026-07-26 |
+| 6g | **Meal PRODUCTION callable** — `soybean_meal_production_forecast` (crush×meal_yield, clone of 6d) + `silver.soybean_meal_series` (clone mig 153). Supply anchor, no blockers | closes meal supply leg | `[ ]` |
+| 6h | **Slaughter→meal-demand forecast** — the missing simple model (ingredients exist: `gold.livestock_slaughter_monthly` + `us_protein_meal_consumption.xlsx`, but no model wired) | forward meal domestic use | `[ ]` |
+| 6i | **Meal BALANCING model** — ending stocks = target ratio (weekday ~8.5–9%, Sunday uplift, RD drift) → exports as PLUG; + meal flat-file writer + sheet wiring (none exist yet) | closes meal sheet forward | `[ ]` |
 | 7 | Helios validation — index vs the 2012 drought / 2019 wet commentary archive | validation note with numbers | `[ ]` |
 | 8 | Non-bio everywhere — needs the system graph **and** the PSD 140/149 ingest first | collector change + coverage report | `[ ]` |
 
@@ -93,10 +98,32 @@ wrong), never `#VALUE!`. The `#VALUE!` come entirely from the **un-forecast SUPP
 `AL11=AL49→#DIV/0!`, beginning stocks `AL10=AK29→#VALUE!`) cascading into Total Supply/Demand/Ending
 Stocks. 624 supply-side errors remain after the biofuel fix.
 
-**Open the next session with this (6d):** **soybean-oil SUPPLY forecast** — production (crush × oil yield)
-+ beginning/ending stocks roll-forward, as `MODEL_BASE`(1) banded rows into `silver.soybean_oil_series`,
-same publish path. That is what actually closes the soyoil balance sheet forward (the 624 remaining
-`#VALUE!`). Copy the 6c callable/runner/writer-merge pattern exactly; the plumbing is proven.
+**Session 6d done (2026-07-24)** — soybean-oil SUPPLY (production) forecast; soyoil sheet closes through
+MY2027/28. Premise changed on inspection (production only — stocks roll by the sheet identity; the blocker
+was a stale Excel crush link + un-forecast trade, not a missing series). Crush link repointed to the DB.
+Full detail + not-verified list: `docs/specs/soyoil_supply_forecast_6d_findings.md`.
+
+**Session 6e done (2026-07-25)** — NASS soy crush matrix fix. `gold.nass_soy_crush_matrix` joined without
+a commodity predicate (canola/cottonseed meal/oil fanned into the soy column) and had wrong conversion
+factors → meal+oil never machine-filled, only crush did. Mig 154 (dedup + units); `fill_soy_crush_safe.py`
+(read-only date match, never rewrites col A); `us_soy_crush.xlsm` filled through May-2026, Dec-25 ties out
+(6895.963 / 5107.259 / 2657.399). Also killed the "D" stamping in `CrushUpdaterSQL.bas` + centralized
+NASS suppression handling in the collector. Verified live 2026-07-26 (DB view + workbook).
+
+**Session 6f done (2026-07-26)** — meal grounding before the meal supply/balance callable. Mig 155
+`reference.month_calendar` (pure-calendar MONTH dim, 1990–2050, `ends_on_weekend`/`_sunday` flags —
+fundamental, join any month-indexed series on (year, month)). Characterized meal stocks / next-month
+domestic use: weekday-end 0.087 vs weekend-end 0.100 (+15%, Sunday the outlier 0.110), RD-era downtrend
+0.108→0.081, clean 2020+ window. **Key finding:** the weekend stock artifact is MEAL-SPECIFIC (neighbor
+test flares +21.5%/Sunday +34.1% on meal, null on oil) — flag is available to all series but the effect
+must be measured per series, never blanket-applied. Also verified: no slaughter→meal-demand forecast
+exists (only ingredients). Full detail: `docs/specs/meal_stocks_weekend_and_calendar_dimension.md`.
+
+**Open the next session with this (6g):** **soybean-meal PRODUCTION callable** — `crush × meal_yield`
+(meal_yield = NASS `meal_production / crush`, short tons), a clean clone of `soybean_oil_production_forecast`
+(6d) into `silver.soybean_meal_series` (clone mig 153). Supply anchor, zero blockers, short. Then 6h
+(slaughter→meal-demand) unlocks domestic use, and 6i (stocks-target → exports-as-plug + meal flat-file
+writer + sheet wiring) closes the sheet — that is where 6f's weekend characterization gets used.
 
 ---
 
