@@ -127,6 +127,19 @@ writer + sheet wiring) closes the sheet — that is where 6f's weekend character
 
 ---
 
+## Workstream: Model completion master plan (the framing)
+
+**Session 2026-07-26 (planning)** — produced `docs/specs/rlc_model_completion_masterplan_v1.md`:
+the framing above the two Helios specs. **Part A** full-quality Helios/Pepsi report outline (each
+section annotated with its data dependency); **Part B** the country×complex build SOP (B0–B9, the
+formalization of "we fumbled US into existence" — inputs, sheet-template-by-complex, flat-file →
+vintage-rank workbook → crush link → identity tie-out → trade-loop → forecast callables → recalc
+gate, STOPS before price); **Part C** master matrix (Tier A/B/C/D across oils/grains/fats-biofuels/
+fuels/other-majors, grounded on the real model tree — US oilseeds 38 wkbks built, Brazil soy partial,
+~22 oilseed country folders empty scaffolds); **Part D** phased finish plan P0→P-FINAL. **Governing
+ruling (Tore 2026-07-26): no shortcuts; Helios/Pepsi set first; fundamentals for every combo first,
+PRICES ARE THE FINAL PASS across all combinations.** Not-verified list in §Open decisions.
+
 ## Blocked on Tore — not sessions, decisions
 
 Resolved 2026-07-22 unless marked open.
