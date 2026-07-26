@@ -1,5 +1,190 @@
-<title>RLC Model Coverage Matrix — Helios / Pepsi</title>
-<style>
+"""Generate the live RLC model coverage matrix (HTML) from the canonical coverage universe.
+
+Single source of truth = scripts/build_pepsi_coverage_tracker.py (COMPLEXES / tiers / sheet sets).
+This script does NOT redefine scope — it imports it, probes the live models/ tree for what is
+actually built, and renders the Lake, Field & Grain coverage dashboard with real counts.
+
+Status is derived, not hand-typed:
+  empty   — the country folder holds no workbook matching the complex
+  partial — workbook(s) present but not on the verified-closed list
+  done    — on VERIFIED_CLOSED (a ledger fact — forecast-closed + tied out; cannot be inferred
+            from file presence, so it is the one curated input here)
+
+As Tore builds, a new workbook flips a cell empty->partial automatically; adding the (complex,
+country) pair to VERIFIED_CLOSED after the recalc/tie-out passes flips it partial->done.
+
+Run:  python scripts/build_coverage_matrix_html.py
+Output: docs/specs/rlc_model_coverage_matrix.html
+"""
+from pathlib import Path
+from datetime import date
+import importlib.util
+
+ROOT = Path(r"C:/dev/RLC-Agent")
+OILSEEDS = ROOT / "models" / "Oilseeds"
+OUT = ROOT / "docs" / "specs" / "rlc_model_coverage_matrix.html"
+
+# ---- import the canonical coverage universe (no re-definition) -------------------------------
+_spec = importlib.util.spec_from_file_location(
+    "pepsi_tracker", ROOT / "scripts" / "build_pepsi_coverage_tracker.py")
+T = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(T)
+
+# ---- the one curated input: ledger-verified closed sheets (see docs/SESSION_LEDGER.md) -------
+VERIFIED_CLOSED = {
+    ("Soybean", "United States"),      # US soy oil supply closed forward, tied out (ledger 6d/6e)
+    ("Corn Oil", "United States"),     # US DCO via the feedstock/IFV layer
+}
+
+# complex -> substrings that identify its workbooks in a country folder
+COMPLEX_FILE_PATTERNS = {
+    "Soybean":            ["soy"],
+    "Rapeseed / Canola":  ["canola", "rapeseed", "rape"],
+    "Sunflower":          ["sunflower", "sunflow", "sunseed"],
+    "Palm":               ["palm"],
+    "Corn Oil":           ["corn_oil", "cornoil", "dco"],
+}
+
+# display + editorial copy (scope stays data-driven; these are just labels)
+DISPLAY = {"Europe": "European Union"}
+SHEET_DESC = {
+    "Palm":              "largest build · CPO + PKO, two oils",
+    "Corn Oil":          "derived · DCO / wet-mill",
+}
+OILSEED_DESC = "Seed · Crush · Oil · Meal · Trade"
+CX_ORDER = ["Soybean", "Rapeseed / Canola", "Sunflower", "Palm", "Corn Oil"]
+CX_DISPLAY = {"Soybean": "Soybean oil", "Rapeseed / Canola": "Rapeseed / Canola",
+              "Sunflower": "Sunflower oil", "Palm": "Palm", "Corn Oil": "Corn oil"}
+A_SMALL = {  # optional annotation on specific exporter chips
+    ("Palm", "Indonesia"): "+ B50 draw",
+}
+IMPORTER_ROLE = {
+    "China":  "Largest veg-oil buyer; crush-driven SBO",
+    "India":  "The marginal buyer — sets palm/sun substitution",
+    "Europe": "Importer <em>and</em> Tier-A rapeseed exporter; biodiesel draw",
+    "Turkey": "Sunseed crusher / re-exporter",
+}
+IMPORTER_SHORT = {"Palm": "Palm", "Sunflower": "Sun", "Rapeseed / Canola": "Rape", "Soybean": "Soy"}
+
+
+def disp(country):
+    return DISPLAY.get(country, country)
+
+
+def cell_status(cx, country):
+    """empty | partial | done — derived from the live models/Oilseeds/<country>/ folder."""
+    if (cx, country) in VERIFIED_CLOSED:
+        return "done"
+    folder = OILSEEDS / country
+    if not folder.exists():
+        return "empty"
+    pats = COMPLEX_FILE_PATTERNS.get(cx, [])
+    for f in folder.glob("*.xls*"):
+        if f.name.startswith("~$"):
+            continue
+        low = f.name.lower()
+        if any(p in low for p in pats):
+            return "partial"
+    return "empty"
+
+
+CHIP_CLS = {"done": "chip done", "partial": "chip part", "empty": "chip", "auto": "chip auto"}
+CHIP_SMALL = {"done": "closed", "partial": "started"}
+
+
+def chip(name, status, small=None):
+    lbl = small if small is not None else CHIP_SMALL.get(status)
+    s = f' <small>{lbl}</small>' if lbl else ""
+    return f'<span class="{CHIP_CLS[status]}"><span class="dot"></span>{name}{s}</span>'
+
+
+def build_sections():
+    # ---- exporter matrix (Tier A) + counts ----
+    a_done = a_part = a_empty = 0
+    rows = []
+    for cx in CX_ORDER:
+        cfg = T.COMPLEXES[cx]
+        n_sheets = len(cfg["sheets"])
+        desc = SHEET_DESC.get(cx, OILSEED_DESC)
+        cells = []
+        for country in cfg.get("A", []):
+            st = cell_status(cx, country)
+            a_done += st == "done"; a_part += st == "partial"; a_empty += st == "empty"
+            small = A_SMALL.get((cx, country))
+            if st == "done":
+                small = "DCO closed" if cx == "Corn Oil" else "closed"
+            cells.append(chip(disp(country), st, small))
+        rows.append(f"""
+      <div class="mrow">
+        <div class="lab"><span class="cx">{CX_DISPLAY[cx]}</span>
+          <span class="meta"><span class="sheetpill">{n_sheets} sheets</span> {desc}</span></div>
+        <div class="cells">
+          {"".join(cells)}
+        </div>
+      </div>""")
+    matrix = "\n".join(rows)
+
+    # ---- importer cards (Tier B, union across complexes) ----
+    importers = []
+    for cx in CX_ORDER:
+        for c in T.COMPLEXES[cx].get("B", []):
+            if c not in importers:
+                importers.append(c)
+    # order by number of complexes served, desc
+    served = {c: [cx for cx in CX_ORDER if c in T.COMPLEXES[cx].get("B", [])] for c in importers}
+    importers.sort(key=lambda c: -len(served[c]))
+    imp_cards = []
+    for c in importers:
+        tags = []
+        for cx in ["Palm", "Sunflower", "Rapeseed / Canola", "Soybean"]:
+            on = "on" if cx in served[c] else ""
+            tags.append(f'<span class="tag {on}">{IMPORTER_SHORT[cx]}</span>')
+        st = cell_status_importer(c)
+        dot = "dot-empty" if st == "empty" else "dot-auto"
+        imp_cards.append(f"""
+      <div class="card">
+        <div class="ct"><b>{disp(c)}</b><span class="mini"><span class="dot {dot}"></span></span></div>
+        <div class="role">{IMPORTER_ROLE.get(c, "Swing importer")}</div>
+        <div class="serves">{"".join(tags)}</div>
+      </div>""")
+    importer_cards = "\n".join(imp_cards)
+
+    # ---- world rollups (Tier C) + scenario stubs (Tier D) ----
+    world_built = (OILSEEDS / "World").exists() and any(
+        f for f in (OILSEEDS / "World").glob("*.xls*") if not f.name.startswith("~$"))
+    roll_status = "auto" if not world_built else "done"
+    rollups = "".join(chip(CX_DISPLAY[cx].replace(" oil", ""), roll_status, small=None if world_built else "")
+                      for cx in CX_ORDER)
+
+    stub_pairs = [(cx, c) for cx in CX_ORDER for c in T.COMPLEXES[cx].get("D", [])]
+    stub_by_cx = {}
+    for cx, c in stub_pairs:
+        stub_by_cx.setdefault(cx, []).append(c)
+    stubs = "".join(chip(f'{CX_DISPLAY[cx].replace(" oil","")} ×{len(v)}', "empty", small="")
+                    for cx, v in stub_by_cx.items())
+    n_stubs = len(stub_pairs)
+    n_rollups = len(CX_ORDER)
+    n_importers = len(importers)
+
+    counts = dict(a_total=a_done + a_part + a_empty, a_done=a_done, a_part=a_part, a_empty=a_empty,
+                  n_importers=n_importers, n_rollups=n_rollups, n_stubs=n_stubs,
+                  roll_built=world_built)
+    return matrix, importer_cards, rollups, stubs, counts
+
+
+def cell_status_importer(country):
+    """Importer folders: partial if any oil workbook present, else empty."""
+    folder = OILSEEDS / country
+    if not folder.exists():
+        return "empty"
+    for f in folder.glob("*.xls*"):
+        if not f.name.startswith("~$"):
+            return "partial"
+    return "empty"
+
+
+# ---- static CSS (Lake, Field & Grain) -------------------------------------------------------
+CSS = r"""
   :root {
     --paper:#F7F3EB; --paper-2:#EFE9DA; --card:#FFFFFF; --ink:#1B2A4A; --ink-soft:#3B486180;
     --lake:#1B2A4A; --field:#3C7D22; --wheat:#C8A951; --sage:#B7CCA4; --clay:#96492A; --slate:#8A8F98;
@@ -149,7 +334,16 @@
   .note b{color:var(--clay)}
   .src{margin-top:22px;font-size:11.5px;color:var(--muted);letter-spacing:.02em}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
+"""
+
+
+def render():
+    matrix, importer_cards, rollups, stubs, c = build_sections()
+    pending = c["n_importers"] + c["n_stubs"]
+    roll_note = "5 · pending" if not c["roll_built"] else "5 · live"
+    today = date.today().strftime("%d %b %Y")
+    return f"""<title>RLC Model Coverage Matrix — Helios / Pepsi</title>
+<style>{CSS}</style>
 
 <div class="wrap">
 <div class="page">
@@ -159,7 +353,7 @@
       <div class="seal" aria-hidden="true"></div>
       <div class="brand-txt"><small>Round Lakes Commodities</small><b>Lake, Field &amp; Grain</b></div>
     </div>
-    <div class="asof">Coverage as of <b>26 Jul 2026</b><br>Live from the <code>models/</code> tree · prices deferred</div>
+    <div class="asof">Coverage as of <b>{today}</b><br>Live from the <code>models/</code> tree · prices deferred</div>
   </header>
 
   <h1>Model Coverage Matrix</h1>
@@ -172,18 +366,18 @@
   <div class="tiles">
     <div class="tile t-done">
       <div class="cap">Built &amp; closed</div>
-      <div class="num">2<small> / 14</small></div>
+      <div class="num">{c['a_done']}<small> / {c['a_total']}</small></div>
       <div class="sub">price-setting exporter builds (Tier&nbsp;A)</div>
     </div>
     <div class="tile t-part">
       <div class="cap">In progress</div>
-      <div class="num">1</div>
+      <div class="num">{c['a_part']}</div>
       <div class="sub">workbooks present, not yet verified closed</div>
     </div>
     <div class="tile t-empty">
       <div class="cap">Scaffolded, empty</div>
-      <div class="num">11<small> +13</small></div>
-      <div class="sub">exporter builds + 4 importers / 9 stubs to fill</div>
+      <div class="num">{c['a_empty']}<small> +{pending}</small></div>
+      <div class="sub">exporter builds + {c['n_importers']} importers / {c['n_stubs']} stubs to fill</div>
     </div>
     <div class="tile t-price">
       <div class="cap">Price pass</div>
@@ -199,46 +393,7 @@
       <p>These origins set the quoted series. No shortcuts — the complete crush-complex build each.</p>
     </div>
     <div class="matrix">
-
-      <div class="mrow">
-        <div class="lab"><span class="cx">Soybean oil</span>
-          <span class="meta"><span class="sheetpill">5 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
-        <div class="cells">
-          <span class="chip done"><span class="dot"></span>United States <small>closed</small></span><span class="chip part"><span class="dot"></span>Brazil <small>started</small></span><span class="chip"><span class="dot"></span>Argentina</span>
-        </div>
-      </div>
-
-      <div class="mrow">
-        <div class="lab"><span class="cx">Rapeseed / Canola</span>
-          <span class="meta"><span class="sheetpill">5 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
-        <div class="cells">
-          <span class="chip"><span class="dot"></span>European Union</span><span class="chip"><span class="dot"></span>Canada</span><span class="chip"><span class="dot"></span>Australia</span><span class="chip"><span class="dot"></span>Russia</span>
-        </div>
-      </div>
-
-      <div class="mrow">
-        <div class="lab"><span class="cx">Sunflower oil</span>
-          <span class="meta"><span class="sheetpill">5 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
-        <div class="cells">
-          <span class="chip"><span class="dot"></span>Ukraine</span><span class="chip"><span class="dot"></span>Russia</span><span class="chip"><span class="dot"></span>Argentina</span>
-        </div>
-      </div>
-
-      <div class="mrow">
-        <div class="lab"><span class="cx">Palm</span>
-          <span class="meta"><span class="sheetpill">8 sheets</span> largest build · CPO + PKO, two oils</span></div>
-        <div class="cells">
-          <span class="chip"><span class="dot"></span>Malaysia</span><span class="chip"><span class="dot"></span>Indonesia <small>+ B50 draw</small></span>
-        </div>
-      </div>
-
-      <div class="mrow">
-        <div class="lab"><span class="cx">Corn oil</span>
-          <span class="meta"><span class="sheetpill">2 sheets</span> derived · DCO / wet-mill</span></div>
-        <div class="cells">
-          <span class="chip done"><span class="dot"></span>United States <small>DCO closed</small></span><span class="chip"><span class="dot"></span>Brazil</span>
-        </div>
-      </div>
+{matrix}
     </div>
   </section>
 
@@ -249,30 +404,7 @@
       <p>One workbook per country, a tab per oil, plus a shared allocation tab — this is where cross-oil substitution lives.</p>
     </div>
     <div class="cards">
-
-      <div class="card">
-        <div class="ct"><b>China</b><span class="mini"><span class="dot dot-empty"></span></span></div>
-        <div class="role">Largest veg-oil buyer; crush-driven SBO</div>
-        <div class="serves"><span class="tag on">Palm</span><span class="tag on">Sun</span><span class="tag on">Rape</span><span class="tag on">Soy</span></div>
-      </div>
-
-      <div class="card">
-        <div class="ct"><b>India</b><span class="mini"><span class="dot dot-empty"></span></span></div>
-        <div class="role">The marginal buyer — sets palm/sun substitution</div>
-        <div class="serves"><span class="tag on">Palm</span><span class="tag on">Sun</span><span class="tag on">Rape</span><span class="tag on">Soy</span></div>
-      </div>
-
-      <div class="card">
-        <div class="ct"><b>European Union</b><span class="mini"><span class="dot dot-empty"></span></span></div>
-        <div class="role">Importer <em>and</em> Tier-A rapeseed exporter; biodiesel draw</div>
-        <div class="serves"><span class="tag on">Palm</span><span class="tag on">Sun</span><span class="tag ">Rape</span><span class="tag on">Soy</span></div>
-      </div>
-
-      <div class="card">
-        <div class="ct"><b>Turkey</b><span class="mini"><span class="dot dot-empty"></span></span></div>
-        <div class="role">Sunseed crusher / re-exporter</div>
-        <div class="serves"><span class="tag ">Palm</span><span class="tag on">Sun</span><span class="tag on">Rape</span><span class="tag ">Soy</span></div>
-      </div>
+{importer_cards}
     </div>
   </section>
 
@@ -284,14 +416,14 @@
     </div>
     <div class="cards" style="grid-template-columns:1.4fr 1fr">
       <div class="card">
-        <div class="ct"><b>World rollups</b><span class="mini"><span class="dot dot-auto"></span>5 · pending</span></div>
+        <div class="ct"><b>World rollups</b><span class="mini"><span class="dot dot-auto"></span>{roll_note}</span></div>
         <div class="role">Production · trade · ending stocks · stocks-to-use — the first-order price answer, refreshed automatically.</div>
-        <div class="rollups"><span class="chip auto"><span class="dot"></span>Soybean</span><span class="chip auto"><span class="dot"></span>Rapeseed / Canola</span><span class="chip auto"><span class="dot"></span>Sunflower</span><span class="chip auto"><span class="dot"></span>Palm</span><span class="chip auto"><span class="dot"></span>Corn</span></div>
+        <div class="rollups">{rollups}</div>
       </div>
       <div class="card">
-        <div class="ct"><b>Scenario stubs</b><span class="mini"><span class="dot dot-empty"></span>9 origins</span></div>
+        <div class="ct"><b>Scenario stubs</b><span class="mini"><span class="dot dot-empty"></span>{c['n_stubs']} origins</span></div>
         <div class="role">Colombia · Guatemala · Mexico · Russia · Turkey · Brazil — single-page, what-if only.</div>
-        <div class="stubs"><span class="chip"><span class="dot"></span>Soybean ×1</span><span class="chip"><span class="dot"></span>Rapeseed / Canola ×2</span><span class="chip"><span class="dot"></span>Sunflower ×2</span><span class="chip"><span class="dot"></span>Palm ×3</span><span class="chip"><span class="dot"></span>Corn ×1</span></div>
+        <div class="stubs">{stubs}</div>
       </div>
     </div>
   </section>
@@ -332,3 +464,19 @@
 
 </div>
 </div>
+"""
+
+
+def main():
+    html = render()
+    OUT.write_text(html, encoding="utf-8")
+    _, _, _, _, c = build_sections()
+    print(f"Wrote {OUT}")
+    print(f"  Tier A: {c['a_done']} done / {c['a_part']} partial / {c['a_empty']} empty "
+          f"(of {c['a_total']})")
+    print(f"  importers={c['n_importers']}  rollups={c['n_rollups']}  stubs={c['n_stubs']}  "
+          f"world_rollups_built={c['roll_built']}")
+
+
+if __name__ == "__main__":
+    main()
