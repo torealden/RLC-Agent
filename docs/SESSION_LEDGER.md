@@ -140,6 +140,15 @@ fuels/other-majors, grounded on the real model tree — US oilseeds 38 wkbks bui
 ruling (Tore 2026-07-26): no shortcuts; Helios/Pepsi set first; fundamentals for every combo first,
 PRICES ARE THE FINAL PASS across all combinations.** Not-verified list in §Open decisions.
 
+**Live coverage tracker (same session)** — `scripts/build_coverage_matrix_html.py` +
+`docs/specs/rlc_model_coverage_matrix.html` (Lake, Field & Grain design system). Generator imports
+the coverage universe from `build_pepsi_coverage_tracker.py` (no re-definition), probes each
+`models/Oilseeds/<country>/` folder → derives empty/partial per cell; only `VERIFIED_CLOSED`
+(US soy oil, US corn oil — a ledger fact) is curated. Live counts: **Tier A 2 done / 1 partial / 11
+empty of 14**, 4 importers, 5 rollups, 9 stubs. Fixed hand-count errors (14 Tier-A not 13; 5-sheet
+oilseed sets not 6). Re-run to refresh; open the HTML locally (self-contained). Commits `94047019`,
+`67e48534`, `5e1ce985`.
+
 ## Blocked on Tore — not sessions, decisions
 
 Resolved 2026-07-22 unless marked open.
