@@ -4,7 +4,7 @@
     --paper:#F7F3EB; --paper-2:#EFE9DA; --card:#FFFFFF; --ink:#1B2A4A; --ink-soft:#3B486180;
     --lake:#1B2A4A; --field:#3C7D22; --wheat:#C8A951; --sage:#B7CCA4; --clay:#96492A; --slate:#8A8F98;
     --line:#DED6C4; --line-strong:#C9BEA6;
-    --done:#3C7D22; --done-fill:#E8F0DE; --partial:#B98F1F; --partial-fill:#F7EFD4;
+    --done:#3C7D22; --done-fill:#E8F0DE; --annual:#2E7D74; --annual-fill:#DCECE9; --partial:#B98F1F; --partial-fill:#F7EFD4;
     --empty:#9AA0A8; --empty-fill:#EFECE3; --auto:#28406B; --auto-fill:#E4E9F2;
     --text:#26314A; --muted:#6C7385; --heading:#152139;
     --shadow:0 1px 2px rgba(20,31,51,.06),0 8px 24px rgba(20,31,51,.05);
@@ -15,7 +15,7 @@
     :root{
       --paper:#141F33; --paper-2:#101A2B; --card:#1B2942; --ink:#EAF0F8; --ink-soft:#c7d2e480;
       --line:#2C3B57; --line-strong:#3A4A68; --text:#D4DEEE; --muted:#94A2BC; --heading:#EAF0F8;
-      --done:#8FD16A; --done-fill:#20361A; --partial:#E6C25E; --partial-fill:#3A3115;
+      --done:#8FD16A; --done-fill:#20361A; --annual:#5FC9BC; --annual-fill:#163230; --partial:#E6C25E; --partial-fill:#3A3115;
       --empty:#7C879C; --empty-fill:#222E45; --auto:#9DB6E6; --auto-fill:#1C2C48;
       --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.28);
     }
@@ -23,14 +23,14 @@
   :root[data-theme="light"]{
       --paper:#F7F3EB; --paper-2:#EFE9DA; --card:#FFFFFF; --ink:#1B2A4A;
       --line:#DED6C4; --line-strong:#C9BEA6; --text:#26314A; --muted:#6C7385; --heading:#152139;
-      --done:#3C7D22; --done-fill:#E8F0DE; --partial:#B98F1F; --partial-fill:#F7EFD4;
+      --done:#3C7D22; --done-fill:#E8F0DE; --annual:#2E7D74; --annual-fill:#DCECE9; --partial:#B98F1F; --partial-fill:#F7EFD4;
       --empty:#9AA0A8; --empty-fill:#EFECE3; --auto:#28406B; --auto-fill:#E4E9F2;
       --shadow:0 1px 2px rgba(20,31,51,.06),0 8px 24px rgba(20,31,51,.05);
   }
   :root[data-theme="dark"]{
       --paper:#141F33; --paper-2:#101A2B; --card:#1B2942; --ink:#EAF0F8;
       --line:#2C3B57; --line-strong:#3A4A68; --text:#D4DEEE; --muted:#94A2BC; --heading:#EAF0F8;
-      --done:#8FD16A; --done-fill:#20361A; --partial:#E6C25E; --partial-fill:#3A3115;
+      --done:#8FD16A; --done-fill:#20361A; --annual:#5FC9BC; --annual-fill:#163230; --partial:#E6C25E; --partial-fill:#3A3115;
       --empty:#7C879C; --empty-fill:#222E45; --auto:#9DB6E6; --auto-fill:#1C2C48;
       --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.28);
   }
@@ -104,6 +104,8 @@
   .chip small{font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.02em}
   .chip.done{background:var(--done-fill);border-color:color-mix(in srgb,var(--done) 45%,transparent);color:color-mix(in srgb,var(--done) 55%,var(--text))}
   .chip.done .dot{background:var(--done);box-shadow:0 0 0 3px color-mix(in srgb,var(--done) 25%,transparent)}
+  .chip.annual{background:var(--annual-fill);border-color:color-mix(in srgb,var(--annual) 50%,transparent);color:color-mix(in srgb,var(--annual) 58%,var(--text))}
+  .chip.annual .dot{background:var(--annual);box-shadow:0 0 0 3px color-mix(in srgb,var(--annual) 25%,transparent)}
   .chip.part{background:var(--partial-fill);border-color:color-mix(in srgb,var(--partial) 45%,transparent);color:color-mix(in srgb,var(--partial) 62%,var(--text))}
   .chip.part .dot{background:var(--partial);box-shadow:0 0 0 3px color-mix(in srgb,var(--partial) 25%,transparent)}
   .chip.auto{background:var(--auto-fill);border-color:color-mix(in srgb,var(--auto) 38%,transparent);color:var(--auto)}
@@ -162,7 +164,7 @@
       <div class="seal" aria-hidden="true"></div>
       <div class="brand-txt"><small>Round Lakes Commodities</small><b>Lake, Field &amp; Grain</b></div>
     </div>
-    <div class="asof">Coverage as of <b>26 Jul 2026</b><br>Live from the <code>models/</code> tree · prices deferred</div>
+    <div class="asof">Coverage as of <b>27 Jul 2026</b><br>Live from the <code>models/</code> tree · prices deferred</div>
   </header>
 
   <h1>Model Coverage Matrix</h1>
@@ -180,13 +182,13 @@
     </div>
     <div class="tile t-staged">
       <div class="cap">Data staged</div>
-      <div class="num">10</div>
+      <div class="num">0</div>
       <div class="sub">PSD flat files ready &mdash; awaiting Desktop wiring</div>
     </div>
     <div class="tile t-part">
       <div class="cap">Not started</div>
       <div class="num">1<small> +13</small></div>
-      <div class="sub">1 building · +4 importers / 9 stubs</div>
+      <div class="sub">0 building · +4 importers / 9 stubs</div>
     </div>
     <div class="tile t-price">
       <div class="cap">Price pass</div>
@@ -207,7 +209,7 @@
         <div class="lab"><span class="cx">Soybean oil</span>
           <span class="meta"><span class="sheetpill">5 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
         <div class="cells">
-          <span class="chip done"><span class="dot"></span>United States <small>closed</small></span><span class="chip part"><span class="dot"></span>Brazil <small>started</small></span><span class="chip staged"><span class="dot"></span>Argentina <small>data ready</small></span>
+          <span class="chip done"><span class="dot"></span>United States <small>closed</small></span><span class="chip annual"><span class="dot"></span>Brazil <small>annual ✓</small></span><span class="chip annual"><span class="dot"></span>Argentina <small>annual ✓</small></span>
         </div>
       </div>
 
@@ -215,7 +217,7 @@
         <div class="lab"><span class="cx">Rapeseed / Canola</span>
           <span class="meta"><span class="sheetpill">5 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
         <div class="cells">
-          <span class="chip staged"><span class="dot"></span>European Union <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Canada <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Australia <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Russia <small>data ready</small></span>
+          <span class="chip annual"><span class="dot"></span>European Union <small>annual ✓</small></span><span class="chip annual"><span class="dot"></span>Canada <small>annual ✓</small></span><span class="chip annual"><span class="dot"></span>Australia <small>annual ✓</small></span><span class="chip annual"><span class="dot"></span>Russia <small>annual ✓</small></span>
         </div>
       </div>
 
@@ -223,7 +225,7 @@
         <div class="lab"><span class="cx">Sunflower oil</span>
           <span class="meta"><span class="sheetpill">5 sheets</span> Seed · Crush · Oil · Meal · Trade</span></div>
         <div class="cells">
-          <span class="chip staged"><span class="dot"></span>Ukraine <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Russia <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Argentina <small>data ready</small></span>
+          <span class="chip annual"><span class="dot"></span>Ukraine <small>annual ✓</small></span><span class="chip annual"><span class="dot"></span>Russia <small>annual ✓</small></span><span class="chip annual"><span class="dot"></span>Argentina <small>annual ✓</small></span>
         </div>
       </div>
 
@@ -231,7 +233,7 @@
         <div class="lab"><span class="cx">Palm</span>
           <span class="meta"><span class="sheetpill">8 sheets</span> largest build · CPO + PKO, two oils</span></div>
         <div class="cells">
-          <span class="chip staged"><span class="dot"></span>Malaysia <small>data ready</small></span><span class="chip staged"><span class="dot"></span>Indonesia <small>+ B50 draw</small></span>
+          <span class="chip annual"><span class="dot"></span>Malaysia <small>annual ✓</small></span><span class="chip annual"><span class="dot"></span>Indonesia <small>+ B50 draw</small></span>
         </div>
       </div>
 
@@ -319,7 +321,8 @@
 
   <div class="foot">
     <div class="legend">
-      <span class="lg"><span class="dot" style="background:var(--done)"></span>Built &amp; closed</span>
+      <span class="lg"><span class="dot" style="background:var(--done)"></span>Built &amp; closed <small>(monthly)</small></span>
+      <span class="lg"><span class="dot" style="background:var(--annual)"></span>Annual closed &amp; tied out</span>
       <span class="lg"><span class="dot" style="border:2px solid var(--auto);background:transparent"></span>Data staged</span>
       <span class="lg"><span class="dot" style="background:var(--partial)"></span>Building</span>
       <span class="lg"><span class="dot" style="background:var(--empty)"></span>Not started</span>

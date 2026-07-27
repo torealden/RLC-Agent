@@ -6,12 +6,16 @@ actually built, and renders the Lake, Field & Grain coverage dashboard with real
 
 Status is derived, not hand-typed:
   empty   — the country folder holds no workbook matching the complex
-  partial — workbook(s) present but not on the verified-closed list
-  done    — on VERIFIED_CLOSED (a ledger fact — forecast-closed + tied out; cannot be inferred
-            from file presence, so it is the one curated input here)
+  staged  — flat file present, no balance-sheet workbook yet (data ready)
+  partial — balance-sheet workbook present but not on either curated list
+  annual  — on ANNUAL_CLOSED (ledger fact: annual balance sheet closed + Excel-recalc-verified,
+            monthly block not yet built)
+  done    — on VERIFIED_CLOSED (ledger fact: monthly block closed + tied out)
 
-As Tore builds, a new workbook flips a cell empty->partial automatically; adding the (complex,
-country) pair to VERIFIED_CLOSED after the recalc/tie-out passes flips it partial->done.
+The two curated lists (ANNUAL_CLOSED, VERIFIED_CLOSED) cannot be inferred from file presence, so
+they are the only hand-curated inputs here. As Tore builds, a new workbook flips a cell
+empty/staged->partial automatically; adding the (complex, country) pair to ANNUAL_CLOSED after the
+recalc/tie-out passes flips it partial->annual, and later to VERIFIED_CLOSED flips it annual->done.
 
 Run:  python scripts/build_coverage_matrix_html.py
 Output: docs/specs/rlc_model_coverage_matrix.html
@@ -34,6 +38,24 @@ _spec.loader.exec_module(T)
 VERIFIED_CLOSED = {
     ("Soybean", "United States"),      # US soy oil supply closed forward, tied out (ledger 6d/6e)
     ("Corn Oil", "United States"),     # US DCO via the feedstock/IFV layer
+}
+
+# annual-closed + Excel-recalc-verified (TIE=0, non-triviality>0, 0 errors) but monthly block NOT
+# yet built. A real milestone beyond "partial" (a bare workbook), short of "done" (monthly-closed,
+# green). Ledger fact — see docs/SESSION_LEDGER.md 2026-07-27. Promote to VERIFIED_CLOSED once the
+# monthly block closes.
+ANNUAL_CLOSED = {
+    ("Soybean", "Brazil"),
+    ("Soybean", "Argentina"),
+    ("Rapeseed / Canola", "Europe"),
+    ("Rapeseed / Canola", "Canada"),
+    ("Rapeseed / Canola", "Australia"),
+    ("Rapeseed / Canola", "Russia"),
+    ("Sunflower", "Ukraine"),
+    ("Sunflower", "Russia"),
+    ("Sunflower", "Argentina"),
+    ("Palm", "Malaysia"),
+    ("Palm", "Indonesia"),
 }
 
 # complex -> substrings that identify its workbooks in a country folder
@@ -77,6 +99,8 @@ def cell_status(cx, country):
     partial = a balance-sheet workbook exists; done = ledger-verified closed."""
     if (cx, country) in VERIFIED_CLOSED:
         return "done"
+    if (cx, country) in ANNUAL_CLOSED:
+        return "annual"
     folder = OILSEEDS / country
     if not folder.exists():
         return "empty"
@@ -101,9 +125,9 @@ def cell_status(cx, country):
     return "empty"
 
 
-CHIP_CLS = {"done": "chip done", "partial": "chip part", "staged": "chip staged",
-            "empty": "chip", "auto": "chip auto"}
-CHIP_SMALL = {"done": "closed", "partial": "started", "staged": "data ready"}
+CHIP_CLS = {"done": "chip done", "annual": "chip annual", "partial": "chip part",
+            "staged": "chip staged", "empty": "chip", "auto": "chip auto"}
+CHIP_SMALL = {"done": "closed", "annual": "annual ✓", "partial": "started", "staged": "data ready"}
 
 
 def chip(name, status, small=None):
@@ -114,7 +138,7 @@ def chip(name, status, small=None):
 
 def build_sections():
     # ---- exporter matrix (Tier A) + counts ----
-    a_done = a_part = a_staged = a_empty = 0
+    a_done = a_annual = a_part = a_staged = a_empty = 0
     rows = []
     for cx in CX_ORDER:
         cfg = T.COMPLEXES[cx]
@@ -123,7 +147,7 @@ def build_sections():
         cells = []
         for country in cfg.get("A", []):
             st = cell_status(cx, country)
-            a_done += st == "done"; a_part += st == "partial"
+            a_done += st == "done"; a_annual += st == "annual"; a_part += st == "partial"
             a_staged += st == "staged"; a_empty += st == "empty"
             small = A_SMALL.get((cx, country))
             if st == "done":
@@ -181,7 +205,8 @@ def build_sections():
     n_rollups = len(CX_ORDER)
     n_importers = len(importers)
 
-    counts = dict(a_total=a_done + a_part + a_staged + a_empty, a_done=a_done, a_part=a_part,
+    counts = dict(a_total=a_done + a_annual + a_part + a_staged + a_empty, a_done=a_done,
+                  a_annual=a_annual, a_part=a_part,
                   a_staged=a_staged, a_empty=a_empty,
                   n_importers=n_importers, n_rollups=n_rollups, n_stubs=n_stubs,
                   roll_built=world_built)
@@ -205,7 +230,7 @@ CSS = r"""
     --paper:#F7F3EB; --paper-2:#EFE9DA; --card:#FFFFFF; --ink:#1B2A4A; --ink-soft:#3B486180;
     --lake:#1B2A4A; --field:#3C7D22; --wheat:#C8A951; --sage:#B7CCA4; --clay:#96492A; --slate:#8A8F98;
     --line:#DED6C4; --line-strong:#C9BEA6;
-    --done:#3C7D22; --done-fill:#E8F0DE; --partial:#B98F1F; --partial-fill:#F7EFD4;
+    --done:#3C7D22; --done-fill:#E8F0DE; --annual:#2E7D74; --annual-fill:#DCECE9; --partial:#B98F1F; --partial-fill:#F7EFD4;
     --empty:#9AA0A8; --empty-fill:#EFECE3; --auto:#28406B; --auto-fill:#E4E9F2;
     --text:#26314A; --muted:#6C7385; --heading:#152139;
     --shadow:0 1px 2px rgba(20,31,51,.06),0 8px 24px rgba(20,31,51,.05);
@@ -216,7 +241,7 @@ CSS = r"""
     :root{
       --paper:#141F33; --paper-2:#101A2B; --card:#1B2942; --ink:#EAF0F8; --ink-soft:#c7d2e480;
       --line:#2C3B57; --line-strong:#3A4A68; --text:#D4DEEE; --muted:#94A2BC; --heading:#EAF0F8;
-      --done:#8FD16A; --done-fill:#20361A; --partial:#E6C25E; --partial-fill:#3A3115;
+      --done:#8FD16A; --done-fill:#20361A; --annual:#5FC9BC; --annual-fill:#163230; --partial:#E6C25E; --partial-fill:#3A3115;
       --empty:#7C879C; --empty-fill:#222E45; --auto:#9DB6E6; --auto-fill:#1C2C48;
       --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.28);
     }
@@ -224,14 +249,14 @@ CSS = r"""
   :root[data-theme="light"]{
       --paper:#F7F3EB; --paper-2:#EFE9DA; --card:#FFFFFF; --ink:#1B2A4A;
       --line:#DED6C4; --line-strong:#C9BEA6; --text:#26314A; --muted:#6C7385; --heading:#152139;
-      --done:#3C7D22; --done-fill:#E8F0DE; --partial:#B98F1F; --partial-fill:#F7EFD4;
+      --done:#3C7D22; --done-fill:#E8F0DE; --annual:#2E7D74; --annual-fill:#DCECE9; --partial:#B98F1F; --partial-fill:#F7EFD4;
       --empty:#9AA0A8; --empty-fill:#EFECE3; --auto:#28406B; --auto-fill:#E4E9F2;
       --shadow:0 1px 2px rgba(20,31,51,.06),0 8px 24px rgba(20,31,51,.05);
   }
   :root[data-theme="dark"]{
       --paper:#141F33; --paper-2:#101A2B; --card:#1B2942; --ink:#EAF0F8;
       --line:#2C3B57; --line-strong:#3A4A68; --text:#D4DEEE; --muted:#94A2BC; --heading:#EAF0F8;
-      --done:#8FD16A; --done-fill:#20361A; --partial:#E6C25E; --partial-fill:#3A3115;
+      --done:#8FD16A; --done-fill:#20361A; --annual:#5FC9BC; --annual-fill:#163230; --partial:#E6C25E; --partial-fill:#3A3115;
       --empty:#7C879C; --empty-fill:#222E45; --auto:#9DB6E6; --auto-fill:#1C2C48;
       --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.28);
   }
@@ -305,6 +330,8 @@ CSS = r"""
   .chip small{font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.02em}
   .chip.done{background:var(--done-fill);border-color:color-mix(in srgb,var(--done) 45%,transparent);color:color-mix(in srgb,var(--done) 55%,var(--text))}
   .chip.done .dot{background:var(--done);box-shadow:0 0 0 3px color-mix(in srgb,var(--done) 25%,transparent)}
+  .chip.annual{background:var(--annual-fill);border-color:color-mix(in srgb,var(--annual) 50%,transparent);color:color-mix(in srgb,var(--annual) 58%,var(--text))}
+  .chip.annual .dot{background:var(--annual);box-shadow:0 0 0 3px color-mix(in srgb,var(--annual) 25%,transparent)}
   .chip.part{background:var(--partial-fill);border-color:color-mix(in srgb,var(--partial) 45%,transparent);color:color-mix(in srgb,var(--partial) 62%,var(--text))}
   .chip.part .dot{background:var(--partial);box-shadow:0 0 0 3px color-mix(in srgb,var(--partial) 25%,transparent)}
   .chip.auto{background:var(--auto-fill);border-color:color-mix(in srgb,var(--auto) 38%,transparent);color:var(--auto)}
@@ -467,7 +494,8 @@ def render():
 
   <div class="foot">
     <div class="legend">
-      <span class="lg"><span class="dot" style="background:var(--done)"></span>Built &amp; closed</span>
+      <span class="lg"><span class="dot" style="background:var(--done)"></span>Built &amp; closed <small>(monthly)</small></span>
+      <span class="lg"><span class="dot" style="background:var(--annual)"></span>Annual closed &amp; tied out</span>
       <span class="lg"><span class="dot" style="border:2px solid var(--auto);background:transparent"></span>Data staged</span>
       <span class="lg"><span class="dot" style="background:var(--partial)"></span>Building</span>
       <span class="lg"><span class="dot" style="background:var(--empty)"></span>Not started</span>
@@ -492,8 +520,8 @@ def main():
     OUT.write_text(html, encoding="utf-8")
     _, _, _, _, c = build_sections()
     print(f"Wrote {OUT}")
-    print(f"  Tier A: {c['a_done']} done / {c['a_staged']} staged / {c['a_part']} building / "
-          f"{c['a_empty']} empty (of {c['a_total']})")
+    print(f"  Tier A: {c['a_done']} done / {c['a_annual']} annual / {c['a_staged']} staged / "
+          f"{c['a_part']} building / {c['a_empty']} empty (of {c['a_total']})")
     print(f"  importers={c['n_importers']}  rollups={c['n_rollups']}  stubs={c['n_stubs']}  "
           f"world_rollups_built={c['roll_built']}")
 

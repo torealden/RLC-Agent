@@ -162,6 +162,19 @@ code, not Desktop** (mechanical + Desktop has no filesystem). **Next:** annual-c
 cells (`write_balance_sheet.py <key>` + recalc), then monthly enrichment per country (MPOB = a rebuild:
 JS-rendered site, stale collector). `_xlfn.MAXIFS` trap documented.
 
+**All 10 remaining Tier-A cells annual-closed + verified (2026-07-27)** — ran `write_balance_sheet.py`
+for argentina-soy, eu-rape, canada-rape, australia-rape, russia-rape, ukraine-sun, russia-sun,
+argentina-sun, malaysia-palm, indonesia-palm. All 28 tabs Excel-recalc verified (TIE=0, non-triviality>0,
+0 `#` errors) via `scratchpad/recalc_verify.py` (win32com CalculateFull). Two script fixes: (1) A1 title
+was hardcoded "BRAZIL" for every country → now uses the country folder; (2) `sunflowerseed_*_balance_sheet`
+tab names exceeded Excel's 31-char cap (openpyxl silently truncated) → abbreviated `sunflowerseed`→`sun`
+in the tab name only. **New coverage state `annual`** (Tore's call): distinct 4th state between `partial`
+(bare workbook) and `done` (monthly-closed, green) — teal chip, curated `ANNUAL_CLOSED` set in
+`build_coverage_matrix_html.py`. Matrix now 2 done / 11 annual / 0 staged / 0 partial / 1 empty (Corn Oil
+Brazil, no PSD). Artifact: claude.ai/code/artifact/81059c20. **Not verified / next:** monthly blocks still
+unbuilt for all 11 annual cells — that's the real per-source work (MPOB rebuild, StatCan/Eurostat/CIARA
+collectors). Brazil soy monthly block exists in the flat file but the sheet doesn't consume it yet.
+
 ## Blocked on Tore — not sessions, decisions
 
 Resolved 2026-07-22 unless marked open.

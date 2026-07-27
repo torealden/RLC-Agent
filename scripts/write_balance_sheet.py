@@ -95,9 +95,12 @@ def wired(ff, series, commodity, col):
             f'SUMIFS({ff}!$I$2:$I$8001,{crit},{ff}!$H$2:$H$8001,_xlfn.MAXIFS({ff}!$H$2:$H$8001,{crit})))')
 
 
-def build_sheet(wb, commodity, tag, mys, ff_sup, ff_dem):
-    ws = wb.create_sheet(f"{commodity}_balance_sheet")
-    ws["A1"] = f"BRAZIL {commodity.upper().replace('_',' ')} SUPPLY & DEMAND  (1000 MT, annual)"
+def build_sheet(wb, commodity, tag, mys, ff_sup, ff_dem, country):
+    # Excel caps sheet names at 31 chars. "sunflowerseed_meal_balance_sheet" is 32, so
+    # abbreviate the long commodity in the TAB NAME only (A1 title keeps the full name).
+    tab_commodity = commodity.replace("sunflowerseed", "sun")
+    ws = wb.create_sheet(f"{tab_commodity}_balance_sheet")
+    ws["A1"] = f"{country.upper()} {commodity.upper().replace('_',' ')} SUPPLY & DEMAND  (1000 MT, annual)"
     ws["A1"].font = TITLE
     # header row 3 = marketing years (integers, matched directly by the formula)
     ws["A3"] = "Marketing Year"; ws["A3"].font = BOLD
@@ -163,7 +166,7 @@ def build(target_key):
         sup, dem, mys = read_long(flat, commodity)
         ff_sup = write_mirror(wb, tag, "supply", sup)
         ff_dem = write_mirror(wb, tag, "demand", dem)
-        build_sheet(wb, commodity, tag, mys, ff_sup, ff_dem)
+        build_sheet(wb, commodity, tag, mys, ff_sup, ff_dem, t["folder"])
         summary.append((commodity, len(sup), len(dem), mys[0], mys[-1]))
     out = folder / t["out"]
     wb.save(out)
