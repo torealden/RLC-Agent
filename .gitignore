@@ -152,8 +152,13 @@ data/raw/state_air_permits/*/*_wimn_page.html
 
 # Working models — large xlsm/xlsx workbooks that bloat the repo with every save.
 # Local-only; restore from .bak.{date} backups the updater scripts create.
-Models/
-models/
+# NB: use /* (ignore CONTENTS) not the bare dir, so the negation below can re-include
+# the shared progress trackers — git won't descend into a fully-excluded directory.
+Models/*
+models/*
+# Exception: the build-progress trackers are shared coordination artifacts, not bulk
+# model workbooks — version them so accruing checkmarks are backed up and shared.
+!models/_Progress_*.xlsx
 data/permits/
 
 # Organized permit archive: keep the curated text artifacts (equipment_list.csv,
