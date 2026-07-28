@@ -35,9 +35,14 @@
 - **Historical backfill NOT done** — ruling 1 above is a separate, reviewable data migration (yfinance/ibkr `futures_daily_settlement` → `price_mark`/`curve_snapshot` at `NEWS_INDICATIVE`). Next obvious step; gives the "as much history as possible" depth.
 - One sanity chart per curve for Desktop (brief DoD) not yet rendered.
 
+## Tier A #12 WTI/Brent — DONE (bridge, not a migration)
+- WTI (RWTC) + Brent (RBRTE) daily spot already sit in `bronze.eia_observations` (1990→) but the EIA v2 collector was **stale since 2026-05-26**. Refreshed bronze via `eia_v2_collector.py --series wti_cushing --series brent --start 2026-05-01` → current to 2026-07-20 (EIA spot lags a few days, normal).
+- New bridge `src/agents/collectors/us/eia_crude_price_bridge.py` (`EIACrudePriceBridge`) upserts bronze → `silver.price_mark` as `WTI`/`BRENT`, `tenor_type=SPOT`, `OFFICIAL_GOV`, `can_republish=TRUE`. First run landed **18,459 rows, 1990-01-02→2026-07-20**. Idempotent; registered daily 18:00 (after the EIA pull). No text parser → functional verification, not a fixture test.
+- GOTCHA logged: `get_connection()` yields a **RealDictCursor** — `fetchone()[0]` raises `KeyError: 0`; use an aliased column + dict access.
+
 ## Next steps (brief sequence)
-1. Historical backfill migration (ruling 1) — 25yr depth into the new layer.
-2. Remaining Tier A core: CME ZL (#5), Bursa FCPO official strip (#6), ZCE/DCE EOD (#7/8), Euronext ECO (#9), ICE canola (#10), **FX daily (#11 — no daily FX table exists at all, fully net-new)**, EIA WTI/Brent backfill (#12, silver table empty), AMS DCO ams_3618 (#13), EPA EMTS RIN (#14).
+1. **FX daily (#11) — BLOCKED on a free FRED API key** (no `FRED_API_KEY` in `.env`; 2-min signup at fred.stlouisfed.org). FRED is the brief's primary (direct USD pairs incl. USDMXN/USDBRL/ARS + long history). Keyless interim = ECB SDW (EUR-base, triangulate to USD; no ARS). Awaiting Tore's call: get the key vs ECB stopgap. **Highest-value remaining gap.**
+2. Remaining Tier A: AMS DCO ams_3618 (#13, MARS key present → unblocked), CME ZL official strip (#5), Bursa FCPO (#6), ZCE/DCE EOD (#7/8), Euronext ECO (#9), ICE canola (#10), EPA EMTS RIN (#14, scrape). #5-#10/#14 are scraping-heavy — a distinct work mode (ToS, fixtures, fragility) better suited to a focused session.
 3. Curve module `src/curves/` methods 1-2, then parity chains.
 
 ## Notes for whoever picks this up

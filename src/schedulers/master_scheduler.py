@@ -160,6 +160,18 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['corn', 'soybeans', 'wheat', 'oats'],
     ),
 
+    'eia_crude_price_bridge': CollectorSchedule(
+        collector_name='eia_crude_price_bridge',
+        collector_class='EIACrudePriceBridge',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(18, 0),  # 6:00 PM ET, after the EIA v2 crude pull refreshes bronze
+            description="Promote EIA WTI/Brent spot (bronze.eia_observations) into price_mark (SPOT, OFFICIAL_GOV)"
+        ),
+        priority=4,
+        commodities=['crude_oil'],
+    ),
+
     # ── DOC: Daily Operations Cycle (runs after all daily collectors) ──
     'doc_daily_ops': CollectorSchedule(
         collector_name='doc_daily_ops',

@@ -47,6 +47,12 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.us.ams_settlement_collector',
         'class': 'AMSSettlementCollector',
     },
+    'eia_crude_price_bridge': {
+        # Helios price-feed layer Tier A #12: promote EIA WTI/Brent spot from
+        # bronze.eia_observations into silver.price_mark (SPOT, OFFICIAL_GOV). Runs after the EIA pull.
+        'module': 'src.agents.collectors.us.eia_crude_price_bridge',
+        'class': 'EIACrudePriceBridge',
+    },
 
     # === CORE 5 (Phase 1 priority) ===
     'cftc_cot': {
