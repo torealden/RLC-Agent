@@ -160,6 +160,19 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['corn', 'soybeans', 'wheat', 'oats'],
     ),
 
+    'ams_dco_prices': CollectorSchedule(
+        collector_name='ams_dco_prices',
+        collector_class='AMSDCOCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.WEEKLY,
+            day_of_week=DayOfWeek.MONDAY,  # ams_3618 publishes Monday ~7-9 AM ET for the prior survey week
+            release_time=time(10, 0),  # 10:00 AM ET; small buffer after the MARS publish
+            description="USDA AMS ams_3618 Distillers Corn Oil regional FOB prices (8 regions) -> price_mark SPOT"
+        ),
+        priority=4,
+        commodities=['distillers_corn_oil'],
+    ),
+
     'eia_crude_price_bridge': CollectorSchedule(
         collector_name='eia_crude_price_bridge',
         collector_class='EIACrudePriceBridge',

@@ -47,6 +47,12 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.us.ams_settlement_collector',
         'class': 'AMSSettlementCollector',
     },
+    'ams_dco_prices': {
+        # Helios price-feed layer Tier A #13: USDA AMS ams_3618 Distillers Corn Oil regional
+        # FOB-plant cash prices (8 regions) via the MARS API (structured JSON, no PDF) -> price_mark SPOT.
+        'module': 'src.agents.collectors.us.ams_dco_collector',
+        'class': 'AMSDCOCollector',
+    },
     'eia_crude_price_bridge': {
         # Helios price-feed layer Tier A #12: promote EIA WTI/Brent spot from
         # bronze.eia_observations into silver.price_mark (SPOT, OFFICIAL_GOV). Runs after the EIA pull.

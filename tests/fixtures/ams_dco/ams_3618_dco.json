@@ -1,0 +1,135 @@
+{
+  "stats": {
+    "note": "trimmed 2-week DCO fixture (clean commodity filter), captured 2026-07-28"
+  },
+  "results": [
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Iowa",
+      "report_date": "07/20/2026",
+      "report_end_date": "07/24/2026",
+      "price": 77.68,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Kansas",
+      "report_date": "07/20/2026",
+      "report_end_date": "07/24/2026",
+      "price": 74,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Wisconsin",
+      "report_date": "07/20/2026",
+      "report_end_date": "07/24/2026",
+      "price": 77,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Missouri",
+      "report_date": "07/20/2026",
+      "report_end_date": "07/24/2026",
+      "price": 78,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Nebraska",
+      "report_date": "07/20/2026",
+      "report_end_date": "07/24/2026",
+      "price": 76.2,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "South Dakota",
+      "report_date": "07/20/2026",
+      "report_end_date": "07/24/2026",
+      "price": 77.2,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Minnesota",
+      "report_date": "07/20/2026",
+      "report_end_date": "07/24/2026",
+      "price": 77.67,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Eastern Cornbelt",
+      "report_date": "07/20/2026",
+      "report_end_date": "07/24/2026",
+      "price": 77.63,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Iowa",
+      "report_date": "07/13/2026",
+      "report_end_date": "07/17/2026",
+      "price": 74.65,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Kansas",
+      "report_date": "07/13/2026",
+      "report_end_date": "07/17/2026",
+      "price": 74,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Wisconsin",
+      "report_date": "07/13/2026",
+      "report_end_date": "07/17/2026",
+      "price": 75,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Missouri",
+      "report_date": "07/13/2026",
+      "report_end_date": "07/17/2026",
+      "price": 76.5,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Nebraska",
+      "report_date": "07/13/2026",
+      "report_end_date": "07/17/2026",
+      "price": 75.6,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "South Dakota",
+      "report_date": "07/13/2026",
+      "report_end_date": "07/17/2026",
+      "price": 75.8,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Minnesota",
+      "report_date": "07/13/2026",
+      "report_end_date": "07/17/2026",
+      "price": 75.33,
+      "price_unit": "Cents Per Lb"
+    },
+    {
+      "commodity": "Distillers Corn Oil",
+      "trade_loc": "Eastern Cornbelt",
+      "report_date": "07/13/2026",
+      "report_end_date": "07/17/2026",
+      "price": 75.94,
+      "price_unit": "Cents Per Lb"
+    }
+  ]
+}
