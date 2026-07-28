@@ -59,9 +59,16 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.us.eia_crude_price_bridge',
         'class': 'EIACrudePriceBridge',
     },
+    'fred_fx': {
+        # Helios price-feed layer Tier A #11 (PRIMARY): Federal Reserve H.10 daily FX via FRED API
+        # -> price_mark SPOT (direct USD pairs, no triangulation). Supersedes ecb_fx as the preferred
+        # source; both coexist at OFFICIAL_GOV (PK includes source), FRED preferred on tie.
+        'module': 'src.agents.collectors.global.fred_fx_collector',
+        'class': 'FREDFXCollector',
+    },
     'ecb_fx': {
-        # Helios price-feed layer Tier A #11 (INTERIM, pending FRED key): ECB euro reference
-        # rates triangulated to USD pairs (EURUSD + USD{MYR,CNY,MXN,CAD,BRL}) -> price_mark SPOT.
+        # Helios price-feed layer Tier A #11 (interim fallback, kept live): ECB euro reference rates
+        # triangulated to USD pairs. Coexists with fred_fx; consumer prefers FRED on the OFFICIAL_GOV tie.
         'module': 'src.agents.collectors.global.ecb_fx_collector',
         'class': 'ECBFXCollector',
     },

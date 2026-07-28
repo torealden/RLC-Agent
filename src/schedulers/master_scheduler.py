@@ -185,6 +185,18 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['crude_oil'],
     ),
 
+    'fred_fx': CollectorSchedule(
+        collector_name='fred_fx',
+        collector_class='FREDFXCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(16, 30),  # 4:30 PM ET; H.10 daily rates post ~4:15 PM ET
+            description="FRED H.10 daily FX pairs (PRIMARY #11) -> price_mark SPOT (supersedes ecb_fx on tie)"
+        ),
+        priority=4,
+        commodities=['fx'],
+    ),
+
     'ecb_fx': CollectorSchedule(
         collector_name='ecb_fx',
         collector_class='ECBFXCollector',
