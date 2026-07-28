@@ -21,8 +21,14 @@
   - Live run: 84 rows landed; logged to `core.collection_status` as `ams_grain_settlement`.
   - Registered: `COLLECTOR_MAP` (dispatcher) + `RELEASE_SCHEDULES` (daily 17:30 ET). Dispatcher resolution verified.
 
+## Historical backfill — DONE (migration 159, applied)
+- Ruling 1 executed. `bronze.futures_daily_settlement` → new layer at `NEWS_INDICATIVE` / `can_republish=FALSE`.
+- **Key discovery:** the 25yr depth lives entirely in the continuous front-month rows (`contract_month='FRONT'`); dated contracts (`U26`…) exist only ~2024+. Dropping FRONT would have discarded the history.
+- **Modeling decision (REVIEW POINT):** extended `price_mark.tenor_type` vocab with **`NEARBY`**; FRONT → `NEARBY`/`M1` (unadjusted continuous, carries roll gaps — documented). Dated contracts → `CONTRACT` + `curve_snapshot`. OI is NULL in the source (yfinance/ibkr both).
+- Landed: **65,671 NEARBY rows** (12 series, 2000-03-15→) + 8,413 CONTRACT + 8,413 curve_snapshot legs. Official AMS settles coexist on top at `SETTLE_OFFICIAL` (PK includes source; consumer takes MAX rank). Reversible: `DELETE … WHERE source IN ('yfinance','ibkr_tws')`.
+
 ## Known-broken / unverified / NOT done
-- **Migrations await Tore's review.** They are applied (to unblock the parser) but the brief says freeze-after-review. Two explicit review points:
+- **Migrations await Tore's review.** They are applied (to unblock the parser) but the brief says freeze-after-review. Review points: the **`NEARBY` tenor_type addition** (159); plus —
   - the tie-out **linkage convention** `curve_key == series_key` (+ same obs_date/tenor);
   - tie-out enforced **from the term side only** — a `DERIVED_*` headline with NO backing terms is currently allowed (mark-side enforcement deliberately deferred so official collectors that write no terms aren't blocked).
 - **Sysgraph declaration NOT added** for `ams_grain_settlement` (brief DoD item). Migration 146 = `sys.system_graph`; needs a node/edge decl. Open.
