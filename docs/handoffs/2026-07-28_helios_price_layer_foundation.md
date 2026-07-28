@@ -40,8 +40,14 @@
 - New bridge `src/agents/collectors/us/eia_crude_price_bridge.py` (`EIACrudePriceBridge`) upserts bronze → `silver.price_mark` as `WTI`/`BRENT`, `tenor_type=SPOT`, `OFFICIAL_GOV`, `can_republish=TRUE`. First run landed **18,459 rows, 1990-01-02→2026-07-20**. Idempotent; registered daily 18:00 (after the EIA pull). No text parser → functional verification, not a fixture test.
 - GOTCHA logged: `get_connection()` yields a **RealDictCursor** — `fetchone()[0]` raises `KeyError: 0`; use an aliased column + dict access.
 
+## Tier A #11 FX — DONE as ECB INTERIM (FRED still preferred)
+- **No FRED key exists** — checked `.env` (root + dashboards/ops) and Gmail (2026-07-28); the "Fred" email hits are a training session / Argus spam, no registration. If Tore registers one (free, fred.stlouisfed.org), FRED is the upgrade: direct USD pairs + **ARS** + long history.
+- Built `src/agents/collectors/global/ecb_fx_collector.py` (`ECBFXCollector`): ECB euro reference rates (keyless, data-api.ecb.europa.eu), triangulated to USD pairs — `USD/xxx = (xxx/EUR)/(USD/EUR)`, exact (same daily fixing). Landed **41,814 rows, 6 pairs** (FX_EURUSD + FX_USD{MYR,CNY,MXN,CAD,BRL}), 1999/2000→2026-07-28, `SPOT`, `OFFICIAL_GOV`, `can_republish=TRUE`. Convention: USDxxx = xxx per USD (divide a MYR/t price by FX_USDMYR to get USD/t). Verified: USDMYR 4.6514/1.1367=4.092021 ✓.
+- **ARS is a gap** — ECB stopped publishing ARS in 2020-10-30. Deferred to FRED / Argentina-official.
+- Registered daily 11:30 ET. Perf note: full-history re-pull every run, but batched `execute_values` makes it ~seconds; single-row upserts over RDS were the original 40k-row hang → use `execute_values`.
+
 ## Next steps (brief sequence)
-1. **FX daily (#11) — BLOCKED on a free FRED API key** (no `FRED_API_KEY` in `.env`; 2-min signup at fred.stlouisfed.org). FRED is the brief's primary (direct USD pairs incl. USDMXN/USDBRL/ARS + long history). Keyless interim = ECB SDW (EUR-base, triangulate to USD; no ARS). Awaiting Tore's call: get the key vs ECB stopgap. **Highest-value remaining gap.**
+1. **FX upgrade to FRED** if Tore adds `FRED_API_KEY` — direct pairs + ARS; would coexist with / supersede ECB (same OFFICIAL_GOV rank, prefer by source).
 2. Remaining Tier A: AMS DCO ams_3618 (#13, MARS key present → unblocked), CME ZL official strip (#5), Bursa FCPO (#6), ZCE/DCE EOD (#7/8), Euronext ECO (#9), ICE canola (#10), EPA EMTS RIN (#14, scrape). #5-#10/#14 are scraping-heavy — a distinct work mode (ToS, fixtures, fragility) better suited to a focused session.
 3. Curve module `src/curves/` methods 1-2, then parity chains.
 

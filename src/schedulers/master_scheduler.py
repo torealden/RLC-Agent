@@ -172,6 +172,18 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['crude_oil'],
     ),
 
+    'ecb_fx': CollectorSchedule(
+        collector_name='ecb_fx',
+        collector_class='ECBFXCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(11, 30),  # ~11:30 AM ET, after the ECB 16:00 CET daily reference fixing
+            description="ECB euro reference rates -> USD FX pairs in price_mark (INTERIM #11, pending FRED key)"
+        ),
+        priority=4,
+        commodities=['fx'],
+    ),
+
     # ── DOC: Daily Operations Cycle (runs after all daily collectors) ──
     'doc_daily_ops': CollectorSchedule(
         collector_name='doc_daily_ops',

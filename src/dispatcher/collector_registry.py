@@ -53,6 +53,12 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.us.eia_crude_price_bridge',
         'class': 'EIACrudePriceBridge',
     },
+    'ecb_fx': {
+        # Helios price-feed layer Tier A #11 (INTERIM, pending FRED key): ECB euro reference
+        # rates triangulated to USD pairs (EURUSD + USD{MYR,CNY,MXN,CAD,BRL}) -> price_mark SPOT.
+        'module': 'src.agents.collectors.global.ecb_fx_collector',
+        'class': 'ECBFXCollector',
+    },
 
     # === CORE 5 (Phase 1 priority) ===
     'cftc_cot': {
