@@ -148,6 +148,18 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
                      'diesel', 'fertilizer'],
     ),
 
+    'ams_grain_settlement': CollectorSchedule(
+        collector_name='ams_grain_settlement',
+        collector_class='AMSSettlementCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(17, 30),  # 5:30 PM ET; the AMS grain PDF finalizes early afternoon
+            description="Official CBOT/KCBT/MGEX grain settlement strips (AMS PDF block) -> price_mark/curve_snapshot"
+        ),
+        priority=3,
+        commodities=['corn', 'soybeans', 'wheat', 'oats'],
+    ),
+
     # ── DOC: Daily Operations Cycle (runs after all daily collectors) ──
     'doc_daily_ops': CollectorSchedule(
         collector_name='doc_daily_ops',

@@ -41,6 +41,12 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.market.futures_data_collector',
         'class': 'FuturesDataCollector',
     },
+    'ams_grain_settlement': {
+        # Helios price-feed layer Tier A #1-4: official CBOT/KCBT/MGEX grain settlement
+        # strips parsed from the AMS grain PDF settlement block -> silver.price_mark + curve_snapshot.
+        'module': 'src.agents.collectors.us.ams_settlement_collector',
+        'class': 'AMSSettlementCollector',
+    },
 
     # === CORE 5 (Phase 1 priority) ===
     'cftc_cot': {
