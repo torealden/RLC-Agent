@@ -45,6 +45,23 @@ def rapeseed_blocks(C="RAPESEED"):
         (f"{C} OIL END-OF-MONTH STOCKS", "soyoil_balance_sheet", "CHINA SOYBEAN OIL MONTH-ENDING STOCKS", "oil"),
     ]
 
+def soybean_blocks():
+    # Argentina is the only country with Pellets+Expeller meal-production split (skipped). Others have a
+    # single 'SOYBEAN MEAL PRODUCTION'. Meal imports/exports/stocks vary: 'MEAL AND HULLS X' or 'MEAL X'.
+    return [
+        ("SOYBEAN IMPORTS", "soy_balance_sheet", "CHINA SOYBEAN IMPORTS", "seed"),
+        ("SOYBEAN EXPORTS", "soy_balance_sheet", "CHINA SOYBEAN EXPORTS", "seed"),
+        ("SOYBEAN CRUSH",   "soy_balance_sheet", "CHINA SOYBEAN CRUSH",   "seed"),
+        ("SOYBEAN MEAL PRODUCTION", "soymeal_balance_sheet", "CHINA SOYBEAN MEAL PRODUCTION", "meal"),
+        (("SOYBEAN MEAL AND HULLS IMPORTS", "SOYBEAN MEAL IMPORTS"), "soymeal_balance_sheet", "CHINA SOYBEAN MEAL IMPORTS", "meal"),
+        (("SOYBEAN MEAL AND HULLS EXPORTS", "SOYBEAN MEAL EXPORTS"), "soymeal_balance_sheet", "CHINA SOYBEAN MEAL EXPORTS", "meal"),
+        (("SOYBEAN MEAL AND HULLS END-OF-MONTH STOCKS", "SOYBEAN MEAL END-OF-MONTH STOCKS"), "soymeal_balance_sheet", "CHINA SOYBEAN MEAL MONTH-ENDING STOCKS", "meal"),
+        ("SOYBEAN OIL PRODUCTION", "soyoil_balance_sheet", "CHINA SOYBEAN OIL PRODUCTION", "oil"),
+        ("SOYBEAN OIL IMPORTS",    "soyoil_balance_sheet", "CHINA SOYBEAN OIL IMPORTS",    "oil"),
+        ("SOYBEAN OIL EXPORTS",    "soyoil_balance_sheet", "CHINA SOYBEAN OIL EXPORTS",    "oil"),
+        ("SOYBEAN OIL END-OF-MONTH STOCKS", "soyoil_balance_sheet", "CHINA SOYBEAN OIL MONTH-ENDING STOCKS", "oil"),
+    ]
+
 def us_my(month, cal_year, product):
     start = 9 if product == "seed" else 10
     return cal_year if month >= start else cal_year - 1
@@ -64,9 +81,19 @@ def find_header(ws, text):
             return r
     return None
 
+def resolve_header(ws, header):
+    """header may be a str or a tuple of alternatives (e.g. 'MEAL AND HULLS IMPORTS' | 'MEAL IMPORTS').
+    Return the first that exists in the tab, else None."""
+    for cand in ((header,) if isinstance(header, str) else header):
+        if find_header(ws, cand) is not None:
+            return cand
+    return None
+
 def read_block(ws, header):
     """Return {(month, cal_year): value}. Local MY start month auto-detected from the block's first
     month row -> cal_year(month) = label-year if month>=start else +1."""
+    header = resolve_header(ws, header)
+    if header is None: return None
     h = find_header(ws, header)
     if h is None: return None
     yr_row, mstart = h + 1, h + 2
@@ -124,10 +151,12 @@ def copy_country(src, country, crop, blocks, out_path):
     ycols = {}
     for tab in ("soy_balance_sheet", "soymeal_balance_sheet", "soyoil_balance_sheet"):
         clear_numbers_in_month_rows(wb[tab]); ycols[tab] = tab_year_cols(wb[tab])
-    written = 0; found = 0; missing = []
+    written = 0; found = 0; missing = []; short_tonnes = False
     for src_hdr, tab, tgt_hdr, product in blocks:
+        rh = resolve_header(src, src_hdr)
+        if rh and "SHORT TON" in rh.upper(): short_tonnes = True
         block = read_block(src, src_hdr)
-        if not block: missing.append(src_hdr); continue
+        if not block: missing.append(src_hdr if isinstance(src_hdr, str) else src_hdr[0]); continue
         found += 1
         ws = wb[tab]; col = ycols[tab]; mrow = target_month_rows(ws, tgt_hdr)
         for (mn, cal), val in block.items():
@@ -162,7 +191,24 @@ def copy_country(src, country, crop, blocks, out_path):
                 if isinstance(c.value,str) and any(k in c.value.lower()
                 for k in ("china","short ton","soybean","schina","chinae")) and cl != "china")
     return {"country": country, "written": written, "blocks_found": found,
-            "blocks_missing": missing, "genuine_mismatch": bad, "formulas": xref, "dirty": dirty}
+            "blocks_missing": missing, "genuine_mismatch": bad, "formulas": xref, "dirty": dirty,
+            "short_tonnes_src": short_tonnes}
+
+def run_soybean():
+    wb = openpyxl.load_workbook(SRC_DIR + "wldsoybal.xlsx", data_only=True)
+    skip = {"argentina", "brazil", "china", "us", "united states"}  # done / different tabs / template
+    tabs = [t for t in wb.sheetnames if t.endswith(" Soy Complex") or t.endswith(" Soybean Complex")]
+    blocks = soybean_blocks(); results = []
+    for tab in tabs:
+        country = tab.replace(" Soybean Complex", "").replace(" Soy Complex", "").strip()
+        if country.lower() in skip:
+            print(f"  SKIP {country} (done/different/template)"); continue
+        d = os.path.join(OUT_DIR, country); os.makedirs(d, exist_ok=True)
+        out = os.path.join(d, f"{country.lower().replace(' ','_')}_soybean_complex_bal_sheets.xlsx")
+        if os.path.exists(out):
+            print(f"  SKIP {country} (monthly file already exists)"); continue
+        r = copy_country(wb[tab], country, "Soybean", blocks, out); results.append(r); print(r)
+    return results
 
 def run_rapeseed():
     from openpyxl.descriptors import Integer as _I
