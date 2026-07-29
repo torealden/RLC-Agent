@@ -23,6 +23,23 @@ SRC = r"C:/Users/torem/RLC Dropbox/Tore Alden/Soybean Spreadsheets - Copy/wldrap
 SRC_TAB = "Australia Rapeseed"
 TEMPLATE = r"models/Oilseeds/China/china_soybean_complex_bal_sheets.xlsx"
 OUT = r"models/Oilseeds/Australia/australia_rapeseed_complex_bal_sheets.xlsx"
+COUNTRY, CROP = "Australia", "Rapeseed"   # template is China/Soybean; relabel to these
+
+# Ordered text corrections applied to LABEL cells (never formulas, never tab names -- 816 formulas
+# reference the tab name 'soy_balance_sheet'). Artifact fixes MUST precede the CHINA->country swap so
+# 'CHINAE'/'SCHINATAINABLE' don't become 'AUSTRALIAE'/'SAUSTRALIA...'. Everything non-US = thousand
+# tonnes (no short tons).
+def relabel_text(s, country, crop):
+    reps = [
+        ("SCHINATAINABLE", "SUSTAINABLE"),           # US->CHINA artifact over 'sUStainable'
+        ("CHINAE", "USE"),                            # US->CHINA artifact over 'USE'
+        ("CHINA", country.upper()), ("China", country), ("Chinese", country + "n"),
+        ("SOYBEAN", crop.upper()), ("Soybean", crop), ("soybean", crop.lower()),
+        ("thousand short tons", "thousand tonnes"), ("short tons", "tonnes"), ("short ton", "tonne"),
+    ]
+    for a, b in reps:
+        s = s.replace(a, b)
+    return s
 
 MONTHNUM = {m: i for i, m in enumerate(
     ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"], 1)}
@@ -116,13 +133,15 @@ def tab_year_cols(ws):
 
 
 def clear_month_data(ws):
-    """Blank every month-row's data (cols B..end) so no template (China) data survives. Leaves labels,
-    year rows, and annual/formula rows untouched."""
+    """Blank hardcoded NUMBERS in month-row data cells (China's raw data) but PRESERVE formulas -- the
+    template's derived formulas (yields, cross-tab refs to soy_balance_sheet) are structure that must
+    recompute for the new country, not be wiped."""
     for r in range(1, ws.max_row + 1):
         a = ws.cell(r, 1).value
         if isinstance(a, str) and a.split() and a.split()[0].strip(",").lower() in MONTHNUM:
             for c in range(2, ws.max_column + 1):
-                ws.cell(r, c).value = None
+                if isinstance(ws.cell(r, c).value, (int, float)):
+                    ws.cell(r, c).value = None
 
 
 def target_month_rows(ws, header_text):
@@ -171,11 +190,18 @@ def main():
                     traces.append((mn, cy, us_my(mn, cy, "seed"), round(block[(mn, cy)], 4)))
         print(f"  {src_hdr:36} -> {tgt_tab:22} {tgt_hdr[:32]:32}  {n} cells")
 
-    # minimal retitle (targeted, NOT naive replace -- template has find-replace artifacts)
+    # relabel LABEL cells only (skip formulas; tab names untouched -> 816 formulas depend on them)
+    relabeled = 0
     for tab in wb.sheetnames:
         ws = wb[tab]
-        if ws.cell(1, 1).value == "CHINA OILSEEDS COMPLEX":
-            ws.cell(1, 1).value = "AUSTRALIA RAPESEED COMPLEX"
+        for row in ws.iter_rows():
+            for c in row:
+                v = c.value
+                if isinstance(v, str) and not v.startswith("="):
+                    nv = relabel_text(v, COUNTRY, CROP)
+                    if nv != v:
+                        c.value = nv; relabeled += 1
+    print(f"relabeled {relabeled} label cells (China->{COUNTRY}, Soybean->{CROP}, artifacts/units fixed)")
     wb.save(OUT)
     print(f"\nTotal monthly cells written: {total_written}")
     print("Trace (seed imports, calendar month/year -> US MY start, value):")
