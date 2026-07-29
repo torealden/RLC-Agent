@@ -58,7 +58,9 @@ PRODUCTS = {
     "fuel":      ["S&D"],
     "energy":    ["S&D"],
 }
-IMPORTER_PRODUCTS = {"oilseed": ["Oil"], "palm": ["CPO", "PKO"]}  # Tier-B importers: reduced set
+# NOTE (Tore 2026-07-29): FULL complex for EVERY country we cover, regardless of tier or client scope.
+# Seed -> Meal + Oil via crush; one feeds the other, so a reduced importer set would miss the complete
+# S&D picture. No tier-based product reduction anywhere.
 
 # ---------------------------------------------------------------------------------------------------
 # The master matrix (from masterplan Part C). commodity -> (group, ctype, [(country, tier)]).
@@ -229,8 +231,7 @@ def build_commodity_workbook(commodity, group, ctype, countries):
 
 
 def _products_for(ctype, tier):
-    if tier == B and ctype in IMPORTER_PRODUCTS:
-        return IMPORTER_PRODUCTS[ctype]
+    # Full complex for every country (see NOTE above) -- tier no longer reduces the product set.
     return PRODUCTS[ctype]
 
 
