@@ -94,6 +94,47 @@ def run_coconut():
         results.append(r); print(r)
     return results
 
+def palm_blocks():
+    # Palm complex = 4 products, NO crush block (palm oil is pressed from fruit, not crushed; the
+    # kernel is crushed but the source has no explicit CRUSH series). Target = Tore's Malaysia template
+    # (base_country="Malaysia", crop=None -> no crop word substitution, template already says PALM).
+    # Products: palm oil / PK oil / PK cake(meal) = Oct-Sep ('oil'/'meal'); palm kernel = Sep-Aug ('seed').
+    # Source is Oct-first; only Sep differs between the two conventions and Sep is absent from source, so
+    # the seed/oil distinction is a no-op here but kept faithful to the template's column labels.
+    # NOTE the source typo 'PRODUCITON' in the PK OIL production header.
+    return [
+        ("PALM OIL PRODUCTION",           "palm_oil_balance_sheet",    "MALAYSIA PALM OIL PRODUCTION",           "oil"),
+        ("PALM OIL IMPORTS",              "palm_oil_balance_sheet",    "MALAYSIA PALM OIL IMPORTS",              "oil"),
+        ("PALM OIL EXPORTS",              "palm_oil_balance_sheet",    "MALAYSIA PALM OIL EXPORTS",              "oil"),
+        ("PALM OIL END-OF-MONTH STOCKS",  "palm_oil_balance_sheet",    "MALAYSIA PALM OIL MONTH-ENDING STOCKS",  "oil"),
+        ("PALM KERNEL PRODUCTION",          "palm_kernel_balance_sheet", "MALAYSIA PALM KERNEL PRODUCTION",        "seed"),
+        ("PALM KERNEL IMPORTS",             "palm_kernel_balance_sheet", "MALAYSIA PALM KERNEL IMPORTS",           "seed"),
+        ("PALM KERNEL EXPORTS",             "palm_kernel_balance_sheet", "MALAYSIA PALM KERNEL EXPORTS",           "seed"),
+        ("PALM KERNEL END-OF-MONTH STOCKS", "palm_kernel_balance_sheet", "MALAYSIA PALM KERNEL STOCKS",            "seed"),
+        ("PALM KERNEL CAKE PRODUCTION",          "pk_meal_balance_sheet", "MALAYSIA PALM KERNEL CAKE PRODUCTION",          "meal"),
+        ("PALM KERNEL CAKE IMPORTS",             "pk_meal_balance_sheet", "MALAYSIA PALM KERNEL CAKE IMPORTS",             "meal"),
+        ("PALM KERNEL CAKE EXPORTS",             "pk_meal_balance_sheet", "MALAYSIA PALM KERNEL CAKE EXPORTS",             "meal"),
+        ("PALM KERNEL CAKE END-OF-MONTH STOCKS", "pk_meal_balance_sheet", "MALAYSIA PALM KERNEL CAKE MONTH-ENDING STOCKS", "meal"),
+        ("PALM KERNEL OIL PRODUCITON",          "pk_oil_balance_sheet", "MALAYSIA PALM KERNEL OIL PRODUCTION",          "oil"),  # sic: source typo
+        ("PALM KERNEL OIL IMPORTS",             "pk_oil_balance_sheet", "MALAYSIA PALM KERNEL OIL IMPORTS",             "oil"),
+        ("PALM KERNEL OIL EXPORTS",             "pk_oil_balance_sheet", "MALAYSIA PALM KERNEL OIL EXPORTS",             "oil"),
+        ("PALM KERNEL OIL END-OF-MONTH STOCKS", "pk_oil_balance_sheet", "MALAYSIA PALM KERNEL OIL MONTH-ENDING STOCKS", "oil"),
+    ]
+
+def run_palm(countries=("Indonesia",)):
+    TPL = "models/Oilseeds/Malaysia/malaysia_palm_complex_bal_sheets.xlsx"  # Tore's filled template
+    wb = openpyxl.load_workbook(SRC_DIR + "wldlaubal.xlsx", data_only=True)
+    blocks = palm_blocks(); results = []
+    for country in countries:
+        tab = f"{country} Palm Complex"
+        if tab not in wb.sheetnames:
+            print(f"  SKIP {country} (no source tab {tab!r})"); continue
+        d = os.path.join(OUT_DIR, country); os.makedirs(d, exist_ok=True)
+        out = os.path.join(d, f"{country.lower().replace(' ','_')}_palm_complex_bal_sheets.xlsx")
+        r = copy_country(wb[tab], country, None, blocks, out, base_country="Malaysia", template=TPL)
+        results.append(r); print(r)
+    return results
+
 def us_my(month, cal_year, product):
     start = 9 if product == "seed" else 10
     return cal_year if month >= start else cal_year - 1
@@ -206,7 +247,10 @@ def copy_country(src, country, crop, blocks, out_path, base_country="China", tem
         ws = wb[tab]; col = ycols[tab]; mrow = target_month_rows(ws, tgt_hdr)
         for (mn, cal), val in block.items():
             c = col.get(us_my(mn, cal, product)); r = mrow.get(mn)
-            if c and r: ws.cell(r, c).value = val; written += 1
+            # numeric-only: some source blocks are derived and carry Excel error strings
+            # ('#DIV/0!') for recent years (palm kernel/cake/PKO). Never write those into a
+            # numeric monthly cell -> leave blank. All-numeric source blocks are unaffected.
+            if c and r and isinstance(val, (int, float)): ws.cell(r, c).value = val; written += 1
     # relabel
     for tab in wb.sheetnames:
         for row in wb[tab].iter_rows():
@@ -225,7 +269,7 @@ def copy_country(src, country, crop, blocks, out_path, base_country="China", tem
         ws = chk[tab]; col = tab_year_cols(ws); mrow = target_month_rows(ws, tgt_hdr)
         for (mn, cal), val in block.items():
             c = col.get(us_my(mn, cal, product)); r = mrow.get(mn)
-            if c and r:
+            if c and r and isinstance(val, (int, float)):   # non-numeric source vals are skipped on write
                 got = ws.cell(r, c).value
                 if got != val and not (isinstance(got,(int,float)) and isinstance(val,(int,float))
                                        and abs(got-val) <= 1e-6*max(1,abs(val))): bad += 1
