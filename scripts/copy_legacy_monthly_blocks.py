@@ -131,12 +131,21 @@ def read_block(ws, header):
     yr_row, mstart = h + 1, h + 2
     m_start = _month(ws.cell(mstart, 1).value)
     if not m_start: return None
-    col_year = {}
+    # Read ONLY the first contiguous run of year columns, then STOP at the first gap / non-year cell.
+    # Tore keeps analysis columns (trailing avg, stocks-to-use) to the RIGHT of the block, often with
+    # their own year labels; reading past the gap made a second table silently overwrite the real one
+    # (the India-rapeseed-crush corruption). Bug found 2026-07-30.
+    col_year = {}; started = False
     for c in range(2, ws.max_column + 1):
         lab = ws.cell(yr_row, c).value
+        yr = None
         if lab is not None:
-            try: col_year[c] = _src_start_year(lab)
-            except Exception: pass
+            try: yr = _src_start_year(lab)
+            except Exception: yr = None
+        if yr is None:
+            if started: break        # end of the real block -> ignore analysis columns to the right
+            else: continue
+        col_year[c] = yr; started = True
     out = {}
     for rr in range(mstart, mstart + 12):
         mn = _month(ws.cell(rr, 1).value)
