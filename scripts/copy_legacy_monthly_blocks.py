@@ -62,6 +62,38 @@ def soybean_blocks():
         ("SOYBEAN OIL END-OF-MONTH STOCKS", "soyoil_balance_sheet", "CHINA SOYBEAN OIL MONTH-ENDING STOCKS", "oil"),
     ]
 
+def copra_blocks(base="PHILIPPINES"):
+    B = base.upper()
+    return [
+        ("COPRA IMPORTS", "copra_balance_sheet", f"{B} COPRA IMPORTS", "seed"),
+        ("COPRA EXPORTS", "copra_balance_sheet", f"{B} COPRA EXPORTS", "seed"),
+        ("COPRA CRUSH",   "copra_balance_sheet", f"{B} COPRA CRUSH",   "seed"),
+        ("COPRA MEAL PRODUCTION", "copra_meal_balance_sheet", f"{B} COPRA MEAL PRODUCTION", "meal"),
+        ("COPRA MEAL IMPORTS",    "copra_meal_balance_sheet", f"{B} COPRA MEAL IMPORTS",    "meal"),
+        ("COPRA MEAL EXPORTS",    "copra_meal_balance_sheet", f"{B} COPRA MEAL EXPORTS",    "meal"),
+        ("COPRA MEAL END-OF-MONTH STOCKS", "copra_meal_balance_sheet", f"{B} COPRA MEAL MONTH-ENDING STOCKS", "meal"),
+        ("COCONUT OIL PRODUCTION", "coconut_oil_balance_sheet", f"{B} COCONUT OIL PRODUCTION", "oil"),
+        ("COCONUT OIL IMPORTS",    "coconut_oil_balance_sheet", f"{B} COCONUT OIL IMPORTS",    "oil"),
+        ("COCONUT OIL EXPORTS",    "coconut_oil_balance_sheet", f"{B} COCONUT OIL EXPORTS",    "oil"),
+        ("COCONUT OIL END-OF-MONTH STOCKS", "coconut_oil_balance_sheet", f"{B} COCONUT OIL MONTH-ENDING STOCKS", "oil"),
+    ]
+
+def run_coconut():
+    TPL = "models/Oilseeds/Philippines/philippines_copra_complex_bal_sheets.xlsx"
+    wb = openpyxl.load_workbook(SRC_DIR + "wldlaubal.xlsx", data_only=True)
+    skip = {"philippines"}  # the filled template/reference
+    tabs = [t for t in wb.sheetnames if t.endswith(" Copra Complex")]
+    blocks = copra_blocks("PHILIPPINES"); results = []
+    for tab in tabs:
+        country = tab[:-len(" Copra Complex")].strip()
+        if country.lower() in skip:
+            print(f"  SKIP {country} (filled template)"); continue
+        d = os.path.join(OUT_DIR, country); os.makedirs(d, exist_ok=True)
+        out = os.path.join(d, f"{country.lower().replace(' ','_')}_copra_complex_bal_sheets.xlsx")
+        r = copy_country(wb[tab], country, None, blocks, out, base_country="Philippines", template=TPL)
+        results.append(r); print(r)
+    return results
+
 def us_my(month, cal_year, product):
     start = 9 if product == "seed" else 10
     return cal_year if month >= start else cal_year - 1
@@ -137,19 +169,23 @@ def target_month_rows(ws, header):
     if h is None: return {}
     return {_month(ws.cell(rr, 1).value): rr for rr in range(h + 2, h + 14) if _month(ws.cell(rr, 1).value)}
 
-def relabel_text(s, country, crop):
-    for a, b in [("SCHINATAINABLE","SUSTAINABLE"),("CHINAE","USE"),
-                 ("CHINA",country.upper()),("China",country),("Chinese",country+"n"),
-                 ("SOYBEAN",crop.upper()),("Soybean",crop),("soybean",crop.lower()),
-                 ("thousand short tons","thousand tonnes"),("short tons","tonnes"),("short ton","tonne")]:
-        s = s.replace(a, b)
+def relabel_text(s, base, country, crop):
+    # Fix the US->base find-replace artifacts FIRST (S<base>TAINABLE=SUSTAINABLE, <base>E=USE), then
+    # base-country -> target country, then crop (soy templates only), then units.
+    bu = base.upper()
+    seq = [(f"S{bu}TAINABLE","SUSTAINABLE"), (f"{bu}E","USE"),
+           (bu, country.upper()), (base, country)]
+    if base == "China": seq.append(("Chinese", country + "n"))
+    if crop: seq += [("SOYBEAN",crop.upper()),("Soybean",crop),("soybean",crop.lower())]
+    seq += [("thousand short tons","thousand tonnes"),("short tons","tonnes"),("short ton","tonne")]
+    for a, b in seq: s = s.replace(a, b)
     return s
 
-def copy_country(src, country, crop, blocks, out_path):
-    shutil.copyfile(TEMPLATE, out_path)
+def copy_country(src, country, crop, blocks, out_path, base_country="China", template=TEMPLATE):
+    shutil.copyfile(template, out_path)
     wb = openpyxl.load_workbook(out_path)
     ycols = {}
-    for tab in ("soy_balance_sheet", "soymeal_balance_sheet", "soyoil_balance_sheet"):
+    for tab in sorted({t for _, t, _, _ in blocks}):   # target tabs from the block map (not hardcoded)
         clear_numbers_in_month_rows(wb[tab]); ycols[tab] = tab_year_cols(wb[tab])
     written = 0; found = 0; missing = []; short_tonnes = False
     for src_hdr, tab, tgt_hdr, product in blocks:
@@ -168,7 +204,7 @@ def copy_country(src, country, crop, blocks, out_path):
             for cell in row:
                 v = cell.value
                 if isinstance(v, str) and not v.startswith("="):
-                    nv = relabel_text(v, country, crop)
+                    nv = relabel_text(v, base_country, country, crop)
                     if nv != v: cell.value = nv
     wb.save(out_path)
     # verify
@@ -185,11 +221,11 @@ def copy_country(src, country, crop, blocks, out_path):
                 if got != val and not (isinstance(got,(int,float)) and isinstance(val,(int,float))
                                        and abs(got-val) <= 1e-6*max(1,abs(val))): bad += 1
     xref = sum(1 for tab in chk.sheetnames for row in chk[tab].iter_rows() for c in row
-               if isinstance(c.value,str) and c.value.startswith("=") and "soy_balance_sheet" in c.value)
-    cl = country.lower()
+               if isinstance(c.value,str) and c.value.startswith("=") and "!" in c.value)  # cross-tab
+    cl = country.lower(); bl = base_country.lower()
+    toks = ("short ton", f"s{bl}tainable", f"{bl}e", bl) + (("soybean",) if crop else ())
     dirty = sum(1 for tab in chk.sheetnames for row in chk[tab].iter_rows() for c in row
-                if isinstance(c.value,str) and any(k in c.value.lower()
-                for k in ("china","short ton","soybean","schina","chinae")) and cl != "china")
+                if isinstance(c.value,str) and any(k in c.value.lower() for k in toks) and cl != bl)
     return {"country": country, "written": written, "blocks_found": found,
             "blocks_missing": missing, "genuine_mismatch": bad, "formulas": xref, "dirty": dirty,
             "short_tonnes_src": short_tonnes}
