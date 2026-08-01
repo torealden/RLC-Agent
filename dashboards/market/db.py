@@ -155,6 +155,54 @@ def get_front_month_ohlc(symbol: str, days: int) -> pd.DataFrame:
     """, {'sym': symbol, 'days': days})
 
 
+# ── Series explorer (registry-driven; identifiers come from the checked-in
+#    dashboards/data/series_registry.py, never from user input) ──────────────
+
+_ID_LIKE = {'id', 'year', 'month', 'calendar_year', 'marketing_year',
+            'crop_year', 'week', 'ingest_run_id'}
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_numeric_columns(schema: str, table: str) -> list:
+    df = query_df("""
+        SELECT column_name FROM information_schema.columns
+        WHERE table_schema = %(s)s AND table_name = %(t)s
+          AND data_type IN ('integer', 'bigint', 'numeric', 'real',
+                            'double precision', 'smallint')
+        ORDER BY ordinal_position
+    """, {'s': schema, 't': table})
+    return [c for c in df['column_name']
+            if c not in _ID_LIKE and not c.endswith('_id')]
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_distinct_values(schema: str, table: str, col: str) -> list:
+    df = query_df(
+        f'SELECT DISTINCT "{col}" AS v FROM {schema}.{table} '
+        f'WHERE "{col}" IS NOT NULL ORDER BY 1 LIMIT 500')
+    return df['v'].tolist()
+
+
+@st.cache_data(ttl=900, show_spinner=False)
+def get_series(schema: str, table: str, date_expr: str, value_col: str,
+               commodity_col: str | None, commodity) -> pd.DataFrame:
+    """Generic (obs_date, value) pull. date_expr is one of the vetted
+    expressions built in explorer.py from registry metadata. Rows sharing a
+    date are averaged (mixed sub-series, e.g. states or contracts)."""
+    where = f'WHERE "{value_col}" IS NOT NULL'
+    params = {}
+    if commodity_col and commodity is not None:
+        where += f' AND "{commodity_col}" = %(commodity)s'
+        params['commodity'] = commodity
+    return query_df(f"""
+        SELECT {date_expr} AS obs, AVG("{value_col}") AS value,
+               COUNT(*) AS n_rows
+        FROM {schema}.{table}
+        {where}
+        GROUP BY 1 ORDER BY 1
+    """, params)
+
+
 # ── Projection comparison (gold.projection_comparison_long, migration 165) ──
 
 @st.cache_data(ttl=3600, show_spinner=False)
