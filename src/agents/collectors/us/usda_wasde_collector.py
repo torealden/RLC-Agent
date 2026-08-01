@@ -75,22 +75,35 @@ PSD_COMMODITY_CODES: Dict[str, Dict[str, str]] = {
     "sunflowerseed_meal":{"code":"0813500", "name": "Meal, Sunflowerseed","unit":"1000 MT"},
     "cottonseed_oil":   {"code": "4233000", "name": "Oil, Cottonseed",   "unit": "1000 MT"},
     "cottonseed_meal":  {"code": "0813300", "name": "Meal, Cottonseed",  "unit": "1000 MT"},
+    "peanut_meal":      {"code": "0813200", "name": "Meal, Peanut",      "unit": "1000 MT"},
+    "peanut_oil":       {"code": "4234000", "name": "Oil, Peanut",       "unit": "1000 MT"},
+    "copra":            {"code": "2231000", "name": "Oilseed, Copra",    "unit": "1000 MT"},
+    "copra_meal":       {"code": "0813700", "name": "Meal, Copra",       "unit": "1000 MT"},
+    "coconut_oil":      {"code": "4242000", "name": "Oil, Coconut",      "unit": "1000 MT"},
+    "palm_kernel":      {"code": "2232000", "name": "Oilseed, Palm Kernel", "unit": "1000 MT"},
+    "palm_kernel_meal": {"code": "0813800", "name": "Meal, Palm Kernel", "unit": "1000 MT"},
     # Fiber
     "cotton":           {"code": "2631000", "name": "Cotton",            "unit": "1000 480-lb Bales"},
     # Sugar
     "sugar":            {"code": "0612000", "name": "Sugar, Centrifugal","unit": "1000 MT"},
 }
 
-# Key countries tracked in WASDE analysis
+# Key countries tracked in WASDE analysis.
+# These are PSD's OWN country codes (legacy FIPS-style), verified against
+# /api/psd/countries on 2026-08-01 -- NOT ISO 3166. The original dict used
+# ISO-style codes (CN, EU, RU, UA, AU, ...) which the PSD API silently
+# returns nothing for: every monthly pull from March to August 2026 landed
+# data only for the 7 countries whose codes happened to coincide (US, BR,
+# AR, CA, IN, ID, MY). Do not "fix" these back to ISO.
 PSD_COUNTRY_CODES: Dict[str, str] = {
     "US": "United States",
     "BR": "Brazil",
     "AR": "Argentina",
-    "CN": "China",
-    "EU": "European Union",
-    "RU": "Russia",
-    "UA": "Ukraine",
-    "AU": "Australia",
+    "CH": "China",
+    "E4": "European Union",
+    "RS": "Russia",
+    "UP": "Ukraine",
+    "AS": "Australia",
     "CA": "Canada",
     "IN": "India",
     "ID": "Indonesia",
@@ -98,16 +111,17 @@ PSD_COUNTRY_CODES: Dict[str, str] = {
     "TH": "Thailand",
     "MX": "Mexico",
     "EG": "Egypt",
-    "JP": "Japan",
-    "KR": "Korea, South",
+    "JA": "Japan",
+    "KS": "Korea, South",
     "PK": "Pakistan",
-    "VN": "Vietnam",
-    "PH": "Philippines",
-    "NG": "Nigeria",
-    "ZA": "South Africa",
+    "VM": "Vietnam",
+    "RP": "Philippines",
+    "NI": "Nigeria",
+    "SF": "South Africa",
     "KZ": "Kazakhstan",
-    "PY": "Paraguay",
-    "TR": "Turkey",
+    "PA": "Paraguay",
+    "TU": "Turkey",
+    "UY": "Uruguay",
 }
 
 # Default commodity list for a standard WASDE pull
@@ -115,13 +129,22 @@ DEFAULT_WASDE_COMMODITIES = [
     "corn", "wheat", "soybeans", "soybean_meal", "soybean_oil",
     "rice", "sorghum", "barley", "cotton", "sugar",
     "palm_oil", "rapeseed", "rapeseed_oil", "sunflowerseed_oil",
+    # Full oilseed-complex membership: without these in the monthly pull, the
+    # usda_comp tabs in the balance-sheet workbooks go stale (they sat at the
+    # 2026-03-15 pull until 2026-08-01 because the list above stopped short).
+    "rapeseed_meal", "sunflowerseed", "sunflowerseed_meal",
+    "cottonseed", "cottonseed_meal", "cottonseed_oil",
+    "peanuts", "peanut_meal", "peanut_oil",
+    "palm_kernel", "palm_kernel_meal", "palm_kernel_oil",
+    "copra", "copra_meal", "coconut_oil",
 ]
 
-# Default country list for a standard WASDE pull
-DEFAULT_WASDE_COUNTRIES = [
-    "US", "BR", "AR", "CN", "EU", "RU", "UA", "AU", "CA", "IN",
-    "ID", "MY",
-]
+# Default country list for a standard WASDE pull.
+# "all" = one API call per commodity/year returns EVERY country -- fewer
+# requests than a per-country loop, and immune to the wrong-country-code
+# failure mode that silently starved China/EU/Russia/Ukraine/Australia
+# (and every non-listed country) of updates from March to August 2026.
+DEFAULT_WASDE_COUNTRIES = ["all"]
 
 # PSD API base URL
 PSD_API_BASE = "https://api.fas.usda.gov"

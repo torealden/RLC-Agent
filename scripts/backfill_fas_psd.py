@@ -148,6 +148,13 @@ PSD_COMMODITY_CODES: Dict[str, Dict[str, str]] = {
     "cottonseed_meal":   {"code": "0813300", "name": "Meal, Cottonseed"},
     "cotton":            {"code": "2631000", "name": "Cotton"},
     "sugar":             {"code": "0612000", "name": "Sugar, Centrifugal"},
+    "peanut_meal":       {"code": "0813200", "name": "Meal, Peanut"},
+    "peanut_oil":        {"code": "4234000", "name": "Oil, Peanut"},
+    "copra":             {"code": "2231000", "name": "Oilseed, Copra"},
+    "copra_meal":        {"code": "0813700", "name": "Meal, Copra"},
+    "coconut_oil":       {"code": "4242000", "name": "Oil, Coconut"},
+    "palm_kernel":       {"code": "2232000", "name": "Oilseed, Palm Kernel"},
+    "palm_kernel_meal":  {"code": "0813800", "name": "Meal, Palm Kernel"},
 }
 
 PROGRESS_FILE = PROJECT_ROOT / "data" / "backfill_fas_psd_progress.json"
