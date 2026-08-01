@@ -51,18 +51,26 @@ note written under RLC OS. Memory: reference_futures_roll_convention.md.
   74,410 rows — the flag is uninformative; no validation marker shown.
 - `bronze.cme_settlements` doesn't exist; that collector is a 0-row placeholder.
 
-## Known-broken / needs Tore
-1. **`us_lauric_oils_bal_sheets.xlsm` is a stale soybean-complex clone** (tabs
-   AND sheet titles still say SOYBEAN). Loader skips it loudly. Rebuild the
-   workbook, then re-run the harvest.
-2. **3 legacy CSV rows** in `silver.user_sd_estimate` (soybeans, estimate_date
-   2026-01-30) have **ambiguous MY convention** (schema comment says END-year,
-   values don't tie cleanly either way; look like demo data). Consider deleting
-   them: `DELETE FROM silver.user_sd_estimate WHERE estimate_date='2026-01-30'`.
-3. **us_canola_balance_sheets.xlsx: 21 green cells have no cached value** —
-   open + save in Excel, re-run harvest.
-4. **Meal sheet ending stocks go NEGATIVE from MY2031** in the soybean complex
-   workbook (down to -817 by 2039) — harvested faithfully; that's in the model.
+## Known-broken / needs Tore — status after Tore's review (same day)
+1. **`us_lauric_oils_bal_sheets.xlsm`** (the **US** book specifically): tabs
+   AND sheet titles are still the US soybean complex — stale clone. The
+   country lauric books (Philippines/Indonesia copra, Indonesia/Malaysia
+   palm) are real and fine. Loader skips the US book loudly; Tore will fix
+   its tabs during his formula pass, then harvest picks it up. **OPEN, with
+   Tore.**
+2. **Legacy CSV rows: RESOLVED 2026-08-01.** They were demo scaffolding
+   loaded 2026-01-30 from `domain_knowledge/balance_sheets/oilseeds/
+   us_soybeans.csv`. Backed up to `data/exports/
+   user_sd_estimate_legacy_rows_backup_2026-08-01.csv` (source CSV also
+   still in domain_knowledge), then deleted. `silver.user_sd_estimate` now
+   contains only harvested rows, all START-year convention — the schema
+   comment's END-year claim no longer describes any live row.
+3. **US canola book uncached greens: PENDING TORE** — open + save
+   `models/Oilseeds/United States/us_canola_balance_sheets.xlsx` (NOT the
+   Canadian book), then re-run `scripts/harvest_user_estimates.py`.
+4. **Negative meal stocks MY2031+: CLOSED per Tore** — at this stage only
+   formula integrity matters (a−b=c); values get fixed when projections are
+   re-imported under the real methodology. Harvest faithfully, don't gate.
 5. Commodity slug `canola/rapeseed_oil` (from title "CANOLA/RAPESEED OIL") is
    ugly; rename the sheet title or add an alias if it bothers.
 6. WASDE vintage depth is 2026-only (labeled in the UI). LLM book still ~2 rows
@@ -76,9 +84,11 @@ note written under RLC OS. Memory: reference_futures_roll_convention.md.
   inspecting one.
 - Cash-vs-futures row and fuels mini-panel on Markets page (phase 1.5 stretch).
 
-## Next-session prompt
-> Read docs/handoffs/2026-08-01_market_dashboard.md. Launch the market
-> dashboard (scripts/launch_market_dashboard.bat), review the three pages in a
-> browser, then either (a) extend the harvest to the corn/wheat books, or
-> (b) wire LLM forecast generation into core.forecasts so the comparison
-> page's LLM column fills in.
+## Next-session prompt (updated after Tore's review)
+> Read docs/handoffs/2026-08-01_market_dashboard.md. Build usda_comp tabs
+> across the balance sheet workbooks from gold.psd_wasde_vintages — extend
+> the wasde_comp pattern in the US soybean complex book; decide Python-
+> written (generated country books) vs VBA/ODBC (hand-maintained US .xlsm)
+> per file type. Re-run scripts/harvest_user_estimates.py first to pick up
+> the US canola book if Tore has re-saved it. Then: LLM forecast generation
+> into core.forecasts is the following workstream.
