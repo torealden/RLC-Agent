@@ -14,6 +14,18 @@ Data facts this module depends on (verified live 2026-08-01):
   - The yfinance collector writes a synthetic contract_month='FRONT' row per
     (symbol, trade_date) carrying front-month settle + OHLC. All symbols
     except FCPO have it. Real contract months match ^[FGHJKMNQUVXZ][0-9]{2}$.
+  - Full contract curves exist only since 2026-03-03 (DC/ZR: 2026-07-13);
+    earlier history is the FRONT continuous series alone.
+
+ROLL CONVENTION (Tore, 2026-08-01): roll on the FIRST BUSINESS DAY OF THE
+CONTRACT MONTH — i.e. the front month is the nearest listed contract whose
+delivery month is strictly after the current calendar month. Rationale:
+after first notice day the front is a couple of cash players trading local
+supply/demand and basis, so its price discovers something different from a
+futures market. The yfinance FRONT series does NOT follow this rule (on
+2026-07-31 it had ZS at X26 while this rule says Q26, and rode expiring DC
+into its settlement period), so FRONT is used only as the pre-2026-03
+historical splice, labeled 'continuous' in the roll column.
 """
 import os
 import sys
@@ -55,102 +67,108 @@ def query_df(sql: str, params: dict | None = None) -> pd.DataFrame:
 
 # ── Prices ──────────────────────────────────────────────────────────────────
 
+# RLC front month: nearest listed contract with delivery month STRICTLY
+# after the trade date's calendar month (== rolled on the first business
+# day of the contract month).
+_RLC_FRONT_FILTER = (f"contract_month <> 'FRONT' AND {SORT_KEY} > "
+                     "EXTRACT(YEAR FROM trade_date)::int * 100 "
+                     "+ EXTRACT(MONTH FROM trade_date)::int")
+
+
 @st.cache_data(ttl=300, show_spinner=False)
 def get_price_strip() -> pd.DataFrame:
-    """Latest front-month settle per symbol + previous settle for the day
-    change + gold-layer validation flag. Uses the collector's FRONT rows;
-    symbols without FRONT rows (FCPO) fall back to the nearest unexpired
-    contract at their own latest date (no day-change for those — they are
-    stale and rendered dimmed anyway)."""
+    """Latest RLC-front settle per symbol + previous settle of the SAME
+    contract for the day change (a continuous-series diff picks up roll
+    jumps — DC 'moved' 12 pct on 2026-07-31 purely from a roll)."""
     return query_df(f"""
         WITH latest AS (
             SELECT symbol, MAX(trade_date) AS td
             FROM silver.futures_price
+            WHERE contract_month <> 'FRONT'
             GROUP BY symbol
         ),
-        front AS (
-            SELECT sp.symbol, sp.trade_date, sp.settlement
-            FROM silver.futures_price sp
-            JOIN latest l ON l.symbol = sp.symbol AND l.td = sp.trade_date
-            WHERE sp.contract_month = 'FRONT'
-        ),
-        fallback AS (
+        ranked AS (
             SELECT sp.symbol, sp.trade_date, sp.contract_month, sp.settlement,
                    ROW_NUMBER() OVER (PARTITION BY sp.symbol
                                       ORDER BY {_sort_key('sp.contract_month')}) AS rn
             FROM silver.futures_price sp
             JOIN latest l ON l.symbol = sp.symbol AND l.td = sp.trade_date
-            WHERE sp.symbol NOT IN (SELECT symbol FROM front)
+            WHERE sp.contract_month <> 'FRONT'
               AND {_sort_key('sp.contract_month')}
-                  >= EXTRACT(YEAR FROM sp.trade_date)::int * 100
-                     + EXTRACT(MONTH FROM sp.trade_date)::int
+                  > EXTRACT(YEAR FROM sp.trade_date)::int * 100
+                    + EXTRACT(MONTH FROM sp.trade_date)::int
         ),
-        best AS (
-            SELECT symbol, trade_date, NULL::text AS contract_month, settlement
-            FROM front
-            UNION ALL
-            SELECT symbol, trade_date, contract_month, settlement
-            FROM fallback WHERE rn = 1
-        ),
-        label AS (
-            -- which real contract the FRONT settle matches (display only)
-            SELECT b.symbol, sp.contract_month,
-                   ROW_NUMBER() OVER (PARTITION BY b.symbol
-                                      ORDER BY {_sort_key('sp.contract_month')}) AS rn
-            FROM best b
-            JOIN silver.futures_price sp
-              ON sp.symbol = b.symbol AND sp.trade_date = b.trade_date
-             AND sp.contract_month <> 'FRONT' AND sp.settlement = b.settlement
-            WHERE b.contract_month IS NULL
-        ),
+        best AS (SELECT * FROM ranked WHERE rn = 1),
         prev AS (
-            -- previous settle of the SAME contract, so the day change is
-            -- never contaminated by a front-month roll (DC jumped 12 pct
-            -- on 2026-07-31 purely from N26->U26 roll)
             SELECT sp.symbol, sp.settlement, sp.trade_date,
                    ROW_NUMBER() OVER (PARTITION BY sp.symbol
                                       ORDER BY sp.trade_date DESC) AS rn
             FROM silver.futures_price sp
             JOIN best b ON b.symbol = sp.symbol
-            LEFT JOIN label lb ON lb.symbol = sp.symbol AND lb.rn = 1
-            WHERE sp.contract_month = COALESCE(b.contract_month,
-                                               lb.contract_month)
-              AND sp.trade_date < b.trade_date
+                       AND b.contract_month = sp.contract_month
+            WHERE sp.trade_date < b.trade_date
         )
-        SELECT b.symbol, b.trade_date,
-               COALESCE(b.contract_month, lb.contract_month, 'front')
-                   AS contract_month,
-               b.settlement, p.settlement AS prev_settle,
-               p.trade_date AS prev_trade_date, g.overall_validation
+        SELECT b.symbol, b.trade_date, b.contract_month, b.settlement,
+               p.settlement AS prev_settle, p.trade_date AS prev_trade_date
         FROM best b
-        LEFT JOIN label lb ON lb.symbol = b.symbol AND lb.rn = 1
         LEFT JOIN prev p ON p.symbol = b.symbol AND p.rn = 1
-        LEFT JOIN gold.futures_daily_validated g
-               ON g.symbol = b.symbol AND g.trade_date = b.trade_date
-              AND g.contract_month = COALESCE(b.contract_month, 'FRONT')
     """)
 
 
 @st.cache_data(ttl=300, show_spinner=False)
 def get_front_month_series(days: int = 400) -> pd.DataFrame:
-    """Front-month continuous settle series (FRONT rows) for all symbols."""
-    return query_df("""
-        SELECT symbol, trade_date, settlement
-        FROM silver.futures_price
-        WHERE contract_month = 'FRONT'
-          AND trade_date >= CURRENT_DATE - (%(days)s * INTERVAL '1 day')
+    """Front-month settle series for all symbols: RLC roll where contract
+    curves exist (since 2026-03-03; DC/ZR 2026-07-13), spliced with the
+    yfinance FRONT continuous before that. roll column says which."""
+    return query_df(f"""
+        WITH rlc AS (
+            SELECT symbol, trade_date, contract_month, settlement,
+                   ROW_NUMBER() OVER (PARTITION BY symbol, trade_date
+                                      ORDER BY {SORT_KEY}) AS rn
+            FROM silver.futures_price
+            WHERE {_RLC_FRONT_FILTER}
+              AND trade_date >= CURRENT_DATE - (%(days)s * INTERVAL '1 day')
+        ),
+        rlc1 AS (SELECT * FROM rlc WHERE rn = 1)
+        SELECT symbol, trade_date, settlement, 'rlc' AS roll FROM rlc1
+        UNION ALL
+        SELECT f.symbol, f.trade_date, f.settlement, 'continuous'
+        FROM silver.futures_price f
+        WHERE f.contract_month = 'FRONT'
+          AND f.trade_date >= CURRENT_DATE - (%(days)s * INTERVAL '1 day')
+          AND NOT EXISTS (SELECT 1 FROM rlc1 r
+                          WHERE r.symbol = f.symbol
+                            AND r.trade_date = f.trade_date)
         ORDER BY symbol, trade_date
     """, {'days': days})
 
 
 @st.cache_data(ttl=300, show_spinner=False)
 def get_front_month_ohlc(symbol: str, days: int) -> pd.DataFrame:
-    """Front-month OHLC for one symbol (FRONT rows carry full OHLC)."""
-    return query_df("""
-        SELECT trade_date, open_price, high_price, low_price, settlement
-        FROM silver.futures_price
-        WHERE symbol = %(sym)s AND contract_month = 'FRONT'
-          AND trade_date >= CURRENT_DATE - (%(days)s * INTERVAL '1 day')
+    """Front-month OHLC for one symbol: RLC roll where curves exist,
+    FRONT continuous splice before that (roll column says which)."""
+    return query_df(f"""
+        WITH rlc AS (
+            SELECT trade_date, open_price, high_price, low_price, settlement,
+                   contract_month,
+                   ROW_NUMBER() OVER (PARTITION BY trade_date
+                                      ORDER BY {SORT_KEY}) AS rn
+            FROM silver.futures_price
+            WHERE symbol = %(sym)s AND {_RLC_FRONT_FILTER}
+              AND trade_date >= CURRENT_DATE - (%(days)s * INTERVAL '1 day')
+        ),
+        rlc1 AS (SELECT * FROM rlc WHERE rn = 1)
+        SELECT trade_date, open_price, high_price, low_price, settlement,
+               contract_month, 'rlc' AS roll
+        FROM rlc1
+        UNION ALL
+        SELECT f.trade_date, f.open_price, f.high_price, f.low_price,
+               f.settlement, f.contract_month, 'continuous'
+        FROM silver.futures_price f
+        WHERE f.symbol = %(sym)s AND f.contract_month = 'FRONT'
+          AND f.trade_date >= CURRENT_DATE - (%(days)s * INTERVAL '1 day')
+          AND NOT EXISTS (SELECT 1 FROM rlc1 r
+                          WHERE r.trade_date = f.trade_date)
         ORDER BY trade_date
     """, {'sym': symbol, 'days': days})
 
@@ -266,7 +284,9 @@ def get_forward_curves(symbol: str) -> pd.DataFrame:
         WHERE fp.symbol = %(sym)s
           AND fp.trade_date IN (picks.d0, picks.d1, picks.d2)
           AND {SORT_KEY} IS NOT NULL
-          AND {SORT_KEY} >= EXTRACT(YEAR FROM picks.d0)::int * 100
-                            + EXTRACT(MONTH FROM picks.d0)::int
+          -- RLC roll convention: curve starts at the front month, i.e. the
+          -- nearest contract with delivery month strictly after today's
+          AND {SORT_KEY} > EXTRACT(YEAR FROM picks.d0)::int * 100
+                           + EXTRACT(MONTH FROM picks.d0)::int
         ORDER BY contract_sort
     """, {'sym': symbol})

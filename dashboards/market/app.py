@@ -27,7 +27,9 @@ page = st.sidebar.radio(
 st.sidebar.markdown('---')
 st.sidebar.caption('Prices are prior-session settles from '
                    'silver.futures_price (yfinance daily collector), '
-                   'not live quotes.')
+                   'not live quotes. Front month rolls on the first '
+                   'business day of the contract month (RLC convention), '
+                   'avoiding notice-period cash-market pricing.')
 
 render_price_strip()
 

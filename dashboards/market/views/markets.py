@@ -69,24 +69,28 @@ def _pct_change_table() -> None:
               .format({c: lambda v: '—' if pd.isna(v) else f'{v:+.1f}%'
                        for c in pct_cols}))
     st.dataframe(styled, width='stretch')
-    st.caption('1D is same-contract; 5D/30D/YTD use the continuous '
-               'front-month series (contract rolls can add small jumps).')
+    st.caption('Front month = RLC roll (first business day of the contract '
+               'month). 1D is same-contract; 5D/30D/YTD use the rolled '
+               'series, spliced with the yfinance continuous before '
+               '2026-03-03 — roll jumps possible across splice and rolls.')
 
 
 def _candlestick() -> None:
     st.subheader('Daily Chart')
-    c1, c2 = st.columns([2, 3])
+    c1, c2, c3 = st.columns([2, 3, 2])
     with c1:
         sym = st.selectbox('Market', list(theme.SYMBOLS),
                            format_func=theme.symbol_name, key='candle_sym')
     with c2:
         days = st.radio('Window', [60, 120, 250], horizontal=True,
                         format_func=lambda d: f'{d} days', key='candle_days')
+    with c3:
+        bollinger = st.checkbox('Bollinger Bands (20, 2σ)', value=True,
+                                key='candle_bb')
 
     ohlc = db.get_front_month_ohlc(sym, days)
     if ohlc.empty:
-        st.info(f'No front-month OHLC data for {theme.symbol_name(sym)} '
-                '(FCPO has no FRONT series).')
+        st.info(f'No front-month OHLC data for {theme.symbol_name(sym)}.')
         return
     for col in ('open_price', 'high_price', 'low_price', 'settlement'):
         ohlc[col] = pd.to_numeric(ohlc[col], errors='coerce')
@@ -94,6 +98,23 @@ def _candlestick() -> None:
     has_ohlc = ohlc[['open_price', 'high_price', 'low_price']].notna().all(axis=1)
 
     fig = go.Figure()
+    if bollinger and len(ohlc) >= 20:
+        mid = ohlc['settlement'].rolling(20).mean()
+        sd = ohlc['settlement'].rolling(20).std()
+        band_color = 'rgba(127,127,127,0.55)'
+        fig.add_trace(go.Scatter(x=ohlc['trade_date'], y=mid + 2 * sd,
+                                 name='BB upper', mode='lines', legendgroup='bb',
+                                 line=dict(color=band_color, width=1),
+                                 showlegend=False, hoverinfo='skip'))
+        fig.add_trace(go.Scatter(x=ohlc['trade_date'], y=mid - 2 * sd,
+                                 name='Bollinger (20, 2σ)', mode='lines',
+                                 legendgroup='bb', fill='tonexty',
+                                 fillcolor='rgba(127,127,127,0.10)',
+                                 line=dict(color=band_color, width=1)))
+        fig.add_trace(go.Scatter(x=ohlc['trade_date'], y=mid, name='20-day SMA',
+                                 legendgroup='bb',
+                                 line=dict(color=theme.COLORS['gold'],
+                                           width=1.5, dash='dot'), opacity=0.9))
     candles = ohlc[has_ohlc]
     if not candles.empty:
         fig.add_trace(go.Candlestick(
@@ -109,7 +130,7 @@ def _candlestick() -> None:
         fig.add_trace(go.Scatter(x=ohlc['trade_date'], y=ohlc['settlement'],
                                  mode='lines', name='Settle',
                                  line=dict(color=theme.COLORS['secondary'], width=2)))
-    if len(ohlc) >= 10:
+    if not bollinger and len(ohlc) >= 10:
         ma = ohlc['settlement'].rolling(10).mean()
         fig.add_trace(go.Scatter(x=ohlc['trade_date'], y=ma, name='10-day MA',
                                  line=dict(color=theme.COLORS['gold'], width=1.5,
@@ -124,6 +145,12 @@ def _candlestick() -> None:
                f"({theme.SYMBOLS[sym]['unit']})"),
         height=480, xaxis_rangeslider_visible=False, hovermode='x'))
     st.plotly_chart(fig, width='stretch')
+    spliced = (ohlc['roll'] == 'continuous').any() if 'roll' in ohlc else False
+    st.caption('Front month rolls on the first business day of the contract '
+               'month (RLC convention).'
+               + (' Dates before the contract-level history begins '
+                  '(2026-03-03) use the yfinance continuous series, whose '
+                  'roll timing differs.' if spliced else ''))
 
 
 def _forward_curves() -> None:
