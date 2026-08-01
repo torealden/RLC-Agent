@@ -155,6 +155,46 @@ def get_front_month_ohlc(symbol: str, days: int) -> pd.DataFrame:
     """, {'sym': symbol, 'days': days})
 
 
+# ── Projection comparison (gold.projection_comparison_long, migration 165) ──
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_comparison_commodities() -> pd.DataFrame:
+    """Commodity/country pairs that have at least one projection source
+    (not realized-only), so the picker leads with comparable series."""
+    return query_df("""
+        SELECT commodity, country_code,
+               COUNT(DISTINCT source_type) AS n_sources, COUNT(*) AS n_rows
+        FROM gold.projection_comparison_long
+        GROUP BY commodity, country_code
+        ORDER BY (COUNT(DISTINCT source_type) FILTER
+                      (WHERE source_type <> 'realized')) DESC,
+                 COUNT(*) DESC
+    """)
+
+
+@st.cache_data(ttl=900, show_spinner=False)
+def get_comparison_metrics(commodity: str, country: str) -> pd.DataFrame:
+    return query_df("""
+        SELECT metric, source_type, n_rows, n_vintages, latest_vintage,
+               my_min, my_max
+        FROM gold.projection_comparison_coverage
+        WHERE commodity = %(c)s AND country_code = %(cc)s
+    """, {'c': commodity, 'cc': country})
+
+
+@st.cache_data(ttl=900, show_spinner=False)
+def get_comparison_data(commodity: str, country: str, metric: str) -> pd.DataFrame:
+    return query_df("""
+        SELECT source_type, source_detail, vintage_date, is_latest,
+               vintage_rank, marketing_year, value_native, unit_native,
+               confidence_low, confidence_high, month_count, value_1000mt
+        FROM gold.projection_comparison_long
+        WHERE commodity = %(c)s AND country_code = %(cc)s AND metric = %(m)s
+          AND marketing_year IS NOT NULL
+        ORDER BY source_type, marketing_year, vintage_date
+    """, {'c': commodity, 'cc': country, 'm': metric})
+
+
 @st.cache_data(ttl=300, show_spinner=False)
 def get_forward_curves(symbol: str) -> pd.DataFrame:
     """Forward curve (real contract months, chronological) at the latest

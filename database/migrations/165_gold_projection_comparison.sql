@@ -17,9 +17,11 @@
 --               mapped via CASE below.
 --   units    -> value_1000mt is CONSERVATIVE: only unambiguous mass conversions
 --               are performed ('1000 MT' passthrough; raw LB; 'mil lbs';
---               'mil bu' for known bushel weights). 'TONS' is left native
---               (NULL value_1000mt) because short-vs-metric is unverified for
---               those NASS rows -- a wrong 10% factor is worse than no number.
+--               'mil bu' for known bushel weights; 'TONS' as SHORT tons).
+--               TONS=short verified two ways on MY2023 US soy crush:
+--               realized 68.559M TONS == USDA 2,288 mil bu * 60/2000 =
+--               68.6M short tons, and *0.90718 = 62.2 MMT == 2,288 * 0.0272.
+--               A metric-ton reading (62.3M expected) would NOT match.
 --               yield/area/ratio metrics are never converted.
 --   metrics  -> USDA columns are renamed to the user-table vocabulary
 --               (domestic_consumption->domestic_use, total_distribution->
@@ -219,6 +221,8 @@ SELECT s.*,
                THEN s.value_native * 0.00000045359237      -- raw lb -> 1000 MT
            WHEN s.unit_native IN ('mil lbs', 'million_lbs')
                THEN s.value_native * 0.45359237            -- mil lb -> 1000 MT
+           WHEN s.unit_native = 'TONS'
+               THEN s.value_native * 0.00090718474         -- short ton (see hdr)
            WHEN s.unit_native = 'mil bu' AND s.commodity IN ('soybeans', 'wheat')
                THEN s.value_native * 27.2155               -- 60-lb bushel
            WHEN s.unit_native = 'mil bu' AND s.commodity = 'corn'
