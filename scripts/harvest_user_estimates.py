@@ -189,7 +189,10 @@ def parse_tab(ws, tab_name: str, report: dict):
     }
     if green_none:
         print(f'  WARNING {tab_name}: {green_none} green cells have no '
-              'cached value — open and save the workbook in Excel, re-run.')
+              'value. If the workbook has NOT been saved by Excel since '
+              'generation, open + save + re-run; if it has, the cells are '
+              'genuinely empty (formulas never written — e.g. the US canola '
+              'meal Stocks-to-Use row) and need filling in the workbook.')
     return unit or 'mil bu', estimates
 
 

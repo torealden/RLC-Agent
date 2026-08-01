@@ -65,9 +65,17 @@ note written under RLC OS. Memory: reference_futures_roll_convention.md.
    still in domain_knowledge), then deleted. `silver.user_sd_estimate` now
    contains only harvested rows, all START-year convention — the schema
    comment's END-year claim no longer describes any live row.
-3. **US canola book uncached greens: PENDING TORE** — open + save
-   `models/Oilseeds/United States/us_canola_balance_sheets.xlsx` (NOT the
-   Canadian book), then re-run `scripts/harvest_user_estimates.py`.
+3. **US canola book: RESOLVED 2026-08-01** — Tore re-saved, harvest re-run
+   (42 new vintage rows). The 21 "uncached" cells turned out to be the meal
+   tab's Stocks-to-Use row (2025/26+), which is green-formatted but has NO
+   formulas at all — a generation gap Tore fills in his formula pass, not a
+   caching issue. Loader warning text updated to name both cases.
+3b. **Lauric rework plan (Tore, same day):** US lauric book gets rebuilt to
+   match the SE Asian country templates — US sheets: palm oil, palm kernel
+   oil, coconut oil, copra, maybe copra meal (fewer sheets than the SE Asia
+   books). ALSO: add US biofuel / non-biofuel use lines to BOTH the US and
+   the SE Asian country sheets. Tore is editing now; harvest picks the book
+   up automatically once its titles stop saying SOYBEAN.
 4. **Negative meal stocks MY2031+: CLOSED per Tore** — at this stage only
    formula integrity matters (a−b=c); values get fixed when projections are
    re-imported under the real methodology. Harvest faithfully, don't gate.
