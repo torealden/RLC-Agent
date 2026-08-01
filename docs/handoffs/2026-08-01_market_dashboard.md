@@ -1,5 +1,16 @@
 # Handoff 2026-08-01 — Market Dashboard (build session)
 
+## ADDENDUM (same session, later): RLC roll convention + Bollinger Bands
+**Ruled by Tore:** roll futures on the FIRST BUSINESS DAY OF THE CONTRACT
+MONTH (front = nearest contract with delivery month strictly after the
+current calendar month) — avoids notice-period trading where a few cash
+players price local S&D/basis, not futures. Implemented across strip /
+perf table / candlestick / curves (`_RLC_FRONT_FILTER` in db.py); yfinance
+FRONT rows are now only the pre-2026-03-03 historical splice (`roll`
+column, captioned). On 7/31 this moved ZS front X26→Q26 (18¢ difference).
+Candlestick gained Bollinger Bands (20d, 2σ, on by default). Notion session
+note written under RLC OS. Memory: reference_futures_roll_convention.md.
+
 ## What shipped (all committed + pushed on `helios-price-layer-foundation`)
 
 **New Streamlit app `dashboards/market/`** — launch `scripts/launch_market_dashboard.bat` (port 8510):
