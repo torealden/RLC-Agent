@@ -175,6 +175,16 @@ Brazil, no PSD). Artifact: claude.ai/code/artifact/81059c20. **Not verified / ne
 unbuilt for all 11 annual cells — that's the real per-source work (MPOB rebuild, StatCan/Eurostat/CIARA
 collectors). Brazil soy monthly block exists in the flat file but the sheet doesn't consume it yet.
 
+**Session 2026-08-01b done — usda_comp tabs + PSD collector repair.** Artifacts: (1) two collector
+bugs fixed in `usda_wasde_collector.py` — ISO country codes silently starved all but 7 countries of
+PSD updates since March (now `country=all`), commodity list extended to full oilseed complex (+7 new
+PSD codes incl. copra/peanut products/palm kernel, verified vs API); (2) `scripts/build_usda_comp_tabs.py`
+wrote USDA-vs-RLC comp tabs into **34 balance sheet workbooks** from `gold.psd_wasde_vintages`
+(openpyxl country books / Excel COM US books; units label+magnitude verified; Brazil, China, US canola
+tied to SQL to the digit); (3) backfills: majors + stale + new commodities, ~13k bronze rows, 0 errors.
+Not-verified list + Tore items (cottonseed sheet garbage, Argentina soy locked, lauric rebuild) in
+`docs/handoffs/2026-08-01_usda_comp_tabs.md`. Next: LLM forecast generation into core.forecasts.
+
 ## Blocked on Tore — not sessions, decisions
 
 Resolved 2026-07-22 unless marked open.
