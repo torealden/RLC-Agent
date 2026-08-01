@@ -223,6 +223,8 @@ SELECT s.*,
                THEN s.value_native * 0.45359237            -- mil lb -> 1000 MT
            WHEN s.unit_native = 'TONS'
                THEN s.value_native * 0.00090718474         -- short ton (see hdr)
+           WHEN s.unit_native IN ('1000 ST', '1000 short tons')
+               THEN s.value_native * 0.90718474            -- 1000 short tons
            WHEN s.unit_native = 'mil bu' AND s.commodity IN ('soybeans', 'wheat')
                THEN s.value_native * 27.2155               -- 60-lb bushel
            WHEN s.unit_native = 'mil bu' AND s.commodity = 'corn'
