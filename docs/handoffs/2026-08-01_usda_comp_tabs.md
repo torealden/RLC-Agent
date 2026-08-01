@@ -50,6 +50,18 @@ Per-file-type engine ruling (the open decision from the prior handoff):
 - us_soybean_complex keeps its hand-built wasde_comp + Ctrl+Shift+W VBA,
   untouched.
 
+**Post-review update (Tore, same session):** ALL books are (or will be)
+hand-maintained / set up like the US sheets. Engine default changed to
+**COM for every book** (openpyxl kept as `--engine openpyxl` escape hatch
+for headless runs on still-generated shells). Per-book VBA duplication of
+WASDECompUpdater was considered and recommended against: the .xlsx books
+can't host macros, and 37 macro copies would need maintaining — one
+`python scripts/build_usda_comp_tabs.py` run after each WASDE refreshes
+everything COM-safely. If in-book Ctrl+Shift+W refresh is wanted for
+specific .xlsm books later, the VBA route stays open. Also ruled: no-PSD
+books (corn oil, flaxseed, safflower) get a NOTE-ONLY usda_comp tab
+(done, verified) rather than nothing; no fabricated #N/A rows in bronze.
+
 Design notes:
 - Layout mirrors wasde_comp: B/E USDA current vintage (two active MYs),
   C/F Δ-from-prior formulas, D/G RLC links into the member sheet's MY
@@ -72,17 +84,23 @@ Design notes:
 - Rerun cadence: after each WASDE (the scheduled collector pull), run
   `python scripts/build_usda_comp_tabs.py`. Idempotent; rewrites the tab.
 
-### 4. Duplicate-vintage cleanup — smaller problem than assumed
-Assumption going in: an off-WASDE-day pull just re-snapshots July values →
-fake "WASDE_AUG_26" vintage with Δ=0. **Verified wrong for the majors**:
-PSD revises continuously between WASDEs — corn US MY2025 ending stocks
-moved 54,481 → 51,306 KMT between the 7/10 and 8/1 pulls, and PSD's own
-`month` attribute advanced 6 → 7. So Aug-1 vintages carry real intra-month
-revisions and their deltas are genuine. Only 184 bronze rows were exact
-zero-information duplicates (every field identical incl. PSD month);
-those were deleted. Residual caveat: vintage names label the PULL month —
-"WASDE_AUG_26" as of 8/1 means "PSD as of Aug 1", not the Aug 12 WASDE;
-the scheduled WASDE-day pull supersedes it within the month by design.
+### 4. Duplicate cleanup + a vintage-labeling bug found via Tore's pushback
+184 bronze rows from the Aug-1 pulls were exact zero-information
+duplicates of the 7/10 rows (every field identical incl. PSD month) and
+were deleted. The interesting part is the rest: corn US MY2025 values
+DIFFER between the 6/11, 7/10 and 8/1 pulls, and PSD's own `month`
+attribute runs one behind the pull date (Jun-11 pull → month 5, Jul-10 →
+month 6, Aug-1 → month 7). First read was "PSD revises between WASDEs";
+**Tore corrected this — PSD normally only updates at WASDE** — and the
+data fits his story better: the scheduled **noon-ET WASDE-day pull races
+the release and captures the PRIOR cycle**. Which means ladder vintages
+for the continuously-pulled countries are systematically mislabeled one
+month late (WASDE_JUL_26 ≈ June WASDE values). Inference, not yet proven —
+verify via PSD `month` attribute semantics across commodities/countries.
+**Fix candidates (own session):** label vintages from the PSD month
+attribute instead of pull date (migration on the 149 view), and/or move
+the scheduled pull from 12:00 to later in the day. Until then, treat comp
+vintage names as pull labels, one cycle stale for the majors' history.
 
 ## Coverage after final pass (2026-08-01)
 - **34 books written** with usda_comp tabs (all country books + US canola,
@@ -113,12 +131,11 @@ the scheduled WASDE-day pull supersedes it within the month by design.
   throughout).
 
 ## Known-broken / needs Tore
-1. **us_cottonseed seed sheet data is a mishmash** — Production row holds
-   ~12,066 (≈ US cotton production in thousand bales), while the stock
-   rows sit at PSD's thousand-tonne magnitudes (365.9 vs PSD 363), all
-   under a "(million pounds)" label. The usda_comp seed block was built
-   with label units (USDA columns are internally consistent); the RLC
-   link columns expose the bad sheet values. Meal/oil members fine.
+1. **us_cottonseed seed sheet units** — Tore is on it (thinks bales are
+   used for yield-ish lines, million pounds elsewhere; will fix and
+   confirm). Rerun `--only cottonseed` after; the unit snap will confirm
+   the fix. (Found because Production holds ~12,066 ≈ cotton K-bales
+   while stocks sit at tonne magnitudes under a million-pounds label.)
 2. **Argentina peanut book** has scattered values ~10% off PSD in the oil
    sheet (weak short-tons snap ignored, label thousand tonnes used).
    Probably a different source vintage — worth a look.
@@ -150,9 +167,13 @@ the scheduled WASDE-day pull supersedes it within the month by design.
   already queued behind this one).
 
 ## Next-session prompt
-> Read docs/handoffs/2026-08-01_usda_comp_tabs.md. Start the LLM forecast
-> generation workstream: forecasts into core.forecasts parallel to the
-> balance sheets (see memory project_forecast_layer.md and
+> Read docs/handoffs/2026-08-01_usda_comp_tabs.md. FIRST (small): resolve
+> the WASDE-day pull race from §4 — verify PSD's `month` attribute
+> semantics on bronze.fas_psd, then either relabel vintages from that
+> attribute (migration on the 149 view) or move the scheduled pull past
+> the release, and rerun build_usda_comp_tabs.py (also picks up the
+> argentina_soybean book and Tore's cottonseed unit fix). THEN the main
+> workstream: LLM forecast generation into core.forecasts parallel to the
+> balance sheets (memory: project_forecast_layer.md,
 > project_symbiotic_forecasting.md), so the Projection Comparison page's
-> LLM book fills in. The usda_comp tabs and gold.projection_comparison_long
-> give the realized/USDA/RLC scaffolding to score against.
+> LLM book fills in.

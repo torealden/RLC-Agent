@@ -132,17 +132,22 @@ SEED_COMMODITIES = {
     "peanuts", "copra", "palm_kernel",
 }
 
-# Books that cannot or must not get a usda_comp tab.
+# Books that must not get a usda_comp tab at all.
 SKIP_BOOKS = {
     # has the hand-built wasde_comp + WASDECompUpdater VBA already
     "us_soybean_complex_bal_sheets.xlsm": "existing wasde_comp (VBA)",
-    # PSD does not publish these commodities at all (verified vs
-    # /api/psd/commodities 2026-08-01)
-    "us_corn_oil_balance_sheets.xlsx": "corn oil not in PSD",
-    "us_flaxseed_balance_sheets.xlsx": "flaxseed not in PSD",
-    "us_safflower_balance_sheets.xlsx": "safflower not in PSD",
     # stale soybean clone, Tore is rebuilding it (handoff 2026-08-01 item 3b)
     "us_lauric_oils_bal_sheets.xlsm": "stale clone, being rebuilt",
+}
+
+# PSD does not publish these commodities at all (verified vs
+# /api/psd/commodities 2026-08-01). Ruled by Tore 2026-08-01: these books
+# get a NOTE-ONLY usda_comp tab saying no comp is available, rather than
+# nothing (no fabricated #N/A rows in bronze -- the note lives in the book).
+NO_PSD_BOOKS = {
+    "us_corn_oil_balance_sheets.xlsx": "corn oil",
+    "us_flaxseed_balance_sheets.xlsx": "flaxseed",
+    "us_safflower_balance_sheets.xlsx": "safflower",
 }
 
 # Known 1000-MT -> book-unit factors the magnitude cross-check may snap to.
@@ -650,7 +655,7 @@ def write_com(path: Path, all_cells, dry_run: bool):
 # Main
 # ---------------------------------------------------------------------------
 
-def process_book(path: Path, cur, dry_run: bool):
+def process_book(path: Path, cur, dry_run: bool, engine: str = "com"):
     country_folder = path.parent.name
     code = COUNTRY_CODES.get(country_folder)
     if code is None:
@@ -694,11 +699,15 @@ def process_book(path: Path, cur, dry_run: bool):
         bak = ARCHIVE_DIR / f"{path.name}.bak_{datetime.now():%Y%m%d_%H%M%S}"
         shutil.copy2(path, bak)
 
-    is_us_book = country_folder == "United States"
-    if is_us_book or path.suffix.lower() == ".xlsm":
-        write_com(path, all_cells, dry_run)
-    else:
+    # Ruled by Tore 2026-08-01: ALL books are (or will be) hand-maintained,
+    # so COM is the default everywhere -- openpyxl re-saves would drop
+    # charts/objects added by hand. openpyxl remains as an explicit
+    # escape hatch (--engine openpyxl) for headless/no-Excel environments,
+    # safe only on books that are still generated shells.
+    if engine == "openpyxl" and path.suffix.lower() != ".xlsm":
         write_openpyxl(path, all_cells, dry_run)
+    else:
+        write_com(path, all_cells, dry_run)
 
     tag = "DRY-RUN " if dry_run else ""
     out = f"{tag}OK   {path.name}: {built} member blocks"
@@ -707,12 +716,34 @@ def process_book(path: Path, cur, dry_run: bool):
     return out
 
 
+def write_note_tab(path: Path, commodity_name: str, dry_run: bool):
+    """usda_comp tab containing only an explanatory note, for books whose
+    commodity PSD does not publish."""
+    cells = [
+        (1, 1, f"{path.parent.name.upper()} — USDA (PSD/WASDE) vs RLC "
+               f"COMPARISON", False, None, True),
+        (3, 1, f"No USDA comparison available: PSD does not publish "
+               f"{commodity_name} (verified against /api/psd/commodities "
+               f"2026-08-01). This tab is a placeholder so the absence is "
+               f"deliberate, not an oversight.", False, None, False),
+    ]
+    if not dry_run:
+        ARCHIVE_DIR.mkdir(exist_ok=True)
+        bak = ARCHIVE_DIR / f"{path.name}.bak_{datetime.now():%Y%m%d_%H%M%S}"
+        shutil.copy2(path, bak)
+    write_com(path, cells, dry_run)
+    return f"{'DRY-RUN ' if dry_run else ''}OK   {path.name}: note-only tab (no PSD coverage)"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", help="substring filter on filename")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--no-us", action="store_true",
                     help="skip hand-maintained US books (COM writer)")
+    ap.add_argument("--engine", choices=["com", "openpyxl"], default="com",
+                    help="com (default, safe on hand-maintained books) or "
+                         "openpyxl (headless; generated .xlsx shells only)")
     args = ap.parse_args()
 
     books = sorted(
@@ -732,7 +763,11 @@ def main():
                 print(f"SKIP {path.name}: --no-us")
                 continue
             try:
-                print(process_book(path, cur, args.dry_run))
+                if path.name in NO_PSD_BOOKS:
+                    print(write_note_tab(path, NO_PSD_BOOKS[path.name],
+                                         args.dry_run))
+                else:
+                    print(process_book(path, cur, args.dry_run, args.engine))
             except Exception as e:  # noqa: BLE001
                 print(f"FAIL {path.name}: {type(e).__name__}: {e}")
 
