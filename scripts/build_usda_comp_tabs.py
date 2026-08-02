@@ -119,6 +119,10 @@ TITLE_TO_COMMODITY = [
     ("COTTONSEED MEAL", "cottonseed_meal"),
     ("COTTONSEED OIL", "cottonseed_oil"),
     ("COTTONSEED", "cottonseed"),
+    # plain COTTON (after all COTTONSEED entries): the lint balance sheet,
+    # kept in million 480-lb bales exactly as the WASDE table prints it.
+    # PSD 'cotton' is natively 1000 480-lb bales -- no mass conversion.
+    ("COTTON", "cotton"),
     ("PEANUT MEAL", "peanut_meal"),
     ("PEANUT OIL", "peanut_oil"),
     ("PEANUT", "peanuts"),
@@ -158,13 +162,10 @@ KNOWN_FACTORS = [
     (0.0367437, "million bushels (60 lb)"),
     (0.0393683, "million bushels (56 lb)"),
     (0.001, "million tonnes"),
-    # 480-lb bale as a MASS unit (1 bale = 480 lb exactly): 1000 MT =
-    # 2.204623 mil lb / 480 = 4.59296 thousand bales. Deterministic only
-    # under the mass definition — a lint-equivalent "bale of seed" would
-    # drift with annual turnout and must NOT be snapped.
-    (4.59296, "thousand 480-lb bales"),
-    (0.00459296, "million 480-lb bales"),
 ]
+# NOTE: no bale factors here on purpose. Ruled by Tore 2026-08-02: bales
+# belong to the cotton LINT sheet only (COTTON_* tables below); a bales
+# label on any seed/meal/oil sheet is a mislabel and must skip loudly.
 
 # Row-label parenthetical -> factor. Used when the annual block is still
 # empty (most generated country books carry the template structure but no
@@ -176,10 +177,6 @@ LABEL_UNIT_FACTORS = {
     "thousand short tons": (1.102311, "thousand short tons"),
     # among the oilseed books only soybeans are kept in bushels -> 60 lb
     "million bushels": (0.0367437, "million bushels (60 lb)"),
-    "million 480-lb bales": (0.00459296, "million 480-lb bales"),
-    "million 480 lb bales": (0.00459296, "million 480-lb bales"),
-    "thousand 480-lb bales": (4.59296, "thousand 480-lb bales"),
-    "thousand 480 lb bales": (4.59296, "thousand 480-lb bales"),
 }
 AREA_FACTORS = {
     # book area unit -> factor from PSD 1000 HA
@@ -218,6 +215,36 @@ PRODUCT_ROWS = [
     ("Ending Stocks", "ending_stocks"),
     ("Stocks-to-Use", "STU"),
 ]
+
+# Cotton (lint): WASDE-table shape -- area/yield up top, no crush.
+# Total Demand here = Total Supply - Ending Stocks, which absorbs WASDE's
+# "Unaccounted" line into demand (PSD carries no unaccounted column).
+COTTON_ROWS = [
+    ("Harvested Area", "area_harvested"),
+    ("Beginning Stocks", "beginning_stocks"),
+    ("Production", "production"),
+    ("Imports", "imports"),
+    ("Total Supply", "SUM_SUPPLY"),
+    ("Domestic Use", "domestic_consumption"),
+    ("Exports", "exports"),
+    ("Total Demand", "DEMAND"),
+    ("Ending Stocks", "ending_stocks"),
+    ("Stocks-to-Use", "STU"),
+]
+
+# PSD serves cotton in 1000 480-lb bales (not 1000 MT), so its factor
+# tables are bale-relative, not mass-relative.
+COTTON_KNOWN_FACTORS = [
+    (0.001, "million 480-lb bales"),
+    (1.0, "thousand 480-lb bales"),
+]
+COTTON_LABEL_UNIT_FACTORS = {
+    "million 480-lb bales": (0.001, "million 480-lb bales"),
+    "million 480 lb bales": (0.001, "million 480-lb bales"),
+    "million 480 pound bales": (0.001, "million 480-lb bales"),
+    "thousand 480-lb bales": (1.0, "thousand 480-lb bales"),
+    "thousand 480 lb bales": (1.0, "thousand 480-lb bales"),
+}
 
 # Comp label -> member-sheet row label patterns (lowercased, ordered by
 # priority) for the RLC link columns.
@@ -355,10 +382,11 @@ def find_label_row(label_row: dict, patterns: list[str]):
     return None
 
 
-def derive_unit_factor(member, finals):
+def derive_unit_factor(member, finals, known_factors=None):
     """Snap sheet_value / psd_value to a known conversion factor. Returns the
     snap backed by the LARGEST psd value (small denominators can't tell a
     ~10%% source difference from the short-tons factor)."""
+    known_factors = known_factors or KNOWN_FACTORS
     fields = [(["production"], "production"), (["imports"], "imports"),
               (["exports"], "exports"),
               (["total domestic use", "domestic use"], "domestic_consumption"),
@@ -380,7 +408,7 @@ def derive_unit_factor(member, finals):
             if sheet_v is None or sheet_v == 0:
                 continue
             ratio = sheet_v / float(psd_v)
-            for factor, unit_name in KNOWN_FACTORS:
+            for factor, unit_name in known_factors:
                 if abs(ratio / factor - 1.0) < 0.05:
                     if best is None or float(psd_v) > best[0]:
                         best = (float(psd_v), factor, unit_name,
@@ -390,9 +418,10 @@ def derive_unit_factor(member, finals):
     return best[1], best[2], best[3], best[0]
 
 
-def unit_factor_from_labels(member):
+def unit_factor_from_labels(member, label_factors=None):
     """Read the unit out of the row-label parentheticals, preferring the
     stock/production rows ('Beginning Stocks (thousand tonnes)')."""
+    label_factors = label_factors or LABEL_UNIT_FACTORS
     preferred = ["beginning stocks", "production", "ending stocks"]
     keys = sorted(member["label_row"],
                   key=lambda k: next((i for i, p in enumerate(preferred)
@@ -401,8 +430,8 @@ def unit_factor_from_labels(member):
         if "(" not in key:
             continue
         unit_txt = key.split("(", 1)[1].rstrip(")").strip()
-        if unit_txt in LABEL_UNIT_FACTORS:
-            return LABEL_UNIT_FACTORS[unit_txt]
+        if unit_txt in label_factors:
+            return label_factors[unit_txt]
     return None, None
 
 
@@ -426,8 +455,12 @@ def build_block(member, active, finals, country_name, start_row):
     """Return (cells, n_rows, notes). cells = list of
     (row, col, value, is_formula, num_fmt, bold)."""
     commodity = member["commodity"]
+    is_cotton = commodity == "cotton"
     is_seed = commodity in SEED_COMMODITIES
-    rows_spec = SEED_ROWS if is_seed else PRODUCT_ROWS
+    rows_spec = (COTTON_ROWS if is_cotton
+                 else SEED_ROWS if is_seed else PRODUCT_ROWS)
+    known_factors = COTTON_KNOWN_FACTORS if is_cotton else None
+    label_factors = COTTON_LABEL_UNIT_FACTORS if is_cotton else None
 
     mys = sorted(active.keys())[:2]
     if len(mys) < 2:
@@ -439,9 +472,9 @@ def build_block(member, active, finals, country_name, start_row):
     # on STRONG evidence (a snapped field with PSD value >= 500) -- small
     # denominators can't tell a ~10% source difference from the short-tons
     # factor. No label and no snap -> loud skip, never a guessed unit.
-    label_factor, label_unit = unit_factor_from_labels(member)
+    label_factor, label_unit = unit_factor_from_labels(member, label_factors)
     snap_factor, snap_unit, evidence, snap_strength = derive_unit_factor(
-        member, finals)
+        member, finals, known_factors)
     notes = []
     if label_factor is not None:
         if (snap_factor is not None
@@ -459,11 +492,14 @@ def build_block(member, active, finals, country_name, start_row):
             factor, unit_name = snap_factor, snap_unit  # confirmed by values
         else:
             evidence = None
-    elif snap_factor is not None:
+    elif snap_factor is not None and snap_strength >= 500:
         factor, unit_name = snap_factor, snap_unit
     else:
-        return None, 0, [f"{commodity}: no unit source (no labelled unit, "
-                         f"no values to snap) -- skipped"]
+        # No recognized label AND no strong snap. A weak label-less snap
+        # is not enough: mid-conversion sheets (cottonseed 2026-08-02)
+        # can coincidentally snap on one small field.
+        return None, 0, [f"{commodity}: no recognized unit label and no "
+                         f"strong value snap -- skipped, never guessed"]
     area_factor = derive_area_factor(member) or 0.001
 
     cur1, prior1 = active[my1]

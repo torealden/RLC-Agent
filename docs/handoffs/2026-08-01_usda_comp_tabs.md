@@ -131,11 +131,21 @@ vintage names as pull labels, one cycle stale for the majors' history.
   throughout).
 
 ## Known-broken / needs Tore
-1. **us_cottonseed seed sheet units** — Tore is on it (thinks bales are
-   used for yield-ish lines, million pounds elsewhere; will fix and
-   confirm). Rerun `--only cottonseed` after; the unit snap will confirm
-   the fix. (Found because Production holds ~12,066 ≈ cotton K-bales
-   while stocks sit at tonne magnitudes under a million-pounds label.)
+1. **us_cottonseed book — RULED 2026-08-02 after back-and-forth.** The
+   "garbage" seed-sheet values were the WASDE U.S. COTTON (lint) table in
+   million 480-lb bales, not bad data. Final convention: cottonSEED
+   balance sheet in **thousand short tons** (ties to ERS Oil Crops and to
+   the meal sheet's units through crush; ref: PSD MY2024 production
+   3,866 KMT = 4,262 K ST, crush 1,084 = 1,195, ending 363 = 400);
+   optional separate "US COTTON SUPPLY AND DEMAND" lint sheet in million
+   480-lb bales exactly as WASDE prints it. Builder supports both:
+   COTTON-titled sheet → PSD `cotton` (native 1000 480-lb bales, factor
+   0.001, WASDE-shape rows incl. Harvested Area, no crush; Total Demand
+   absorbs WASDE's Unaccounted); COTTONSEED-titled → PSD `cottonseed` in
+   tons. A bales label on any NON-cotton sheet now skips loudly (no mass-
+   bale factors in the generic tables — ruled out). Tore converting the
+   sheet; rerun `--only cottonseed` after. Longer-term note from Tore:
+   eventually all US sheets in tonnes — another day.
 2. **Argentina peanut book** has scattered values ~10% off PSD in the oil
    sheet (weak short-tons snap ignored, label thousand tonnes used).
    Probably a different source vintage — worth a look.
