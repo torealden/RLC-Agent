@@ -175,6 +175,9 @@ LABEL_UNIT_FACTORS = {
     "thousand metric tons": (1.0, "thousand tonnes"),
     "million pounds": (2.204623, "million pounds"),
     "thousand short tons": (1.102311, "thousand short tons"),
+    # US-convention "tons" = short tons (Tore, 2026-08-02, cottonseed).
+    # Metric sheets must say "tonnes" -- the country books all do.
+    "thousand tons": (1.102311, "thousand short tons"),
     # among the oilseed books only soybeans are kept in bushels -> 60 lb
     "million bushels": (0.0367437, "million bushels (60 lb)"),
 }
