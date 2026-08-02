@@ -280,7 +280,7 @@ def load_vintages(cur, commodity: str, country_code: str):
     newest FINAL (closed-MY) row for the unit cross-check."""
     cur.execute(
         """
-        SELECT marketing_year, report_date, vintage, vintage_rank,
+        SELECT marketing_year, report_date, psd_cycle, vintage, vintage_rank,
                area_harvested, beginning_stocks, production, imports,
                total_supply, crush, domestic_consumption, exports,
                ending_stocks
@@ -386,15 +386,19 @@ def find_label_row(label_row: dict, patterns: list[str]):
 
 
 def derive_unit_factor(member, finals, known_factors=None):
-    """Snap sheet_value / psd_value to a known conversion factor. Returns the
-    snap backed by the LARGEST psd value (small denominators can't tell a
-    ~10%% source difference from the short-tons factor)."""
+    """Snap sheet_value / psd_value to known conversion factors. Returns
+    {factor: (psd_v, unit_name, evidence)} — the strongest snap PER FACTOR,
+    because different fields can snap to different factors when the sheet's
+    source differs from PSD (india soy oil 2026-08-02: production tied PSD
+    in tonnes to 0.2%% while domestic use sat 2.5%% off the short-tons
+    factor — a source difference, not a unit difference). The caller must
+    treat conflicting snaps as ambiguity, not take the largest blindly."""
     known_factors = known_factors or KNOWN_FACTORS
     fields = [(["production"], "production"), (["imports"], "imports"),
               (["exports"], "exports"),
               (["total domestic use", "domestic use"], "domestic_consumption"),
               (["ending stocks"], "ending_stocks")]
-    best = None  # (psd_v, factor, unit_name, evidence)
+    snaps = {}  # factor -> (psd_v, unit_name, evidence)
     for final in finals:
         my = final["marketing_year"]
         if my not in member["my_col"]:
@@ -413,12 +417,11 @@ def derive_unit_factor(member, finals, known_factors=None):
             ratio = sheet_v / float(psd_v)
             for factor, unit_name in known_factors:
                 if abs(ratio / factor - 1.0) < 0.05:
-                    if best is None or float(psd_v) > best[0]:
-                        best = (float(psd_v), factor, unit_name,
-                                (sheet_patterns[0], my, sheet_v, float(psd_v)))
-    if best is None:
-        return None, None, None, 0.0
-    return best[1], best[2], best[3], best[0]
+                    if factor not in snaps or float(psd_v) > snaps[factor][0]:
+                        snaps[factor] = (float(psd_v), unit_name,
+                                         (sheet_patterns[0], my, sheet_v,
+                                          float(psd_v)))
+    return snaps
 
 
 def unit_factor_from_labels(member, label_factors=None):
@@ -472,33 +475,56 @@ def build_block(member, active, finals, country_name, start_row):
 
     # Unit factor: the row-label unit is authoritative when present (it is
     # part of the template). The magnitude cross-check can only overrule it
-    # on STRONG evidence (a snapped field with PSD value >= 500) -- small
-    # denominators can't tell a ~10% source difference from the short-tons
-    # factor. No label and no snap -> loud skip, never a guessed unit.
+    # on STRONG evidence (a snapped field with PSD value >= 500) that is
+    # also UNANIMOUS: if any field snaps in agreement with the label, a
+    # conflicting snap on another field is a source difference, not a unit
+    # difference (india soy oil: production tied the label's tonnes exactly
+    # while domestic use coincidentally sat near the short-tons factor).
+    # Small denominators can't tell a ~10% source difference from the
+    # short-tons factor. No label and no snap -> loud skip, never a guess.
     label_factor, label_unit = unit_factor_from_labels(member, label_factors)
-    snap_factor, snap_unit, evidence, snap_strength = derive_unit_factor(
-        member, finals, known_factors)
+    snaps = derive_unit_factor(member, finals, known_factors)
     notes = []
+    evidence = None
     if label_factor is not None:
-        if (snap_factor is not None
-                and abs(label_factor / snap_factor - 1.0) > 0.05):
-            if snap_strength >= 500:
-                return None, 0, [f"{commodity}: label says {label_unit} but "
-                                 f"values strongly snap to {snap_unit} "
-                                 f"(psd={snap_strength:,.0f}) -- skipped"]
-            notes.append(f"{commodity}: weak snap to {snap_unit} "
-                         f"(psd={snap_strength:,.0f}) ignored; label "
-                         f"{label_unit} used")
-            evidence = None
+        agree = [(pv, u, ev) for f, (pv, u, ev) in snaps.items()
+                 if abs(label_factor / f - 1.0) <= 0.05]
+        conflict = [(pv, u, ev) for f, (pv, u, ev) in snaps.items()
+                    if abs(label_factor / f - 1.0) > 0.05]
         factor, unit_name = label_factor, label_unit
-        if snap_factor is not None and abs(label_factor / snap_factor - 1.0) <= 0.05:
-            factor, unit_name = snap_factor, snap_unit  # confirmed by values
-        else:
-            evidence = None
-    elif snap_factor is not None and snap_strength >= 500:
-        factor, unit_name = snap_factor, snap_unit
+        if agree:
+            pv, u, ev = max(agree)
+            evidence = ev  # label confirmed by values
+            if conflict:
+                cpv, cu, cev = max(conflict)
+                notes.append(f"{commodity}: mixed snaps -- label {label_unit} "
+                             f"confirmed by {ev[0]} (psd={pv:,.0f}); "
+                             f"conflicting {cu} snap on {cev[0]} "
+                             f"(psd={cpv:,.0f}) treated as source "
+                             f"difference, label kept")
+        elif conflict:
+            cpv, cu, cev = max(conflict)
+            if cpv >= 500:
+                return None, 0, [f"{commodity}: label says {label_unit} but "
+                                 f"values strongly snap to {cu} "
+                                 f"(psd={cpv:,.0f}) -- skipped"]
+            notes.append(f"{commodity}: weak snap to {cu} "
+                         f"(psd={cpv:,.0f}) ignored; label "
+                         f"{label_unit} used")
+    elif snaps:
+        # No label: values may only decide the unit when they agree with
+        # each other AND the evidence is strong.
+        if len(snaps) > 1:
+            return None, 0, [f"{commodity}: no unit label and values snap "
+                             f"to {len(snaps)} different factors -- "
+                             f"ambiguous, skipped"]
+        (factor, (strength, unit_name, ev)), = snaps.items()
+        if strength < 500:
+            return None, 0, [f"{commodity}: no recognized unit label and no "
+                             f"strong value snap -- skipped, never guessed"]
+        evidence = ev
     else:
-        # No recognized label AND no strong snap. A weak label-less snap
+        # No recognized label AND no snap at all. A weak label-less snap
         # is not enough: mid-conversion sheets (cottonseed 2026-08-02)
         # can coincidentally snap on one small field.
         return None, 0, [f"{commodity}: no recognized unit label and no "
@@ -525,9 +551,11 @@ def build_block(member, active, finals, country_name, start_row):
     my_label = lambda my: f"{my}/{str(my + 1)[-2:]}"
     short = lambda my: f"{str(my)[-2:]}/{str(my + 1)[-2:]}"
 
-    cur_month = MONTH_NAMES[cur1["report_date"].month]
-    cur_year = cur1["report_date"].year
-    prior_month = (MONTH_NAMES[prior1["report_date"].month]
+    # Month labels come from psd_cycle (the WASDE cycle the values belong to),
+    # NOT report_date (the pull that happened to carry them) — mig 166.
+    cur_month = MONTH_NAMES[cur1["psd_cycle"].month]
+    cur_year = cur1["psd_cycle"].year
+    prior_month = (MONTH_NAMES[prior1["psd_cycle"].month]
                    if prior1 is not None else "")
 
     cells.append((r0, 1, f"{member_title} - USDA v RLC ({unit_name})",
@@ -624,7 +652,8 @@ def build_block(member, active, finals, country_name, start_row):
 
     note_r = data0 + len(rows_spec) + 1
     vtag = cur1["vintage"]
-    note = (f"USDA columns: {vtag} ({cur_month} {cur_year} pull) from "
+    note = (f"USDA columns: {vtag} ({cur_month} {cur_year} cycle, "
+            f"pulled {cur1['report_date']:%Y-%m-%d}) from "
             f"gold.psd_wasde_vintages"
             + (f"; Δ vs {prior1['vintage']}" if prior1 is not None
                else "; no prior vintage yet -- Δ columns blank")
