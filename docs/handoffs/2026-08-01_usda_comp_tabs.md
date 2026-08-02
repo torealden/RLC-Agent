@@ -158,6 +158,30 @@ vintage names as pull labels, one cycle stale for the majors' history.
    Rerun `python scripts/build_usda_comp_tabs.py --only argentina_soybean`
    after closing it.
 
+## Post-review closures (Tore, same session)
+- argentina_soybean book closed and comp built (3 blocks) — **all 38
+  books now covered** (34 comp + 3 note-only + soybean complex VBA).
+- Cottonseed units: Tore fixing (bales for yield-ish lines, million
+  pounds elsewhere); rerun `--only cottonseed` after.
+- Ruled: no #N/A rows anywhere; note tabs suffice.
+
+## Queued workstreams (from Tore's review)
+1. **USDACompUpdater.bas** — generalized VBA/ODBC in-book updater
+   (WASDECompUpdater pattern, reads gold.psd_wasde_vintages, layout-aware
+   like the Python builder). Tore will re-save .xlsx books as .xlsm and
+   import. Python script stays the fleet-wide refresh.
+2. **Historical WASDE vintage backfill (1990→2025).** VERIFIED this
+   session: bronze.fas_psd holds exactly 9 pull dates, ALL 2026 — the
+   ladder's depth is 2026-only because the PSD API serves only the
+   current snapshot (closed MYs rebroadcast as identical finals; that's
+   why mig 149 collapses them to FINAL). Monthly USDA estimates to 1990
+   must come from the WASDE report archive itself: Cornell Mann Library
+   (USDA ESMIS) back to 1973; OCE machine-readable (XML/XLS) for roughly
+   2010+; older = text/PDF parsing (local-LLM batch, best-of-N per
+   feedback_llm_extraction_variance). FIRST establish whether a clean
+   pre-compiled by-release-month dataset exists before parsing anything.
+   Payoff: USDA's in-season revision path vs RLC vs LLM, historically.
+
 ## Not done / deferred
 - Feed/Food grains books (corn, wheat) — same builder grammar would work;
   they already have hand-built wasde_comp tabs + VBA. Decide whether to
@@ -171,9 +195,9 @@ vintage names as pull labels, one cycle stale for the majors' history.
 > the WASDE-day pull race from §4 — verify PSD's `month` attribute
 > semantics on bronze.fas_psd, then either relabel vintages from that
 > attribute (migration on the 149 view) or move the scheduled pull past
-> the release, and rerun build_usda_comp_tabs.py (also picks up the
-> argentina_soybean book and Tore's cottonseed unit fix). THEN the main
-> workstream: LLM forecast generation into core.forecasts parallel to the
-> balance sheets (memory: project_forecast_layer.md,
-> project_symbiotic_forecasting.md), so the Projection Comparison page's
-> LLM book fills in.
+> the release, and rerun build_usda_comp_tabs.py (picks up Tore's
+> cottonseed unit fix too). THEN pick per Tore's priority: (a) historical
+> WASDE vintage backfill source hunt (queued workstream 2 — Cornell/OCE
+> archive), (b) USDACompUpdater.bas in-book VBA (workstream 1), or
+> (c) LLM forecast generation into core.forecasts (memory:
+> project_forecast_layer.md, project_symbiotic_forecasting.md).
