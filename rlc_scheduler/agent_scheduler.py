@@ -224,7 +224,11 @@ USDA_RELEASES = {
             (11, 10),  # Nov 10
             (12, 10),  # Dec 10
         ],
-        "time": "12:00",
+        # 15:00, NOT release time (12:00): PSD Online propagates tables over minutes-to-
+        # hours after the noon release, per-commodity. The 12:00 pull (dispatcher tick
+        # ~12:14) captured the PRIOR cycle for corn on every 2026 WASDE day while
+        # soybeans/wheat were already updated. See migration 166 + handoff 2026-08-01.
+        "time": "15:00",
         "timezone": "America/New_York",
         "agent": "usda_wasde_agent",
         "description": "World Agricultural Supply and Demand Estimates"

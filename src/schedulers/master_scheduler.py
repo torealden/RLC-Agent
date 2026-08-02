@@ -432,7 +432,11 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.MONTHLY,
             day_of_month=12,  # Fallback if no exact date for the year
-            release_time=time(12, 0),  # 12:00 PM ET
+            # 15:00, NOT the 12:00 release time: PSD Online propagates tables
+            # per-commodity over minutes-to-hours after the noon release. Every
+            # 2026 WASDE-day pull at ~12:14 ET captured the PRIOR cycle for corn
+            # while soybeans/wheat were already updated. See migration 166.
+            release_time=time(15, 0),
             description="USDA World Agricultural Supply & Demand Estimates",
             release_dates=WASDE_RELEASE_DATES,
         ),

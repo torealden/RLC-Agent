@@ -78,7 +78,7 @@ python agent_scheduler.py trigger census_trade_agent
 |--------|----------|-----------|-------|-------|
 | USDA Export Sales | Thursday* | 8:30 AM | usda_export_sales_agent | Holiday-aware |
 | USDA Export Inspections | Monday* | 10:00 AM | usda_export_inspections_agent | Holiday-aware |
-| WASDE Report | Specific dates | 12:00 PM | usda_wasde_agent | See 2026 dates below |
+| WASDE Report | Specific dates | 3:00 PM | usda_wasde_agent | Release is 12:00; pulled at 15:00 because PSD Online propagates per-commodity after the release (mig 166). See 2026 dates below |
 | Crop Progress | Monday* (Apr-Nov) | 4:00 PM | usda_crop_progress_agent | Holiday-aware, seasonal |
 | Grain Stocks | Quarterly | 12:00 PM | usda_grain_stocks_agent | See schedule below |
 | Prospective Plantings | Last biz day Mar | 12:00 PM | usda_plantings_agent | With Mar Grain Stocks |

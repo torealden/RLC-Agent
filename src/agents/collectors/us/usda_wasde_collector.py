@@ -292,7 +292,9 @@ class USDAWASPECollector(BaseCollector):
                     "country_code": key[2],
                     "country": key[3],
                     "marketing_year": key[4],
-                    "calendar_year": None,
+                    # (calendar_year, month) = PSD's last-updated cycle stamp; the vintage
+                    # ladder (mig 166) labels vintages from it, so it must be persisted.
+                    "calendar_year": rec.get("calendar_year"),
                     "month": key[5],
                     "report_date": report_date,
                     "unit": rec.get("unit", "1000 MT"),
@@ -582,6 +584,7 @@ class USDAWASPECollector(BaseCollector):
                 "unit_id": self._safe_int(record.get("unitId")),
                 "unit": record.get("unitDescription", commodity_info.get("unit", "1000 MT")),
                 "month": record.get("month"),
+                "calendar_year": self._safe_int(record.get("calendarYear")),
 
                 # Convenience fields matching bronze.fas_psd schema
                 "beginning_stocks": self._safe_float(record.get("beginningStocks")),
