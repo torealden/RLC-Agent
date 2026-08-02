@@ -158,6 +158,12 @@ KNOWN_FACTORS = [
     (0.0367437, "million bushels (60 lb)"),
     (0.0393683, "million bushels (56 lb)"),
     (0.001, "million tonnes"),
+    # 480-lb bale as a MASS unit (1 bale = 480 lb exactly): 1000 MT =
+    # 2.204623 mil lb / 480 = 4.59296 thousand bales. Deterministic only
+    # under the mass definition — a lint-equivalent "bale of seed" would
+    # drift with annual turnout and must NOT be snapped.
+    (4.59296, "thousand 480-lb bales"),
+    (0.00459296, "million 480-lb bales"),
 ]
 
 # Row-label parenthetical -> factor. Used when the annual block is still
@@ -170,6 +176,10 @@ LABEL_UNIT_FACTORS = {
     "thousand short tons": (1.102311, "thousand short tons"),
     # among the oilseed books only soybeans are kept in bushels -> 60 lb
     "million bushels": (0.0367437, "million bushels (60 lb)"),
+    "million 480-lb bales": (0.00459296, "million 480-lb bales"),
+    "million 480 lb bales": (0.00459296, "million 480-lb bales"),
+    "thousand 480-lb bales": (4.59296, "thousand 480-lb bales"),
+    "thousand 480 lb bales": (4.59296, "thousand 480-lb bales"),
 }
 AREA_FACTORS = {
     # book area unit -> factor from PSD 1000 HA
