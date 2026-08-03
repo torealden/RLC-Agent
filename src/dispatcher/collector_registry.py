@@ -59,6 +59,20 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.us.eia_crude_price_bridge',
         'class': 'EIACrudePriceBridge',
     },
+    'futures_price_mark_bridge': {
+        # Standing daily version of migration 159: promote delayed yfinance/ibkr futures settles
+        # (bronze.futures_daily_settlement) into silver.price_mark/curve_snapshot at NEWS_INDICATIVE.
+        # Runs after yfinance_futures so the curve engine sees current dated-contract board marks.
+        'module': 'src.agents.collectors.market.futures_price_mark_bridge',
+        'class': 'FuturesPriceMarkBridge',
+    },
+    'curve_builder': {
+        # Helios price-feed layer, curve construction module (src/curves/): derived curves as IFV
+        # term stacks -> gold.curve_term + DERIVED_* headline in price_mark, validated by the
+        # deferred term-sum tie-out trigger (mig 158) at COMMIT. First curve: BRSBO_FOB_PARITY.
+        'module': 'src.curves.engine',
+        'class': 'CurveEngine',
+    },
     'fred_fx': {
         # Helios price-feed layer Tier A #11 (PRIMARY): Federal Reserve H.10 daily FX via FRED API
         # -> price_mark SPOT (direct USD pairs, no triangulation). Supersedes ecb_fx as the preferred

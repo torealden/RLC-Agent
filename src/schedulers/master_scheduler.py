@@ -185,6 +185,31 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['crude_oil'],
     ),
 
+    'futures_price_mark_bridge': CollectorSchedule(
+        collector_name='futures_price_mark_bridge',
+        collector_class='FuturesPriceMarkBridge',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(17, 45),  # 5:45 PM ET, after yfinance_futures (17:15) refreshes bronze
+            description="Promote delayed futures settles (bronze) into price_mark/curve_snapshot (mig-159 mapping, daily)"
+        ),
+        priority=3,
+        commodities=['corn', 'wheat', 'soybeans', 'soy_oil', 'soy_meal',
+                     'crude_oil', 'gasoline', 'diesel', 'natural_gas'],
+    ),
+
+    'curve_builder': CollectorSchedule(
+        collector_name='curve_builder',
+        collector_class='CurveEngine',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(18, 15),  # 6:15 PM ET, after the bridge (17:45) + AMS settles (17:30)
+            description="Derived curves as IFV term stacks -> gold.curve_term + DERIVED_* headline (tie-out at COMMIT)"
+        ),
+        priority=4,
+        commodities=['soy_oil'],
+    ),
+
     'fred_fx': CollectorSchedule(
         collector_name='fred_fx',
         collector_class='FREDFXCollector',
