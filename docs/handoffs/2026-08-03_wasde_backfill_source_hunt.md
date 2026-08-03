@@ -56,3 +56,22 @@ Full detail: `docs/specs/wasde_vintage_backfill_v1.md`. Short version:
 > vintage ladder. Get Tore's ruling on vintage_rank assignment (spec §2) before the
 > transform writes anything. Put the archive-contiguity checks (report-number sequence,
 > shutdown skips) in the loader as assertions, not in prose.
+
+## Addendum (post-session Q&A, same day)
+
+- **Killed 3 zombie `running` rows** in core.collection_status for epa_echo_enrich_by_frs
+  (ids 855, 915, 1412 — 05-28, 06-04, 07-30; never finalized). Today's 04:00 row left alone.
+- **ECHO 429s ruled not-a-problem** (throttle+retry working, ~0.8% daily failures, heal next
+  run). Queued hygiene fix: quarantine permanently-invalid FRS ids + last_enriched_at touch
+  stamp. Tore ruled touch-stamps estate-wide: memory `feedback_timestamp_every_touch.md`.
+- **Queued: zombie-run checker** — daily CNS check flagging collection_status rows stuck in
+  'running' >6h as system_alert events (piggyback the existing daily CNS job, no new infra).
+- **Argentina oilseed scope (PSD-verified, latest vintage MY25/26)**: AR is #1 world exporter
+  of soy meal (34.5%), soy oil (47.3%), sunflowerseed (27%), peanuts (24%). Needs ONE more
+  book: sunflower complex (flat files already exist). Rapeseed (rank 22, 40k MT) and
+  palm/lauric (no AR PSD rows) ruled out; cottonseed marginal, skip.
+- **usda_comp formatting**: Tore hand-formatted the Argentina xlsm tab (RLC green #3C7D22
+  bands, Aptos Display 9 data, medium/thin border grid, red-neg #,##0, yield 3dp, 0.0%).
+  Plan: build_usda_comp_tabs.py uses that tab as STYLE DONOR (copy styles per block
+  row-type) instead of hardcoded constants — one builder session together with the meta
+  stamping + USDACompUpdater.bas. The .xlsx original moved to Archive by Tore.
