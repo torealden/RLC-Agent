@@ -168,3 +168,10 @@ data/permits/
 permits/**/source.pdf
 permits/**/equipment_list_auto.csv
 docs/memory_archive/*.docx
+
+# WASDE historical archive: keep the two ZIPs (USDA WAF blocks re-download; came via
+# Wayback), ignore the 180MB of extracted/monthly CSVs — scripts/download_wasde_historical.py
+# regenerates them.
+data/raw/wasde_historical/monthly_csv/
+data/raw/wasde_historical/monthly_csv_2010_2015/
+data/raw/wasde_historical/monthly_csv_2016_2020/
