@@ -286,7 +286,9 @@ def load_vintages(cur, commodity: str, country_code: str):
                ending_stocks
         FROM gold.psd_wasde_vintages
         WHERE commodity = %s AND country_code = %s AND is_active_my
-        ORDER BY marketing_year, vintage_rank DESC
+        -- psd_cycle breaks rank ties: with the mig-168 archive union, an active
+        -- MY can carry >19 cycles and everything past the 19th caps at rank 79
+        ORDER BY marketing_year, vintage_rank DESC, psd_cycle DESC
         """,
         (commodity, country_code),
     )

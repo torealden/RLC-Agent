@@ -765,14 +765,14 @@ When a user asks about **corn positioning**:
 <!-- BEGIN GENERATED: DB INVENTORY (scripts/generate_claude_md_db_inventory.py — do not hand-edit) -->
 *Generated 2026-08-03 — do not edit by hand; run `python scripts/generate_claude_md_db_inventory.py` to refresh.*
 
-- **bronze**: 107 tables
-- **silver**: 78 tables + 48 views
+- **bronze**: 108 tables
+- **silver**: 79 tables + 48 views
 - **gold**: 8 tables + 193 views
 - **core**: 22 tables + 11 views
 - **reference**: 57 tables + 4 views
 - **risk**: 5 tables
 - **sys**: 6 tables + 6 views
-- **59 distinct collectors** seen in `core.collection_status`
+- **61 distinct collectors** seen in `core.collection_status`
 - The hand-curated bronze/silver/gold objects documented in detail elsewhere in this file are the **commodities-focused subset**; the live database spans facilities, permits, trade, fuel, refining, and adjacent industries. Every object name in this file is existence-checked daily by `scripts/check_claude_md_db_drift.py`.
 <!-- END GENERATED: DB INVENTORY -->
 
