@@ -1,0 +1,25 @@
+#!/bin/sh
+# CLAUDE.md DB-inventory hard lock (commit side).
+#
+# If the staged diff touches CLAUDE.md, the STAGED content is checked against the live database:
+# any schema-qualified object that does not exist, or a stale generated inventory region, blocks
+# the commit (exit 1). DB-unreachable soft-passes (exit 2 from the checker) so a network hiccup
+# never blocks unrelated work — the daily dispatcher job (claude_md_drift_check) is the backstop
+# that catches DB-side drift regardless of commits.
+#
+# Versioned at scripts/hooks/pre-commit; install with:
+#   cp scripts/hooks/pre-commit .git/hooks/pre-commit
+# (Re-run after cloning — .git/hooks is not versioned.)
+
+if git diff --cached --name-only | grep -qx "CLAUDE.md"; then
+    git show :CLAUDE.md | python scripts/check_claude_md_db_drift.py --stdin
+    code=$?
+    if [ "$code" = "1" ]; then
+        echo "" >&2
+        echo "pre-commit BLOCKED: CLAUDE.md names database objects that do not exist," >&2
+        echo "or its generated inventory region is stale." >&2
+        echo "Fix the names, or run: python scripts/generate_claude_md_db_inventory.py" >&2
+        exit 1
+    fi
+fi
+exit 0

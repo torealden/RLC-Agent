@@ -185,6 +185,18 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['crude_oil'],
     ),
 
+    'claude_md_drift_check': CollectorSchedule(
+        collector_name='claude_md_drift_check',
+        collector_class='ClaudeMdDriftCheck',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(7, 30),  # 7:30 AM ET, before the workday — drift surfaces in the morning briefing
+            description="CLAUDE.md vs database drift check (phantom objects / stale inventory region) -> CNS alert"
+        ),
+        priority=5,
+        commodities=[],
+    ),
+
     'futures_price_mark_bridge': CollectorSchedule(
         collector_name='futures_price_mark_bridge',
         collector_class='FuturesPriceMarkBridge',

@@ -126,7 +126,7 @@ RLC-Agent is an agricultural commodity data collection, analysis, and reporting 
 |-------|-------------|------------|
 | `bronze.fas_psd` | USDA FAS global S&D balance sheets | commodity, country_code, marketing_year, production, exports, ending_stocks |
 | `bronze.fas_export_sales` | Weekly US export sales by country | commodity, country, week_ending, weekly_exports, outstanding_sales |
-| `bronze.usda_nass` | NASS crop progress/condition/production | commodity, state, week_ending, value |
+| `bronze.nass_production` | NASS production/yield surveys | commodity, state, year, value |
 | `bronze.nass_crop_progress` | Weekly crop planting, emergence, maturity | commodity, state, week_ending, progress_pct |
 | `bronze.nass_crop_condition` | Weekly crop condition ratings | commodity, state, week_ending, excellent, good, fair, poor, very_poor |
 | `bronze.conab_production` | Brazil all crops by state (7,255 records) | crop_year, state, commodity, area_planted, production, yield |
@@ -135,18 +135,14 @@ RLC-Agent is an agricultural commodity data collection, analysis, and reporting 
 | `bronze.census_trade` | US import/export trade with HS codes (1,536 records) | hs_code, country, flow, quantity, value |
 | `bronze.cftc_cot` | Commitments of Traders data | commodity, report_date, commercial_long, commercial_short, mm_long, mm_short |
 | `bronze.eia_raw_ingestion` | EIA energy data (ethanol, petroleum, etc.) | series_id, period, value |
-| `bronze.eia_ethanol` | EIA ethanol production/stocks | series_id, period, value |
-| `bronze.eia_petroleum` | EIA petroleum data | series_id, period, value |
-| `bronze.epa_rfs_rin_generation` | RFS RIN generation data | year, month, rin_type, gallons |
-| `bronze.epa_rfs_rin_transaction` | RFS RIN transaction data | transaction_date, rin_type, quantity |
+| `bronze.eia_observations` | EIA v2 API observations (crude spot, petroleum, ethanol series) | series_id, period, value |
+| `bronze.epa_rfs_rin_monthly` | RFS RIN generation by month | year, month, rin_type, gallons |
 | `bronze.weather_raw` | Raw weather observations | station_id, observation_time, temp, precip |
-| `bronze.weather_observations` | Hourly weather data | location, observation_time, temperature, precipitation |
-| `bronze.weather_emails` | Meteorologist commentary extracts | email_date, subject, extracted_text |
-| `bronze.usda_ams_cash_prices` | AMS cash grain prices | commodity, location, date, price |
-| `bronze.usda_ers_data` | ERS oilcrops and wheat data | series_name, period, value |
-| `bronze.cme_settlements` | CME futures settlement prices | contract, settle_date, settle_price |
-| `bronze.ndvi_data` | Satellite vegetation index data | region, date, ndvi_value |
-| `bronze.wheat_tenders` | International wheat tender data | country, tender_date, quantity, price |
+| `bronze.weather_email_extract` | Meteorologist commentary extracts | email_date, subject, extracted_text |
+| `bronze.ams_price_record` | AMS cash price records | commodity, location, date, price |
+| `bronze.ers_oilcrops_raw` | ERS Oil Crops Yearbook data (wheat: `bronze.ers_wheat_raw`) | series_name, period, value |
+| `bronze.futures_daily_settlement` | Daily futures settlements (delayed yfinance/ibkr) | symbol, contract_month, trade_date, settlement |
+| `bronze.ndvi_observation` | Satellite vegetation index data | region, date, ndvi_value |
 
 ### Silver Layer (26 Tables) - Cleaned & Standardized Data
 
@@ -154,15 +150,13 @@ RLC-Agent is an agricultural commodity data collection, analysis, and reporting 
 |-------|-------------|------------|
 | `silver.monthly_realized` | Monthly S&D actuals from NASS (400+ records) | commodity, marketing_year, month, attribute, realized_value, source |
 | `silver.user_sd_estimate` | User-provided S&D projections | commodity, country, marketing_year, attribute, estimate_value |
-| `silver.crop_progress` | Standardized progress with YoY comparisons | commodity, state, week_ending, progress_pct, yoy_change |
-| `silver.crop_condition` | Condition ratings with G/E calculations | commodity, state, week_ending, good_excellent_pct |
+| `silver.crop_progress_condition` | Standardized progress + condition with YoY and G/E calculations | commodity, state, week_ending, progress_pct, good_excellent_pct |
 | `silver.nass_latest_progress` | Most recent crop progress | commodity, state, progress_pct |
 | `silver.nass_crop_condition_ge` | Good/Excellent condition percentage | commodity, state, week_ending, ge_pct |
 | `silver.conab_production` | Standardized Brazil production with YoY | crop_year, state, commodity, production, yoy_change |
 | `silver.conab_balance_sheet` | Brazil S&D with stocks-to-use ratios | crop_year, commodity, stocks_to_use |
 | `silver.census_trade_monthly` | Monthly trade flows by partner | commodity, country, month, imports, exports |
 | `silver.cftc_position_history` | Net positioning calculations | commodity, report_date, mm_net, comm_net |
-| `silver.ethanol_weekly` | Weekly ethanol with moving averages | week_ending, production, stocks, ma_4wk |
 | `silver.weather_observation` | Cleaned hourly weather (152,792 records) | station_id, state, observation_time, temp_f, precip_in |
 | `silver.cash_price` | Daily cash prices standardized | commodity, location, price_date, cash_price |
 | `silver.futures_price` | Daily futures settlements | contract, settle_date, settle_price |
@@ -193,9 +187,7 @@ RLC-Agent is an agricultural commodity data collection, analysis, and reporting 
 #### Crop Conditions & Progress Views
 | View | Description |
 |------|-------------|
-| `gold.corn_condition_latest` | Current corn condition vs 5-year avg |
-| `gold.soybean_condition_latest` | Current soybean condition vs 5-year avg |
-| `gold.wheat_condition_latest` | Current wheat condition vs 5-year avg |
+| `gold.cpc_condition_weekly` | Weekly crop condition by commodity/state |
 | `gold.nass_condition_yoy` | Condition ratings year-over-year |
 
 #### CFTC Positioning Views
@@ -203,9 +195,7 @@ RLC-Agent is an agricultural commodity data collection, analysis, and reporting 
 |------|-------------|
 | `gold.cftc_sentiment` | Current managed money positioning summary |
 | `gold.cftc_mm_extremes` | Historical position extremes |
-| `gold.cftc_corn_positioning` | Corn managed money positions |
-| `gold.cftc_soybean_positioning` | Soybean managed money positions |
-| `gold.cftc_wheat_positioning` | Wheat managed money positions |
+| `silver.cftc_position_history` | Per-commodity net positioning history (no per-commodity gold views exist) |
 
 #### Energy & Biofuels Views
 | View | Description |
@@ -213,7 +203,7 @@ RLC-Agent is an agricultural commodity data collection, analysis, and reporting 
 | `gold.eia_ethanol_weekly` | Weekly ethanol production summary |
 | `gold.eia_petroleum_weekly` | Weekly petroleum data |
 | `gold.eia_prices_daily` | Daily energy prices |
-| `gold.ethanol_production_summary` | Ethanol production with trends |
+| `gold.weekly_ethanol_matrix` | Weekly ethanol production matrix |
 | `gold.rin_monthly_trend` | RIN generation trends |
 | `gold.rin_generation_summary` | RIN generation by type |
 | `gold.d6_ethanol_trend` | D6 conventional ethanol RINs |
@@ -755,7 +745,7 @@ When a user asks about **corn positioning**:
 1. Call `get_kg_context('cftc.cot')` → returns expert rules on positioning extremes, seasonal patterns
 2. Call `get_kg_context('corn')` → returns cross-market links, demand drivers
 3. Call `get_kg_relationships('corn')` → shows what CAUSES corn price movement
-4. Query `gold.cftc_corn_positioning` for current data
+4. Query `gold.cftc_sentiment` (current) / `silver.cftc_position_history` (history) for corn positioning data
 5. Frame the analysis using KG context: "Net long at X contracts is in the Yth percentile for [month]. Historical pattern suggests..."
 
 ---
@@ -772,13 +762,19 @@ When a user asks about **corn positioning**:
 
 ## Current Database Stats
 
-*Live counts as of 2026-05-19.*
+<!-- BEGIN GENERATED: DB INVENTORY (scripts/generate_claude_md_db_inventory.py — do not hand-edit) -->
+*Generated 2026-08-03 — do not edit by hand; run `python scripts/generate_claude_md_db_inventory.py` to refresh.*
 
-- **89 bronze tables** (raw ingested data)
-- **93 silver tables** (cleaned + standardized)
-- **180 gold views** (analytics-ready)
-- **41 distinct collectors** seen in `core.collection_status`
-- The hand-curated bronze/silver/gold tables documented in detail elsewhere in this file (31/26/53) are the **commodities-focused subset**; the live database has ~3× as many tables now spanning facilities, permits, trade, fuel, refining, and adjacent industries.
+- **bronze**: 107 tables
+- **silver**: 78 tables + 48 views
+- **gold**: 8 tables + 193 views
+- **core**: 22 tables + 11 views
+- **reference**: 57 tables + 4 views
+- **risk**: 5 tables
+- **sys**: 6 tables + 6 views
+- **59 distinct collectors** seen in `core.collection_status`
+- The hand-curated bronze/silver/gold objects documented in detail elsewhere in this file are the **commodities-focused subset**; the live database spans facilities, permits, trade, fuel, refining, and adjacent industries. Every object name in this file is existence-checked daily by `scripts/check_claude_md_db_drift.py`.
+<!-- END GENERATED: DB INVENTORY -->
 
 ### Computed Context Types
 

@@ -59,6 +59,13 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.us.eia_crude_price_bridge',
         'class': 'EIACrudePriceBridge',
     },
+    'claude_md_drift_check': {
+        # CLAUDE.md DB-inventory hard lock (doc side of VERIFY BEFORE ASSERTING): fails when
+        # CLAUDE.md names DB objects that don't exist or its generated inventory region is stale.
+        # Writes a system_alert CNS event on drift (surfaces via get_briefing at session start).
+        'module': 'scripts.check_claude_md_db_drift',
+        'class': 'ClaudeMdDriftCheck',
+    },
     'futures_price_mark_bridge': {
         # Standing daily version of migration 159: promote delayed yfinance/ibkr futures settles
         # (bronze.futures_daily_settlement) into silver.price_mark/curve_snapshot at NEWS_INDICATIVE.
