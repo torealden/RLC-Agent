@@ -87,18 +87,15 @@ run — external PDF fetch, same code shape). **RLC Dispatcher scheduled task
 restarted 07:38 ET** so tonight's fires use the fixed modules (the long-running
 process had the old code imported).
 
-Tonight's 17:45 bridge / 18:15 curve fires: a persistent Monitor in this session
-reports each `triggered_by='scheduler'` row (or MISSED at due+45 min). If the
-session closes first:
-```sql
-SELECT collector_name, run_started_at, status, triggered_by
-FROM core.collection_status
-WHERE collector_name IN ('futures_price_mark_bridge','curve_builder')
-  AND triggered_by = 'scheduler' AND run_started_at > '2026-08-03 20:00+00'
-ORDER BY run_started_at;
-```
-Expect exactly ONE row per job, `success`, no ET-naive skew. The drift check's
-first post-fix SCHEDULED fire is tomorrow 07:30 — worth one glance.
+**Post-fix scheduled fires VERIFIED same evening (all three jobs closed out):**
+- `futures_price_mark_bridge` 21:44:58 UTC (17:44:58 ET): success/scheduler,
+  1,718 rows, single row id 1535, 1.7 s duration, stamps consistent.
+- `curve_builder` 22:15:00 UTC (18:15:00 ET): success/scheduler, 189 rows,
+  single row id 1537, 17.5 s duration.
+- `claude_md_drift_check` fired 07:30 under the OLD code (the failure that
+  exposed the bug); its runner path is verified via the manual
+  `run_collector()` test. First post-fix SCHEDULED fire is tomorrow 07:30 —
+  worth one glance, expect one success/scheduler row.
 
 ## Known-broken / unverified
 
