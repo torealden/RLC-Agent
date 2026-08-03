@@ -185,6 +185,20 @@ tied to SQL to the digit); (3) backfills: majors + stale + new commodities, ~13k
 Not-verified list + Tore items (cottonseed sheet garbage, Argentina soy locked, lauric rebuild) in
 `docs/handoffs/2026-08-01_usda_comp_tabs.md`. Next: LLM forecast generation into core.forecasts.
 
+**Session 2026-08-02/03 done — WASDE pull race fix (mig 166) + repo consolidation + first skill.**
+Artifacts: (1) mig 166 relabels `gold.psd_wasde_vintages` by PSD cycle stamp (calendar_year+month),
+not pull date — proved the 12:00 ET pull races PSD propagation per-commodity (corn stale-by-one on
+every 2026 WASDE day); collector now parses `calendarYear`; pull moved to 15:00 ET in
+`src/schedulers/master_scheduler.py` (the LIVE path — rlc_scheduler/ is a parallel copy); comp tabs
+rebuilt fleet-wide with cycle-based labels + unit-check unanimity rule (india soy oil false veto
+fixed). (2) Git consolidated: main fast-forwarded to helios tip and is the single trunk; felipe +
+helios branches deleted (verified fully merged); `origin/sandbox/wasde-wheat-vintage` = Felipe's
+UNMERGED Jul-7 wheat WASDE work touching usda_wasde_collector — needs review/rebase, do not blind-merge.
+(3) First project skill `.claude/skills/weekly-commentary/` (ranked non-circular driver attribution +
+curve-vs-stocks divergence check). Handoff: `docs/handoffs/2026-08-02_wasde_pull_race_fix.md` (incl.
+two queued build prompts: populate gold.curve_term IFV engine; CLAUDE.md DB-inventory hard lock).
+First live test of 15:00 pull + cycle labels = Aug 12 WASDE.
+
 ## Blocked on Tore — not sessions, decisions
 
 Resolved 2026-07-22 unless marked open.

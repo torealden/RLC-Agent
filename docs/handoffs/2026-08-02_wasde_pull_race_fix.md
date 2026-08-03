@@ -112,11 +112,67 @@ convention. Note-only tabs (corn oil/flaxseed/safflower) and skips
   (Cornell/OCE), (b) USDACompUpdater.bas in-book VBA, (c) LLM forecast
   generation into core.forecasts.
 
+## Addendum (same session, 2026-08-02/03) — repo consolidation + skills
+
+### Git consolidated to a single trunk
+- `main` fast-forwarded to the helios tip and pushed; working copy now on
+  main. `felipe` and `helios-price-layer-foundation` deleted local+remote
+  after verifying ZERO commits outside main. GitHub Desktop showing
+  "nothing to pull" is correct behavior (commits originate locally).
+- **`origin/sandbox/wasde-wheat-vintage` preserved — Felipe's UNMERGED
+  work** (Jul 7, "Wheat Wasde Comp": wheat flat-file export scripts +
+  ~94 lines in usda_wasde_collector.py). Based on pre-fix main; needs
+  review/rebase against the country-code + calendarYear + mig-166 changes
+  before incorporating. Do NOT blind-merge.
+
+### First project skill shipped
+`.claude/skills/weekly-commentary/SKILL.md` — ranked, non-circular
+price-driver attribution + curve-vs-inventory divergence check, mined from
+a generic MCPMarket skill and rebuilt on verified-live objects
+(gold.futures_daily_validated, gold.cftc_sentiment, gold.psd_wasde_vintages).
+Found during verification: CLAUDE.md documents gold.cftc_corn/soybean/
+wheat_positioning views that DO NOT EXIST; gold.curve_term (mig 158) has
+zero rows because the curve-construction phase was never built (storage
+only). Both became queued prompts below.
+
+### Strategic direction agreed (Tore)
+Skills + a client-scoped MCP profile = the productization path for the
+analytical layer. Internal skills first (/session-close and /wasde-refresh
+still unbuilt); client MCP needs a whitelisted-tools profile + read-only
+role BEFORE anything client-facing (current server exposes raw
+query_database — never ship that). Client-MCP scoping spec is queued,
+unwritten.
+
+### Two ready-to-paste session prompts (generated 2026-08-03, Tore has copies)
+**A. Build the derived-curve engine populating gold.curve_term (mig 158).**
+Read handoff 2026-07-28_helios_price_layer_foundation.md + the Helios
+price-feeds brief (clients/Contracts/Helios/CLAUDE_CODE_BRIEF_price_feeds.md)
++ mig 158 comments. Verify silver.price_mark state and the PENDING backfill
+ruling first; build the first derived curve end-to-end (term rows + DERIVED_*
+headline mark in one transaction; the deferred tie-out trigger must stay
+intact — fix terms, never weaken the trigger); curve_key must equal the
+headline's series_key; freight/FX/basis method choices are review points for
+Tore; register in src/dispatcher + src/schedulers/master_scheduler.py (LIVE
+path); prove the tie-out rejects a deliberately broken term.
+
+**B. CLAUDE.md DB-inventory hard lock.** A prose promise can't prevent
+drift; build (1) scripts/generate_claude_md_db_inventory.py rewriting a
+marked generated region of CLAUDE.md from information_schema (curated
+subset, every named object existence-verified), (2)
+scripts/check_claude_md_db_drift.py failing nonzero on any nonexistent
+object named anywhere in CLAUDE.md or stale generated region — wired as a
+daily dispatcher job that writes a CNS event (surfaces via get_briefing at
+session start) AND a commit-blocking hook; (3) fix current drift now
+(phantom CFTC views, stale 89/93/180 counts) and demonstrate the check
+failing on a fake view name.
+
 ## Next-session prompt
-> Read docs/handoffs/2026-08-02_wasde_pull_race_fix.md. Pick per Tore's
-> priority: (a) historical WASDE vintage backfill source hunt (Cornell
-> Mann Library / OCE machine-readable archive — FIRST check whether a
-> clean pre-compiled by-release-month dataset exists), (b)
-> USDACompUpdater.bas generalized in-book VBA updater, or (c) LLM forecast
-> generation into core.forecasts (memory: project_forecast_layer.md,
-> project_symbiotic_forecasting.md).
+> Read docs/handoffs/2026-08-02_wasde_pull_race_fix.md including the
+> addendum. Pick ONE per Tore's priority: (A) gold.curve_term derived-curve
+> engine or (B) CLAUDE.md DB-inventory hard lock (full prompts in the
+> addendum), or the earlier queue: (a) historical WASDE vintage backfill
+> source hunt (Cornell Mann Library / OCE archive — FIRST check for a
+> pre-compiled by-release-month dataset), (b) USDACompUpdater.bas in-book
+> VBA, (c) LLM forecast generation into core.forecasts
+> (memory: project_forecast_layer.md, project_symbiotic_forecasting.md),
+> or (d) client-MCP scoping spec.
