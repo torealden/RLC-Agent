@@ -199,6 +199,17 @@ curve-vs-stocks divergence check). Handoff: `docs/handoffs/2026-08-02_wasde_pull
 two queued build prompts: populate gold.curve_term IFV engine; CLAUDE.md DB-inventory hard lock).
 First live test of 15:00 pull + cycle labels = Aug 12 WASDE.
 
+**Session 2026-08-03 done — curve engine (queued prompt A) + CLAUDE.md DB-inventory hard lock (B).**
+Artifacts: (1) `src/curves/` engine — first derived curve `BRSBO_FOB_PARITY` (BR SBO FOB parity from
+dated ZL, register #19/#27) live end-to-end: term stacks in `gold.curve_term` + `DERIVED_PARITY`
+headline in `price_mark`, one txn, mig-158 tie-out proven to reject a broken term at COMMIT; board
+legs read `gold.price_mark_best`; `futures_price_mark_bridge` keeps delayed board marks current daily
+(they had frozen at 07-27); both registered + dispatcher restarted. fob_spread/basis are 0-placeholders
+— **Tore rulings needed** (see handoff). (2) CLAUDE.md hard lock: generator rewrites a marked inventory
+region from information_schema; drift checker (daily 07:30 CNS alert + pre-commit hook) fails on any
+phantom object; fixed 22 phantoms (not just the 3 CFTC views) + stale counts (actual: bronze 107,
+gold 193 views, 59 collectors). Handoff: `docs/handoffs/2026-08-03_curve_engine_claude_md_lock.md`.
+
 ## Blocked on Tore — not sessions, decisions
 
 Resolved 2026-07-22 unless marked open.
