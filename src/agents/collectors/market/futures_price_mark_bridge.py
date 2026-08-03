@@ -22,7 +22,7 @@ revisions in bronze propagate; the deep history is already in place from migrati
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -51,19 +51,30 @@ class FuturesPriceMarkBridge:
     COLLECTOR_NAME = "futures_price_mark_bridge"
     WINDOW_DAYS = 14
 
-    def collect(self, triggered_by: str = "manual") -> dict:
-        started = datetime.now()
+    def collect(self, triggered_by: str | None = None):
+        # Dispatcher runs pass NO triggered_by: collector_runner owns the
+        # collection_status row there (self-logging too produced paired rows,
+        # one ET-naive 'manual', one runner 'scheduler' — 2026-08-03). Only the
+        # __main__ path (triggered_by='cli'), which bypasses the runner,
+        # self-logs. Runner requires a .success attribute, so return
+        # CollectorResult, not a dict.
+        from src.agents.base.base_collector import CollectorResult
+        started = datetime.now(timezone.utc)
         try:
             counts, latest = self._sync()
         except Exception as e:
             logger.error("futures price_mark bridge failed: %s", e)
-            self._log_run(started, "FAILED", 0, error=str(e), triggered_by=triggered_by)
-            return {"success": False, "error": str(e)}
+            if triggered_by:
+                self._log_run(started, "FAILED", 0, error=str(e), triggered_by=triggered_by)
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message=str(e))
         total = sum(counts.values())
-        self._log_run(started, "SUCCESS", total, data_period=str(latest) if latest else None,
-                      triggered_by=triggered_by)
-        return {"success": True, "rows_written": total, **counts,
-                "latest": str(latest) if latest else None}
+        if triggered_by:
+            self._log_run(started, "SUCCESS", total, data_period=str(latest) if latest else None,
+                          triggered_by=triggered_by)
+        return CollectorResult(success=True, source=self.COLLECTOR_NAME,
+                               records_fetched=total, data=counts,
+                               period_end=str(latest) if latest else None)
 
     def _sync(self):
         from src.services.database.db_config import get_connection

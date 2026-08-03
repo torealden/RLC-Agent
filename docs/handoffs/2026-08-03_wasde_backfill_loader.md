@@ -63,29 +63,54 @@ Follow-on from `2026-08-03_wasde_backfill_source_hunt.md`. Ran ~05:40–06:30 ET
    sets RealDictCursor; a SELECT with two same-named columns (e.g. two COUNTs)
    silently collapses keys. Alias every aggregate.
 
-## Scheduled-job verification (task from prior handoff) — STILL OPEN, monitored
+## Scheduled-job verification — drift check FIRED AND FAILED; root cause found and fixed
 
-At 06:11 ET none of the three had fired yet (drift 07:30, bridge 17:45, curve
-18:15 — all later today). A **persistent Monitor** is armed in this session
-polling `core.collection_status` every 10 min; it reports each fire (status +
-triggered_by) or a MISSED line at due+45 min. If the session closes first, next
-session runs:
+The 07:30 drift check fired on schedule and produced the predicted paired rows:
+`failed/scheduler` (real UTC stamp, error `'dict' object has no attribute
+'success'`) + `SUCCESS/manual` (ET-naive stamp). **Root cause, both defects at
+once**: the five jobs built in the recent price-layer/CNS sessions
+(claude_md_drift_check, futures_price_mark_bridge, curve_builder,
+eia_crude_price_bridge, ams_grain_settlement) all (a) return a plain dict from
+`collect()` while `collector_runner.py:196` requires a `.success` ATTRIBUTE →
+every scheduled fire logs FAILED; (b) self-log a second collection_status row
+with naive `datetime.now()` and `triggered_by` defaulting to `"manual"` (the
+dispatcher never passes it into collect()). That one bug explains the entire
+estate-wide paired-row/4-hour-skew pattern from the prior handoff §1.
+
+**Fixed in all five modules**: `collect()` now returns `CollectorResult`
+(dataclass with `.success`); self-logging only on the explicit CLI path
+(`triggered_by='cli'`, which bypasses the runner) and with tz-aware UTC stamps;
+dispatcher runs are logged solely by the runner (`triggered_by='scheduler'`).
+Verified end-to-end through `CollectorRunner.run_collector()` for four of the
+five (drift clean, bridge 1,516 rows, curve 180 terms, EIA 18,459 rows; AMS not
+run — external PDF fetch, same code shape). **RLC Dispatcher scheduled task
+restarted 07:38 ET** so tonight's fires use the fixed modules (the long-running
+process had the old code imported).
+
+Tonight's 17:45 bridge / 18:15 curve fires: a persistent Monitor in this session
+reports each `triggered_by='scheduler'` row (or MISSED at due+45 min). If the
+session closes first:
 ```sql
 SELECT collector_name, run_started_at, status, triggered_by
 FROM core.collection_status
-WHERE collector_name IN ('claude_md_drift_check','futures_price_mark_bridge','curve_builder')
-  AND run_started_at > '2026-08-03 10:00+00' ORDER BY run_started_at;
+WHERE collector_name IN ('futures_price_mark_bridge','curve_builder')
+  AND triggered_by = 'scheduler' AND run_started_at > '2026-08-03 20:00+00'
+ORDER BY run_started_at;
 ```
-`triggered_by` must be the dispatcher, not cli.
+Expect exactly ONE row per job, `success`, no ET-naive skew. The drift check's
+first post-fix SCHEDULED fire is tomorrow 07:30 — worth one glance.
 
 ## Known-broken / unverified
 
-1. The three scheduled fires (above) — unverified until they happen.
+1. Tonight's bridge/curve scheduler fires — monitored, unverified until they
+   happen; drift check's first post-fix scheduled fire is tomorrow 07:30.
 2. Comp-tab workbooks not rebuilt against the union view (query change verified
    by inspection only; ties-at-79 path untested against real books).
-3. collection_status ET-naive/UTC start-stamp skew — still diagnosed-not-fixed
-   (loader/transform here write both stamps tz-aware UTC and are clean).
-4. CLAUDE.md DB inventory regenerated (bronze 108, silver 79 tables now).
+3. AMS settlement collector got the same dict→CollectorResult fix but was NOT
+   executed (external PDF fetch); its next scheduled run is the test.
+4. Historical paired/skewed collection_status rows from the old code are still
+   in the table — display noise only; cleanup optional.
+5. CLAUDE.md DB inventory regenerated (bronze 108, silver 79 tables now).
 
 ## Next-session prompt
 

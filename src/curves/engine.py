@@ -22,7 +22,7 @@ decomposition error still fails loud.
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from src.curves.specs import CURVE_SPECS, ParityChainSpec
 
@@ -52,20 +52,31 @@ class CurveEngine:
         self.specs = specs if specs is not None else CURVE_SPECS
         self.window_dates = window_dates  # trailing obs_dates re-derived each run (revision heal)
 
-    def collect(self, triggered_by: str = "manual") -> dict:
-        started = datetime.now()
+    def collect(self, triggered_by: str | None = None):
+        # Dispatcher runs pass NO triggered_by: collector_runner owns the
+        # collection_status row there (self-logging too produced paired rows —
+        # 2026-08-03). Only the __main__ path (triggered_by='cli'), which
+        # bypasses the runner, self-logs. Runner requires a .success attribute,
+        # so return CollectorResult, not a dict.
+        from src.agents.base.base_collector import CollectorResult
+        started = datetime.now(timezone.utc)
         try:
             results = self.build_all()
         except Exception as e:
             logger.error("curve build failed: %s", e)
-            self._log_run(started, "FAILED", 0, error=str(e), triggered_by=triggered_by)
-            return {"success": False, "error": str(e)}
+            if triggered_by:
+                self._log_run(started, "FAILED", 0, error=str(e), triggered_by=triggered_by)
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message=str(e))
         total_terms = sum(r["term_rows"] for r in results)
         latest = max((r["obs_date"] for r in results), default=None)
-        self._log_run(started, "SUCCESS", total_terms,
-                      data_period=str(latest) if latest else None, triggered_by=triggered_by)
-        return {"success": True, "curves": len(self.specs), "builds": len(results),
-                "term_rows": total_terms, "latest": str(latest) if latest else None}
+        if triggered_by:
+            self._log_run(started, "SUCCESS", total_terms,
+                          data_period=str(latest) if latest else None, triggered_by=triggered_by)
+        return CollectorResult(success=True, source=self.COLLECTOR_NAME,
+                               records_fetched=total_terms,
+                               data={"curves": len(self.specs), "builds": len(results)},
+                               period_end=str(latest) if latest else None)
 
     def build_all(self) -> list[dict]:
         from src.services.database.db_config import get_connection

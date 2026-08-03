@@ -29,7 +29,6 @@ from __future__ import annotations
 import json
 import re
 import sys
-from datetime import datetime
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -107,19 +106,27 @@ def run_check(text: str) -> tuple[int, list[str]]:
 
 
 class ClaudeMdDriftCheck:
-    """Dispatcher job wrapper: daily drift check that raises a CNS briefing event on drift."""
+    """Dispatcher job wrapper: daily drift check that raises a CNS briefing event on drift.
+
+    collection_status is written by the dispatcher's collector_runner, NOT here —
+    the previous self-written row produced a duplicate pair per fire (one ET-naive
+    'manual', one runner 'scheduler'; 2026-08-03). The runner needs a `.success`
+    attribute on the result, so this returns CollectorResult, not a dict (the dict
+    return made every scheduled fire log FAILED with 'dict' object has no
+    attribute 'success').
+    """
 
     COLLECTOR_NAME = "claude_md_drift_check"
 
-    def collect(self, triggered_by: str = "manual") -> dict:
-        started = datetime.now()
+    def collect(self, **_kwargs):
+        from src.agents.base.base_collector import CollectorResult
         text = CLAUDE_MD.read_text(encoding="utf-8")
         code, findings = run_check(text)
-        try:
-            from src.services.database.db_config import get_connection
-            with get_connection() as conn:
-                cur = conn.cursor()
-                if findings:
+        if findings:
+            try:
+                from src.services.database.db_config import get_connection
+                with get_connection() as conn:
+                    cur = conn.cursor()
                     cur.execute(
                         "SELECT core.log_event(%s, %s, %s, %s, %s)",
                         ("system_alert", self.COLLECTOR_NAME,
@@ -127,21 +134,14 @@ class ClaudeMdDriftCheck:
                          "docs name objects the DB doesn't have, or the inventory region is stale",
                          json.dumps({"findings": findings}), 2),
                     )
-                cur.execute(
-                    """INSERT INTO core.collection_status
-                       (collector_name, run_started_at, run_finished_at, status, rows_collected,
-                        rows_inserted, error_message, is_new_data, triggered_by)
-                       VALUES (%s,%s,now(),%s,%s,%s,%s,%s,%s)""",
-                    (self.COLLECTOR_NAME, started,
-                     "SUCCESS" if code in (0, 1) else "FAILED",
-                     len(findings), 0,
-                     None if code in (0, 1) else "DB unreachable during drift check",
-                     bool(findings), triggered_by),
-                )
-                conn.commit()
-        except Exception as e:  # pragma: no cover
-            print(f"WARNING: could not log drift-check result: {e}", file=sys.stderr)
-        return {"success": code != 2, "drift_findings": len(findings), "findings": findings}
+                    conn.commit()
+            except Exception as e:  # pragma: no cover
+                print(f"WARNING: could not raise drift CNS event: {e}", file=sys.stderr)
+        return CollectorResult(
+            success=code != 2, source=self.COLLECTOR_NAME,
+            records_fetched=len(findings),
+            data={"findings": findings},
+            error_message=None if code != 2 else "DB unreachable during drift check")
 
 
 def main() -> int:

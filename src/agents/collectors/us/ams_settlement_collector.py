@@ -37,7 +37,7 @@ import io
 import logging
 import re
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Optional
 
 import requests
@@ -148,8 +148,14 @@ class AMSSettlementCollector:
     SOURCE = "usda_ams_settle"
     COLLECTOR_NAME = "ams_grain_settlement"
 
-    def collect(self, triggered_by: str = "manual") -> dict:
-        started = datetime.now()
+    def collect(self, triggered_by: str | None = None):
+        # Dispatcher runs pass NO triggered_by: collector_runner owns the
+        # collection_status row there (self-logging too produced paired rows —
+        # 2026-08-03). Only the __main__ path (triggered_by='cli'), which
+        # bypasses the runner, self-logs. Runner requires a .success attribute,
+        # so return CollectorResult, not a dict.
+        from src.agents.base.base_collector import CollectorResult
+        started = datetime.now(timezone.utc)
         report_date, marks, slug_used = None, [], None
         for slug in _SLUGS:
             text = _fetch_pdf_text(slug)
@@ -162,16 +168,22 @@ class AMSSettlementCollector:
             logger.warning("AMS %s parsed no marks / no date; trying next slug", slug)
 
         if not marks or not report_date:
-            self._log_run(started, "FAILED", 0, 0, report_date,
-                          error="no settlement marks parsed from any slug", triggered_by=triggered_by)
-            return {"success": False, "error": "no marks parsed", "rows": 0}
+            if triggered_by:
+                self._log_run(started, "FAILED", 0, 0, report_date,
+                              error="no settlement marks parsed from any slug",
+                              triggered_by=triggered_by)
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message="no settlement marks parsed from any slug")
 
         inserted = self._write(report_date, marks, slug_used)
-        self._log_run(started, "SUCCESS", len(marks) * 2, inserted, report_date,
-                      triggered_by=triggered_by,
-                      notes=f"slug {slug_used}; {len({m.series_key for m in marks})} series")
-        return {"success": True, "report_date": str(report_date), "slug": slug_used,
-                "marks": len(marks), "rows_written": inserted}
+        if triggered_by:
+            self._log_run(started, "SUCCESS", len(marks) * 2, inserted, report_date,
+                          triggered_by=triggered_by,
+                          notes=f"slug {slug_used}; {len({m.series_key for m in marks})} series")
+        return CollectorResult(success=True, source=self.COLLECTOR_NAME,
+                               records_fetched=len(marks) * 2,
+                               data={"slug": slug_used, "rows_written": inserted},
+                               period_end=str(report_date))
 
     def _write(self, report_date: date, marks: list[SettlementMark], slug: str) -> int:
         from src.services.database.db_config import get_connection
