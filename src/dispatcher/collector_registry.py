@@ -53,6 +53,13 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
         'module': 'src.agents.collectors.us.ams_dco_collector',
         'class': 'AMSDCOCollector',
     },
+    'eia_v2_crude': {
+        # Daily WTI/Brent spot pull (EIA v2 API) -> bronze.eia_observations. The 18:00 ET
+        # bridge below promotes bronze -> price_mark, but until 2026-08-04 nothing scheduled
+        # the pull itself — bronze crude went stale twice (05-26, 07-20). 45-day lookback upsert.
+        'module': 'src.agents.collectors.us.eia_v2_collector',
+        'class': 'EIAV2CrudeDaily',
+    },
     'eia_crude_price_bridge': {
         # Helios price-feed layer Tier A #12: promote EIA WTI/Brent spot from
         # bronze.eia_observations into silver.price_mark (SPOT, OFFICIAL_GOV). Runs after the EIA pull.

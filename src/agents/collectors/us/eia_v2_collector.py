@@ -337,6 +337,41 @@ class EIAV2Collector:
         return results
 
 
+class EIAV2CrudeDaily:
+    """Scheduler-facing wrapper: daily WTI/Brent spot pull -> bronze.eia_observations.
+
+    EIAV2Collector.collect() returns a per-series row-count dict and was never
+    registered — the 18:00 ET crude price bridge consumed bronze that nothing
+    refreshed (stale since the 2026-07-28 manual pull; before that since 05-26).
+    This wrapper gives the dispatcher the CollectorResult contract it needs.
+    Registered as 'eia_v2_crude', daily 17:30 ET, ahead of the bridge."""
+
+    COLLECTOR_NAME = "eia_v2_crude"
+    SERIES = ['wti_cushing', 'brent']
+
+    def collect(self, **kwargs):
+        from datetime import timedelta
+        from src.agents.base.base_collector import CollectorResult
+        try:
+            inner = EIAV2Collector()
+            # 45-day lookback: EIA spot publishes with up to ~2 weeks lag and
+            # revises recent days; the upsert makes the overlap idempotent.
+            res = inner.collect(self.SERIES, start=date.today() - timedelta(days=45))
+        except Exception as e:
+            logger.error(f'eia_v2_crude failed: {e}')
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message=str(e))
+        total = sum(res.values())
+        zero = [sk for sk in self.SERIES if not res.get(sk)]
+        return CollectorResult(
+            success=bool(total),
+            source=self.COLLECTOR_NAME,
+            records_fetched=total,
+            error_message=None if total else f'no rows for {self.SERIES}',
+            warnings=[f'no rows for {zero}'] if (total and zero) else [],
+        )
+
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()

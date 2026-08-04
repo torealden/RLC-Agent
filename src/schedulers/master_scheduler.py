@@ -173,6 +173,18 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['distillers_corn_oil'],
     ),
 
+    'eia_v2_crude': CollectorSchedule(
+        collector_name='eia_v2_crude',
+        collector_class='EIAV2CrudeDaily',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(17, 30),  # 5:30 PM ET, ahead of the 18:00 bridge that promotes it
+            description="EIA v2 WTI/Brent daily spot -> bronze.eia_observations (45-day lookback upsert)"
+        ),
+        priority=4,
+        commodities=['crude_oil'],
+    ),
+
     'eia_crude_price_bridge': CollectorSchedule(
         collector_name='eia_crude_price_bridge',
         collector_class='EIACrudePriceBridge',
