@@ -50,7 +50,7 @@ from datetime import datetime
 from pathlib import Path
 
 import openpyxl
-from openpyxl.styles import Font
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -320,8 +320,16 @@ def load_vintages(cur, commodity: str, country_code: str):
 
 def inspect_book(path: Path):
     """Read member-sheet structure: title, MY->column map, label->row map,
-    cached values for the unit cross-check."""
+    cached values for the unit cross-check. Also returns the existing
+    usda_comp A1 sheet title when Tore has hand-set one (donor: 'ARGENTINA
+    OILSEEDS COMPLEX') so a rebuild preserves it -- generated banners
+    (recognizable by 'USDA (PSD/WASDE)') are NOT preserved."""
     wb_v = openpyxl.load_workbook(path, data_only=True)   # cached values
+    existing_title = None
+    if "usda_comp" in wb_v.sheetnames:
+        v = wb_v["usda_comp"].cell(row=1, column=1).value
+        if isinstance(v, str) and v.strip() and "USDA (PSD/WASDE)" not in v:
+            existing_title = v.strip()
     members = []
     for name in wb_v.sheetnames:
         if not name.endswith("_balance_sheet"):
@@ -375,7 +383,7 @@ def inspect_book(path: Path):
             "values": values,
         })
     wb_v.close()
-    return members
+    return members, existing_title
 
 
 def find_label_row(label_row: dict, patterns: list[str]):
@@ -456,12 +464,52 @@ def derive_area_factor(member):
 
 
 # ---------------------------------------------------------------------------
-# Comp-tab content assembly (engine-neutral cell list)
+# Comp-tab content assembly (engine-neutral styled-cell map)
 # ---------------------------------------------------------------------------
+# Styling replicates the donor tab Tore hand-formatted 2026-08-03 in
+# argentina_soybean_complex_bal_sheets.xlsm/usda_comp: Aptos Display
+# throughout, internal-green MY headers (#3C7D22, white text) merged across
+# B:D / E:G / I:J, every 2nd data row banded light gray, medium box outline
+# with thin column separators, centered values with red-parenthesis
+# negatives, notes in Aptos Narrow 8. Column widths follow the donor
+# exactly: A ~40.7, B ~12.7, C:J left at the Excel default (Tore's call --
+# long "Δ from September"-style headers will clip; flagged in handoff).
+
+GREEN = "3C7D22"     # internal green (reference_excel_color_conventions)
+BAND = "D0CECE"      # donor band fill: Background 2, darker 10%
+GRAY = "757171"      # donor unit-line text: Background 2, darker 50%
+WHITE = "FFFFFF"
+F_MAIN = "Aptos Display"   # donor A1 says "Bierstadt Display" = Aptos' old name
+F_NOTE = "Aptos Narrow"
+
+NF_INT = "#,##0_);[Red](#,##0)"
+NF_1DP = "#,##0.0_);[Red](#,##0.0)"
+NF_AREA = "#,##0.000_);[Red](#,##0.000)"
+NF_PCT = "0.0%"
+
+# data-grid columns -> (left, right) border weight
+VCOLS = {2: ("medium", "thin"), 3: ("thin", "thin"), 4: ("thin", "thin"),
+         5: ("thin", "thin"), 6: ("thin", "thin"), 7: ("thin", "medium"),
+         9: ("medium", "thin"), 10: ("thin", "medium")}
+
+
+def _cell(cells, r, c, v=None, f=False, nf=None, st=None):
+    """Merge a value / number-format / style into the (r, c) cell record."""
+    cur = cells.setdefault((r, c), {"v": None, "f": False, "nf": None, "st": {}})
+    if v is not None:
+        cur["v"], cur["f"] = v, f
+    if nf:
+        cur["nf"] = nf
+    if st:
+        border = {**cur["st"].get("border", {}), **st.get("border", {})}
+        cur["st"].update(st)
+        if border:
+            cur["st"]["border"] = border
+
 
 def build_block(member, active, finals, country_name, start_row):
-    """Return (cells, n_rows, notes). cells = list of
-    (row, col, value, is_formula, num_fmt, bold)."""
+    """Return (cells, merges, n_rows, notes). cells = {(row, col): record},
+    merges = [(row, col_first, col_last)]."""
     commodity = member["commodity"]
     is_cotton = commodity == "cotton"
     is_seed = commodity in SEED_COMMODITIES
@@ -472,7 +520,7 @@ def build_block(member, active, finals, country_name, start_row):
 
     mys = sorted(active.keys())[:2]
     if len(mys) < 2:
-        return None, 0, [f"{commodity}: fewer than 2 active MYs"]
+        return None, None, 0, [f"{commodity}: fewer than 2 active MYs"]
     my1, my2 = mys
 
     # Unit factor: the row-label unit is authoritative when present (it is
@@ -507,9 +555,9 @@ def build_block(member, active, finals, country_name, start_row):
         elif conflict:
             cpv, cu, cev = max(conflict)
             if cpv >= 500:
-                return None, 0, [f"{commodity}: label says {label_unit} but "
-                                 f"values strongly snap to {cu} "
-                                 f"(psd={cpv:,.0f}) -- skipped"]
+                return None, None, 0, [f"{commodity}: label says {label_unit} "
+                                       f"but values strongly snap to {cu} "
+                                       f"(psd={cpv:,.0f}) -- skipped"]
             notes.append(f"{commodity}: weak snap to {cu} "
                          f"(psd={cpv:,.0f}) ignored; label "
                          f"{label_unit} used")
@@ -517,20 +565,22 @@ def build_block(member, active, finals, country_name, start_row):
         # No label: values may only decide the unit when they agree with
         # each other AND the evidence is strong.
         if len(snaps) > 1:
-            return None, 0, [f"{commodity}: no unit label and values snap "
-                             f"to {len(snaps)} different factors -- "
-                             f"ambiguous, skipped"]
+            return None, None, 0, [f"{commodity}: no unit label and values "
+                                   f"snap to {len(snaps)} different factors "
+                                   f"-- ambiguous, skipped"]
         (factor, (strength, unit_name, ev)), = snaps.items()
         if strength < 500:
-            return None, 0, [f"{commodity}: no recognized unit label and no "
-                             f"strong value snap -- skipped, never guessed"]
+            return None, None, 0, [f"{commodity}: no recognized unit label "
+                                   f"and no strong value snap -- skipped, "
+                                   f"never guessed"]
         evidence = ev
     else:
         # No recognized label AND no snap at all. A weak label-less snap
         # is not enough: mid-conversion sheets (cottonseed 2026-08-02)
         # can coincidentally snap on one small field.
-        return None, 0, [f"{commodity}: no recognized unit label and no "
-                         f"strong value snap -- skipped, never guessed"]
+        return None, None, 0, [f"{commodity}: no recognized unit label and "
+                               f"no strong value snap -- skipped, never "
+                               f"guessed"]
     area_factor = derive_area_factor(member) or 0.001
 
     cur1, prior1 = active[my1]
@@ -545,10 +595,10 @@ def build_block(member, active, finals, country_name, start_row):
         f = area_factor if field == "area_harvested" else factor
         return round(float(v) * f, 2)
 
-    member_title = member["title"].replace(" SUPPLY AND DEMAND", "")
     tab = member["tab"]
 
-    cells = []
+    cells: dict = {}
+    merges = []
     r0 = start_row
     my_label = lambda my: f"{my}/{str(my + 1)[-2:]}"
     short = lambda my: f"{str(my)[-2:]}/{str(my + 1)[-2:]}"
@@ -560,31 +610,73 @@ def build_block(member, active, finals, country_name, start_row):
     prior_month = (MONTH_NAMES[prior1["psd_cycle"].month]
                    if prior1 is not None else "")
 
-    cells.append((r0, 1, f"{member_title} - USDA v RLC ({unit_name})",
-                  False, None, True))
-    cells.append((r0 + 1, 2, my_label(my1), False, None, True))
-    cells.append((r0 + 1, 5, my_label(my2), False, None, True))
-    if prior_month:
-        cells.append((r0 + 1, 9, prior_month, False, None, True))
+    fmt_val = NF_INT if factor >= 1 else NF_1DP
+
+    has_area = any(f == "area_harvested" for _, f in rows_spec)
+    area_unit_name = next((k for k, v in AREA_FACTORS.items()
+                           if v == area_factor), "million hectares")
+    unit_text = (f"({area_unit_name}, {unit_name})" if has_area
+                 else f"({unit_name})")
+
+    # Block title: the member sheet's own title, as in the donor.
+    _cell(cells, r0, 1, member["title"],
+          st={"font": F_MAIN, "bold": True})
+
+    # MY header row: green merged headers B:D / E:G, prior month I:J.
+    r1 = r0 + 1
+    my_hdr = {"font": F_MAIN, "bold": True, "center": True,
+              "fill": GREEN, "color": WHITE}
+    _cell(cells, r1, 2, my_label(my1), st={**my_hdr, "border": {"left": "medium"}})
+    _cell(cells, r1, 4, st={"border": {"right": "thin"}})
+    _cell(cells, r1, 5, my_label(my2), st={**my_hdr, "border": {"left": "thin"}})
+    _cell(cells, r1, 7, st={"border": {"right": "thin"}})
+    _cell(cells, r1, 9, prior_month or " ",
+          st={**my_hdr, "border": {"top": "medium", "left": "medium"}})
+    _cell(cells, r1, 10, st={"border": {"top": "medium", "right": "medium"}})
+    merges += [(r1, 2, 4), (r1, 5, 7), (r1, 9, 10)]
+
+    # Column header row + unit line.
     hdr = r0 + 2
     delta_txt = f"Δ from {prior_month}" if prior_month else "Δ (no prior)"
+    _cell(cells, hdr, 1, unit_text,
+          st={"font": F_MAIN, "size": 8, "color": GRAY})
+    col_hdr = {"font": F_MAIN, "bold": True, "center": True}
     for col, txt in [(2, "USDA"), (3, delta_txt), (4, "RLC"),
-                     (5, "USDA"), (6, delta_txt), (7, "RLC"),
-                     (9, short(my1)), (10, short(my2))]:
-        cells.append((hdr, col, txt, False, None, True))
+                     (5, "USDA"), (6, delta_txt), (7, "RLC")]:
+        left, right = VCOLS[col]
+        _cell(cells, hdr, col, txt,
+              st={**col_hdr, "border": {"left": left, "right": right}})
+    _cell(cells, hdr, 9, short(my1),
+          st={**col_hdr, "border": {"left": "medium", "right": "thin",
+                                    "bottom": "medium"}})
+    _cell(cells, hdr, 10, short(my2),
+          st={**col_hdr, "border": {"left": "thin", "right": "medium",
+                                    "bottom": "medium"}})
 
     data0 = hdr + 1
     row_of = {}
     for i, (label, _f) in enumerate(rows_spec):
         row_of[label] = data0 + i
 
-    n_fmt = "#,##0.0"
-    for label, field in rows_spec:
+    for i, (label, field) in enumerate(rows_spec):
         r = row_of[label]
-        fmt = "0.0%" if field == "STU" else ("0.000" if field == "area_harvested" else n_fmt)
-        cells.append((r, 1, label if field != "area_harvested"
-                      else f"Harvested Area ({[k for k,v in AREA_FACTORS.items() if v == area_factor][0]})",
-                      False, None, False))
+        band = i % 2 == 1
+        fill = BAND if band else None
+        fmt = (NF_PCT if field == "STU"
+               else NF_AREA if field == "area_harvested" else fmt_val)
+
+        # Row label (units live in the unit line, per the donor) + the
+        # styled grid: every B..G / I..J cell gets border/fill/format even
+        # when empty, so banding and the box stay continuous.
+        _cell(cells, r, 1, label,
+              st={"font": F_MAIN, "size": 10, "fill": fill})
+        for col, (left, right) in VCOLS.items():
+            border = {"left": left, "right": right}
+            if i == 0:
+                border["top"] = "medium"
+            _cell(cells, r, col, nf=fmt,
+                  st={"font": F_MAIN, "size": 9, "center": True,
+                      "fill": fill, "border": border})
 
         # RLC link columns D/G
         link_row = find_label_row(member["label_row"],
@@ -592,10 +684,10 @@ def build_block(member, active, finals, country_name, start_row):
         if link_row is not None:
             if my1 in member["my_col"]:
                 c1 = get_column_letter(member["my_col"][my1])
-                cells.append((r, 4, f"='{tab}'!{c1}{link_row}", True, fmt, False))
+                _cell(cells, r, 4, f"='{tab}'!{c1}{link_row}", f=True)
             if my2 in member["my_col"]:
                 c2 = get_column_letter(member["my_col"][my2])
-                cells.append((r, 7, f"='{tab}'!{c2}{link_row}", True, fmt, False))
+                _cell(cells, r, 7, f"='{tab}'!{c2}{link_row}", f=True)
 
         # formula rows land in B/E (current vintage) and, when a prior
         # vintage exists, in I/J too -- the hand-built wasde_comp carries
@@ -610,49 +702,49 @@ def build_block(member, active, finals, country_name, start_row):
             top, bot = row_of["Beginning Stocks"], r - 1
             for col in formula_cols:
                 L = get_column_letter(col)
-                cells.append((r, col, f"=SUM({L}{top}:{L}{bot})", True, fmt, False))
+                _cell(cells, r, col, f"=SUM({L}{top}:{L}{bot})", f=True)
         elif field == "RESIDUAL":
             for col in formula_cols:
                 L = get_column_letter(col)
-                cells.append((r, col,
-                              f"={L}{row_of['Total Demand']}-{L}{row_of['Crush']}-{L}{row_of['Exports']}",
-                              True, fmt, False))
+                _cell(cells, r, col,
+                      f"={L}{row_of['Total Demand']}-{L}{row_of['Crush']}-{L}{row_of['Exports']}",
+                      f=True)
         elif field == "DEMAND":
             for col in formula_cols:
                 L = get_column_letter(col)
-                cells.append((r, col,
-                              f"={L}{row_of['Total Supply']}-{L}{row_of['Ending Stocks']}",
-                              True, fmt, False))
+                _cell(cells, r, col,
+                      f"={L}{row_of['Total Supply']}-{L}{row_of['Ending Stocks']}",
+                      f=True)
         elif field == "STU":
             for col in formula_cols:
                 L = get_column_letter(col)
-                cells.append((r, col,
-                              f"={L}{row_of['Ending Stocks']}/{L}{row_of['Total Demand']}",
-                              True, "0.0%", False))
+                _cell(cells, r, col,
+                      f"={L}{row_of['Ending Stocks']}/{L}{row_of['Total Demand']}",
+                      f=True)
         else:
             v1, v2 = conv(cur1, field), conv(cur2, field)
             p1, p2 = conv(prior1, field), conv(prior2, field)
             if v1 is not None:
-                cells.append((r, 2, v1, False, fmt, False))
+                _cell(cells, r, 2, v1)
             if v2 is not None:
-                cells.append((r, 5, v2, False, fmt, False))
+                _cell(cells, r, 5, v2)
             if p1 is not None:
-                cells.append((r, 9, p1, False, fmt, False))
+                _cell(cells, r, 9, p1)
             if p2 is not None:
-                cells.append((r, 10, p2, False, fmt, False))
+                _cell(cells, r, 10, p2)
 
         # deltas only when a prior vintage exists
-        if prior1 is not None and field != "STU":
-            cells.append((r, 3, f"=B{r}-I{r}", True, fmt, False))
-        if prior2 is not None and field != "STU":
-            cells.append((r, 6, f"=E{r}-J{r}", True, fmt, False))
-        if field == "STU":
-            if prior1 is not None:
-                cells.append((r, 3, f"=B{r}-I{r}", True, "0.0%", False))
-            if prior2 is not None:
-                cells.append((r, 6, f"=E{r}-J{r}", True, "0.0%", False))
+        if prior1 is not None:
+            _cell(cells, r, 3, f"=B{r}-I{r}", f=True)
+        if prior2 is not None:
+            _cell(cells, r, 6, f"=E{r}-J{r}", f=True)
 
-    note_r = data0 + len(rows_spec) + 1
+    # closing edge under the last data row
+    r_close = data0 + len(rows_spec)
+    for col in VCOLS:
+        _cell(cells, r_close, col, st={"border": {"top": "medium"}})
+
+    note_r = r_close + 1
     vtag = cur1["vintage"]
     note = (f"USDA columns: {vtag} ({cur_month} {cur_year} cycle, "
             f"pulled {cur1['report_date']:%Y-%m-%d}) from "
@@ -665,36 +757,65 @@ def build_block(member, active, finals, country_name, start_row):
                if evidence is not None else
                f"Unit from row labels ({unit_name}); sheet has no values "
                f"yet to cross-check."))
-    cells.append((note_r, 1, note, False, None, False))
+    _cell(cells, note_r, 1, note, st={"font": F_NOTE, "size": 8})
 
     n_rows = (note_r - r0) + 3
-    return cells, n_rows, notes
+    return cells, merges, n_rows, notes
 
 
 # ---------------------------------------------------------------------------
 # Writers
 # ---------------------------------------------------------------------------
 
-def write_openpyxl(path: Path, all_cells, dry_run: bool):
+def write_openpyxl(path: Path, sheet, dry_run: bool):
     wb = openpyxl.load_workbook(path)
     if "usda_comp" in wb.sheetnames:
         del wb["usda_comp"]
     ws = wb.create_sheet("usda_comp", 0)
-    ws.column_dimensions["A"].width = 40
-    for col in "BCDEFGHIJ":
-        ws.column_dimensions[col].width = 12
-    for (r, c, v, is_formula, fmt, bold) in all_cells:
-        cell = ws.cell(row=r, column=c, value=v)
-        if fmt:
-            cell.number_format = fmt
-        if bold:
-            cell.font = Font(bold=True)
+    ws.column_dimensions["A"].width = 40.71
+    ws.column_dimensions["B"].width = 12.71
+    ws.row_dimensions[1].height = 21
+    white = PatternFill("solid", fgColor=WHITE)
+    for row in ws.iter_rows(min_row=1, max_row=sheet["max_row"],
+                            min_col=1, max_col=11):
+        for c in row:
+            c.fill = white
+    for (r, col), rec in sheet["cells"].items():
+        cell = ws.cell(row=r, column=col)
+        if rec["v"] is not None:
+            cell.value = rec["v"]
+        if rec["nf"]:
+            cell.number_format = rec["nf"]
+        st = rec["st"]
+        cell.font = Font(name=st.get("font", F_MAIN),
+                         size=st.get("size", 11),
+                         bold=st.get("bold", False),
+                         color=st.get("color") or "FF000000")
+        if st.get("fill"):
+            cell.fill = PatternFill("solid", fgColor=st["fill"])
+        if st.get("center"):
+            cell.alignment = Alignment(horizontal="center")
+        if st.get("border"):
+            cell.border = Border(**{edge: Side(style=w)
+                                    for edge, w in st["border"].items()})
+    for (r, c1, c2) in sheet["merges"]:
+        ws.merge_cells(start_row=r, start_column=c1, end_row=r, end_column=c2)
     if not dry_run:
         wb.save(path)
     wb.close()
 
 
-def write_com(path: Path, all_cells, dry_run: bool):
+XL_EDGE = {"left": 7, "top": 8, "bottom": 9, "right": 10}
+XL_WEIGHT = {"thin": 2, "medium": -4138}  # xlThin, xlMedium
+
+
+def _bgr(hexrgb: str) -> int:
+    """'RRGGBB' -> the BGR long Excel COM color properties expect."""
+    r, g, b = (int(hexrgb[i:i + 2], 16) for i in (0, 2, 4))
+    return r + g * 256 + b * 65536
+
+
+def write_com(path: Path, sheet, dry_run: bool):
     if dry_run:
         return
     import pythoncom
@@ -712,18 +833,37 @@ def write_com(path: Path, all_cells, dry_run: bool):
                 sh.Delete()
         ws = wb.Sheets.Add(Before=wb.Sheets(1))
         ws.Name = "usda_comp"
-        ws.Columns("A").ColumnWidth = 40
-        ws.Columns("B:J").ColumnWidth = 12
-        for (r, c, v, is_formula, fmt, bold) in all_cells:
-            cell = ws.Cells(r, c)
-            if is_formula:
-                cell.Formula = v
-            else:
-                cell.Value = v
-            if fmt:
-                cell.NumberFormat = fmt
-            if bold:
+        ws.Columns("A").ColumnWidth = 40.71
+        ws.Columns("B").ColumnWidth = 12.71
+        ws.Rows(1).RowHeight = 21
+        ws.Range(ws.Cells(1, 1),
+                 ws.Cells(sheet["max_row"], 11)).Interior.Color = _bgr(WHITE)
+        for (r, col), rec in sorted(sheet["cells"].items()):
+            cell = ws.Cells(r, col)
+            if rec["v"] is not None:
+                if rec["f"]:
+                    cell.Formula = rec["v"]
+                else:
+                    cell.Value = rec["v"]
+            if rec["nf"]:
+                cell.NumberFormat = rec["nf"]
+            st = rec["st"]
+            cell.Font.Name = st.get("font", F_MAIN)
+            cell.Font.Size = st.get("size", 11)
+            if st.get("bold"):
                 cell.Font.Bold = True
+            if st.get("color"):
+                cell.Font.Color = _bgr(st["color"])
+            if st.get("fill"):
+                cell.Interior.Color = _bgr(st["fill"])
+            if st.get("center"):
+                cell.HorizontalAlignment = -4108  # xlCenter
+            for edge, w in (st.get("border") or {}).items():
+                b = cell.Borders(XL_EDGE[edge])
+                b.LineStyle = 1  # xlContinuous
+                b.Weight = XL_WEIGHT[w]
+        for (r, c1, c2) in sheet["merges"]:
+            ws.Range(ws.Cells(r, c1), ws.Cells(r, c2)).Merge()
         wb.Save()
         wb.Close(SaveChanges=False)
     finally:
@@ -735,15 +875,28 @@ def write_com(path: Path, all_cells, dry_run: bool):
 # Main
 # ---------------------------------------------------------------------------
 
+def default_book_title(path: Path) -> str:
+    """'argentina_soybean_complex_bal_sheets' -> 'ARGENTINA SOYBEAN COMPLEX'
+    (country display name from the folder, descriptor from the filename)."""
+    stem = path.stem
+    for suf in ("_bal_sheets", "_balance_sheets", "_bal_sheet",
+                "_balance_sheet"):
+        if stem.endswith(suf):
+            stem = stem[: -len(suf)]
+            break
+    descriptor = " ".join(stem.split("_")[1:]).upper()
+    return f"{path.parent.name.upper()} {descriptor}".strip()
+
+
 def process_book(path: Path, cur, dry_run: bool, engine: str = "com"):
     country_folder = path.parent.name
     code = COUNTRY_CODES.get(country_folder)
     if code is None:
         return f"SKIP {path.name}: unknown country folder {country_folder!r}"
 
-    members = inspect_book(path)
-    all_cells, notes, built = [], [], 0
-    next_row = 3
+    members, existing_title = inspect_book(path)
+    cells, merges, notes, built = {}, [], [], 0
+    next_row = 2   # A1 carries the sheet title; first block right below it
     for m in members:
         if m["commodity"] is None:
             notes.append(f"  {m['tab']}: unrecognized title {m['title'][:50]!r}")
@@ -753,14 +906,15 @@ def process_book(path: Path, cur, dry_run: bool, engine: str = "com"):
             notes.append(f"  {m['tab']}: no PSD data for "
                          f"({m['commodity']}, {code})")
             continue
-        cells, n_rows, errs = build_block(m, active, finals,
-                                          country_folder, next_row)
-        if cells is None:
+        bcells, bmerges, n_rows, errs = build_block(m, active, finals,
+                                                    country_folder, next_row)
+        if bcells is None:
             notes.append("  " + "; ".join(errs))
             continue
         for w in errs:
             notes.append("  " + w)
-        all_cells.extend(cells)
+        cells.update(bcells)
+        merges.extend(bmerges)
         next_row += n_rows
         built += 1
 
@@ -768,11 +922,18 @@ def process_book(path: Path, cur, dry_run: bool, engine: str = "com"):
         return (f"SKIP {path.name}: no member with usable PSD data\n"
                 + "\n".join(notes))
 
-    # banner
-    all_cells.insert(0, (1, 1,
-                         f"{country_folder.upper()} — USDA (PSD/WASDE) vs RLC "
-                         f"COMPARISON — refreshed {datetime.now():%Y-%m-%d}",
-                         False, None, True))
+    # Sheet title (preserved if hand-set) + the single refresh stamp line.
+    # Both this builder and USDACompUpdater.bas rewrite the stamp on every
+    # touch (feedback_timestamp_every_touch).
+    _cell(cells, 1, 1, existing_title or default_book_title(path),
+          st={"font": F_MAIN, "size": 16, "bold": True})
+    stamp_row = next_row
+    _cell(cells, stamp_row, 1,
+          f"USDA (PSD/WASDE) vs RLC comparison — refreshed "
+          f"{datetime.now():%Y-%m-%d %H:%M} by "
+          f"scripts/build_usda_comp_tabs.py — source gold.psd_wasde_vintages",
+          st={"font": F_NOTE, "size": 8})
+    sheet = {"cells": cells, "merges": merges, "max_row": stamp_row + 2}
 
     if not dry_run:
         ARCHIVE_DIR.mkdir(exist_ok=True)
@@ -785,9 +946,9 @@ def process_book(path: Path, cur, dry_run: bool, engine: str = "com"):
     # escape hatch (--engine openpyxl) for headless/no-Excel environments,
     # safe only on books that are still generated shells.
     if engine == "openpyxl" and path.suffix.lower() != ".xlsm":
-        write_openpyxl(path, all_cells, dry_run)
+        write_openpyxl(path, sheet, dry_run)
     else:
-        write_com(path, all_cells, dry_run)
+        write_com(path, sheet, dry_run)
 
     tag = "DRY-RUN " if dry_run else ""
     out = f"{tag}OK   {path.name}: {built} member blocks"
@@ -799,19 +960,26 @@ def process_book(path: Path, cur, dry_run: bool, engine: str = "com"):
 def write_note_tab(path: Path, commodity_name: str, dry_run: bool):
     """usda_comp tab containing only an explanatory note, for books whose
     commodity PSD does not publish."""
-    cells = [
-        (1, 1, f"{path.parent.name.upper()} — USDA (PSD/WASDE) vs RLC "
-               f"COMPARISON", False, None, True),
-        (3, 1, f"No USDA comparison available: PSD does not publish "
-               f"{commodity_name} (verified against /api/psd/commodities "
-               f"2026-08-01). This tab is a placeholder so the absence is "
-               f"deliberate, not an oversight.", False, None, False),
-    ]
+    cells: dict = {}
+    _cell(cells, 1, 1, default_book_title(path),
+          st={"font": F_MAIN, "size": 16, "bold": True})
+    _cell(cells, 3, 1,
+          f"No USDA comparison available: PSD does not publish "
+          f"{commodity_name} (verified against /api/psd/commodities "
+          f"2026-08-01). This tab is a placeholder so the absence is "
+          f"deliberate, not an oversight.",
+          st={"font": F_NOTE, "size": 8})
+    _cell(cells, 5, 1,
+          f"USDA (PSD/WASDE) vs RLC comparison — refreshed "
+          f"{datetime.now():%Y-%m-%d %H:%M} by "
+          f"scripts/build_usda_comp_tabs.py",
+          st={"font": F_NOTE, "size": 8})
+    sheet = {"cells": cells, "merges": [], "max_row": 7}
     if not dry_run:
         ARCHIVE_DIR.mkdir(exist_ok=True)
         bak = ARCHIVE_DIR / f"{path.name}.bak_{datetime.now():%Y%m%d_%H%M%S}"
         shutil.copy2(path, bak)
-    write_com(path, cells, dry_run)
+    write_com(path, sheet, dry_run)
     return f"{'DRY-RUN ' if dry_run else ''}OK   {path.name}: note-only tab (no PSD coverage)"
 
 
