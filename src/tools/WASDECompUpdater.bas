@@ -336,12 +336,16 @@ Private Function LoadVintages(conn As Object, commodityKey As String) As Object
     ' which ran backwards against every other vintage_rank in the database. Do NOT
     ' hardcode ladder values here -- order by rank DESC and take the top two per
     ' marketing year, so this keeps working whatever the numbers become.
+    '
+    ' psd_cycle tie-break (migrations 168/169): the ladder now unions the WASDE
+    ' archive, and within a marketing year every cycle past the 19th caps at
+    ' rank 79 -- rank alone stops ordering once a MY carries 20+ cycles.
     Dim sql As String
-    sql = "SELECT marketing_year, report_date, vintage, vintage_rank, area_harvested, yield, beginning_stocks, " & _
+    sql = "SELECT marketing_year, report_date, psd_cycle, vintage, vintage_rank, area_harvested, yield, beginning_stocks, " & _
           "production, imports, fsi_consumption, feed_dom_consumption, crush, exports, ending_stocks " & _
           "FROM gold.fas_us_wasde_comp WHERE commodity = '" & commodityKey & "' " & _
           "AND marketing_year >= (SELECT MAX(marketing_year) - 1 FROM gold.fas_us_wasde_comp WHERE commodity = '" & commodityKey & "') " & _
-          "ORDER BY marketing_year, vintage_rank DESC"
+          "ORDER BY marketing_year, vintage_rank DESC, psd_cycle DESC"
 
     Dim rs As Object
     Set rs = CreateObject("ADODB.Recordset")
@@ -360,6 +364,7 @@ Private Function LoadVintages(conn As Object, commodityKey As String) As Object
             rowDict.Add CStr(fn), rs.Fields(CStr(fn)).Value
         Next fn
         rowDict.Add "report_date", rs.Fields("report_date").Value
+        rowDict.Add "psd_cycle", rs.Fields("psd_cycle").Value
 
         rowDict.Add "vintage", rs.Fields("vintage").Value
 
@@ -550,13 +555,17 @@ End Function
 ' VINTAGE LABEL HELPERS
 ' =============================================================================
 
+' Month/year labels come from psd_cycle (the WASDE cycle the values belong
+' to), NOT report_date (the pull that happened to carry them) -- mig 166.
+' report_date is kept as a fallback for any row without a cycle stamp.
 Private Function VintageMonthName(rowDict As Object) As String
     If rowDict Is Nothing Then
         VintageMonthName = ""
         Exit Function
     End If
     Dim d As Variant
-    d = rowDict("report_date")
+    d = rowDict("psd_cycle")
+    If IsNull(d) Then d = rowDict("report_date")
     If IsNull(d) Then
         VintageMonthName = ""
         Exit Function
@@ -570,7 +579,8 @@ Private Function VintageYear(rowDict As Object) As String
         Exit Function
     End If
     Dim d As Variant
-    d = rowDict("report_date")
+    d = rowDict("psd_cycle")
+    If IsNull(d) Then d = rowDict("report_date")
     If IsNull(d) Then
         VintageYear = ""
         Exit Function
