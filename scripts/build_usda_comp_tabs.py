@@ -635,9 +635,11 @@ def build_block(member, active, finals, country_name, start_row):
     _cell(cells, r1, 10, st={"border": {"top": "medium", "right": "medium"}})
     merges += [(r1, 2, 4), (r1, 5, 7), (r1, 9, 10)]
 
-    # Column header row + unit line.
+    # Column header row + unit line. Delta headers use the ABBREVIATED month
+    # ("Δ from Sep") so the longest months don't clip at grid width — the
+    # merged I:J prior-month header keeps the full name like the donor.
     hdr = r0 + 2
-    delta_txt = f"Δ from {prior_month}" if prior_month else "Δ (no prior)"
+    delta_txt = f"Δ from {prior_month[:3]}" if prior_month else "Δ (no prior)"
     _cell(cells, hdr, 1, unit_text,
           st={"font": F_MAIN, "size": 8, "color": GRAY})
     col_hdr = {"font": F_MAIN, "bold": True, "center": True}
@@ -773,7 +775,8 @@ def write_openpyxl(path: Path, sheet, dry_run: bool):
         del wb["usda_comp"]
     ws = wb.create_sheet("usda_comp", 0)
     ws.column_dimensions["A"].width = 40.71
-    ws.column_dimensions["B"].width = 12.71
+    for col in "BCDEFGIJ":   # grid columns uniform; H spacer stays default
+        ws.column_dimensions[col].width = 12.71
     ws.row_dimensions[1].height = 21
     white = PatternFill("solid", fgColor=WHITE)
     for row in ws.iter_rows(min_row=1, max_row=sheet["max_row"],
@@ -834,7 +837,8 @@ def write_com(path: Path, sheet, dry_run: bool):
         ws = wb.Sheets.Add(Before=wb.Sheets(1))
         ws.Name = "usda_comp"
         ws.Columns("A").ColumnWidth = 40.71
-        ws.Columns("B").ColumnWidth = 12.71
+        ws.Columns("B:G").ColumnWidth = 12.71   # grid uniform; H spacer default
+        ws.Columns("I:J").ColumnWidth = 12.71
         ws.Rows(1).RowHeight = 21
         ws.Range(ws.Cells(1, 1),
                  ws.Cells(sheet["max_row"], 11)).Interior.Color = _bgr(WHITE)

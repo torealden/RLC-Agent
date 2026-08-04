@@ -255,10 +255,12 @@ Private Function UpdateBlock(conn As Object, ws As Worksheet, countryCode As Str
     curMonthName = CycleMonthName(cur1)
     curYear = CycleYear(cur1)
 
+    ' Merged I:J header carries the full month name; delta headers use the
+    ' ABBREVIATED month (matches the builder -- long months clip at grid width)
     UpdateIfLiteral ws.Cells(myRow, 9), priorMonthName
     If priorMonthName <> "" Then
-        UpdateIfLiteral ws.Cells(hdrRow, 3), ChrW(916) & " from " & priorMonthName
-        UpdateIfLiteral ws.Cells(hdrRow, 6), ChrW(916) & " from " & priorMonthName
+        UpdateIfLiteral ws.Cells(hdrRow, 3), ChrW(916) & " from " & Left(priorMonthName, 3)
+        UpdateIfLiteral ws.Cells(hdrRow, 6), ChrW(916) & " from " & Left(priorMonthName, 3)
     End If
 
     ' Note row: first row after the data whose A starts "USDA columns:"
