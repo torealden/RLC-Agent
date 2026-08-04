@@ -50,12 +50,27 @@ was swallowed after one attempt, and the row stayed `running` forever. Then
 - TCP sampled during the live enrich window: TIME_WAIT 11–14, RDS conns 3–5, no
   exhaustion. The ~540 "Bound" sockets are OneDrive (416), not our stack.
 
+## Follow-up work (same session, commit f9ebf6fb)
+
+- **cme_settlements phantom OVERDUE alerts** (21 in 30 days): the daily
+  `is_overdue` rule in `core.data_freshness` was a UTC-midnight boundary test —
+  a weekday-21:00-UTC collector always failed it at the 08:00 ET check. Mig 171
+  makes the daily rule expected-by and weekday-aware (uses
+  `data_source.expected_release_time_et`). Applied + verified: cme flips to
+  fresh, `usda_nass_stocks` (genuinely stale since 6/1, `partial`) still alerts.
+  **usda_nass_stocks itself is REAL staleness needing attention — 2 months.**
+- **bronze crude spot stale at 7/20** (Tore's catch): `eia_v2_collector` was
+  never registered anywhere — the 18:00 ET bridge promoted bronze that nothing
+  refreshed (only manual pulls 5/26 and 7/28). New `EIAV2CrudeDaily` wrapper
+  registered as `eia_v2_crude`, daily 17:30 ET, 45-day lookback upsert.
+  Verified through the runner: WTI/Brent current to 7/27 in bronze and
+  price_mark; the 7/27→today gap is EIA publication lag, not the pipeline.
+
 ## Known-broken / unverified
 
-- **Dispatcher restart pending**: PID 56328 still runs pre-fix code. A background
-  job waits for enrich run 1539 to finish (~10:47 UTC), then restarts
-  `\RLC\RLC Dispatcher`. If that didn't land, restart the task manually — until then
-  tonight's fred_fx/ecb_fx/ams_dco fires would still log the AttributeError.
+- **Dispatcher restarted 06:46 ET (PID 68084)** after enrich run 1539 finished
+  `partial` — now running fixed code + the new eia_v2_crude schedule. First
+  scheduled proof: tonight's 17:30/18:00 ET crude pair and 16:30 fred_fx.
 - The enrich single-connection + runtime-cap change has **not yet run end-to-end**
   (first real exercise = tomorrow's 04:00 ET fire). Check `collection_status`
   tomorrow: expect one row, `success`/`partial`, finished ≤150 min.
