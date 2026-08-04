@@ -47,7 +47,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Optional
 
 import requests
@@ -167,27 +167,38 @@ class AMSDCOCollector:
             logger.error("MARS %s JSON decode failed: %s", _SLUG, e)
             return None
 
-    def collect(self, triggered_by: str = "manual") -> dict:
-        started = datetime.now()
+    def collect(self, triggered_by: str | None = None):
+        # Dispatcher runs pass NO triggered_by: collector_runner owns the
+        # collection_status row there (self-logging too produced paired rows —
+        # 2026-08-03). Only the __main__ path (triggered_by='cli'), which
+        # bypasses the runner, self-logs. Runner requires a .success attribute,
+        # so return CollectorResult, not a dict.
+        from src.agents.base.base_collector import CollectorResult
+        started = datetime.now(timezone.utc)
         payload = self._fetch()
         if payload is None:
-            self._log_run(started, "FAILED", 0, 0, None,
-                          error="MARS fetch/decode failed", triggered_by=triggered_by)
-            return {"success": False, "error": "fetch failed", "rows": 0}
+            if triggered_by:
+                self._log_run(started, "FAILED", 0, 0, None,
+                              error="MARS fetch/decode failed", triggered_by=triggered_by)
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message="MARS fetch/decode failed")
 
         marks = parse_dco_rows(payload)
         if not marks:
-            self._log_run(started, "FAILED", 0, 0, None,
-                          error="no DCO marks parsed", triggered_by=triggered_by)
-            return {"success": False, "error": "no marks parsed", "rows": 0}
+            if triggered_by:
+                self._log_run(started, "FAILED", 0, 0, None,
+                              error="no DCO marks parsed", triggered_by=triggered_by)
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message="no DCO marks parsed")
 
         inserted = self._write(marks)
         max_date = max(m.obs_date for m in marks)
-        self._log_run(started, "SUCCESS", len(marks), inserted, max_date,
-                      triggered_by=triggered_by,
-                      notes=f"{len({m.series_key for m in marks})} regions; latest {max_date}")
-        return {"success": True, "latest_obs_date": str(max_date),
-                "marks": len(marks), "rows_written": inserted}
+        if triggered_by:
+            self._log_run(started, "SUCCESS", len(marks), inserted, max_date,
+                          triggered_by=triggered_by,
+                          notes=f"{len({m.series_key for m in marks})} regions; latest {max_date}")
+        return CollectorResult(success=True, source=self.COLLECTOR_NAME,
+                               records_fetched=len(marks), period_end=str(max_date))
 
     def _write(self, marks: list[DCOMark]) -> int:
         from psycopg2.extras import execute_values

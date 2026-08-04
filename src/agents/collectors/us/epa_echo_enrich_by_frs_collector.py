@@ -214,6 +214,10 @@ class EpaEchoEnrichByFrsConfig(CollectorConfig):
     dfr_delay_sec: float = 1.0
     dfr_jitter_sec: float = 0.5
     timeout: int = 60
+    # Hard wall-clock cap for a full run. Normal runs finish in ~105 min;
+    # robotic-block backoffs without a cap have left runs (and their
+    # collection_status='running' rows) open indefinitely — 2026-08-04.
+    max_runtime_min: float = 150.0
     # Optional: limit run to specific industry_codes for testing
     industry_codes: Optional[List[str]] = None
     # Optional: cap rows (for smoke tests)
@@ -296,18 +300,17 @@ class EpaEchoEnrichByFrsCollector(BaseCollector):
                 time.sleep(5 * (attempt + 1))
         return None
 
-    def _get_prior_state(self, frs_id: str) -> Dict[str, Any]:
+    def _get_prior_state(self, conn, frs_id: str) -> Dict[str, Any]:
         """Read current bronze row for change detection."""
-        with get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(f"""
-                    SELECT facility_name, state, {', '.join(AUDITED_FIELDS)}
-                    FROM bronze.epa_echo_facility WHERE frs_registry_id = %s
-                """, (frs_id,))
-                r = cur.fetchone()
+        with conn.cursor() as cur:
+            cur.execute(f"""
+                SELECT facility_name, state, {', '.join(AUDITED_FIELDS)}
+                FROM bronze.epa_echo_facility WHERE frs_registry_id = %s
+            """, (frs_id,))
+            r = cur.fetchone()
         return dict(r) if r else {}
 
-    def _upsert_and_audit(self, frs_id: str, parsed: Dict[str, Any], prior: Dict[str, Any]) -> int:
+    def _upsert_and_audit(self, conn, frs_id: str, parsed: Dict[str, Any], prior: Dict[str, Any]) -> int:
         """Upsert into bronze.epa_echo_facility + write audit rows for changes."""
         cols = list(parsed.keys()) + ['frs_registry_id', 'collected_at']
         vals = [parsed[k] for k in parsed.keys()] + [frs_id, datetime.utcnow()]
@@ -318,41 +321,69 @@ class EpaEchoEnrichByFrsCollector(BaseCollector):
             f"{c} = EXCLUDED.{c}" for c in parsed.keys()
         ) + ", collected_at = EXCLUDED.collected_at"
 
-        with get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    f"INSERT INTO bronze.epa_echo_facility ({', '.join(cols)}) "
-                    f"VALUES ({placeholders}) "
-                    f"ON CONFLICT (frs_registry_id) DO UPDATE SET {update_set}",
-                    vals,
+        with conn.cursor() as cur:
+            cur.execute(
+                f"INSERT INTO bronze.epa_echo_facility ({', '.join(cols)}) "
+                f"VALUES ({placeholders}) "
+                f"ON CONFLICT (frs_registry_id) DO UPDATE SET {update_set}",
+                vals,
+            )
+            # Write audit rows for any AUDITED_FIELDS that changed
+            audit_rows = []
+            for f in AUDITED_FIELDS:
+                new_val = parsed.get(f) or ''
+                old_val = prior.get(f) or ''
+                if new_val != old_val:
+                    audit_rows.append((
+                        frs_id,
+                        parsed.get('facility_name') or prior.get('facility_name'),
+                        parsed.get('state') or prior.get('state'),
+                        f,
+                        old_val or None,
+                        new_val,
+                        self.run_id,
+                    ))
+            if audit_rows:
+                cur.executemany(
+                    "INSERT INTO bronze.epa_echo_facility_audit "
+                    "(frs_registry_id, facility_name, state, field, "
+                    " previous_value, new_value, collector_run_id) "
+                    "VALUES (%s,%s,%s,%s,%s,%s,%s)",
+                    audit_rows,
                 )
-                # Write audit rows for any AUDITED_FIELDS that changed
-                audit_rows = []
-                for f in AUDITED_FIELDS:
-                    new_val = parsed.get(f) or ''
-                    old_val = prior.get(f) or ''
-                    if new_val != old_val:
-                        audit_rows.append((
-                            frs_id,
-                            parsed.get('facility_name') or prior.get('facility_name'),
-                            parsed.get('state') or prior.get('state'),
-                            f,
-                            old_val or None,
-                            new_val,
-                            self.run_id,
-                        ))
-                if audit_rows:
-                    cur.executemany(
-                        "INSERT INTO bronze.epa_echo_facility_audit "
-                        "(frs_registry_id, facility_name, state, field, "
-                        " previous_value, new_value, collector_run_id) "
-                        "VALUES (%s,%s,%s,%s,%s,%s,%s)",
-                        audit_rows,
-                    )
-            conn.commit()
+        conn.commit()
         return len(audit_rows)
 
+    def _open_conn(self):
+        """One raw psycopg2 connection held for the whole run.
+
+        The prior per-facility `with get_connection()` pattern opened and closed
+        ~2 TCP+SSL connections to RDS per facility (~4,000/run). Each close
+        parks a socket in TIME_WAIT; during the run window that churn produced
+        WinSock 10055 'No buffer space available' connect failures (event_log
+        2026-06-26) — for this collector AND for anything else touching the DB
+        in the same window."""
+        import psycopg2
+        import psycopg2.extras
+        from src.services.database import db_config
+        conn = psycopg2.connect(
+            host=db_config.PG_HOST,
+            port=db_config.PG_PORT,
+            database=db_config.PG_DATABASE,
+            user=db_config.PG_USER,
+            password=db_config.PG_PASSWORD,
+        )
+        conn.cursor_factory = psycopg2.extras.RealDictCursor
+        return conn
+
+    def _close_conn(self, conn):
+        try:
+            conn.close()
+        except Exception:
+            pass
+
     def fetch_data(self, **kwargs) -> CollectorResult:
+        import psycopg2
         targets = self._select_facility_list()
         self.logger.info(f"[ECHO-FRS] enriching {len(targets)} facilities, run_id={self.run_id}")
 
@@ -360,22 +391,44 @@ class EpaEchoEnrichByFrsCollector(BaseCollector):
         failed: List[str] = []
         audit_total = 0
         first_seen = 0
+        warnings: List[str] = []
+        t0 = time.monotonic()
+        cap_sec = self.config.max_runtime_min * 60
+        conn = self._open_conn()
 
-        for i, (facility_id, frs_id, _industry) in enumerate(targets, 1):
-            if i % 100 == 0:
-                self.logger.info(f"[ECHO-FRS] progress {i}/{len(targets)}, ok={ok}, failed={len(failed)}, audited={audit_total}")
-            results = self._fetch_dfr(frs_id)
-            if not results:
-                failed.append(frs_id)
-                continue
-            parsed = _parse_dfr(results)
-            prior = self._get_prior_state(frs_id)
-            if not prior:
-                first_seen += 1
-            audited = self._upsert_and_audit(frs_id, parsed, prior)
-            audit_total += audited
-            ok += 1
+        try:
+            for i, (facility_id, frs_id, _industry) in enumerate(targets, 1):
+                if time.monotonic() - t0 > cap_sec:
+                    msg = (f"runtime cap {self.config.max_runtime_min:.0f}min hit at "
+                           f"{i-1}/{len(targets)} facilities — stopping early")
+                    self.logger.warning(f"[ECHO-FRS] {msg}")
+                    warnings.append(msg)
+                    break
+                if i % 100 == 0:
+                    self.logger.info(f"[ECHO-FRS] progress {i}/{len(targets)}, ok={ok}, failed={len(failed)}, audited={audit_total}")
+                results = self._fetch_dfr(frs_id)
+                if not results:
+                    failed.append(frs_id)
+                    continue
+                parsed = _parse_dfr(results)
+                try:
+                    prior = self._get_prior_state(conn, frs_id)
+                    if not prior:
+                        first_seen += 1
+                    audited = self._upsert_and_audit(conn, frs_id, parsed, prior)
+                except psycopg2.Error as e:
+                    self.logger.warning(f"[ECHO-FRS] DB error on {frs_id}: {e} — reconnecting")
+                    self._close_conn(conn)
+                    conn = self._open_conn()
+                    failed.append(frs_id)
+                    continue
+                audit_total += audited
+                ok += 1
+        finally:
+            self._close_conn(conn)
 
+        if failed:
+            warnings.append(f"{len(failed)} DFR failures")
         return CollectorResult(
             success=True,
             source=self.config.source_name,
@@ -389,7 +442,7 @@ class EpaEchoEnrichByFrsCollector(BaseCollector):
                 "total_targets": len(targets),
                 "run_id": self.run_id,
             },
-            warnings=[f"{len(failed)} DFR failures"] if failed else [],
+            warnings=warnings,
         )
 
     def save_to_bronze(self, result: CollectorResult) -> int:

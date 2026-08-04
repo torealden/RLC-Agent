@@ -110,6 +110,28 @@ class CollectorRunner:
         )
         conn.commit()
 
+    def _normalize_dict_result(self, collector_name: str, d: Dict[str, Any]):
+        """Adapt a legacy dict return from collect() to the CollectorResult contract.
+
+        Maps the dict conventions seen in the estate ('success', 'error'/'error_message',
+        'rows'/'rows_written'/'marks') so the collector's TRUE error reaches
+        collection_status instead of "'dict' object has no attribute 'success'"."""
+        from src.agents.base.base_collector import CollectorResult
+        rows = 0
+        for key in ('records_fetched', 'rows_written', 'marks', 'rows'):
+            if isinstance(d.get(key), int):
+                rows = d[key]
+                break
+        error = d.get('error_message') or d.get('error')
+        return CollectorResult(
+            success=bool(d.get('success')),
+            source=collector_name,
+            records_fetched=rows,
+            period_end=d.get('latest_obs_date') or d.get('latest') or d.get('period_end'),
+            error_message=str(error) if error else None,
+            warnings=d.get('warnings') or [],
+        )
+
     def _compute_data_period(self, result) -> Optional[str]:
         """Extract data period from collector result."""
         if hasattr(result, 'period_end') and result.period_end:
@@ -188,6 +210,16 @@ class CollectorRunner:
         try:
             result = collector.collect(**collector_kwargs)
 
+            # Contract: collect() returns an object with .success (CollectorResult).
+            # Some collectors have historically returned plain dicts — accept them
+            # rather than let the AttributeError mask the collector's real error.
+            if isinstance(result, dict):
+                logger.warning(
+                    f"{collector_name}.collect() returned a dict (contract wants "
+                    f"CollectorResult) — normalizing; fix the collector"
+                )
+                result = self._normalize_dict_result(collector_name, result)
+
             run_result.finished_at = datetime.now()
             run_result.rows_collected = result.records_fetched if hasattr(result, 'records_fetched') else 0
             run_result.data_period = self._compute_data_period(result)
@@ -210,22 +242,32 @@ class CollectorRunner:
             run_result.error_message = str(e)
             logger.error(f"Collector {collector_name} raised exception: {e}", exc_info=True)
 
-        # Step 4: Update database with results
+        # Step 4: Update database with results. Retry once after a pause: if the
+        # collector died of a transient network failure (e.g. WinSock 10055
+        # connect errors, 2026-08-04), the first finalize attempt hits the same
+        # failure and the row would otherwise be stranded at status='running'.
         if status_id:
-            try:
-                with self._get_connection() as conn:
-                    self._update_status_result(
-                        conn, status_id,
-                        run_result.status,
-                        run_result.rows_collected,
-                        run_result.rows_inserted,
-                        run_result.data_period,
-                        run_result.is_new_data,
-                        error_message=run_result.error_message,
-                        notes='; '.join(run_result.warnings) if run_result.warnings else None
+            for attempt in (1, 2):
+                try:
+                    with self._get_connection() as conn:
+                        self._update_status_result(
+                            conn, status_id,
+                            run_result.status,
+                            run_result.rows_collected,
+                            run_result.rows_inserted,
+                            run_result.data_period,
+                            run_result.is_new_data,
+                            error_message=run_result.error_message,
+                            notes='; '.join(run_result.warnings) if run_result.warnings else None
+                        )
+                    break
+                except Exception as e:
+                    logger.error(
+                        f"Failed to update collection_status for {collector_name} "
+                        f"(attempt {attempt}/2): {e}"
                     )
-            except Exception as e:
-                logger.error(f"Failed to update collection_status for {collector_name}: {e}")
+                    if attempt == 1:
+                        time.sleep(60)
 
         # Step 5: Log event for LLM briefing
         if status_id:

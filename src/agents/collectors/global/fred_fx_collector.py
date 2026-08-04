@@ -35,7 +35,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Optional
 
 import requests
@@ -122,12 +122,20 @@ class FREDFXCollector:
             logger.error("FRED %s JSON decode failed: %s", fred_id, e)
             return None
 
-    def collect(self, triggered_by: str = "manual") -> dict:
-        started = datetime.now()
+    def collect(self, triggered_by: str | None = None):
+        # Dispatcher runs pass NO triggered_by: collector_runner owns the
+        # collection_status row there (self-logging too produced paired rows —
+        # 2026-08-03). Only the __main__ path (triggered_by='cli'), which
+        # bypasses the runner, self-logs. Runner requires a .success attribute,
+        # so return CollectorResult, not a dict.
+        from src.agents.base.base_collector import CollectorResult
+        started = datetime.now(timezone.utc)
         if not self.api_key:
-            self._log_run(started, "FAILED", 0, 0, None,
-                          error="FRED_API_KEY not set", triggered_by=triggered_by)
-            return {"success": False, "error": "no api key", "rows": 0}
+            if triggered_by:
+                self._log_run(started, "FAILED", 0, 0, None,
+                              error="FRED_API_KEY not set", triggered_by=triggered_by)
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message="FRED_API_KEY not set")
 
         all_marks: list[FXMark] = []
         failed: list[str] = []
@@ -139,18 +147,24 @@ class FREDFXCollector:
             all_marks.extend(parse_fred_observations(series_key, unit, currency, payload))
 
         if not all_marks:
-            self._log_run(started, "FAILED", 0, 0, None,
-                          error=f"no marks parsed (failed: {failed})", triggered_by=triggered_by)
-            return {"success": False, "error": "no marks", "rows": 0, "failed": failed}
+            if triggered_by:
+                self._log_run(started, "FAILED", 0, 0, None,
+                              error=f"no marks parsed (failed: {failed})", triggered_by=triggered_by)
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message=f"no marks parsed (failed: {failed})")
 
         inserted = self._write(all_marks)
         max_date = max(m.obs_date for m in all_marks)
-        status = "SUCCESS" if not failed else "PARTIAL"
-        self._log_run(started, status, len(all_marks), inserted, max_date, triggered_by=triggered_by,
-                      notes=f"{len({m.series_key for m in all_marks})}/6 pairs; latest {max_date}"
-                            + (f"; FAILED {failed}" if failed else ""))
-        return {"success": True, "latest_obs_date": str(max_date), "marks": len(all_marks),
-                "rows_written": inserted, "failed": failed}
+        if triggered_by:
+            status = "SUCCESS" if not failed else "PARTIAL"
+            self._log_run(started, status, len(all_marks), inserted, max_date,
+                          triggered_by=triggered_by,
+                          notes=f"{len({m.series_key for m in all_marks})}/6 pairs; latest {max_date}"
+                                + (f"; FAILED {failed}" if failed else ""))
+        return CollectorResult(success=True, source=self.COLLECTOR_NAME,
+                               records_fetched=len(all_marks),
+                               period_end=str(max_date),
+                               warnings=[f"failed pairs: {failed}"] if failed else [])
 
     def _write(self, marks: list[FXMark]) -> int:
         from psycopg2.extras import execute_values

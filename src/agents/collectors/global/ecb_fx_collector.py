@@ -28,7 +28,7 @@ from __future__ import annotations
 import csv
 import io
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 
@@ -55,26 +55,37 @@ _PAIRS = [
 class ECBFXCollector:
     COLLECTOR_NAME = "ecb_fx"
 
-    def collect(self, start: str = "1999-01-01", triggered_by: str = "manual") -> dict:
-        started = datetime.now()
+    def collect(self, start: str = "1999-01-01", triggered_by: str | None = None):
+        # Dispatcher runs pass NO triggered_by: collector_runner owns the
+        # collection_status row there (self-logging too produced paired rows —
+        # 2026-08-03). Only the __main__ path (triggered_by='cli'), which
+        # bypasses the runner, self-logs. Runner requires a .success attribute,
+        # so return CollectorResult, not a dict.
+        from src.agents.base.base_collector import CollectorResult
+        started = datetime.now(timezone.utc)
         try:
             legs = {cur: self._fetch_leg(cur, start) for cur in _LEGS}
         except Exception as e:
             logger.error("ECB FX fetch failed: %s", e)
-            self._log_run(started, "FAILED", 0, error=str(e), triggered_by=triggered_by)
-            return {"success": False, "error": str(e)}
+            if triggered_by:
+                self._log_run(started, "FAILED", 0, error=str(e), triggered_by=triggered_by)
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message=str(e))
 
         rows = self._build_rows(legs)
         if not rows:
-            self._log_run(started, "FAILED", 0, error="no rows built", triggered_by=triggered_by)
-            return {"success": False, "error": "no rows built"}
+            if triggered_by:
+                self._log_run(started, "FAILED", 0, error="no rows built", triggered_by=triggered_by)
+            return CollectorResult(success=False, source=self.COLLECTOR_NAME,
+                                   error_message="no rows built")
 
         written = self._write(rows)
         latest = max(r[1] for r in rows)
-        self._log_run(started, "SUCCESS", written, data_period=latest, triggered_by=triggered_by,
-                      notes=f"{len({r[0] for r in rows})} pairs; ARS gap (ECB stale since 2020)")
-        return {"success": True, "rows_written": written, "pairs": len({r[0] for r in rows}),
-                "latest": latest}
+        if triggered_by:
+            self._log_run(started, "SUCCESS", written, data_period=latest, triggered_by=triggered_by,
+                          notes=f"{len({r[0] for r in rows})} pairs; ARS gap (ECB stale since 2020)")
+        return CollectorResult(success=True, source=self.COLLECTOR_NAME,
+                               records_fetched=written, period_end=str(latest))
 
     def _fetch_leg(self, cur: str, start: str) -> dict[str, float]:
         """Return {date_str: rate} of `cur` units per 1 EUR."""
