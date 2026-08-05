@@ -160,6 +160,27 @@ def persist(rows_by_date: Dict[date, List[tuple]]) -> int:
     return len(all_rows)
 
 
+# Unmapped-position monitor (mig 175): a posicion sharing a curated HS6 family with NO
+# disposition row is a new/drifted code — surface it instead of letting the series die
+# silently in bronze. Known-but-unpromoted variants have series_key NULL rows and don't fire.
+UNREVIEWED_POSITIONS = """
+    SELECT DISTINCT b.posicion
+    FROM bronze.sagyp_fob_raw b
+    WHERE b.fecha BETWEEN %s AND %s
+      AND left(b.posicion, 6) IN (SELECT left(posicion, 6)
+                                  FROM reference.sagyp_position_map WHERE is_active)
+      AND NOT EXISTS (SELECT 1 FROM reference.sagyp_position_map m
+                      WHERE m.posicion = b.posicion)
+"""
+
+
+def unreviewed_positions(dates: List[date]) -> List[str]:
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(UNREVIEWED_POSITIONS, (min(dates), max(dates)))
+        return sorted(r["posicion"] for r in cur.fetchall())
+
+
 def prev_business_day(d: date) -> date:
     d -= timedelta(days=1)
     while d.weekday() >= 5:
@@ -199,17 +220,24 @@ class SAGyPFOBCollector:
                     continue
                 rows_by_date[d] = parse_posts(d, posts)
             n = persist(rows_by_date) if rows_by_date else 0
+            new_codes = unreviewed_positions(list(rows_by_date)) if rows_by_date else []
         except Exception as e:
             logger.error(f"sagyp_fob_oficial failed: {e}")
             return CollectorResult(success=False, source=self.COLLECTOR_NAME,
                                    error_message=str(e))
 
+        warnings = []
+        if new_codes:
+            warnings.append(
+                f"unreviewed posicion(s) in curated HS6 families: {new_codes} — add "
+                f"disposition rows to reference.sagyp_position_map (map or mark bronze-only)")
         return CollectorResult(
             success=True,  # empty weekday = holiday no-publication, still SUCCESS
             source=self.COLLECTOR_NAME,
             records_fetched=n,
             period_start=min(dates).isoformat(),
             period_end=max(dates).isoformat(),
+            warnings=warnings,
         )
 
 
