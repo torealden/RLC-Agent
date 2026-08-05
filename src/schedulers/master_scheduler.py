@@ -736,9 +736,20 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_class='NASSCollector',
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.QUARTERLY,
-            day_of_month=31,  # Approximate — actual dates vary
-            release_time=time(12, 0),
-            description="USDA NASS Acreage reports (Prospective Plantings Mar, Acreage Jun, Final Jan)"
+            # The old day_of_month=31 in the month-1,3,6,9 cron NEVER fired for
+            # Jun/Sep (no day 31) and this collector had ZERO lifetime runs as
+            # of 2026-08-05 — the 6/30 Acreage report was never collected until
+            # the same-day manual backfill. Exact dates + day-after second shot;
+            # Jan 2027 is a Mon-Fri window pending the USDA release calendar.
+            release_dates={
+                2026: [date(2026, 3, 31), date(2026, 6, 30)],  # past; keeps guard-list truthful
+                2027: [date(2027, 1, 11), date(2027, 1, 12), date(2027, 1, 13),
+                       date(2027, 1, 14), date(2027, 1, 15),
+                       date(2027, 3, 31), date(2027, 4, 1),
+                       date(2027, 6, 30), date(2027, 7, 1)],
+            },
+            release_time=time(16, 0),  # 4:00 PM ET — clear of the 12:00 ET release
+            description="USDA NASS Acreage reports (Prospective Plantings Mar 31, Acreage Jun 30, Final Jan)"
         ),
         priority=1,
         commodities=['corn', 'soybeans', 'wheat', 'sorghum', 'cotton', 'barley', 'oats', 'sunflower', 'canola'],

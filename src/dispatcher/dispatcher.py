@@ -467,10 +467,13 @@ class Dispatcher:
             # report — usda_nass_stocks missed the entire 6/30 release this way
             # (caught 2026-08-05).
             if release.release_dates:
-                from datetime import date as _date
-                year_dates = release.release_dates.get(_date.today().year, [])
-                if year_dates:
-                    possible_days = sorted(set(d.day for d in year_dates))
+                # Union candidate days across ALL years, not just today's: the
+                # trigger is built once at dispatcher start, so a current-year-only
+                # set silently drops next year's days (e.g. the mid-Jan window)
+                # until a restart happens to land after Jan 1.
+                all_dates = [d for dates in release.release_dates.values() for d in dates]
+                if all_dates:
+                    possible_days = sorted(set(d.day for d in all_dates))
                     day_str = ','.join(str(d) for d in possible_days)
                     return CronTrigger(
                         day=day_str,
