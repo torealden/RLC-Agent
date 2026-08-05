@@ -459,6 +459,25 @@ class Dispatcher:
             )
 
         elif release.frequency == ReleaseFrequency.QUARTERLY:
+            # Exact release dates take precedence, same pattern as MONTHLY:
+            # fire on all candidate days-of-month and let _run_scheduled_collector's
+            # release-day guard skip the non-release firings. The month='1,3,6,9'
+            # fallback fires on the 1st-of-quarter-month, which for end-of-month
+            # releases (Grain Stocks: Jun 30/Sep 30) collects 29 days BEFORE the
+            # report — usda_nass_stocks missed the entire 6/30 release this way
+            # (caught 2026-08-05).
+            if release.release_dates:
+                from datetime import date as _date
+                year_dates = release.release_dates.get(_date.today().year, [])
+                if year_dates:
+                    possible_days = sorted(set(d.day for d in year_dates))
+                    day_str = ','.join(str(d) for d in possible_days)
+                    return CronTrigger(
+                        day=day_str,
+                        hour=hour,
+                        minute=minute,
+                    )
+
             day = release.day_of_month or 1
             return CronTrigger(
                 month='1,3,6,9',

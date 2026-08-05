@@ -708,9 +708,23 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         collector_class='NASSCollector',
         release_schedule=ReleaseSchedule(
             frequency=ReleaseFrequency.QUARTERLY,
-            day_of_month=1,  # Late month releases (varies)
-            release_time=time(12, 0),
-            description="USDA Quarterly Grain Stocks (Jan, Mar, Jun, Sep)"
+            # Grain Stocks publishes at 12:00 ET on the LAST business day of
+            # Mar/Jun/Sep, plus mid-January with the Annual Crop Production
+            # recap. The old day_of_month=1 fallback fired on the 1st of the
+            # quarter month — 29 days BEFORE the release; the 6/30/2026 report
+            # was never collected until the 8/5 manual backfill. Exact dates
+            # below; day-after entries are a second shot (pull is idempotent).
+            # Jan 2027 is a Mon-Fri window pending the USDA release calendar.
+            release_dates={
+                2026: [date(2026, 9, 30), date(2026, 10, 1)],
+                2027: [date(2027, 1, 11), date(2027, 1, 12), date(2027, 1, 13),
+                       date(2027, 1, 14), date(2027, 1, 15),
+                       date(2027, 3, 31), date(2027, 4, 1),
+                       date(2027, 6, 30), date(2027, 7, 1),
+                       date(2027, 9, 30), date(2027, 10, 1)],
+            },
+            release_time=time(16, 0),  # 4:00 PM ET — clear of the 12:00 ET release
+            description="USDA Quarterly Grain Stocks (last biz day Mar/Jun/Sep + Jan annual recap)"
         ),
         priority=1,
         commodities=['corn', 'soybeans', 'wheat'],
