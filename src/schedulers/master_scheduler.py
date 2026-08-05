@@ -197,6 +197,20 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         commodities=['crude_oil'],
     ),
 
+    'helios_wapr': CollectorSchedule(
+        collector_name='helios_wapr',
+        collector_class='HeliosWAPRCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(7, 0),  # 7:00 AM ET — day's index in before the morning briefing;
+                                      # full-index upsert self-heals weekend gaps on Monday
+            description="Helios WAPR climate-risk index (composite + 4 factors, ~88 pairs) -> "
+                        "bronze.helios_climate_risk + forecast vintage archive"
+        ),
+        priority=4,
+        commodities=['soybeans', 'canola', 'palm_oil', 'wheat', 'corn', 'cotton'],
+    ),
+
     'claude_md_drift_check': CollectorSchedule(
         collector_name='claude_md_drift_check',
         collector_class='ClaudeMdDriftCheck',
@@ -232,6 +246,21 @@ RELEASE_SCHEDULES: Dict[str, CollectorSchedule] = {
         ),
         priority=4,
         commodities=['soy_oil'],
+    ),
+
+    'sagyp_fob_oficial': CollectorSchedule(
+        collector_name='sagyp_fob_oficial',
+        collector_class='SAGyPFOBCollector',
+        release_schedule=ReleaseSchedule(
+            frequency=ReleaseFrequency.DAILY,
+            release_time=time(18, 0),  # 6:00 PM ET = 7:00 PM ART, after the circular's business day
+            timezone="America/Argentina/Buenos_Aires",
+            description="SAGyP official Argentine FOB circulars (shipment bands) -> bronze.sagyp_fob_raw "
+                        "+ curated price_mark WINDOW rows; pulls today ART + T-1 revision re-pull; "
+                        "empty weekday = Argentine holiday, SUCCESS 0 rows"
+        ),
+        priority=4,
+        commodities=['wheat', 'corn', 'soybeans', 'soy_oil', 'soy_meal', 'sunflower'],
     ),
 
     'fred_fx': CollectorSchedule(

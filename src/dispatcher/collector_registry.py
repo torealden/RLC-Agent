@@ -251,6 +251,13 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
     },
 
     # === South America — Tier 2 (newly wired) ===
+    'sagyp_fob_oficial': {
+        # Argentine official FOB price circulars (SAGyP precios_fob.php) with forward
+        # shipment bands -> bronze.sagyp_fob_raw + curated silver.price_mark WINDOW rows
+        # (reference.sagyp_position_map, mig 173). History to 1993; ART business days only.
+        'module': 'src.agents.collectors.south_america.sagyp_fob_collector',
+        'class': 'SAGyPFOBCollector',
+    },
     'argentina_magyp': {
         'module': 'src.agents.collectors.south_america.magyp_collector',
         'class': 'MAGyPCollector',
@@ -265,6 +272,13 @@ COLLECTOR_MAP: Dict[str, Dict[str, str]] = {
     },
 
     # === Global — Tier 2 (newly wired) ===
+    'helios_wapr': {
+        # Helios climate-risk index (WAPR + 4 factors), full-index daily upsert ->
+        # bronze.helios_climate_risk; forecast rows archived by pull date into
+        # bronze.helios_climate_risk_vintage (mig 174). Replaces the one-time 7/21 load.
+        'module': 'src.agents.collectors.global.helios_wapr_collector',
+        'class': 'HeliosWAPRCollector',
+    },
     'faostat': {
         'module': 'src.agents.collectors.global.faostat_collector',
         'class': 'FAOSTATCollector',
