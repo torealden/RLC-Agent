@@ -376,6 +376,25 @@ class EpaEchoEnrichByFrsCollector(BaseCollector):
         conn.cursor_factory = psycopg2.extras.RealDictCursor
         return conn
 
+    def _open_conn_with_retry(self, attempts: int = 4, delay_sec: float = 60.0):
+        """Reconnect that rides out a transient RDS outage.
+
+        2026-08-05: a ~5-min RDS connectivity drop killed the mid-run reconnect
+        (single attempt raised straight out of fetch_data) and the run died at
+        facility ~1,600 with the status row stranded 'running'. Four attempts a
+        minute apart survive any outage shorter than ~3 minutes of the last try."""
+        last_err = None
+        for i in range(1, attempts + 1):
+            try:
+                return self._open_conn()
+            except Exception as e:
+                last_err = e
+                self.logger.warning(
+                    f"[ECHO-FRS] DB reconnect attempt {i}/{attempts} failed: {e}")
+                if i < attempts:
+                    time.sleep(delay_sec)
+        raise last_err
+
     def _close_conn(self, conn):
         try:
             conn.close()
@@ -419,7 +438,7 @@ class EpaEchoEnrichByFrsCollector(BaseCollector):
                 except psycopg2.Error as e:
                     self.logger.warning(f"[ECHO-FRS] DB error on {frs_id}: {e} — reconnecting")
                     self._close_conn(conn)
-                    conn = self._open_conn()
+                    conn = self._open_conn_with_retry()
                     failed.append(frs_id)
                     continue
                 audit_total += audited

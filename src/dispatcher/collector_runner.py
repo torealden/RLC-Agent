@@ -242,12 +242,14 @@ class CollectorRunner:
             run_result.error_message = str(e)
             logger.error(f"Collector {collector_name} raised exception: {e}", exc_info=True)
 
-        # Step 4: Update database with results. Retry once after a pause: if the
-        # collector died of a transient network failure (e.g. WinSock 10055
-        # connect errors, 2026-08-04), the first finalize attempt hits the same
-        # failure and the row would otherwise be stranded at status='running'.
+        # Step 4: Update database with results. Retry with growing pauses: if the
+        # collector died of a transient network failure, the early finalize
+        # attempts hit the same failure and the row would otherwise be stranded
+        # at status='running'. One 60s retry was not enough for the ~5-min RDS
+        # outage of 2026-08-05; 60+120+300s rides out ~8 minutes.
         if status_id:
-            for attempt in (1, 2):
+            finalize_delays = {1: 60, 2: 120, 3: 300}
+            for attempt in (1, 2, 3, 4):
                 try:
                     with self._get_connection() as conn:
                         self._update_status_result(
@@ -264,10 +266,10 @@ class CollectorRunner:
                 except Exception as e:
                     logger.error(
                         f"Failed to update collection_status for {collector_name} "
-                        f"(attempt {attempt}/2): {e}"
+                        f"(attempt {attempt}/4): {e}"
                     )
-                    if attempt == 1:
-                        time.sleep(60)
+                    if attempt in finalize_delays:
+                        time.sleep(finalize_delays[attempt])
 
         # Step 5: Log event for LLM briefing
         if status_id:
