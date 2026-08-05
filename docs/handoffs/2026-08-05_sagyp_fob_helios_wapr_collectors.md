@@ -70,10 +70,20 @@
 
 ## State by workstream
 
-- **EPA Echo manual enrich (run 1567)**: [FILLED AT SESSION END — see below]
-- **SAGyP backfill**: 2020→present pass [FILLED AT SESSION END]; 1993→2019 pass chained in
-  the same background command (~2h at 1 req/s), state files in `data/backfill_state/`
-  (resumable; re-run the same command line to resume after any kill).
+- **EPA Echo manual enrich (run 1567) — hardening VALIDATED**: partial, 75 min (est. was
+  ~105), 1,876/1,902 facilities enriched, 26 DFR failures (1.4%, the reason for 'partial'),
+  ONE row, finalized cleanly at 10:44:32 UTC. First full exercise of single-connection +
+  runtime-cap + reconnect-retry passed. Orphan row 1566 (dead first launch attempt,
+  09:26 UTC) hand-closed as failed.
+- **SAGyP backfill**: 2020→present pass COMPLETE + audited — 1,721 requests, 208,268 bronze
+  rows, 124 holiday weekdays, 29.2 min; audit shows every curated series present on every
+  publication day 2020→2026 (241/244/242/243/244/241/142), zero holes. 1993→2019 pass
+  running at session end (~2h at 1 req/s); if it died with the session, resume with
+  `python scripts/backfill_sagyp_fob.py --start 1993-01-04 --end 2019-12-31` (state file in
+  `data/backfill_state/` makes it pick up where it stopped). Then re-run
+  `scripts/audit_sagyp_series_coverage.py`. Early 1993 signal already visible: SUNOIL_REFINED
+  quoted only 14/40 days, WHEAT 39/40 — thin early-90s quoting, not code drift; judge against
+  the full pass.
 
 ## Open decisions needing Tore
 
