@@ -175,3 +175,7 @@ docs/memory_archive/*.docx
 data/raw/wasde_historical/monthly_csv/
 data/raw/wasde_historical/monthly_csv_2010_2015/
 data/raw/wasde_historical/monthly_csv_2016_2020/
+
+# local-LLM MCP bridge: filled config + originals carry the real DSN/password
+mcp/mcphost-config.json
+mcp/ollama_files/
