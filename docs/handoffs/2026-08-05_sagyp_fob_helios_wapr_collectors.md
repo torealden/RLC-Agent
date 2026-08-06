@@ -77,11 +77,13 @@
   09:26 UTC) hand-closed as failed.
 - **SAGyP backfill**: 2020→present pass COMPLETE + audited — 1,721 requests, 208,268 bronze
   rows, 124 holiday weekdays, 29.2 min; audit shows every curated series present on every
-  publication day 2020→2026 (241/244/242/243/244/241/142), zero holes. 1993→2019 pass
-  running at session end (~2h at 1 req/s); if it died with the session, resume with
-  `python scripts/backfill_sagyp_fob.py --start 1993-01-04 --end 2019-12-31` (state file in
-  `data/backfill_state/` makes it pick up where it stopped). Then re-run
-  `scripts/audit_sagyp_series_coverage.py`. Early 1993 signal already visible: SUNOIL_REFINED
+  publication day 2020→2026 (241/244/242/243/244/241/142), zero holes. 1993→2019 pass COMPLETE
+  (2026-08-06, detached process: 4,494 requests, 562,142 bronze rows, 282 holidays, 78 min —
+  after the session background runner killed it twice; checkpoint/resume worked every time).
+  **Full-span audit CLEAN: zero per-year holes in any curated series 1993→2026** — the
+  exact-code drift risk did not materialize; posicion codes are empirically stable across
+  the whole history. Only sub-year dips are early-1993 thin quoting (SUNOIL_REFINED 224/250,
+  WHEAT 249/250). silver.price_mark: sagyp_oficial is now the largest source (~171k rows). Early 1993 signal already visible: SUNOIL_REFINED
   quoted only 14/40 days, WHEAT 39/40 — thin early-90s quoting, not code drift; judge against
   the full pass.
 
