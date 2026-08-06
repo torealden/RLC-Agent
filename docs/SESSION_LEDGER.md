@@ -260,3 +260,29 @@ these are fixed because a later session touched nearby code.
 - [ ] **`RepointSoyOilCleanup` must NOT run** — 3,107 forward cells (ff_ mirrors + `eia_data.xlsm`) still
       depend on it; breaking the links `#REF!`s Tore's MY2028–2045 extensions + the biofuel-yield line *(new, session 5)*.
 - [ ] PSD attributes 140 / 149 not ingested — no biofuel/non-biofuel split outside the US *(session 8)*
+
+---
+
+## Session 2026-08-05/06 — collectors (sagyp_fob, helios_wapr) + local-LLM MCP bridge
+
+Artifacts, all verified and pushed (`5310c668`..`7d272227`):
+- `sagyp_fob_oficial` collector LIVE (migs 173/175): bronze.sagyp_fob_raw + 12 SAGYP_* series in
+  silver.price_mark (OFFICIAL_GOV, WINDOW shipment bands), full 1993→2026 backfill, audit shows
+  ZERO per-year holes in any series. Acceptance passed vs Circular 2030. Drift guards: disposition
+  registry + `scripts/audit_sagyp_series_coverage.py`.
+- `helios_wapr` daily collector LIVE (mig 174): current-state upsert + forecast-vintage archive
+  (RULED by Tore: full-horizon daily, retention decided with hindsight after the accuracy paper).
+- EPA ECHO enrich hardening VALIDATED (run 1567: partial-by-DFR-failures only, clean finalize).
+- Local-LLM MCP bridge (`mcp/`): rlc_mcp_server.py + mcphost v0.34 + qwen3-coder:30b, smoke test
+  3/3 exact (449/449 table names, schema description, by-source counts). rlc_readonly role,
+  secrets gitignored. Launcher `mcp/run_local_llm.ps1`.
+- Queued spec: `docs/specs/sagyp_estimaciones_collector_v1.md` (NOT built).
+
+Not-verified list:
+- [ ] First SCHEDULED firings: helios_wapr 07:00 ET + sagyp_fob_oficial 18:00 ET (registered +
+      manually verified only) — check the briefing.
+- [ ] SAGYP_CORN map variant: 190Y "los demás" (208) chosen over 120A (217) — confirm which is
+      the market's quoted benchmark; flip the map row if wrong.
+- [ ] Post-Aug-12 WASDE: rerun build_usda_comp_tabs.py (carried from prior handoff).
+
+Next session: **Feedstock report builder** (Desktop handoff note exists — start from it).
