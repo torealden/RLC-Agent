@@ -1,11 +1,15 @@
 {
   "mcpServers": {
     "rlc": {
-      "command": "python",
-      "args": ["C:\\dev\\RLC-Agent\\mcp\\rlc_mcp_server.py"],
-      "env": {
+      "type": "local",
+      "command": [
+        "python",
+        "C:\\dev\\RLC-Agent\\mcp\\rlc_mcp_server.py"
+      ],
+      "environment": {
         "RLC_PG_DSN": "postgresql://rlc_readonly:CHANGE_ME@CHANGE_ME_HOST:5432/rlc_commodities?sslmode=require",
-        "RLC_WORKBOOK_ROOT": "C:\\dev\\RLC-Agent\\models"
+        "RLC_WORKBOOK_ROOT": "C:\\dev\\RLC-Agent\\models",
+        "PYTHONIOENCODING": "utf-8"
       }
     }
   }
