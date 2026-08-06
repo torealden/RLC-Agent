@@ -60,13 +60,19 @@ The binary lands in `%USERPROFILE%\go\bin\mcphost.exe` (add that folder to
 PATH, or call it by full path). Then:
 
 ```powershell
-mcphost -m ollama:qwen3-coder:30b --config C:\dev\RLC-Agent\mcp\mcphost-config.json
+mcphost -m ollama:qwen3-coder:30b --provider-url http://127.0.0.1:11434 --config C:\dev\RLC-Agent\mcp\mcphost-config.json
 ```
 
 Note: mcphost's config format has evolved across versions — if it rejects the
 JSON, run `mcphost --help` and check the README at
 github.com/mark3labs/mcphost for the current schema (newer versions also
 accept YAML). The mcpServers block contents stay the same.
+
+### Ollama URL quirk (this machine)
+
+`--provider-url http://127.0.0.1:11434` is required: OLLAMA_HOST is set to the
+scheme-less server-bind form `0.0.0.0:11434` and mcphost would otherwise reuse it
+as the client base URL and fail to parse it. Easiest: run `mcpun_local_llm.ps1`.
 
 ## 6. First conversation — verify the loop
 
