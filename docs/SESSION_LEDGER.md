@@ -286,3 +286,24 @@ Not-verified list:
 - [ ] Post-Aug-12 WASDE: rerun build_usda_comp_tabs.py (carried from prior handoff).
 
 Next session: **Feedstock report builder** (Desktop handoff note exists — start from it).
+
+## 2026-08-06 (PM) — Feedstock Report Issue 0 pipeline
+Handoff: `docs/handoffs/2026-08-06_feedstock_report_issue0_pipeline.md` · Audit: `docs/specs/feedstock_report_issue0_freshness_audit.md`
+- Task 0 audit KILLED the rebuild premise: dead series were Fastmarkets, not AMS. MARS collector
+  live+contiguous since Feb 2022. DCO alive (AMS 3618). Poultry fat absent from AMS source-side
+  (API-verified). No backfill needed.
+- Mig 176 applied: free_mode, Monday coverage close, carry-forward fields, per-instrument credit rows.
+- Built `src/reports/feedstock_report/` {report_config,snapshot,gates,render,cli}.py — CLI verbs per
+  spec, single-file HTML + LinkedIn kit, IFVS-008 gates hard-fail (verified: exit 2, no output).
+- Issue 0 populated + rendered, all 5 acceptance criteria pass. Artifacts committed
+  (output/reports/feedstock_report/issues/issue_0/). Notion note posted under IFV Studio page.
+
+Not-verified list:
+- [ ] EPA whitelist ruling (blocks any D4 RIN row rendering — EMTS is the only public source).
+- [ ] Issue 0 written sections are [DRAFT] placeholders — replace before Sat 09:00.
+- [ ] Aug 3 AMS weeklies (3510/2839/3511) hadn't posted — re-snapshot prices before Sat render.
+- [ ] HTML not yet opened in a real email client.
+- [ ] Task 1 Barchart (FCPO — our feed dead since 2026-03-09 — + CME UCO) NOT started, non-blocking.
+
+Next session: **Issue 0 finalization** — replace draft sections, re-snapshot Monday prints, email-client
+check, then `render` + `lock`. Or Task 1 Barchart collectors if Issue 0 is handled by Desktop.
