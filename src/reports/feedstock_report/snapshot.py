@@ -37,6 +37,7 @@ from src.services.database.db_config import get_connection
 from src.reports.feedstock_report.report_config import (
     DASHBOARD_SERIES, CREDIT_INSTRUMENTS, FEEDSTOCK_CODES, FEEDSTOCK_LABELS,
     IFV_LEADERBOARD_CODES, STALE_EXCLUDE_DAYS, COVERAGE_WINDOW_DAYS,
+    RANGE_MIN_WEEKS,
 )
 
 logger = logging.getLogger(__name__)
@@ -214,8 +215,19 @@ def snapshot_prices(issue_no: int) -> int:
                 yoy_pct = (round((current['px'] - yoy_ref) / yoy_ref * 100, 2)
                            if (not carried and yoy_ref) else None)
 
-                lows = min(p['px'] for p in hist) * scale
-                highs = max(p['px'] for p in hist) * scale
+                # Never label a range 52-wk that isn't. A short span means the
+                # series is new or was truncated upstream (e.g. a region
+                # rename); render "—" rather than a number the header misstates.
+                span_weeks = (hist[-1]['date'] - hist[0]['date']).days / 7.0
+                if span_weeks >= RANGE_MIN_WEEKS:
+                    lows = round(min(p['px'] for p in hist) * scale, 2)
+                    highs = round(max(p['px'] for p in hist) * scale, 2)
+                else:
+                    lows = highs = None
+                    logger.warning(
+                        f"{code}: history spans only {span_weeks:.0f} weeks "
+                        f"({hist[0]['date']} -> {hist[-1]['date']}, {len(hist)} prints) "
+                        f"— 52-wk range SUPPRESSED (needs >={RANGE_MIN_WEEKS}w)")
 
                 cur.execute("""
                     INSERT INTO reports.feedstock_price_dashboard_snapshot
@@ -239,7 +251,7 @@ def snapshot_prices(issue_no: int) -> int:
                 """, (issue['id'], FEEDSTOCK_LABELS[code], spec['location_label'],
                       close, code,
                       round(current['px'] * scale, 2), wow_pct, mom_pct, yoy_pct,
-                      round(lows, 2), round(highs, 2), spec['unit'],
+                      lows, highs, spec['unit'],
                       spec['public_source'], current['date'], carried))
                 n += 1
                 age = (close - current['date']).days

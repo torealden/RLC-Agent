@@ -92,6 +92,15 @@ STALE_EXCLUDE_DAYS = 21
 # cadence note in snapshot.py. A Friday-evening run would miss DCO entirely.
 COVERAGE_WINDOW_DAYS = 4
 
+# Minimum-observation guard on the "52-wk range" column (ruled 2026-08-07).
+# The column previously took min/max over whatever prints existed in the
+# trailing 52 weeks and labelled the result 52-wk regardless. A series that is
+# new, or that was silently truncated by an upstream rename, then prints a
+# false label — soybean oil spanned 10 weeks after AMS 3511 renamed region
+# `minneapolis` to `minnesota`/`iowa`/`indiana_ohio`/`illinois` on 2026-05-18.
+# A series whose history spans fewer than this many weeks renders "—" instead.
+RANGE_MIN_WEEKS = 40
+
 # =============================================================
 # Section registry (render order)
 # =============================================================

@@ -146,10 +146,19 @@ region `minneapolis` from 2025-02-17 to 2026-05-18, then switched to
 `minnesota`/`iowa`/`indiana_ohio`/`illinois` from 2026-05-18. The dashboard points at
 `illinois`, which only exists after the rename.
 
-**Fix:** bridge the pre-rename region to its successor so the series is continuous, then
-add a coverage floor — if a series spans materially less than 52 weeks, either suppress
-the range or label the true window. Same failure class as the cadence collapse: a header
-asserting something the data does not support.
+**Guard SHIPPED 2026-08-07** (`RANGE_MIN_WEEKS = 40`): any series whose history spans
+fewer than 40 weeks now renders "—" instead of a mislabelled range, and logs a warning
+naming the span and print count. This is the generalizable half — it fires for *any*
+renamed or newly-added series, not just soybean oil, so the next silent truncation
+cannot print a false 52-week label.
+
+**Still open:** bridge the pre-rename region to its successor so soybean oil has a
+genuine 52 weeks again (`minneapolis` 2025-02-17→2026-05-18 + `minnesota` 2026-05-18→).
+Until then SBO simply has no range column. Deliberately not done on ship day — it is a
+data-lineage change and deserves its own verification.
+
+Same failure class as the cadence collapse: a header asserting something the data does
+not support.
 
 ## 2.5 Forecast tournament infrastructure
 
