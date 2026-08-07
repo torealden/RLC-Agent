@@ -7,6 +7,14 @@ and can wait. Do not let Tier 2 work delay Tier 1.
 **Global filter:** any pull feeding free content applies `WHERE is_proprietary = false`.
 Enforce at the query, not at write time.
 
+**How to write items in this list (learned 2026-08-07).** Name the *thing needed*, not the
+table assumed to hold it. Item 1.5 said "before querying `rfs_volume_projections`…",
+which sent the work to a table holding a 2020 snapshot and produced a confident report
+that the Set 2 volumes were absent from the database. They were present the whole time,
+in `reference.biofuel_policy_timeline`. A pointer to a specific table reads as settled
+fact and suppresses the search that would have found the right one. Write "the live 2026
+D4 requirement" and let the lookup happen.
+
 ---
 ---
 
@@ -168,6 +176,31 @@ data-lineage change and deserves its own verification.
 
 Same failure class as the cadence collapse: a header asserting something the data does
 not support.
+
+## 2.5c Unit discipline on any table mixing denominations
+
+Two denominator traps surfaced in one afternoon, and both would have rendered plausible
+charts rather than obvious errors:
+
+1. `silver.rfs_volume_projections` — a 2020 projection used as a 2026 denominator, giving
+   a ~127% "overshoot" that was an artifact of the projection's age.
+2. `reference.biofuel_policy_timeline` — `RFS2_RVO` denominates D4 and D6 in
+   `billion_gal` but D3, D5 and TOTAL in `billion_rins`, in the same column of the same
+   table. Comparing RINs generated against the gallon-denominated D4 RVO overstates pace
+   by about 63%.
+
+Neither is a bad number; both are correct values that mean different things. The danger is
+that a mismatch produces a chart that looks right.
+
+**Fix:** a unit column is mandatory on any table whose rows can carry different
+denominations — no inferring the unit from the row's identity. Then add an assertion at
+the comparison point, not the render point: any ratio, percentage or delta computed
+across two series asserts the units match and raises if they do not. Put the check in the
+code, not in the analyst's head — the same pattern as the per-month tie-out in
+`scripts/rake_feedstock_vintage_aware.py`.
+
+Audit candidates beyond these two: anything holding both volume and RIN measures, and the
+feedstock tables mixing ¢/lb with $/gal.
 
 ## 2.5 Forecast tournament infrastructure
 
