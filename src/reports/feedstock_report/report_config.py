@@ -44,7 +44,12 @@ FEEDSTOCK_LABELS = {
 # IFVS-008 compliance gates (renderer-enforced)
 # =============================================================
 # Public citation whitelist (ruled 2026-08-06: USDA added).
-CITATION_WHITELIST = {'CARB', 'NREL', 'EIA', 'IEA', 'Argus', 'OPIS', 'USDA'}
+# Government/public-institution sources are citable as a class — the licensing
+# constraint is the commercial vendors, not the agencies. EPA added 2026-08-07
+# (ruled by Tore) so EMTS RIN prices and RFS volumes can render.
+# Argus and OPIS sit here only so their w/w or index form can render; their
+# LEVELS stay embargoed via LICENSED_LEVEL_SOURCES below.
+CITATION_WHITELIST = {'CARB', 'EPA', 'NREL', 'EIA', 'IEA', 'USDA', 'Argus', 'OPIS'}
 
 # Exchange names — board data renders as levels with attribution.
 EXCHANGE_WHITELIST = {'CME Group', 'CBOT', 'NYMEX', 'ICE', 'Bursa Malaysia'}

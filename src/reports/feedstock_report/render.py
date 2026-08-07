@@ -209,16 +209,20 @@ def _render_dashboard(prices: List[Dict], close: date) -> Tuple[str, List[List[s
     note = ('Rows pending reliable public sourcing — ' + '; '.join(note_bits) + '.'
             if note_bits else '')
 
+    # The dagger legend travels with the table into the kit PNG as well — a kit
+    # image is posted standalone, where an unexplained † reads as a defect.
+    legend = ('† No print in the coverage week — last actual print shown with '
+              'its date; changes not computed across carried values.'
+              if any(r['is_carried_forward'] for r in renderable) else '')
+
     html = _table(headers, html_rows, right_cols={2, 3, 4, 5})
-    if any(r['is_carried_forward'] for r in renderable):
+    if legend:
         html += (f'<p style="font-family:{FONT_BODY};font-size:12px;color:{INK};'
-                 f'opacity:.7;margin:6px 0 0 0;">† No print in the coverage week — '
-                 f'last actual print shown with its date; changes not computed '
-                 f'across carried values.</p>')
+                 f'opacity:.7;margin:6px 0 0 0;">{_html.escape(legend)}</p>')
     if note:
         html += (f'<p style="font-family:{FONT_BODY};font-size:12px;color:{INK};'
                  f'opacity:.7;margin:8px 0 0 0;">{_html.escape(note)}</p>')
-    return html, [headers] + png_rows, sources, note
+    return html, [headers] + png_rows, sources, note, legend
 
 
 def _render_credit_stack(credits: List[Dict], close: date,
@@ -370,13 +374,14 @@ def _write_chart_png(series: Dict, out_path) -> None:
     plt.close(fig)
 
 
-def _write_table_png(table_rows: List[List[str]], title: str, out_path: Path) -> None:
+def _write_table_png(table_rows: List[List[str]], title: str, out_path: Path,
+                     note: str = '') -> None:
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     headers, body = table_rows[0], table_rows[1:]
     nrows = len(body)
-    fig_h = 1.35 + 0.62 * max(nrows, 1)
+    fig_h = 1.35 + 0.62 * max(nrows, 1) + (0.55 if note else 0.0)
     fig, ax = plt.subplots(figsize=(PNG_EXPORT_WIDTH_PX / 100, fig_h), dpi=100)
     fig.patch.set_facecolor(PAPER)
     ax.axis('off')
@@ -386,8 +391,11 @@ def _write_table_png(table_rows: List[List[str]], title: str, out_path: Path) ->
                   *(len(str(row[c])) for row in body)) + 2 for c in range(ncols)]
     total = sum(char_w)
     widths = [w / total for w in char_w]
+    # With a note the table is lifted to make room beneath it; its height is
+    # reduced by the same amount so the top edge never reaches the title.
+    tbl_y0, tbl_h = (0.13, 0.74) if note else (0.0, 0.80)
     tbl = ax.table(cellText=body, colLabels=headers, cellLoc='left',
-                   colWidths=widths, bbox=[0, 0, 1, 0.80])
+                   colWidths=widths, bbox=[0, tbl_y0, 1, tbl_h])
     tbl.auto_set_font_size(False)
     tbl.set_fontsize(16)
     for (r, c), cell in tbl.get_celld().items():
@@ -402,6 +410,9 @@ def _write_table_png(table_rows: List[List[str]], title: str, out_path: Path) ->
             cell.set_text_props(color=INK)
     ax.text(0, 0.93, title, color=INK, fontsize=24, fontfamily='Georgia',
             transform=ax.transAxes, va='bottom')
+    if note:
+        ax.text(0, 0.045, note, color=INK, alpha=.75, fontsize=12,
+                transform=ax.transAxes, va='bottom', wrap=True)
     fig.text(0.01, 0.012, 'The Feedstock Report · Round Lakes Commodities',
              color=INK, alpha=.55, fontsize=11)
     fig.savefig(out_path, facecolor=PAPER, bbox_inches='tight', pad_inches=0.25)
@@ -463,17 +474,17 @@ def render_issue(issue_no: int, inject_ifv_numeric_test: bool = False) -> Dict[s
                   "progress; the stack table joins the dashboard shortly.")
     if cs_png:
         png_jobs.append(('table', cs_png, 'Credit Stack Monitor',
-                         kit_dir / 'credit_stack.png'))
+                         kit_dir / 'credit_stack.png', ''))
         kit_images.append(('credit_stack', 'credit_stack.png'))
 
     # dashboard
-    dash_html, dash_png, dash_sources, coverage_note = _render_dashboard(
+    dash_html, dash_png, dash_sources, coverage_note, dash_legend = _render_dashboard(
         data['prices'], close)
     rendered_sources += dash_sources
     body_parts.append(_section_title('Feedstock Price Dashboard') + dash_html)
     kit_md.append("FEEDSTOCK PRICE DASHBOARD\n\n[IMAGE: dashboard]")
     png_jobs.append(('table', dash_png, 'Feedstock Price Dashboard',
-                     kit_dir / 'dashboard.png'))
+                     kit_dir / 'dashboard.png', dash_legend))
     kit_images.append(('dashboard', 'dashboard.png'))
 
     # IFV leaderboard
@@ -486,7 +497,7 @@ def render_issue(issue_no: int, inject_ifv_numeric_test: bool = False) -> Dict[s
     kit_md.append("IFV LEADERBOARD\n\n[IMAGE: ifv_leaderboard]")
     if ifv_png:
         png_jobs.append(('table', ifv_png, 'IFV Leaderboard — Implied Feedstock Value',
-                         kit_dir / 'ifv_leaderboard.png'))
+                         kit_dir / 'ifv_leaderboard.png', ''))
         kit_images.append(('ifv_leaderboard', 'ifv_leaderboard.png'))
 
     # in focus (+ one chart max). The chart is embedded as a data URI so
@@ -502,8 +513,8 @@ def render_issue(issue_no: int, inject_ifv_numeric_test: bool = False) -> Dict[s
         buf = _io.BytesIO()
         _write_chart_png(chart, buf)
         b64 = base64.b64encode(buf.getvalue()).decode('ascii')
-        png_jobs.append(('chart', chart, '', kit_dir / 'in_focus_chart.png'))
-        png_jobs.append(('chart', chart, '', out_dir / f'issue_{issue_no}_teaser.png'))
+        png_jobs.append(('chart', chart, '', kit_dir / 'in_focus_chart.png', ''))
+        png_jobs.append(('chart', chart, '', out_dir / f'issue_{issue_no}_teaser.png', ''))
         kit_images.append(('in_focus_chart', 'in_focus_chart.png'))
         chart_html = (f'<img src="data:image/png;base64,{b64}" alt="{chart["label"]}" '
                       f'style="max-width:100%;border:1px solid {GOLD};margin-top:10px;">')
@@ -558,9 +569,9 @@ def render_issue(issue_no: int, inject_ifv_numeric_test: bool = False) -> Dict[s
     html_path = out_dir / f'issue_{issue_no}.html'
     html_path.write_text(html_doc, encoding='utf-8')
     (kit_dir / 'body.md').write_text(kit_body, encoding='utf-8')
-    for kind, payload, title, path in png_jobs:
+    for kind, payload, title, path, png_note in png_jobs:
         if kind == 'table':
-            _write_table_png(payload, title, path)
+            _write_table_png(payload, title, path, note=png_note)
         else:
             _write_chart_png(payload, path)
 
