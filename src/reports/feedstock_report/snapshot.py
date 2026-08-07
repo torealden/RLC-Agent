@@ -4,8 +4,15 @@ Populates reports.feedstock_issue / feedstock_price_dashboard_snapshot /
 feedstock_credit_stack_snapshot from live silver-layer series, applying the
 carry-forward facts the renderer needs (staleness itself is renderer-enforced).
 
-Coverage window (ruled 2026-08-06): ends Monday settlement close; snapshots run
-Monday evening; publish Tuesday. week_ending column = the Monday close.
+Coverage window (ruled 2026-08-07, supersedes the 2026-08-06 Monday close):
+the window IS the AMS reporting week, Monday through Friday. week_ending
+column = the Friday close.
+
+Cadence: run the snapshot verbs the MONDAY AFTER the coverage week, from
+~10:00 ET, and publish that afternoon or Tuesday. That is the earliest moment
+both AMS families are out for the same week — 3510/3511 (SBO/CWG/YG) land the
+prior Friday, but 3618 (DCO) does not post until Monday ~09:00 ET. Running
+Friday evening renders DCO carried-forward on every issue.
 
 Manual entry path (`load_manual_csv`): supervised CSV -> same validation and
 snapshot tables as collector data. Manual numbers never enter rendered output
@@ -29,7 +36,7 @@ from src.services.database.db_config import get_connection
 
 from src.reports.feedstock_report.report_config import (
     DASHBOARD_SERIES, CREDIT_INSTRUMENTS, FEEDSTOCK_CODES, FEEDSTOCK_LABELS,
-    IFV_LEADERBOARD_CODES, STALE_EXCLUDE_DAYS,
+    IFV_LEADERBOARD_CODES, STALE_EXCLUDE_DAYS, COVERAGE_WINDOW_DAYS,
 )
 
 logger = logging.getLogger(__name__)
@@ -39,15 +46,22 @@ logger = logging.getLogger(__name__)
 # Issue lifecycle
 # =============================================================
 
-def monday_close_on_or_before(d: date) -> date:
-    """The Monday settlement close covering an issue dated d."""
-    return d - timedelta(days=(d.weekday() - 0) % 7)
+def friday_close_on_or_before(d: date) -> date:
+    """The Friday weekly close covering an issue dated d.
+
+    The AMS weeklies that back most of the dashboard cover Monday-Friday and
+    publish that same Friday, stamped with the week's Monday. An issue dated
+    Monday therefore closes on the preceding Friday.
+    """
+    return d - timedelta(days=(d.weekday() - 4) % 7)
 
 
 def create_issue(issue_no: int, issue_date: date, free_mode: bool = True,
                  title: Optional[str] = None) -> int:
-    week_ending = monday_close_on_or_before(issue_date)
-    coverage_start = week_ending - timedelta(days=6)   # the prior Tuesday
+    week_ending = friday_close_on_or_before(issue_date)
+    # Monday of the same AMS reporting week — a print stamped that Monday is
+    # in-window, which is the whole point of the Friday close.
+    coverage_start = week_ending - timedelta(days=COVERAGE_WINDOW_DAYS)
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -145,10 +159,13 @@ def snapshot_prices(issue_no: int) -> int:
     coverage week, the row carries the LAST actual print with its as-of date
     (is_carried_forward=TRUE) and NULL w/w. W/w change computes only between
     actual prints in the current and prior coverage weeks of the SAME series.
+
+    The coverage week is Mon-Fri (ruled 2026-08-07) so that an AMS weekly
+    stamped with the week's Monday lands in its own window.
     """
     issue = get_issue(issue_no)
     close: date = issue['week_ending']
-    start: date = issue['coverage_start'] or (close - timedelta(days=6))
+    start: date = issue['coverage_start'] or (close - timedelta(days=COVERAGE_WINDOW_DAYS))
     n = 0
 
     with get_connection() as conn:
@@ -329,7 +346,7 @@ def load_manual_csv(issue_no: int, csv_path: str, kind: str = 'prices') -> int:
                             is_manual_entry = TRUE, is_placeholder = FALSE
                     """, (issue['id'], FEEDSTOCK_LABELS[code], location, close, code,
                           price, unit, source, obs,
-                          not (close - timedelta(days=6) <= obs <= close)))
+                          not (close - timedelta(days=COVERAGE_WINDOW_DAYS) <= obs <= close)))
                 else:
                     inst = r['instrument'].strip().upper()
                     if inst not in KNOWN_INSTRUMENTS:
@@ -348,7 +365,7 @@ def load_manual_csv(issue_no: int, csv_path: str, kind: str = 'prices') -> int:
                             is_carried_forward = EXCLUDED.is_carried_forward,
                             is_manual_entry = TRUE, notes = NULL
                     """, (issue['id'], inst, price, unit, source, obs,
-                          not (close - timedelta(days=6) <= obs <= close)))
+                          not (close - timedelta(days=COVERAGE_WINDOW_DAYS) <= obs <= close)))
                 n += 1
         conn.commit()
     logger.info(f"Loaded {n} manual {kind} rows into issue {issue_no}")

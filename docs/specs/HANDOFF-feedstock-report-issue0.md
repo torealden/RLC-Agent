@@ -33,7 +33,7 @@ Render order and section codes (store code in `section_content.section_code` or 
 
 ## Row grain and required fields
 
-- `feedstock_issue`: one row per issue. Required: issue_no (0, 1, …), issue_date, coverage window (**ends Monday settlement close** — ruled 2026-08-06; snapshots run Monday evening, publish Tuesday), status (`draft`/`locked`/`published`), free_mode boolean.
+- `feedstock_issue`: one row per issue. Required: issue_no (0, 1, …), issue_date, coverage window (**the AMS reporting week, Monday–Friday, ending the Friday close** — ruled 2026-08-07, supersedes the 2026-08-06 Monday close; snapshots run the following Monday from ~10:00 ET, publish that afternoon or Tuesday — see mig 177), status (`draft`/`locked`/`published`), free_mode boolean.
 - `price_dashboard_snapshot`: one row per (issue, feedstock, series). Required: feedstock code from the 11-code canonical vocabulary (SBO, CAN, DCO, BFT, CWG, YG, PLT, UCO, CAM, CAR, OTH), price level, w/w change, unit, source, **last_observed date**, staleness flag.
 - `credit_stack_snapshot`: one row per (issue, credit instrument). Same staleness fields.
 - `news_items`: one row per item: headline, url, source, one-line annotation, rank.
@@ -88,7 +88,7 @@ If the pipeline is not green by Fri EOD: stop, and Desktop assembles Issue 0 man
 2. Argus/OPIS-derived series render as w/w change or base-100 index in free content — no levels — pending license review. Exchange settles render as levels with attribution.
 3. Issue 1 In Focus = IFV framework explainer with explicitly illustrative, non-current numbers.
 4. Dead cash series: fix collector if AMS still publishes; otherwise replace via exchange contracts (Task 1: CME UCO, Bursa FCPO); poultry fat rides the coverage-gap line if AMS is source-dead.
-5. Coverage window ends Monday settlement close; automated snapshots Monday evening; Tuesday publish. Written annotations get a mandatory Monday-evening review pass against refreshed tables (characterize, never restate levels).
+5. ~~Coverage window ends Monday settlement close; automated snapshots Monday evening; Tuesday publish.~~ **Superseded 2026-08-07 (mig 177):** coverage window is the AMS reporting week Mon–Fri, closing Friday. Snapshots run the FOLLOWING Monday from ~10:00 ET — the earliest moment both AMS families are published for that week (3510/3511 land the prior Friday ~13:30 stamped with the week's Monday; 3618/DCO lands Monday ~09:00 stamped with the week's Friday). Publish Monday afternoon or Tuesday. Written annotations get a mandatory Monday review pass against refreshed tables (characterize, never restate levels).
 
 ## Out of scope
 

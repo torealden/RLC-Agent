@@ -164,7 +164,7 @@ def _asof_note(d: date) -> str:
 def _render_masthead(issue: Dict) -> str:
     tag = 'PILOT · FREE EDITION' if issue['free_mode'] else 'SUBSCRIBER EDITION'
     cov = (f"Coverage: {_fmt_date(issue['coverage_start'])} – "
-           f"{issue['week_ending'].strftime('%b %d, %Y')} settlement close")
+           f"{issue['week_ending'].strftime('%b %d, %Y')} weekly close")
     return f'''
 <div style="border-top:6px solid {GOLD};border-bottom:2px solid {INK};padding:26px 0 14px 0;">
   <div style="font-family:{FONT_BODY};font-size:11px;letter-spacing:3px;color:{GOLD};

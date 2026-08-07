@@ -50,6 +50,22 @@ Note on the weekly Monday reports (3510/2839/3511): the 2026-08-03 issues had no
 posted to MARS as of this audit — last print is the 07-27 week. That is a normal
 thin-load state; carry-forward covers it.
 
+> **Correction 2026-08-07.** Calling these "Monday reports" was wrong and it hid a
+> cadence bug. Verified at the MARS API over five consecutive weeks
+> (2026-06-29 → 2026-07-31): **3510 and 3511 cover Mon–Fri and publish that same
+> FRIDAY ~13:30 ET, stamped with the week's MONDAY** as `report_date`. So on
+> 2026-08-06 the Aug-3 week's issue was not late — it was not yet due, and it
+> posted Friday 2026-08-07. **3618 (DCO) also covers Mon–Fri but stamps the
+> week's FRIDAY and publishes the FOLLOWING MONDAY ~09:00 ET.** 2839 publishes
+> Monday for the prior week; it does not back a dashboard row (BFT reads off the
+> daily 2837), so it is not cadence-critical.
+>
+> Consequence: under the then-current Monday close with a Monday-evening
+> snapshot, SBO/CWG/YG could never contain the print for their own coverage week
+> and were flagged carried-forward on *every* issue with NULL w/w — an off-by-one
+> in the cadence, not a freshness problem. Fixed by migration 177 (Friday close,
+> Mon–Fri window, snapshot the following Monday).
+
 ## Freshness table — credit stack
 
 | Instrument | Series (db) | DB last real obs | Source | Renderable? |

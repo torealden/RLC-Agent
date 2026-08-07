@@ -62,6 +62,12 @@
 
 ## Rerun sequence (Monday-evening cadence)
 
+> **Superseded 2026-08-07** — the cadence below is wrong (see
+> `docs/handoffs/2026-08-07_feedstock_report_friday_close.md` and migration 177).
+> Coverage now closes **Friday** over a Mon–Fri window, and the snapshot runs the
+> **following Monday from ~10:00 ET**. `--date` is the publish date, so Issue 1
+> is `--date 2026-08-17` (coverage 2026-08-10 → 2026-08-14), not 2026-08-11.
+
 ```
 python -m src.reports.feedstock_report.cli issue create --n 1 --date 2026-08-11 --free
 python -m src.reports.feedstock_report.cli snapshot prices --issue 1

@@ -73,6 +73,20 @@ BANNED_OUTPUT_STRINGS = [
 # and moved to the "coverage expanding" line.
 STALE_EXCLUDE_DAYS = 21
 
+# Coverage window (ruled 2026-08-07, supersedes the 2026-08-06 Monday close):
+# the window is the AMS reporting week, Monday through Friday inclusive, so
+# coverage_start = week_ending - COVERAGE_WINDOW_DAYS.
+#
+# Both AMS families that back the dashboard cover Mon-Fri but differ in stamp
+# and publication, and a Mon-Fri window is the only one that holds both:
+#   3510/3511 (SBO, CWG, YG): stamped the week's MONDAY, published that FRIDAY
+#                             ~13:30 ET.
+#   3618      (DCO):          stamped the week's FRIDAY, published the FOLLOWING
+#                             MONDAY ~09:00 ET.
+# Hence the snapshot must run the Monday AFTER the coverage week — see the
+# cadence note in snapshot.py. A Friday-evening run would miss DCO entirely.
+COVERAGE_WINDOW_DAYS = 4
+
 # =============================================================
 # Section registry (render order)
 # =============================================================

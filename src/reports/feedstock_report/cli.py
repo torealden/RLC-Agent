@@ -1,5 +1,15 @@
 """The Feedstock Report — CLI.
 
+Cadence (ruled 2026-08-07): an issue covers the AMS reporting week Mon-Fri and
+is dated the FOLLOWING Monday. `issue create --date` takes the publish date;
+week_ending and coverage_start are derived from it (see snapshot.create_issue),
+so dating an issue Monday 2026-08-17 gives coverage 2026-08-10 -> 2026-08-14.
+
+Run the snapshot verbs that same Monday from ~10:00 ET — the earliest point at
+which both AMS families are published for the coverage week (3510/3511 land the
+prior Friday ~13:30, 3618/DCO lands Monday ~09:00). Running any earlier leaves
+one family carried-forward.
+
 Verbs (handoff spec 2026-08-06):
     python -m src.reports.feedstock_report.cli issue create --n 0 --date 2026-08-08 --free
     python -m src.reports.feedstock_report.cli snapshot prices  --issue 0
