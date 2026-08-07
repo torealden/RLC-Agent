@@ -73,9 +73,18 @@ an LCFS CI into a 45Z staircase position.**
 | `silver.rfs_volume_projections` | 2026 requirement. Note `scenario`, `snapshot_label`, `measure` |
 | `gold.rin_annual_balance` | Carryover |
 
-**Before querying `rfs_volume_projections`:** `SELECT DISTINCT` on `scenario`,
-`snapshot_label`, and `measure`. Do not guess which is current. Report the values and
-which one is the live Set 2 figure.
+**Corrected 2026-08-07 — `silver.rfs_volume_projections` is the WRONG table.** It holds a
+single snapshot, `mandate_projections_2020_12` (`snapshot_date` 2020-12-11, source
+`Mandate Projections.xlsx`), with only Lower/Upper scenarios. There is no Set 2 figure in
+it and its 2026 D4 projection (2.53–3.03 bn RINs) is already exceeded by first-half
+actuals alone. Do not use it as a denominator.
+
+**The live Set 2 volumes are in `reference.biofuel_policy_timeline`**, `policy_name =
+'RFS2_RVO'`, sourced to the EPA Federal Register, covering 2025–2027. **Unit trap:** D4
+and D6 are denominated in `billion_gal`; D3, D5 and TOTAL in `billion_rins`. Compare
+gallons to gallons — the monthly EMTS export carries `Volume (Gal.)` alongside `RINs`.
+
+2026 D4 RVO = **3.35 bn gal** (2025: 2.95; 2027: 3.50).
 
 **Deliverable:** D4 generation year to date against the 2026 requirement, with share of
 year elapsed. One table, one chart.
