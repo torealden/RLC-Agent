@@ -111,14 +111,18 @@ case does not materialise in current code.
   `monthly`. Weekly ends 2025-04-18, so **every period after that silently falls
   through to the forecast curve.**
 
-**Live bugs — unbounded queries:**
-- `src/dashboard/biofuels.py:184` — "Latest credit prices",
-  `ORDER BY price_date DESC LIMIT 1` with **no `<= CURRENT_DATE` filter**. This
-  tile is displaying the **2050-12-01** row as the latest credit price.
+**Live bugs — unbounded queries. Fix the tile FIRST** (ruled 2026-08-08: order by
+plausibility, not by how wrong it looks):
+- `src/dashboard/biofuels.py:184` — **HIGHEST PRIORITY.** "Latest credit prices",
+  `ORDER BY price_date DESC LIMIT 1` with **no `<= CURRENT_DATE` filter**. Displays
+  the **2050-12-01** row as a single number labelled "latest credit price", with
+  nothing marking it as a forecast. Worse than the chart *precisely because it
+  looks fine* — a reader has no cue that anything is wrong.
 - `src/dashboard/biofuels.py:358` — "Credit Stack Tracker" chart,
   `WHERE price_date >= '2019-01-01'` with no upper bound. Plots 2019 → 2050,
-  actuals and forecast undifferentiated, rendering **all 25 sawteeth as price
-  history**, under the heading "D4 RIN Prices (cents/RIN)".
+  actuals and forecast undifferentiated, rendering all 25 sawteeth under the
+  heading "D4 RIN Prices (cents/RIN)". Ugly and self-evidently wrong to anyone who
+  looks at it, which makes it the *less* dangerous of the two.
 
 **Client-facing note:** `dashboards/helios_demo/app.py` describes its source to the
 viewer as "bronze.credit_prices forward curve" (line 797) — at least labelled —
@@ -127,10 +131,44 @@ but the IFV underneath it uses the point lookup above.
 **Writers, not readers** (no action): `ingest_historical.py`,
 `ingest_training_prices_v2.py`, `ingest_profitability_workbook.py`.
 
-**Not re-verified this session:** `src/dashboard/showcase.py`,
-`src/agents/facility/crush_economics.py`, `hefa_economics.py`,
-`scripts/build_per_facility_template.py`. They appear in the grep; I confirmed the
-four above and did not read these.
+**Now verified (read 2026-08-08, all four clean):**
+- `src/dashboard/showcase.py` — uses **hardcoded scenario literals**
+  (`{"Current": 1.25, "Bull": 1.80, "Bear": 0.50}`). Never touches the table.
+- `src/agents/facility/crush_economics.py` and `hefa_economics.py` — pure
+  functions taking `d4_rin_per_gal` / `d4_rin_price_per_rin` as **input
+  parameters**. No database read.
+- `scripts/build_per_facility_template.py` — writes Excel *formulas* referencing a
+  D4 RIN cell. No database read.
+
+**Architectural consequence, and it is good news:** every path funnels through the
+single callable `src/kg/callables/implied_feedstock_value.py`. The facility
+modules are pure and take the price as an argument. **Fixing provenance in that
+one callable fixes every downstream consumer.** One chokepoint, not a sweep.
+
+### Has any of it been shown to anyone?
+
+**Retrospective, not prospective** (Tore, 2026-08-08): every current-date IFV
+computed since 2025-04-18 has used a modelled D4 leg while its provenance string
+read as observed. Those numbers already exist. Same class as the tallow LCFS
+freeze.
+
+`core.kg_callable_invocation` holds **48 invocations, all `smoke_test` (44) or
+`test` (4)** — zero human or production callers. Twelve of them cite
+`bronze.credit_prices.d4_rin @ 2026-05-01`, i.e. a **forecast point cited as an
+observation**, so the defect is reproducible in the log.
+
+**But the log does not cover the surface that matters.** `dashboards/helios_demo/app.py`
+line 23 comments "import the IFV callable directly" and line 40 imports it
+straight from `src.kg.callables.implied_feedstock_value`, **bypassing the
+production invoker** — so Helios calls are never logged. That is the
+client-facing Pepsi-pilot surface.
+
+**Therefore: cannot rule out that IFV numbers built on a forecast D4 leg have been
+shown externally.** The clean invocation log is not evidence of no exposure; it is
+evidence that the logged path was only ever exercised by tests. Anyone picking
+this up should establish what the Helios demo has been run against and in front of
+whom, and should treat "no rows in the invocation table" as uninformative for that
+surface.
 
 ---
 
@@ -240,5 +278,13 @@ Immediate schema consequences:
   2026-08-07 ~13:30. It still carries Jul 27 prints with daggers.
 - **`silver.tallow_implied_value` and the IFV are consuming the March forecast as
   a price** — internal correctness issue independent of the commercial decision.
+  This is **retrospective**: numbers already computed carry it. Fix at the single
+  chokepoint (`implied_feedstock_value.py`), then establish what the Helios demo
+  has been shown against — the invocation log cannot answer that because the demo
+  bypasses the invoker.
+- **`core.kg_callable_invocation` has a coverage hole.** Any caller importing a
+  callable directly is unlogged. If the invocation table is meant to be an audit
+  trail, direct import needs to be closed off or the table needs to stop being
+  treated as one.
 - Unverified: whether Fastmarkets assesses spot or a forward strip. Needs their
   methodology note.
