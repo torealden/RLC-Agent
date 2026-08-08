@@ -206,11 +206,11 @@ veg-oil price sensitivity, not a credit-derived figure.
    level, whatever the external branding says. Cheap now; stops being cheap once
    there are more surfaces.
 
-2. **The demo has no artifact trail — question for Tore, stated plainly:**
-   *has the Helios demo been driven in front of anyone, and if so roughly when?*
-   It is a Streamlit app, so nothing was delivered to inspect. Low concern given
-   the delivered package is clean, but it is the one thing evidence cannot close,
-   and it should be asked rather than left implied.
+2. **The demo — ANSWERED 2026-08-08 by Tore: shown to him only, no one else.**
+   It is a Streamlit app with no artifact trail, so this could only be closed by
+   asking. Combined with the clean artifact scan above, **client exposure is now
+   fully ruled out, not merely unlikely.** No correction owed to anyone; the
+   forecast-as-observed defect never left the building.
 
 ---
 
@@ -328,9 +328,12 @@ Consequences to design for on 2026-08-24:
   market-priced leg has no current public source. Three options — publish lagged
   and dated; license Argus/OPIS for levels (`LICENSED_LEVEL_SOURCES` /
   `LICENSED_LEVELS_OK` already wired, so it is a contract not a build); or publish
-  as change/index. Commercial decision, wanted before 2026-08-25. Note free-tier
-  IFV renders rank + arrows only under IFVS-008, so the lag bites only the paid
-  tier.
+  as change/index. Free-tier IFV renders rank + arrows only under IFVS-008, so the
+  lag bites only the paid tier.
+  **RULED 2026-08-08 (Tore): acceptable as-is for the demo — it is a demo.
+  A live D4 price is required for the real report, and Tore is taking that on.**
+  So this is deferred by decision, not outstanding. Re-open when the paid tier
+  approaches.
 - **RIN price table does not exist.** `table_export (11).csv` (8,449 rows,
   2010-06-28 → 2026-06-22, D3/D4/D5/D6 × Q-RIN/Unverified × vintage) is unloaded.
   Needs a new table with vintage + observation-type mandatory.
