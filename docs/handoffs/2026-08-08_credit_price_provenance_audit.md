@@ -163,12 +163,48 @@ straight from `src.kg.callables.implied_feedstock_value`, **bypassing the
 production invoker** — so Helios calls are never logged. That is the
 client-facing Pepsi-pilot surface.
 
-**Therefore: cannot rule out that IFV numbers built on a forecast D4 leg have been
-shown externally.** The clean invocation log is not evidence of no exposure; it is
-evidence that the logged path was only ever exercised by tests. Anyone picking
-this up should establish what the Helios demo has been run against and in front of
-whom, and should treat "no rows in the invocation table" as uninformative for that
-surface.
+The clean invocation log is **not** evidence of no exposure; it is evidence that
+the logged path was only ever exercised by tests. So the question was answered
+from **delivered artifacts instead of logs**.
+
+### Artifact check — RESOLVED, no client exposure
+
+Scanned all 48 text-readable delivered artifacts under `clients/Contracts/`
+(Helios Vol 1 No 1 and No 2, the SAMPLE_2 package, the Derivation Memo, the
+regional `Helios_*_VegOils/Grains` JSON, the chart data, and the Woolworths
+sample). Negative test for a numeric D4 RIN price, an LCFS $/MT level, a credit
+stack $/gal, or an IFV expressed as a ¢/lb feedstock bid:
+
+**Zero hits on all four patterns.**
+
+D4 / RIN / 45Z appear exactly three times in the delivered Vol 1 No 1 — all the
+same row of a risk-driver table, as a *qualitative watch-item*:
+`US biofuel policy revision (RVO/45Z) | CBOT SBO, BR local, corn oil proxy | 40% |
+±2–4 ¢/lb | EPA docket; D4 RIN complex; canola-RVO utilization pace`. That is a
+veg-oil price sensitivity, not a credit-derived figure.
+
+**Root reason it is clean — "IFV" names two different constructs:**
+
+| | Helios IFV (delivered) | Biofuel IFV (defective) |
+|---|---|---|
+| What | veg-oil/grain price **term stack** — board + freight + duty + VAT + FX + basis residual (`gold.curve_term`) | D4 RIN + LCFS + 45Z → $/lb feedstock bid |
+| Where | `IFV_Statistical_Package_Data_SAMPLE.xlsx` ("VEG OILS IFV STATISTICAL PACKAGE", CPO CIF Rotterdam, USD/t); masthead "Engine: IFV (Implied Feedstock Value)" | `src/kg/callables/implied_feedstock_value.py` |
+| Units | USD/t, ¢/lb of vegetable oil | $/lb feedstock, from a credit stack |
+| Touches `bronze.credit_prices`? | **No** | **Yes — the forecast curve** |
+
+**Conclusion: no correction owed to Francisco. Exposure is internal.**
+
+**Two things to carry forward anyway:**
+1. **The acronym collision is a live hazard.** `dashboards/helios_demo/app.py`
+   imports the *biofuel* callable and computes a BBD price stack, while the
+   *delivered* Helios product is veg oils and grains under the same brand and the
+   same three letters. That makes it easy to wire the defective construct into a
+   Helios surface unnoticed — and the demo is where it already sits. Rename one of
+   them.
+2. **The demo has no artifact trail.** It is a Streamlit app, so nothing was
+   delivered to inspect. Only Tore knows whether it has been driven in front of
+   anyone and with what as-of date. Low concern given the delivered package is
+   clean, but it is the one thing evidence cannot close.
 
 ---
 
