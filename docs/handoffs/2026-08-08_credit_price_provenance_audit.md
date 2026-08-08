@@ -195,16 +195,22 @@ veg-oil price sensitivity, not a credit-derived figure.
 **Conclusion: no correction owed to Francisco. Exposure is internal.**
 
 **Two things to carry forward anyway:**
-1. **The acronym collision is a live hazard.** `dashboards/helios_demo/app.py`
-   imports the *biofuel* callable and computes a BBD price stack, while the
-   *delivered* Helios product is veg oils and grains under the same brand and the
-   same three letters. That makes it easy to wire the defective construct into a
-   Helios surface unnoticed — and the demo is where it already sits. Rename one of
-   them.
-2. **The demo has no artifact trail.** It is a Streamlit app, so nothing was
-   delivered to inspect. Only Tore knows whether it has been driven in front of
-   anyone and with what as-of date. Low concern given the delivered package is
-   clean, but it is the one thing evidence cannot close.
+
+1. **ACTION — rename one of the two IFV constructs in code.** This is a hazard
+   *independent of today's bug*: it survives every fix discussed here, it is
+   invisible in code review, and the failure mode is silent. Someone wires the
+   biofuel callable into a Helios surface, the masthead reads "Engine: IFV" either
+   way, and nothing looks wrong. `dashboards/helios_demo/app.py` already sits on
+   exactly that seam — it imports the biofuel callable under the Helios brand.
+   Proposed: `ifv_vegoil` and `ifv_biofuel` (or similar) at the module/callable
+   level, whatever the external branding says. Cheap now; stops being cheap once
+   there are more surfaces.
+
+2. **The demo has no artifact trail — question for Tore, stated plainly:**
+   *has the Helios demo been driven in front of anyone, and if so roughly when?*
+   It is a Streamlit app, so nothing was delivered to inspect. Low concern given
+   the delivered package is clean, but it is the one thing evidence cannot close,
+   and it should be asked rather than left implied.
 
 ---
 
@@ -253,6 +259,28 @@ Immediate schema consequences:
 - Any RIN price row **must** carry a vintage column. EPA supplies it natively
   (`RIN Year` vs `Transfer Year`), so it costs nothing to carry.
 - Any price table must carry observation-type (actual / forecast / modelled).
+
+### Second design principle — provenance that can be bypassed is not provenance
+
+> A provenance system that can be imported around records only the subset that
+> remembered to route. That is not provenance; it is a sample.
+
+**Worked example, this session.** `core.kg_callable_invocation` is the audit trail
+for KG callables. Answering "has any IFV number built on a forecast D4 leg reached
+a client?" took an hour *because the log could not answer it* —
+`dashboards/helios_demo/app.py` imports `implied_feedstock_value` directly
+(its own comment at line 23 says "import the IFV callable directly"), bypassing
+the production invoker, so its calls never appear. The log showed 48 rows, all
+`smoke_test`/`test`, which reads like "no exposure" and means nothing of the kind.
+The question was ultimately settled from **delivered artifacts**, not logs.
+
+Consequences to design for on 2026-08-24:
+- Either close the direct-import route (single entry point, invoker-enforced), or
+  stop treating `core.kg_callable_invocation` as an audit trail and say so
+  explicitly wherever it is relied on.
+- An audit trail whose coverage is unknown is worse than none: it invites the
+  false-negative conclusion. Same family as the schema rule — *a record that does
+  not state its own completeness cannot be reasoned from.*
 
 ---
 
